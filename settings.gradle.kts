@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Learnyscacpe"
-include ':app'
+include(":app")
