@@ -36,6 +36,12 @@ kapt {
 }
 
 dependencies {
+    implementation(project(":feature:home"))
+    implementation(project(":feature:profile"))
+    implementation(project(":feature:schedule"))
+    implementation(project(":feature:search"))
+
+    implementation(project(":core:designsystem"))
 
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
