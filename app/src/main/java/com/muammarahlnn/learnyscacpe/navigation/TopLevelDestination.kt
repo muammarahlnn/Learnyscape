@@ -1,7 +1,6 @@
 package com.muammarahlnn.learnyscacpe.navigation
 
 import androidx.annotation.DrawableRes
-import com.muammarahlnn.core.designsystem.icon.LearnyscapeIcons
 import com.muammarahlnn.learnyscape.feature.home.R as homeR
 import com.muammarahlnn.learnyscape.feature.profile.R as profileR
 import com.muammarahlnn.learnyscape.feature.schedule.R as scheduleR
@@ -19,23 +18,23 @@ enum class TopLevelDestination(
     val iconTextId: Int,
 ) {
     HOME(
-        selectedIconId = LearnyscapeIcons.Home,
-        unselectedIconId = LearnyscapeIcons.HomeBorder,
+        selectedIconId = homeR.drawable.ic_home,
+        unselectedIconId = homeR.drawable.ic_home_border,
         iconTextId = homeR.string.home
     ),
     SEARCH(
-        selectedIconId = LearnyscapeIcons.Search,
-        unselectedIconId = LearnyscapeIcons.SearchBorder,
+        selectedIconId = searchR.drawable.ic_search,
+        unselectedIconId = searchR.drawable.ic_search_border,
         iconTextId = searchR.string.search
     ),
     SCHEDULE(
-        selectedIconId = LearnyscapeIcons.CalendarToday,
-        unselectedIconId = LearnyscapeIcons.CalendarTodayBorder,
+        selectedIconId = scheduleR.drawable.ic_calendar_today,
+        unselectedIconId = scheduleR.drawable.ic_calendary_today_border,
         iconTextId = scheduleR.string.schedule
     ),
     PROFILE(
-        selectedIconId = LearnyscapeIcons.Person,
-        unselectedIconId = LearnyscapeIcons.PersonBorder,
+        selectedIconId = profileR.drawable.ic_person,
+        unselectedIconId = profileR.drawable.ic_person_border,
         iconTextId = profileR.string.profile
     ),
 }
