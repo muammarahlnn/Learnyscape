@@ -3,6 +3,8 @@ package com.muammarahlnn.core.designsystem.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.unit.dp
 
 
 /**
@@ -25,9 +27,17 @@ val LightColorScheme = lightColorScheme(
 
 @Composable
 fun LearnyscapeTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = LightColorScheme,
-        typography = LearnyscapeTypography,
-        content = content
+    val defaultBackgroundTheme = BackgroundTheme(
+        color = LightColorScheme.surface,
+        tonalElevation = 2.dp
     )
+    CompositionLocalProvider(
+        LocalBackgroundTheme provides defaultBackgroundTheme
+    ) {
+        MaterialTheme(
+            colorScheme = LightColorScheme,
+            typography = LearnyscapeTypography,
+            content = content
+        )
+    }
 }

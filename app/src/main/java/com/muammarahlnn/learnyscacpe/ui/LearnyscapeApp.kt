@@ -8,13 +8,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.muammarahlnn.core.designsystem.component.LearnyscapeBackground
 import com.muammarahlnn.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.core.designsystem.component.LearnyscapeNavigationBarItem
-import com.muammarahlnn.core.designsystem.theme.LearnyscapeTheme
 import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
 import com.muammarahlnn.learnyscacpe.navigation.TopLevelDestination
 
@@ -28,10 +29,11 @@ import com.muammarahlnn.learnyscacpe.navigation.TopLevelDestination
 fun LearnyscapeApp(
     appState: LearnyscapeAppState = rememberLearnyscapeAppState(),
 ) {
-    LearnyscapeTheme {
+    LearnyscapeBackground {
         Scaffold(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            contentColor = MaterialTheme.colorScheme.background,
             bottomBar = {
                 LearnyscapeBottomBar(
                     destinations = appState.topLevelDestinations,
