@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +21,6 @@ internal fun ProfileScreen(modifier: Modifier = Modifier) {
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
     ) {
         Text(
             text = stringResource(id = R.string.profile),

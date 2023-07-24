@@ -8,9 +8,6 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.core.designsystem.theme.LightRed
-import com.muammarahlnn.core.designsystem.theme.Test
-import com.muammarahlnn.core.designsystem.theme.WhiteCloud
 
 
 /**
