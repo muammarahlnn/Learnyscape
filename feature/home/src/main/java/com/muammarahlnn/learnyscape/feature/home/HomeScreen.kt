@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 
@@ -156,9 +157,11 @@ private fun ClassItem(modifier: Modifier = Modifier) {
                     )
                 )
                 Text(
-                    text = "Andi Muh. Amil Siddik, S.Si., M.Si.",
+                    text = "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet",
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                 )
             }
         }
