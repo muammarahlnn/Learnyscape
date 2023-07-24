@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.muammarahlnn.learnyscape.feature.home.HomeScreen
+import com.muammarahlnn.learnyscape.feature.home.HomeRoute
 
 
 /**
@@ -28,7 +28,7 @@ fun NavGraphBuilder.homeGraph(
         startDestination = homeRoute
     ) {
         composable(route = homeRoute) {
-            HomeScreen()
+            HomeRoute()
         }
         nestedGraph()
     }
