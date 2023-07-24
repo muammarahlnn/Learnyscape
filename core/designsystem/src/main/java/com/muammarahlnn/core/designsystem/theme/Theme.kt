@@ -29,7 +29,7 @@ val LightColorScheme = lightColorScheme(
 fun LearnyscapeTheme(content: @Composable () -> Unit) {
     val defaultBackgroundTheme = BackgroundTheme(
         color = LightColorScheme.surface,
-        tonalElevation = 2.dp
+        tonalElevation = 0.dp
     )
     CompositionLocalProvider(
         LocalBackgroundTheme provides defaultBackgroundTheme
