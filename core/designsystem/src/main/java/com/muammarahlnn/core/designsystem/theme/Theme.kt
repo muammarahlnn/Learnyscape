@@ -23,6 +23,7 @@ val LightColorScheme = lightColorScheme(
     background = WhiteSmoke,
     onBackground = Black,
     surface = WhiteSmoke,
+    onSurface = Gray,
 )
 
 @Composable
