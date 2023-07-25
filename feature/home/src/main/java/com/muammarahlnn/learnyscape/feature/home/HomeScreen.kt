@@ -21,11 +21,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -39,6 +36,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.core.designsystem.component.homeTopAppBarColors
 
 
@@ -97,16 +95,18 @@ private fun HomeTopAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    TopAppBar(
+    LearnyscapeTopAppBar(
         title = {
             LearnyscapeText()
         },
-        actions = {
-            NotificationsIcon()
-        },
-        scrollBehavior = scrollBehavior,
+        actionIconRes = R.drawable.ic_notification,
+        actionIconContentDescription = stringResource(id = R.string.top_app_bar_navigation_icon_description),
         colors = homeTopAppBarColors(),
+        scrollBehavior = scrollBehavior,
         modifier = modifier,
+        onActionClick = {
+            // TODO: will implement later
+        }
     )
 }
 
@@ -128,17 +128,6 @@ private fun LearnyscapeText() {
         style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.onBackground,
     )
-}
-
-@Composable
-private fun NotificationsIcon() {
-    IconButton(onClick = { /* TODO: will implement later */ }) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_notification),
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onBackground
-        )
-    }
 }
 
 @Composable
