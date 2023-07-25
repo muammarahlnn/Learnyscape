@@ -1,7 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.home
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,10 +21,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,7 +65,7 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
         }
 
         item {
-            HomeToolbar()
+            HomeTopAppBar()
         }
 
         homeContent()
@@ -90,20 +91,20 @@ private fun LazyListScope.homeContent() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeToolbar(
+private fun HomeTopAppBar(
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    TopAppBar(
+        title = {
+            LearnyscapeText()
+        },
+        actions = {
+            NotificationsIcon()
+        },
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        LearnyscapeText()
-        NotificationsIcon()
-    }
+    )
 }
 
 @Composable
