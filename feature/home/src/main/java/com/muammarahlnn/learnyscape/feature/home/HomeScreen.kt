@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,9 +26,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -37,6 +39,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.core.designsystem.component.homeTopAppBarColors
 
 
 /**
@@ -51,45 +54,40 @@ internal fun HomeRoute(
     HomeScreen(modifier = modifier)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(modifier: Modifier = Modifier) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val listState = rememberLazyListState()
-    LazyColumn(
-        state = listState,
+    Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
     ) {
-        item { 
-            Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
-        }
+        Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
 
-        item {
-            HomeTopAppBar()
-        }
-
-        homeContent()
-
-        item {
-            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
-        }
-    }
-}
-
-private fun LazyListScope.homeContent() {
-    // dummy items
-    val items = (1..10).toList()
-    items(
-        items = items,
-        key = {
-            it
-        },
-    ) {
-        ClassItem(
-            modifier = Modifier.padding(
-                vertical = 4.dp,
-                horizontal = 16.dp,
-            )
+        HomeTopAppBar(
+            scrollBehavior = scrollBehavior,
         )
+
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) {
+            // for now this items just for dummy purpose
+            items(
+                items = (1..10).toList(),
+                key = { it },
+            ) {
+                ClassItem(
+                    modifier = Modifier.padding(
+                        vertical = 4.dp,
+                        horizontal = 16.dp
+                    )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
     }
 }
 
@@ -97,6 +95,7 @@ private fun LazyListScope.homeContent() {
 @Composable
 private fun HomeTopAppBar(
     modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     TopAppBar(
         title = {
@@ -105,7 +104,9 @@ private fun HomeTopAppBar(
         actions = {
             NotificationsIcon()
         },
-        modifier = modifier
+        scrollBehavior = scrollBehavior,
+        colors = homeTopAppBarColors(),
+        modifier = modifier,
     )
 }
 
