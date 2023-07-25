@@ -25,6 +25,27 @@ import androidx.compose.ui.res.stringResource
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearnyscapeTopAppBar(
+    @StringRes title: Int,
+    modifier: Modifier = Modifier,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = stringResource(id = title),
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
+        },
+        colors = colors,
+        scrollBehavior = scrollBehavior,
+        modifier = modifier
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LearnyscapeTopAppBar(
     title: @Composable () -> Unit,
     @DrawableRes actionIconRes: Int,
     actionIconContentDescription: String?,
@@ -81,8 +102,18 @@ fun LearnyscapeTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+    // TODO: fix top app bar color changing when scrolled stick to the top
     containerColor = MaterialTheme.colorScheme.background,
     scrolledContainerColor = MaterialTheme.colorScheme.background,
     navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
     actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun defaultTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+    containerColor = MaterialTheme.colorScheme.primary,
+    scrolledContainerColor = MaterialTheme.colorScheme.primary,
+    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
 )
