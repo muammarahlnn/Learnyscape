@@ -6,11 +6,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -44,24 +52,41 @@ internal fun HomeRoute(
 
 @Composable
 private fun HomeScreen(modifier: Modifier = Modifier) {
-    Column(
+    val listState = rememberLazyListState()
+    LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxSize()
+            .padding(horizontal = 16.dp),
     ) {
-        HomeToolbar()
-        HomeContent()
+        item { 
+            Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
+        }
+
+        item {
+            HomeToolbar()
+        }
+
+        homeContent()
+
+        item {
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+        }
     }
 }
 
-@Composable
-private fun HomeContent(modifier: Modifier = Modifier) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
+private fun LazyListScope.homeContent() {
+    // dummy items
+    val items = (1..10).toList()
+    items(
+        items = items,
+        key = {
+            it
+        },
     ) {
-        ClassItem()
+        ClassItem(
+            modifier = Modifier.padding(vertical = 4.dp)
+        )
     }
 }
 
@@ -72,7 +97,7 @@ private fun HomeToolbar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 16.dp, horizontal = 16.dp),
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
