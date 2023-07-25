@@ -57,8 +57,7 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
     LazyColumn(
         state = listState,
         modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .fillMaxSize(),
     ) {
         item { 
             Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
@@ -86,7 +85,10 @@ private fun LazyListScope.homeContent() {
         },
     ) {
         ClassItem(
-            modifier = Modifier.padding(vertical = 4.dp)
+            modifier = Modifier.padding(
+                vertical = 4.dp,
+                horizontal = 16.dp,
+            )
         )
     }
 }
