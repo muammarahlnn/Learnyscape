@@ -16,6 +16,7 @@ dependencyResolutionManagement {
 rootProject.name = "Learnyscape"
 include(":app")
 include(":core:designsystem")
+include(":core:ui")
 
 include(":feature:home")
 include(":feature:search")
