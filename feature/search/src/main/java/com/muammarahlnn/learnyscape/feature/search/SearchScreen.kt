@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.core.designsystem.component.defaultTopAppBarColors
-import com.muammarahlnn.core.designsystem.R as designSystemR
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
