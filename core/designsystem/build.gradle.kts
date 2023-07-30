@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.muammarahlnn.core.designsystem"
+    namespace = "com.muammarahlnn.learnyscape.core.designsystem"
 
     defaultConfig {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
