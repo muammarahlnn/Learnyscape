@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile">Profile</string>
+    <string name="logout">Logout</string>
+    <string name="camera_icon_description">Camera</string>
+    <string name="logout_icon_description">Logout</string>
 </resources>
