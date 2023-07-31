@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.ui.ClassItem
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -50,15 +53,7 @@ internal fun SearchScreen(modifier: Modifier = Modifier) {
     Column(modifier = modifier.fillMaxSize()) {
         SearchTopAppBar()
         SearchTextField()
-//        Box(
-//            contentAlignment = Alignment.Center,
-//            modifier = Modifier.fillMaxSize()
-//        ) {
-//            Text(
-//                text = stringResource(id = R.string.search),
-//                color = MaterialTheme.colorScheme.onBackground
-//            )
-//        }
+        SearchResult()
     }
 }
 
@@ -120,7 +115,6 @@ private fun SearchTextField() {
         singleLine = true,
         shape = RoundedCornerShape(10.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
             unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant ,
@@ -131,6 +125,7 @@ private fun SearchTextField() {
             focusedTrailingIconColor = MaterialTheme.colorScheme.onSurface,
             focusedPlaceholderColor = MaterialTheme.colorScheme.onSurface,
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.onSurface,
         ),
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Search,
@@ -156,5 +151,22 @@ private fun SearchTextField() {
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
+    }
+}
+
+@Composable
+private fun SearchResult() {
+    LazyColumn {
+        items(
+            items = (1..10).toList(),
+            key = { it }
+        ) {
+            ClassItem(
+                modifier = Modifier.padding(
+                    vertical = 4.dp,
+                    horizontal = 16.dp
+                )
+            )
+        }
     }
 }
