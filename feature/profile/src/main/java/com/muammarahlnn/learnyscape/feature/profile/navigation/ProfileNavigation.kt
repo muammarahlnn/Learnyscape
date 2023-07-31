@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.profile.ProfileScreen
+import com.muammarahlnn.learnyscape.feature.profile.ProfileRoute
 
 
 /**
@@ -20,6 +20,6 @@ fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.profileScreen() {
     composable(route = profileRoute) {
-        ProfileScreen()
+        ProfileRoute()
     }
 }
