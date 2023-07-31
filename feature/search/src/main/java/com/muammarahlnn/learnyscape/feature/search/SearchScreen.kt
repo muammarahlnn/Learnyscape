@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.search
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,10 +53,17 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SearchScreen(modifier: Modifier = Modifier) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier.fillMaxSize()) {
-        SearchTopAppBar()
+        SearchTopAppBar(
+            scrollBehavior = scrollBehavior
+        )
+
         SearchTextField()
-        SearchResult()
+
+        SearchResult(
+            scrollBehavior = scrollBehavior,
+        )
     }
 }
 
@@ -137,7 +147,11 @@ private fun SearchTextField() {
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(
+                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+            )
             .focusRequester(focusRequester)
             .onKeyEvent {
                 if (it.key == Key.Enter) {
@@ -154,9 +168,20 @@ private fun SearchTextField() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SearchResult() {
-    LazyColumn {
+private fun SearchResult(
+    scrollBehavior: TopAppBarScrollBehavior,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(
+            horizontal = 16.dp,
+            vertical = 12.dp, // 16 - 4 (from its item) = 12
+        ),
+        modifier = modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) {
         items(
             items = (1..10).toList(),
             key = { it }
@@ -164,7 +189,6 @@ private fun SearchResult() {
             ClassItem(
                 modifier = Modifier.padding(
                     vertical = 4.dp,
-                    horizontal = 16.dp
                 )
             )
         }
