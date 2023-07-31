@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.search.SearchScreen
+import com.muammarahlnn.learnyscape.feature.search.SearchRoute
 
 
 /**
@@ -20,6 +20,6 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.searchScreen() {
     composable(route = searchRoute) {
-        SearchScreen()
+        SearchRoute()
     }
 }
