@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,7 +30,10 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun ClassItem(modifier: Modifier = Modifier) {
+fun ClassItem(
+    modifier: Modifier = Modifier,
+    onItemClick: () -> Unit = {},
+) {
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
@@ -40,6 +44,9 @@ fun ClassItem(modifier: Modifier = Modifier) {
         ),
         modifier = modifier
             .fillMaxWidth()
+            .clickable {
+                onItemClick()
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

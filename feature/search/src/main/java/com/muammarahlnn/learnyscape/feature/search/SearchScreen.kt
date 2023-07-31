@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -17,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -37,6 +39,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.core.designsystem.component.LearnyscapeTopAppBar
@@ -50,9 +53,40 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  * @file SearchScreen, 20/07/2023 22.06 by Muammar Ahlan Abimanyu
  */
 
+@Composable
+internal fun SearchRoute(
+    modifier: Modifier = Modifier,
+) {
+    var showJoinRequestDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    SearchScreen(
+        showJoinRequestDialog = showJoinRequestDialog,
+        onClassItemClick = {
+            showJoinRequestDialog = true
+        },
+        onDismissJoinRequestDialog = {
+            showJoinRequestDialog = false
+        },
+        modifier = modifier,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SearchScreen(modifier: Modifier = Modifier) {
+private fun SearchScreen(
+    showJoinRequestDialog: Boolean,
+    onClassItemClick: () -> Unit,
+    onDismissJoinRequestDialog: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (showJoinRequestDialog) {
+        JoinRequestClassDialog(
+            onDismiss = onDismissJoinRequestDialog,
+        )
+    }
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier.fillMaxSize()) {
         SearchTopAppBar(
@@ -63,6 +97,7 @@ internal fun SearchScreen(modifier: Modifier = Modifier) {
 
         SearchResult(
             scrollBehavior = scrollBehavior,
+            onClassItemClick = onClassItemClick,
         )
     }
 }
@@ -172,6 +207,7 @@ private fun SearchTextField() {
 @Composable
 private fun SearchResult(
     scrollBehavior: TopAppBarScrollBehavior,
+    onClassItemClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -187,10 +223,68 @@ private fun SearchResult(
             key = { it }
         ) {
             ClassItem(
+                onItemClick = onClassItemClick,
                 modifier = Modifier.padding(
                     vertical = 4.dp,
                 )
             )
         }
     }
+}
+
+@Composable
+private fun JoinRequestClassDialog(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(id = R.string.join_request_dialog_title),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(
+                    R.string.join_request_dialog_text,
+                    "Pemrograman Mobile B"
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text(
+                    text = stringResource(
+                        id = R.string.join_request_dialog_confirm_button_text
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismiss
+            ) {
+                Text(
+                    text = stringResource(
+                        id = R.string.join_request_dialog_dismiss_button_text
+                    ),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.onPrimary,
+        modifier = modifier,
+    )
 }
