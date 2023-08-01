@@ -21,11 +21,13 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,29 +54,46 @@ internal fun NotificationsRoute(
 private fun NotificationsScreen(
     modifier: Modifier = Modifier,
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier.fillMaxSize()) {
-        NotificationsTopAppBar()
-        NotificationContent()
+        NotificationsTopAppBar(
+            scrollBehavior = scrollBehavior,
+        )
+        NotificationContent(
+            scrollBehavior = scrollBehavior,
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotificationContent(
+    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) {
-        item {
-            NotificationItem(type = NotificationType.MODULE)
-        }
-        item {
-            NotificationItem(type = NotificationType.ASSIGNMENT)
-        }
-        item {
-            NotificationItem(type = NotificationType.QUIZ)
+        // dummy list only for test ui purpose
+        listOf(
+            NotificationType.MODULE,
+            NotificationType.ASSIGNMENT,
+            NotificationType.QUIZ,
+            NotificationType.MODULE,
+            NotificationType.ASSIGNMENT,
+            NotificationType.QUIZ,
+            NotificationType.MODULE,
+            NotificationType.ASSIGNMENT,
+            NotificationType.QUIZ,
+            NotificationType.MODULE,
+            NotificationType.ASSIGNMENT,
+            NotificationType.QUIZ,
+        ).forEach {
+            item {
+                NotificationItem(type = it)
+            }
         }
     }
 }
