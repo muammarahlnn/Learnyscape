@@ -1,4 +1,4 @@
-package com.muammarahlnn.core.designsystem.theme
+package com.muammarahlnn.learnyscape.core.designsystem.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme

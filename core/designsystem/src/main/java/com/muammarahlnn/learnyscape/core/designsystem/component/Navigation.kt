@@ -1,4 +1,4 @@
-package com.muammarahlnn.core.designsystem.component
+package com.muammarahlnn.learnyscape.core.designsystem.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.MaterialTheme

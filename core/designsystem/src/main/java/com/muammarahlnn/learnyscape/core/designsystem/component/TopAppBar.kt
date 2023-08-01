@@ -1,4 +1,4 @@
-package com.muammarahlnn.core.designsystem.component
+package com.muammarahlnn.learnyscape.core.designsystem.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes

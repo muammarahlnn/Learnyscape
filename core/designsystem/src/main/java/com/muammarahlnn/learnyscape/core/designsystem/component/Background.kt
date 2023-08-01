@@ -1,4 +1,4 @@
-package com.muammarahlnn.core.designsystem.component
+package com.muammarahlnn.learnyscape.core.designsystem.component
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.LocalAbsoluteTonalElevation
@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.core.designsystem.theme.LocalBackgroundTheme
+import com.muammarahlnn.learnyscape.core.designsystem.theme.LocalBackgroundTheme
 
 
 /**
