@@ -35,14 +35,21 @@ import com.muammarahlnn.learnyscape.core.ui.ClassItem
 
 @Composable
 internal fun HomeRoute(
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    HomeScreen(modifier = modifier)
+    HomeScreen(
+        onNotificationsClick = onNotificationsClick,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun HomeScreen(modifier: Modifier = Modifier) {
+private fun HomeScreen(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val listState = rememberLazyListState()
     Column(
@@ -52,6 +59,7 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
 
         HomeTopAppBar(
+            onNotificationsClick = onNotificationsClick,
             scrollBehavior = scrollBehavior,
         )
 
@@ -80,6 +88,7 @@ private fun HomeScreen(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeTopAppBar(
+    onNotificationsClick: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
@@ -92,9 +101,7 @@ private fun HomeTopAppBar(
         colors = homeTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         modifier = modifier,
-        onActionClick = {
-            // TODO: will implement later
-        }
+        onActionClick = onNotificationsClick
     )
 }
 

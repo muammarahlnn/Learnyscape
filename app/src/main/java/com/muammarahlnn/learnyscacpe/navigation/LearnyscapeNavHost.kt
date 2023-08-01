@@ -8,6 +8,8 @@ import androidx.navigation.compose.NavHost
 import com.muammarahlnn.learnyscacpe.ui.LearnyscapeAppState
 import com.muammarahlnn.learnyscape.feature.home.navigation.homeGraph
 import com.muammarahlnn.learnyscape.feature.home.navigation.homeGraphRoutePattern
+import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
+import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
 import com.muammarahlnn.learnyscape.feature.profile.navigation.profileScreen
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.scheduleScreen
 import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
@@ -36,7 +38,13 @@ fun LearnyscapeNavHost(
             ExitTransition.None
         },
     ) {
-        homeGraph {}
+        homeGraph(
+            onNotificationsClick = {
+                navController.navigateToNotifications()
+            }
+        ) {
+            notificationsScreen()
+        }
         searchScreen()
         scheduleScreen()
         profileScreen()

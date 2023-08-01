@@ -83,10 +83,15 @@ fun LearnyscapeTopAppBar(
 ) {
     TopAppBar(
         title = {
-            Text(text = stringResource(id = titleRes))
+            Text(
+                text = stringResource(id = titleRes),
+                color = MaterialTheme.colorScheme.onPrimary,
+            )
         },
         navigationIcon = {
-            IconButton(onClick = onNavigationClick) {
+            IconButton(
+                onClick = onNavigationClick,
+            ) {
                 Icon(
                     painterResource(id = navigationIconRes),
                     contentDescription = navigationIconContentDescription,
