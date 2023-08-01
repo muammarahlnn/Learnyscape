@@ -1,4 +1,4 @@
-package com.muammarahlnn.core.designsystem
+package com.muammarahlnn.learnyscape.core.designsystem
 
 import org.junit.Test
 

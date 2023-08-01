@@ -13,9 +13,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.muammarahlnn.core.designsystem.component.LearnyscapeBackground
-import com.muammarahlnn.core.designsystem.component.LearnyscapeNavigationBar
-import com.muammarahlnn.core.designsystem.component.LearnyscapeNavigationBarItem
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
 import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
 import com.muammarahlnn.learnyscacpe.navigation.TopLevelDestination
 

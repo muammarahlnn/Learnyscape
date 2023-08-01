@@ -1,4 +1,4 @@
-package com.muammarahlnn.core.designsystem.theme
+package com.muammarahlnn.learnyscape.core.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

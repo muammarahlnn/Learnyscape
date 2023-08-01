@@ -42,8 +42,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
+import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 import com.muammarahlnn.learnyscape.core.ui.ClassItem
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
