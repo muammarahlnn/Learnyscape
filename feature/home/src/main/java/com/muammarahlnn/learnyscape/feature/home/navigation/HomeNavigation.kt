@@ -21,6 +21,7 @@ fun NavController.navigateToHomeGraph(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeGraph(
+    onNotificationsClick: () -> Unit,
     nestedGraph: NavGraphBuilder.() -> Unit,
 ) {
     navigation(
@@ -28,7 +29,9 @@ fun NavGraphBuilder.homeGraph(
         startDestination = homeRoute
     ) {
         composable(route = homeRoute) {
-            HomeRoute()
+            HomeRoute(
+                onNotificationsClick = onNotificationsClick
+            )
         }
         nestedGraph()
     }
