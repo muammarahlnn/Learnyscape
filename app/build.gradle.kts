@@ -40,6 +40,7 @@ dependencies {
     implementation(project(":feature:profile"))
     implementation(project(":feature:schedule"))
     implementation(project(":feature:search"))
+    implementation(project(":feature:notifications"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
