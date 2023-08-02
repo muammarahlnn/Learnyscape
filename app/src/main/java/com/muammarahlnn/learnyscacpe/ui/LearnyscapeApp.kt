@@ -35,11 +35,13 @@ fun LearnyscapeApp(
             contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
-                LearnyscapeBottomBar(
-                    destinations = appState.topLevelDestinations,
-                    onNavigateToDestination = appState::navigateToTopLevelDestination,
-                    currentDestination = appState.currentDestination
-                )
+                if (!appState.shouldNotShowBottomBar) {
+                    LearnyscapeBottomBar(
+                        destinations = appState.topLevelDestinations,
+                        onNavigateToDestination = appState::navigateToTopLevelDestination,
+                        currentDestination = appState.currentDestination
+                    )
+                }
             }
         ) { innerPadding ->
             LearnyscapeNavHost(

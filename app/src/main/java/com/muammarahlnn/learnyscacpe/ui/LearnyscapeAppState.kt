@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscacpe.navigation.TopLevelDestination
 import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHomeGraph
+import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsRoute
 import com.muammarahlnn.learnyscape.feature.profile.navigation.navigateToProfile
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.navigateToSchedule
 import com.muammarahlnn.learnyscape.feature.search.navigation.navigateToSearch
@@ -37,6 +38,18 @@ class LearnyscapeAppState(
     val currentDestination: NavDestination?
         @Composable
         get() = navController.currentBackStackEntryAsState().value?.destination
+
+    private val currentRoute: String?
+        @Composable
+        get() = currentDestination?.route
+
+    private val withoutBottomBarRoutes = listOf(
+        notificationsRoute
+    )
+
+    val shouldNotShowBottomBar: Boolean
+        @Composable
+        get() = currentRoute in withoutBottomBarRoutes
 
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
 
