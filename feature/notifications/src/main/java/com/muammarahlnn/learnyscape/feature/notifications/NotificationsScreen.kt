@@ -44,20 +44,26 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun NotificationsRoute(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    NotificationsScreen(modifier = modifier)
+    NotificationsScreen(
+        onBackClick = onBackClick,
+        modifier = modifier
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotificationsScreen(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier.fillMaxSize()) {
         NotificationsTopAppBar(
             scrollBehavior = scrollBehavior,
+            onBackClick = onBackClick,
         )
         NotificationContent(
             scrollBehavior = scrollBehavior,
@@ -101,6 +107,7 @@ private fun NotificationContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotificationsTopAppBar(
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
@@ -112,6 +119,7 @@ private fun NotificationsTopAppBar(
         ),
         colors = defaultTopAppBarColors(),
         scrollBehavior = scrollBehavior,
+        onNavigationClick = onBackClick,
         modifier = modifier,
     )
 }
