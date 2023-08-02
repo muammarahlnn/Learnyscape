@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":feature:schedule"))
     implementation(project(":feature:search"))
     implementation(project(":feature:notifications"))
+    implementation(project(":feature:class"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
