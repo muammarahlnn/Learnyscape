@@ -43,7 +43,9 @@ fun LearnyscapeNavHost(
                 navController.navigateToNotifications()
             }
         ) {
-            notificationsScreen()
+            notificationsScreen(
+                onBackClick = navController::popBackStack
+            )
         }
         searchScreen()
         scheduleScreen()
