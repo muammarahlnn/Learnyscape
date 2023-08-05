@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.muammarahlnn.learnyscape.feature.home"
+    namespace = "com.muammarahlnn.learnyscape.feature.aclass"
 }
 
 dependencies {

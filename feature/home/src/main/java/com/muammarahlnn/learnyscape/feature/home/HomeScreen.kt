@@ -36,10 +36,12 @@ import com.muammarahlnn.learnyscape.core.ui.ClassItem
 @Composable
 internal fun HomeRoute(
     onNotificationsClick: () -> Unit,
+    onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeScreen(
         onNotificationsClick = onNotificationsClick,
+        onClassClick = onClassClick,
         modifier = modifier,
     )
 }
@@ -48,6 +50,7 @@ internal fun HomeRoute(
 @Composable
 private fun HomeScreen(
     onNotificationsClick: () -> Unit,
+    onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -73,6 +76,7 @@ private fun HomeScreen(
                 key = { it },
             ) {
                 ClassItem(
+                    onItemClick = onClassClick,
                     modifier = Modifier.padding(
                         vertical = 4.dp,
                         horizontal = 16.dp,

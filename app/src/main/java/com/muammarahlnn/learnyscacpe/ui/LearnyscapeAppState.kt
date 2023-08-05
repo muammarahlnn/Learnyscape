@@ -9,12 +9,27 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.muammarahlnn.learnyscacpe.navigation.TopLevelDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
+import com.muammarahlnn.learnyscape.feature.aclass.navigation.classRoute
+import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph
+import com.muammarahlnn.learnyscape.feature.assignment.navigation.assignmentRoute
+import com.muammarahlnn.learnyscape.feature.assignment.navigation.navigateToAssignment
+import com.muammarahlnn.learnyscape.feature.home.navigation.homeRoute
 import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHomeGraph
+import com.muammarahlnn.learnyscape.feature.member.navigation.memberRoute
+import com.muammarahlnn.learnyscape.feature.member.navigation.navigateToMember
+import com.muammarahlnn.learnyscape.feature.module.navigation.moduleRoute
+import com.muammarahlnn.learnyscape.feature.module.navigation.navigateToModule
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsRoute
 import com.muammarahlnn.learnyscape.feature.profile.navigation.navigateToProfile
+import com.muammarahlnn.learnyscape.feature.profile.navigation.profileRoute
+import com.muammarahlnn.learnyscape.feature.quiz.navigation.navigateToQuiz
+import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizRoute
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.navigateToSchedule
+import com.muammarahlnn.learnyscape.feature.schedule.navigation.scheduleRoute
 import com.muammarahlnn.learnyscape.feature.search.navigation.navigateToSearch
+import com.muammarahlnn.learnyscape.feature.search.navigation.searchRoute
 
 
 /**
@@ -47,26 +62,56 @@ class LearnyscapeAppState(
         notificationsRoute
     )
 
+    private val learnyscapeBottomBarRoutes = listOf(
+        homeRoute, searchRoute, scheduleRoute, profileRoute,
+    )
+
+    private val classBottomBarRoutes = listOf(
+        classRoute, moduleRoute, assignmentRoute, quizRoute, memberRoute,
+    )
+
+    val showLearnyscapeBottomBar: Boolean
+        @Composable
+        get() = currentRoute in learnyscapeBottomBarRoutes
+
+    val showClassBottomBar: Boolean
+        @Composable
+        get() = currentRoute in classBottomBarRoutes
+
     val shouldNotShowBottomBar: Boolean
         @Composable
         get() = currentRoute in withoutBottomBarRoutes
 
     val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
 
-    fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        val topLevelNavOptions = navOptions {
+    val classDestinations: List<ClassDestination> = ClassDestination.values().asList()
+
+    private val navOptions by lazy {
+        navOptions {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }
             launchSingleTop = true
             restoreState = true
         }
+    }
 
+    fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
         when (topLevelDestination) {
-            TopLevelDestination.HOME -> navController.navigateToHomeGraph(topLevelNavOptions)
-            TopLevelDestination.SEARCH -> navController.navigateToSearch(topLevelNavOptions)
-            TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(topLevelNavOptions)
-            TopLevelDestination.PROFILE -> navController.navigateToProfile(topLevelNavOptions)
+            TopLevelDestination.HOME -> navController.navigateToHomeGraph(navOptions)
+            TopLevelDestination.SEARCH -> navController.navigateToSearch(navOptions)
+            TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(navOptions)
+            TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
+        }
+    }
+
+    fun navigateToClassDestination(classDestination: ClassDestination) {
+        when (classDestination) {
+            ClassDestination.CLASS -> navController.navigateToClassGraph(navOptions)
+            ClassDestination.MODULE -> navController.navigateToModule(navOptions)
+            ClassDestination.ASSIGNMENT -> navController.navigateToAssignment(navOptions)
+            ClassDestination.QUIZ -> navController.navigateToQuiz(navOptions)
+            ClassDestination.MEMBER -> navController.navigateToMember(navOptions)
         }
     }
 }
