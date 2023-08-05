@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.module.ModuleScreen
+import com.muammarahlnn.learnyscape.feature.module.ModuleRoute
 
 
 /**
@@ -17,8 +17,10 @@ fun NavController.navigateToModule(navOptions: NavOptions? = null) {
     this.navigate(moduleRoute, navOptions)
 }
 
-fun NavGraphBuilder.moduleScreen() {
+fun NavGraphBuilder.moduleScreen(
+    onBackClick: () -> Unit,
+) {
     composable(route = moduleRoute) {
-        ModuleScreen()
+        ModuleRoute(onBackClick = onBackClick)
     }
 }

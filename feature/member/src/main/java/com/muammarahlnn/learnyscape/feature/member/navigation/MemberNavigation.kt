@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.member.MemberScreen
+import com.muammarahlnn.learnyscape.feature.member.MemberRoute
 
 
 /**
@@ -17,8 +17,12 @@ fun NavController.navigateToMember(navOptions: NavOptions? = null) {
     this.navigate(memberRoute, navOptions)
 }
 
-fun NavGraphBuilder.memberScreen() {
+fun NavGraphBuilder.memberScreen(
+    onBackClick: () -> Unit,
+) {
     composable(route = memberRoute) {
-        MemberScreen()
+        MemberRoute(
+            onBackClick = onBackClick,
+        )
     }
 }

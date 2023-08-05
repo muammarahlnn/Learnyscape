@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.quiz.QuizScreen
+import com.muammarahlnn.learnyscape.feature.quiz.QuizRoute
 
 
 /**
@@ -17,8 +17,12 @@ fun NavController.navigateToQuiz(navOptions: NavOptions? = null) {
     this.navigate(quizRoute, navOptions)
 }
 
-fun NavGraphBuilder.quizScreen() {
+fun NavGraphBuilder.quizScreen(
+    onBackClick: () -> Unit,
+) {
     composable(route = quizRoute) {
-        QuizScreen()
+        QuizRoute(
+            onBackClick = onBackClick,
+        )
     }
 }

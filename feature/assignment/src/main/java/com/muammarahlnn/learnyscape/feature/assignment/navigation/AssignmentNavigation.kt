@@ -4,7 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.assignment.AssignmentScreen
+import com.muammarahlnn.learnyscape.feature.assignment.AssignmentRoute
 
 
 /**
@@ -17,8 +17,12 @@ fun NavController.navigateToAssignment(navOptions: NavOptions? = null) {
     this.navigate(assignmentRoute, navOptions)
 }
 
-fun NavGraphBuilder.assignmentScreen() {
+fun NavGraphBuilder.assignmentScreen(
+    onBackClick: () -> Unit,
+) {
     composable(route = assignmentRoute) {
-        AssignmentScreen()
+        AssignmentRoute(
+            onBackClick = onBackClick
+        )
     }
 }

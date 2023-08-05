@@ -85,7 +85,6 @@ fun LearnyscapeTopAppBar(
         title = {
             Text(
                 text = stringResource(id = titleRes),
-                color = MaterialTheme.colorScheme.onPrimary,
             )
         },
         navigationIcon = {
@@ -121,4 +120,15 @@ fun defaultTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
     scrolledContainerColor = MaterialTheme.colorScheme.primary,
     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
     actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun classTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+    containerColor = MaterialTheme.colorScheme.onPrimary,
+    scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
+    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+    actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+    titleContentColor = MaterialTheme.colorScheme.onBackground,
 )

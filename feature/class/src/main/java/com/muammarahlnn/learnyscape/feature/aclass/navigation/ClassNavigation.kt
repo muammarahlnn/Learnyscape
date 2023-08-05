@@ -20,6 +20,7 @@ fun NavController.navigateToClassGraph(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.classGraph(
+    onBackClick: () -> Unit,
     nestedGraph: NavGraphBuilder.() -> Unit,
 ) {
     navigation(
@@ -27,7 +28,9 @@ fun NavGraphBuilder.classGraph(
         startDestination = classRoute,
     ) {
         composable(route = classRoute) {
-            ClassRoute()
+            ClassRoute(
+                onBackClick = onBackClick,
+            )
         }
         nestedGraph()
     }
