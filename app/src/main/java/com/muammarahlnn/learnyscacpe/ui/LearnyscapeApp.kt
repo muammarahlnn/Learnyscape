@@ -5,20 +5,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
 import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
-import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
-import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
 
 
 /**
@@ -43,6 +41,29 @@ fun LearnyscapeApp(
                 appState = appState,
                 modifier = Modifier.padding(innerPadding)
             )
+        }
+    }
+}
+
+@Composable
+private fun ShowBottomBar(appState: LearnyscapeAppState) {
+    if (!appState.shouldNotShowBottomBar) {
+        when {
+            appState.showLearnyscapeBottomBar -> {
+                LearnyscapeBottomBar(
+                    destinations = appState.topLevelDestinations,
+                    onNavigateToDestination = appState::navigateToTopLevelDestination,
+                    currentDestination = appState.currentDestination
+                )
+            }
+
+            appState.showClassBottomBar -> {
+                ClassBottomBar(
+                    destinations = appState.classDestinations,
+                    onNavigateToDestination = appState::navigateToClassDestination,
+                    currentDestination = appState.currentDestination
+                )
+            }
         }
     }
 }
@@ -76,33 +97,7 @@ private fun LearnyscapeBottomBar(
                         contentDescription = null
                     )
                 },
-                label = {
-                    Text(text = stringResource(id = destination.iconTextId))
-                },
             )
-        }
-    }
-}
-
-@Composable
-private fun ShowBottomBar(appState: LearnyscapeAppState) {
-    if (!appState.shouldNotShowBottomBar) {
-        when {
-            appState.showLearnyscapeBottomBar -> {
-                LearnyscapeBottomBar(
-                    destinations = appState.topLevelDestinations,
-                    onNavigateToDestination = appState::navigateToTopLevelDestination,
-                    currentDestination = appState.currentDestination
-                )
-            }
-
-            appState.showClassBottomBar -> {
-                ClassBottomBar(
-                    destinations = appState.classDestinations,
-                    onNavigateToDestination = appState::navigateToClassDestination,
-                    currentDestination = appState.currentDestination
-                )
-            }
         }
     }
 }
@@ -134,9 +129,6 @@ private fun ClassBottomBar(
                         contentDescription = null,
                     )
                 },
-                label = {
-                    Text(text = stringResource(id = destination.iconTextId))
-                }
             )
         }
     }
