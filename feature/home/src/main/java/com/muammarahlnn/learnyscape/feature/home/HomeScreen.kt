@@ -25,7 +25,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.homeTopAppBarColors
-import com.muammarahlnn.learnyscape.core.ui.ClassItem
+import com.muammarahlnn.learnyscape.core.ui.ClassCard
 
 
 /**
@@ -75,7 +75,7 @@ private fun HomeScreen(
                 items = (1..10).toList(),
                 key = { it },
             ) {
-                ClassItem(
+                ClassCard(
                     onItemClick = onClassClick,
                     modifier = Modifier.padding(
                         vertical = 4.dp,

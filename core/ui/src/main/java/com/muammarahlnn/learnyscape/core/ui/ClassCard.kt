@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
  */
 
 @Composable
-fun ClassItem(
+fun ClassCard(
     modifier: Modifier = Modifier,
     onItemClick: () -> Unit = {},
 ) {
