@@ -53,11 +53,21 @@ fun LearnyscapeNavHost(
             notificationsScreen(
                 onBackClick = navController::popBackStack
             )
-            classGraph {  }
-            moduleScreen()
-            assignmentScreen()
-            quizScreen()
-            memberScreen()
+            classGraph(
+                onBackClick = navController::popBackStack
+            ) {  }
+            moduleScreen(
+                onBackClick = navController::popBackStack
+            )
+            assignmentScreen(
+                onBackClick = navController::popBackStack
+            )
+            quizScreen(
+                onBackClick = navController::popBackStack
+            )
+            memberScreen(
+                onBackClick = navController::popBackStack
+            )
         }
         searchScreen()
         scheduleScreen()
