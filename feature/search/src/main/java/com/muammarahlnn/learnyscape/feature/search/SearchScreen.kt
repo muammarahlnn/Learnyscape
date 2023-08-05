@@ -44,7 +44,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
-import com.muammarahlnn.learnyscape.core.ui.ClassItem
+import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -222,7 +222,7 @@ private fun SearchResult(
             items = (1..10).toList(),
             key = { it }
         ) {
-            ClassItem(
+            ClassCard(
                 onItemClick = onClassItemClick,
                 modifier = Modifier.padding(
                     vertical = 4.dp,
