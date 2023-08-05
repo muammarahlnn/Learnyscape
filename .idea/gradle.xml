@@ -31,10 +31,15 @@
             <option value="$PROJECT_DIR$/core/designsystem" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/announcement" />
+            <option value="$PROJECT_DIR$/feature/assignment" />
             <option value="$PROJECT_DIR$/feature/class" />
             <option value="$PROJECT_DIR$/feature/home" />
+            <option value="$PROJECT_DIR$/feature/member" />
+            <option value="$PROJECT_DIR$/feature/module" />
             <option value="$PROJECT_DIR$/feature/notifications" />
             <option value="$PROJECT_DIR$/feature/profile" />
+            <option value="$PROJECT_DIR$/feature/quiz" />
             <option value="$PROJECT_DIR$/feature/schedule" />
             <option value="$PROJECT_DIR$/feature/search" />
           </set>

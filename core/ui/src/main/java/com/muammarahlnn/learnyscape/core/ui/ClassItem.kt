@@ -62,7 +62,7 @@ fun ClassItem(
                         .padding(8.dp)
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_group),
+                        painter = painterResource(id = R.drawable.ic_class),
                         contentDescription = null,
                         modifier = Modifier
                             .size(28.dp)

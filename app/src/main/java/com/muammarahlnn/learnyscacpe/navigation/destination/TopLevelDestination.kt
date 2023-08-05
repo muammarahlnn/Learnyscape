@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscacpe.navigation
+package com.muammarahlnn.learnyscacpe.navigation.destination
 
 import androidx.annotation.DrawableRes
 import com.muammarahlnn.learnyscape.feature.home.R as homeR
