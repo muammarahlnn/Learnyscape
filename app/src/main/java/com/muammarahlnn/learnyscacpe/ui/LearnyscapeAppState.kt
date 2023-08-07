@@ -55,13 +55,17 @@ class LearnyscapeAppState(
         @Composable
         get() = navController.currentBackStackEntryAsState().value?.destination
 
-    val currentDestinations: List<Destination>
+    val currentBottomBarDestinations: List<Destination>
         @Composable
         get() = when {
             showLearnyscapeBottomBar -> topLevelDestinations
             showClassBottomBar -> classDestinations
-            else -> listOf()
+            else -> listOf() // TODO: fix this if use IllegalArgumentException()
         }
+
+    private val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
+
+    private val classDestinations: List<ClassDestination> = ClassDestination.values().asList()
 
     private val currentRoute: String?
         @Composable
@@ -79,21 +83,17 @@ class LearnyscapeAppState(
         classRoute, moduleRoute, assignmentRoute, quizRoute, memberRoute,
     )
 
-    val showLearnyscapeBottomBar: Boolean
+    private val showLearnyscapeBottomBar: Boolean
         @Composable
         get() = currentRoute in learnyscapeBottomBarRoutes
 
-    val showClassBottomBar: Boolean
+    private val showClassBottomBar: Boolean
         @Composable
         get() = currentRoute in classBottomBarRoutes
 
     val shouldNotShowBottomBar: Boolean
         @Composable
         get() = currentRoute in withoutBottomBarRoutes
-
-    val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
-
-    val classDestinations: List<ClassDestination> = ClassDestination.values().asList()
 
     private val navOptions by lazy {
         navOptions {
@@ -112,25 +112,6 @@ class LearnyscapeAppState(
             TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(navOptions)
             TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
 
-            ClassDestination.CLASS -> navController.navigateToClassGraph(navOptions)
-            ClassDestination.MODULE -> navController.navigateToModule(navOptions)
-            ClassDestination.ASSIGNMENT -> navController.navigateToAssignment(navOptions)
-            ClassDestination.QUIZ -> navController.navigateToQuiz(navOptions)
-            ClassDestination.MEMBER -> navController.navigateToMember(navOptions)
-        }
-    }
-
-    fun navigateToTopLevelDestination(topLevelDestination: TopLevelDestination) {
-        when (topLevelDestination) {
-            TopLevelDestination.HOME -> navController.navigateToHomeGraph(navOptions)
-            TopLevelDestination.SEARCH -> navController.navigateToSearch(navOptions)
-            TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(navOptions)
-            TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
-        }
-    }
-
-    fun navigateToClassDestination(classDestination: ClassDestination) {
-        when (classDestination) {
             ClassDestination.CLASS -> navController.navigateToClassGraph(navOptions)
             ClassDestination.MODULE -> navController.navigateToModule(navOptions)
             ClassDestination.ASSIGNMENT -> navController.navigateToAssignment(navOptions)
