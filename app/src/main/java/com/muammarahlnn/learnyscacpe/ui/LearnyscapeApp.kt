@@ -35,7 +35,13 @@ fun LearnyscapeApp(
             contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
-                ShowBottomBar(appState = appState)
+                if (!appState.shouldNotShowBottomBar) {
+                    LearnyscapeBottomBar(
+                        destinations = appState.currentBottomBarDestinations,
+                        onNavigateToDestination = appState::navigateToDestination,
+                        currentDestination = appState.currentDestination
+                    )
+                }
             }
         ) { innerPadding ->
             LearnyscapeNavHost(
@@ -45,29 +51,6 @@ fun LearnyscapeApp(
         }
     }
 }
-
-@Composable
-private fun ShowBottomBar(appState: LearnyscapeAppState) {
-    if (!appState.shouldNotShowBottomBar) {
-        LearnyscapeBottomBar(
-            destinations = appState.currentDestinations,
-            onNavigateToDestination = appState::navigateToDestination,
-            currentDestination = appState.currentDestination
-        )
-//        when {
-//            appState.showLearnyscapeBottomBar -> {
-//            }
-
-//            appState.showClassBottomBar -> {
-//                ClassBottomBar(
-//                    destinations = appState.classDestinations,
-//                    onNavigateToDestination = appState::navigateToClassDestination,
-//                    currentDestination = appState.currentDestination
-//                )
-//            }
-        }
-    }
-//}
 
 @Composable
 private fun LearnyscapeBottomBar(
@@ -108,45 +91,13 @@ private fun LearnyscapeBottomBar(
         }
     }
 }
-
-@Composable
-private fun ClassBottomBar(
-    destinations: List<ClassDestination>,
-    onNavigateToDestination: (ClassDestination) -> Unit,
-    currentDestination: NavDestination?,
-    modifier: Modifier = Modifier,
-) {
-    LearnyscapeNavigationBar(modifier = modifier) {
-        destinations.forEach { destination ->
-            val selected = currentDestination.isClassDestinationInHierarchy(destination)
-            LearnyscapeNavigationBarItem(
-                selected = selected,
-                onClick = { 
-                    onNavigateToDestination(destination)
-                },
-                icon = { 
-                    Icon(
-                        painter = painterResource(id = destination.unselectedIconId),
-                        contentDescription = null,
-                    )
-                },
-                selectedIcon = {
-                    Icon(
-                        painter = painterResource(id = destination.selectedIconId),
-                        contentDescription = null,
-                    )
-                },
-            )
-        }
-    }
-}
+private fun NavDestination?.isRouteContainedInHierarchy(route: String) =
+    this?.hierarchy?.any {
+        it.route?.contains(route, true) ?: false
+    } ?: false
 
 private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
-    this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
-    } ?: false
+    isRouteContainedInHierarchy(destination.name)
 
 private fun NavDestination?.isClassDestinationInHierarchy(destination: ClassDestination) =
-    this?.hierarchy?.any {
-        it.route?.contains(destination.name, true) ?: false
-    } ?: false
+    isRouteContainedInHierarchy(destination.name)
