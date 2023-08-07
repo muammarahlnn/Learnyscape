@@ -13,10 +13,10 @@ import com.muammarahlnn.learnyscape.feature.search.R as searchR
  */
 
 enum class TopLevelDestination(
-    @DrawableRes val selectedIconId: Int,
-    @DrawableRes val unselectedIconId: Int,
-    val iconTextId: Int,
-) {
+    override val selectedIconId: Int,
+    override val unselectedIconId: Int,
+    override val iconTextId: Int,
+) : Destination {
     HOME(
         selectedIconId = homeR.drawable.ic_home,
         unselectedIconId = homeR.drawable.ic_home_border,

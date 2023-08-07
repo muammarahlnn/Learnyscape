@@ -10,6 +10,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
 import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.classRoute
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph
@@ -54,6 +55,14 @@ class LearnyscapeAppState(
         @Composable
         get() = navController.currentBackStackEntryAsState().value?.destination
 
+    val currentDestinations: List<Destination>
+        @Composable
+        get() = when {
+            showLearnyscapeBottomBar -> topLevelDestinations
+            showClassBottomBar -> classDestinations
+            else -> listOf()
+        }
+
     private val currentRoute: String?
         @Composable
         get() = currentDestination?.route
@@ -93,6 +102,21 @@ class LearnyscapeAppState(
             }
             launchSingleTop = true
             restoreState = true
+        }
+    }
+
+    fun navigateToDestination(destination: Destination) {
+        when (destination) {
+            TopLevelDestination.HOME -> navController.navigateToHomeGraph(navOptions)
+            TopLevelDestination.SEARCH -> navController.navigateToSearch(navOptions)
+            TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(navOptions)
+            TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
+
+            ClassDestination.CLASS -> navController.navigateToClassGraph(navOptions)
+            ClassDestination.MODULE -> navController.navigateToModule(navOptions)
+            ClassDestination.ASSIGNMENT -> navController.navigateToAssignment(navOptions)
+            ClassDestination.QUIZ -> navController.navigateToQuiz(navOptions)
+            ClassDestination.MEMBER -> navController.navigateToMember(navOptions)
         }
     }
 
