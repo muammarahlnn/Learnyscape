@@ -13,6 +13,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
 import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
 import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
@@ -48,30 +49,30 @@ fun LearnyscapeApp(
 @Composable
 private fun ShowBottomBar(appState: LearnyscapeAppState) {
     if (!appState.shouldNotShowBottomBar) {
-        when {
-            appState.showLearnyscapeBottomBar -> {
-                LearnyscapeBottomBar(
-                    destinations = appState.topLevelDestinations,
-                    onNavigateToDestination = appState::navigateToTopLevelDestination,
-                    currentDestination = appState.currentDestination
-                )
-            }
+        LearnyscapeBottomBar(
+            destinations = appState.currentDestinations,
+            onNavigateToDestination = appState::navigateToDestination,
+            currentDestination = appState.currentDestination
+        )
+//        when {
+//            appState.showLearnyscapeBottomBar -> {
+//            }
 
-            appState.showClassBottomBar -> {
-                ClassBottomBar(
-                    destinations = appState.classDestinations,
-                    onNavigateToDestination = appState::navigateToClassDestination,
-                    currentDestination = appState.currentDestination
-                )
-            }
+//            appState.showClassBottomBar -> {
+//                ClassBottomBar(
+//                    destinations = appState.classDestinations,
+//                    onNavigateToDestination = appState::navigateToClassDestination,
+//                    currentDestination = appState.currentDestination
+//                )
+//            }
         }
     }
-}
+//}
 
 @Composable
 private fun LearnyscapeBottomBar(
-    destinations: List<TopLevelDestination>,
-    onNavigateToDestination: (TopLevelDestination) -> Unit,
+    destinations: List<Destination>,
+    onNavigateToDestination: (Destination) -> Unit,
     currentDestination: NavDestination?,
     modifier: Modifier = Modifier,
 ) {
@@ -79,7 +80,13 @@ private fun LearnyscapeBottomBar(
         modifier = modifier,
     ) {
         destinations.forEach { destination ->
-            val selected = currentDestination.isTopLevelDestinationInHierarchy(destination)
+            val selected = when (destination) {
+                is TopLevelDestination ->
+                    currentDestination.isTopLevelDestinationInHierarchy(destination)
+                is ClassDestination ->
+                    currentDestination.isClassDestinationInHierarchy(destination)
+                else -> throw IllegalArgumentException("")
+            }
             LearnyscapeNavigationBarItem(
                 selected = selected,
                 onClick = {

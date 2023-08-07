@@ -15,10 +15,10 @@ import com.muammarahlnn.learnyscape.feature.member.R as memberR
  */
 
 enum class ClassDestination(
-    @DrawableRes val selectedIconId: Int,
-    @DrawableRes val unselectedIconId: Int,
-    @StringRes val iconTextId: Int,
-) {
+    override val selectedIconId: Int,
+    override val unselectedIconId: Int,
+    override val iconTextId: Int,
+) : Destination {
     CLASS(
         selectedIconId = classR.drawable.ic_announcement,
         unselectedIconId = classR.drawable.ic_announcement_border,
