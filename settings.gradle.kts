@@ -17,6 +17,7 @@ rootProject.name = "Learnyscape"
 include(":app")
 include(":core:designsystem")
 include(":core:ui")
+include(":core:model")
 
 include(":feature:home")
 include(":feature:search")
