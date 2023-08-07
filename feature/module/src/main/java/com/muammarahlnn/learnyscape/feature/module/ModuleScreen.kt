@@ -1,15 +1,19 @@
 package com.muammarahlnn.learnyscape.feature.module
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.core.model.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 
@@ -35,16 +39,35 @@ private fun ModuleScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
-        ClassTopAppBar(onBackClick = onBackClick)
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = modifier.fillMaxSize()
-        ) {
-            Text(
-                text = stringResource(id = R.string.module),
-                color = MaterialTheme.colorScheme.onBackground
-            )
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Column(modifier = modifier.fillMaxSize()) {
+        ClassTopAppBar(
+            scrollBehavior = scrollBehavior,
+            onBackClick = onBackClick
+        )
+        ModuleContent(scrollBehavior = scrollBehavior)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ModuleContent(
+    scrollBehavior: TopAppBarScrollBehavior,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    ) {
+        repeat(20) {
+            item {
+                ClassResourceCard(
+                    classResourceType = ClassResourceType.MODULE,
+                    title = "Materi Networking dan Background Thread",
+                    timeLabel = "Posted 21 May 2023, 21:21"
+                )
+            }
         }
     }
 }
