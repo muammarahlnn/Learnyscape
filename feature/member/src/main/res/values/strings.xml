@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="member">Member</string>
+    <string name="teachers">Teachers</string>
+    <string name="students">Students</string>
 </resources>
