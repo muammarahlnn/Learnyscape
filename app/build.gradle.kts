@@ -42,7 +42,6 @@ dependencies {
     implementation(project(":feature:search"))
     implementation(project(":feature:notifications"))
     implementation(project(":feature:class"))
-    implementation(project(":feature:announcement"))
     implementation(project(":feature:module"))
     implementation(project(":feature:assignment"))
     implementation(project(":feature:quiz"))
