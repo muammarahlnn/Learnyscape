@@ -32,7 +32,6 @@
             <option value="$PROJECT_DIR$/core/model" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
-            <option value="$PROJECT_DIR$/feature/announcement" />
             <option value="$PROJECT_DIR$/feature/assignment" />
             <option value="$PROJECT_DIR$/feature/class" />
             <option value="$PROJECT_DIR$/feature/home" />

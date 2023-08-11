@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="11">
       <module name="Learnyscacpe.build-source" target="17" />
+      <module name="Learnyscape.feature.announcement" target="17" />
     </bytecodeTargetLevel>
   </component>
 </project>
