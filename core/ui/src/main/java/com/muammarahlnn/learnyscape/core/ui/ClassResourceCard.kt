@@ -97,7 +97,7 @@ fun ClassResourceCard(
 }
 
 @Composable
-private fun getClassResourceIcon(type: ClassResourceType) = when (type) {
+fun getClassResourceIcon(type: ClassResourceType) = when (type) {
     ClassResourceType.MODULE -> painterResource(id = designSystemR.drawable.ic_book)
     ClassResourceType.ASSIGNMENT -> painterResource(id = designSystemR.drawable.ic_assignment)
     ClassResourceType.QUIZ -> painterResource(id = designSystemR.drawable.ic_quiz)
