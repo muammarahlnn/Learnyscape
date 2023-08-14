@@ -6,11 +6,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
 import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
 import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
@@ -29,6 +31,12 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavig
 fun LearnyscapeApp(
     appState: LearnyscapeAppState = rememberLearnyscapeAppState(),
 ) {
+    val systemUiController = rememberSystemUiController()
+    val statusBarColor = appState.currentStatusBarColor
+    LaunchedEffect(systemUiController, statusBarColor) {
+        systemUiController.setStatusBarColor(color = statusBarColor)
+    }
+
     LearnyscapeBackground {
         Scaffold(
             containerColor = Color.Transparent,
