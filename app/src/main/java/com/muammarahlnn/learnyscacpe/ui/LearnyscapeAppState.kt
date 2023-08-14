@@ -1,8 +1,10 @@
 package com.muammarahlnn.learnyscacpe.ui
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -61,6 +63,14 @@ class LearnyscapeAppState(
             showLearnyscapeBottomBar -> topLevelDestinations
             showClassBottomBar -> classDestinations
             else -> listOf() // TODO: fix this if use IllegalArgumentException()
+        }
+
+    val currentStatusBarColor: Color
+        @Composable
+        get() = when {
+            showLearnyscapeBottomBar -> MaterialTheme.colorScheme.primary
+            showClassBottomBar -> MaterialTheme.colorScheme.onPrimary
+            else -> MaterialTheme.colorScheme.primary
         }
 
     private val topLevelDestinations: List<TopLevelDestination> = TopLevelDestination.values().asList()
