@@ -25,17 +25,16 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.muammarahlnn.learnyscape.core.model.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 import com.muammarahlnn.learnyscape.core.ui.getClassResourceIcon
@@ -84,12 +83,6 @@ private fun ClassContent(
     ) {
         item {
             ClassHeader()
-        }
-
-        item {
-            ClassInfoCard(
-                modifier = Modifier.classContentItemPlacement()
-            )
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -99,7 +92,7 @@ private fun ClassContent(
                 title = "Tugas Fragment",
                 timePosted = "21 Mei 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-                modifier = Modifier.classContentItemPlacement(),
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -110,34 +103,10 @@ private fun ClassContent(
                 title = "Materi Background Thread",
                 timePosted = "11 Mei 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-                modifier = Modifier.classContentItemPlacement(),
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
+            Spacer(modifier = Modifier.height(16.dp))
         }
-    }
-}
-
-private val headerHeight = 160.dp
-private val classIconSize  = 120.dp
-
-@Composable
-private fun ClassHeader() {
-    Box {
-        Image(
-            painter = painterResource(id = R.drawable.bg_class_header_gradient),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(headerHeight)
-        )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_groups),
-            contentDescription = stringResource(id = R.string.groups),
-            modifier = Modifier
-                .size(classIconSize)
-                .align(Alignment.TopCenter)
-        )
     }
 }
 
@@ -154,6 +123,7 @@ private fun ClassInfoCard(
             defaultElevation = 2.dp,
         ),
         modifier = modifier
+            .fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
@@ -174,6 +144,52 @@ private fun ClassInfoCard(
                 text = "Tuesday, 13:00 - 15:40",
                 style = MaterialTheme.typography.bodySmall,
                 color =  MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ClassHeader(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.bg_class_header_gradient),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(175.dp)
+        )
+
+        // can replace it with more simple layout like Column,
+        // but use ConstraintLayout instead for learning purpose only
+        ConstraintLayout(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val (classIcon, classInfoCard) = createRefs()
+
+            Image(
+                painter = painterResource(id = R.drawable.ic_groups),
+                contentDescription = stringResource(id = R.string.groups),
+                modifier = Modifier
+                    .size(125.dp)
+                    .constrainAs(classIcon) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+            )
+
+            ClassInfoCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .constrainAs(classInfoCard) {
+                        top.linkTo(classIcon.bottom)
+                    }
             )
         }
     }
@@ -261,17 +277,8 @@ private fun ClassResourcePostCard(
     }
 }
 
-// TODO: (change this approach with another solution -> with BoxWithConstraints maybe)
-private fun Modifier.classContentItemPlacement(): Modifier = composed {
-    val minusPlacementY = with(LocalDensity.current) {
-        -(headerHeight - classIconSize).roundToPx()
-    }
-    this.fillMaxWidth()
-        .padding(horizontal = 16.dp)
-        .placeAt(0, minusPlacementY)
-}
 
-
+// keep this function in case we need it in the future
 private fun Modifier.placeAt(
     x: Int,
     y: Int,
