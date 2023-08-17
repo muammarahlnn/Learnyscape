@@ -105,6 +105,37 @@ fun LearnyscapeTopAppBar(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun LearnyscapeTopAppBar(
+    title: String,
+    @DrawableRes navigationIconRes: Int,
+    navigationIconContentDescription: String?,
+    modifier: Modifier = Modifier,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    onNavigationClick: () -> Unit = {},
+) {
+    TopAppBar(
+        title = {
+            Text(text = title)
+        },
+        navigationIcon = {
+            IconButton(
+                onClick = onNavigationClick,
+            ) {
+                Icon(
+                    painterResource(id = navigationIconRes),
+                    contentDescription = navigationIconContentDescription,
+                )
+            }
+        },
+        colors = colors,
+        scrollBehavior = scrollBehavior,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
     // TODO: fix top app bar color changing when scrolled stick to the top
     containerColor = MaterialTheme.colorScheme.background,
