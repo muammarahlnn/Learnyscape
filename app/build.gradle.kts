@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":feature:assignment"))
     implementation(project(":feature:quiz"))
     implementation(project(":feature:member"))
+    implementation(project(":feature:resourcedetails"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
