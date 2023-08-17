@@ -15,6 +15,8 @@ import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToN
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
 import com.muammarahlnn.learnyscape.feature.profile.navigation.profileScreen
 import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizScreen
+import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.navigateToResourceDetails
+import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.resourceDetailsScreen
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.scheduleScreen
 import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
 
@@ -54,8 +56,15 @@ fun LearnyscapeNavHost(
                 onBackClick = navController::popBackStack
             )
             classGraph(
+                onPostClick = {
+                    navController.navigateToResourceDetails()
+                },
                 onBackClick = navController::popBackStack
-            ) {  }
+            ) {
+                resourceDetailsScreen(
+                    onBackClick = navController::popBackStack
+                )
+            }
             moduleScreen(
                 onBackClick = navController::popBackStack
             )

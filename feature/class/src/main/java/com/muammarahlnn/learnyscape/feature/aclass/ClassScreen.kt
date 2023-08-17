@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.feature.aclass
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,10 +48,12 @@ import com.muammarahlnn.learnyscape.core.ui.getClassResourceIcon
 
 @Composable
 internal fun ClassRoute(
+    onPostClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ClassScreen(
+        onPostClick = onPostClick,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -59,6 +62,7 @@ internal fun ClassRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassScreen(
+    onPostClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -68,7 +72,10 @@ private fun ClassScreen(
             scrollBehavior = scrollBehavior,
             onBackClick = onBackClick,
         )
-        ClassContent(scrollBehavior = scrollBehavior)
+        ClassContent(
+            scrollBehavior = scrollBehavior,
+            onPostClick = onPostClick,
+        )
     }
 }
 
@@ -76,6 +83,7 @@ private fun ClassScreen(
 @Composable
 private fun ClassContent(
     scrollBehavior: TopAppBarScrollBehavior,
+    onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -92,6 +100,7 @@ private fun ClassContent(
                 title = "Tugas Fragment",
                 timePosted = "21 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -103,6 +112,7 @@ private fun ClassContent(
                 title = "Materi Background Thread",
                 timePosted = "11 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -114,6 +124,7 @@ private fun ClassContent(
                 title = "Quiz Networking",
                 timePosted = "10 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -124,6 +135,7 @@ private fun ClassContent(
                 authorName = "Andi Muh. Amil Siddik, S.Si., M.Si",
                 timePosted = "2 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -223,6 +235,7 @@ private fun AnnouncementPostCard(
     authorName: String,
     timePosted: String,
     caption: String,
+    onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BasePostCard(
@@ -238,6 +251,7 @@ private fun AnnouncementPostCard(
         title = authorName,
         timePosted = timePosted,
         caption = caption,
+        onPostClick = onPostClick,
         modifier = modifier,
     )
 }
@@ -248,6 +262,7 @@ fun ClassResourcePostCard(
     title: String,
     timePosted: String,
     caption: String,
+    onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BasePostCard(
@@ -269,6 +284,7 @@ fun ClassResourcePostCard(
         title = title,
         timePosted = timePosted,
         caption = caption,
+        onPostClick = onPostClick,
         modifier = modifier,
     )
 }
@@ -279,6 +295,7 @@ private fun BasePostCard(
     title: String,
     timePosted: String,
     caption: String,
+    onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -289,7 +306,9 @@ private fun BasePostCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
         ),
-        modifier = modifier,
+        modifier = modifier.clickable {
+            onPostClick()
+        },
     ) {
         Column {
             // header
