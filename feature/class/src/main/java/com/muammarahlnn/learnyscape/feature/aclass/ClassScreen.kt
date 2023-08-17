@@ -90,7 +90,7 @@ private fun ClassContent(
             ClassResourcePostCard(
                 classResourceType = ClassResourceType.ASSIGNMENT,
                 title = "Tugas Fragment",
-                timePosted = "21 Mei 2023",
+                timePosted = "21 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -101,7 +101,28 @@ private fun ClassContent(
             ClassResourcePostCard(
                 classResourceType = ClassResourceType.MODULE,
                 title = "Materi Background Thread",
-                timePosted = "11 Mei 2023",
+                timePosted = "11 May 2023",
+                caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            ClassResourcePostCard(
+                classResourceType = ClassResourceType.QUIZ,
+                title = "Quiz Networking",
+                timePosted = "10 May 2023",
+                caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        item {
+            AnnouncementPostCard(
+                authorName = "Andi Muh. Amil Siddik, S.Si., M.Si",
+                timePosted = "2 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -195,9 +216,66 @@ private fun ClassHeader(
     }
 }
 
+
+
 @Composable
-private fun ClassResourcePostCard(
+private fun AnnouncementPostCard(
+    authorName: String,
+    timePosted: String,
+    caption: String,
+    modifier: Modifier = Modifier,
+) {
+    BasePostCard(
+        indicatorImage = {
+            Image(
+                painter = painterResource(id = R.drawable.ava_luffy),
+                contentDescription = null,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(36.dp)
+            )
+        },
+        title = authorName,
+        timePosted = timePosted,
+        caption = caption,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun ClassResourcePostCard(
     classResourceType: ClassResourceType,
+    title: String,
+    timePosted: String,
+    caption: String,
+    modifier: Modifier = Modifier,
+) {
+    BasePostCard(
+        indicatorImage = {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary)
+                    .padding(8.dp)
+            ) {
+                Image(
+                    painter = getClassResourceIcon(type = classResourceType),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        },
+        title = title,
+        timePosted = timePosted,
+        caption = caption,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun BasePostCard(
+    indicatorImage: @Composable () -> Unit,
     title: String,
     timePosted: String,
     caption: String,
@@ -211,9 +289,10 @@ private fun ClassResourcePostCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
         ),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Column {
+            // header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(
@@ -223,21 +302,10 @@ private fun ClassResourcePostCard(
                     bottom = 12.dp,
                 )
             ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary)
-                        .padding(8.dp)
-                ) {
-                    Image(
-                        painter = getClassResourceIcon(type = classResourceType),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(24.dp)
-                    )
-                }
+                indicatorImage()
+
                 Spacer(modifier = Modifier.width(12.dp))
+
                 Column {
                     // this is a hardcoded text just for dummy purpose
                     Text(
@@ -261,10 +329,11 @@ private fun ClassResourcePostCard(
 
             Divider(
                 thickness = 2.dp,
-                color = MaterialTheme.colorScheme.background
+                color = MaterialTheme.colorScheme.background,
             )
 
-            Box(Modifier.padding(16.dp)) {
+            // content
+            Box(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = caption,
                     color = MaterialTheme.colorScheme.onSurface,
