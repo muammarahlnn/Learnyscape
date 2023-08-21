@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -23,8 +24,11 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun ResourceDetailsRoute(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ResourceDetailsViewModel = hiltViewModel(),
 ) {
+    val resourceType = viewModel.resourceType
     ResourceDetailsScreen(
+        topAppBarTitle = resourceType,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -32,11 +36,15 @@ internal fun ResourceDetailsRoute(
 
 @Composable
 private fun ResourceDetailsScreen(
+    topAppBarTitle: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
-        ResourceDetailsTopAppBar(onBackClick = onBackClick)
+        ResourceDetailsTopAppBar(
+            title = topAppBarTitle,
+            onBackClick = onBackClick,
+        )
         ResourceDetailsContent()
     }
 }
@@ -56,11 +64,12 @@ private fun ResourceDetailsContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ResourceDetailsTopAppBar(
+    title: String,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LearnyscapeTopAppBar(
-        title = "Details",
+        title = title,
         navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
         navigationIconContentDescription = stringResource(
             id = designSystemR.string.navigation_back_icon_description,

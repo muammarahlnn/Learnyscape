@@ -11,6 +11,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.model.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
@@ -24,7 +25,7 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun ModuleRoute(
-    onModuleClick: () -> Unit,
+    onModuleClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,7 +39,7 @@ internal fun ModuleRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ModuleScreen(
-    onModuleClick: () -> Unit,
+    onModuleClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -59,9 +60,10 @@ private fun ModuleScreen(
 @Composable
 private fun ModuleContent(
     scrollBehavior: TopAppBarScrollBehavior,
-    onModuleClick: () -> Unit,
+    onModuleClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val resourceType = stringResource(id = R.string.module)
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -73,7 +75,9 @@ private fun ModuleContent(
                     classResourceType = ClassResourceType.MODULE,
                     title = "Materi Networking dan Background Thread",
                     timeLabel = "Posted 21 May 2023, 21:21",
-                    onItemClick = onModuleClick,
+                    onItemClick = {
+                        onModuleClick(resourceType)
+                    },
                 )
             }
         }
