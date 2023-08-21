@@ -13,11 +13,11 @@ import com.muammarahlnn.learnyscape.feature.home.HomeRoute
  * @file HomeNavigation, 20/07/2023 19.44 by Muammar Ahlan Abimanyu
  */
 
-const val homeGraphRoutePattern = "home_graph"
-const val homeRoute = "home_route"
+const val HOME_GRAPH_ROUTE_PATTERH = "home_graph"
+const val HOME_ROUTE = "home_route"
 
 fun NavController.navigateToHomeGraph(navOptions: NavOptions? = null) {
-    this.navigate(homeGraphRoutePattern, navOptions)
+    this.navigate(HOME_GRAPH_ROUTE_PATTERH, navOptions)
 }
 
 fun NavGraphBuilder.homeGraph(
@@ -26,10 +26,10 @@ fun NavGraphBuilder.homeGraph(
     nestedGraph: NavGraphBuilder.() -> Unit,
 ) {
     navigation(
-        route = homeGraphRoutePattern,
-        startDestination = homeRoute
+        route = HOME_GRAPH_ROUTE_PATTERH,
+        startDestination = HOME_ROUTE
     ) {
-        composable(route = homeRoute) {
+        composable(route = HOME_ROUTE) {
             HomeRoute(
                 onNotificationsClick = onNotificationsClick,
                 onClassClick = onClassClick,

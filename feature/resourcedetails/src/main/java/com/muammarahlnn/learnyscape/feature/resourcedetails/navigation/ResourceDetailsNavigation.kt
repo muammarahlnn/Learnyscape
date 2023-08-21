@@ -12,16 +12,16 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
  * @file ResourceDetailsNavigation, 18/08/2023 01.19 by Muammar Ahlan Abimanyu
  */
 
-const val resourceDetailsRoute = "resource_details_route"
+const val RESOURCE_DETAILS_ROUTE = "resource_details_route"
 
 fun NavController.navigateToResourceDetails(navOptions: NavOptions? = null) {
-    this.navigate(resourceDetailsRoute, navOptions)
+    this.navigate(RESOURCE_DETAILS_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.resourceDetailsScreen(
     onBackClick: () -> Unit,
 ) {
-    composable(route = resourceDetailsRoute) {
+    composable(route = RESOURCE_DETAILS_ROUTE) {
         ResourceDetailsRoute(
             onBackClick = onBackClick,
         )

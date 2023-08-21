@@ -12,14 +12,14 @@ import com.muammarahlnn.learnyscape.feature.schedule.ScheduleScreen
  * @file ScheduleNavigation, 20/07/2023 21.51 by Muammar Ahlan Abimanyu
  */
 
-const val scheduleRoute = "schedule_route"
+const val SCHEDULE_ROUTE = "schedule_route"
 
 fun NavController.navigateToSchedule(navOptions: NavOptions? = null) {
-    this.navigate(scheduleRoute, navOptions)
+    this.navigate(SCHEDULE_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.scheduleScreen() {
-    composable(route = scheduleRoute) {
+    composable(route = SCHEDULE_ROUTE) {
         ScheduleScreen()
     }
 }

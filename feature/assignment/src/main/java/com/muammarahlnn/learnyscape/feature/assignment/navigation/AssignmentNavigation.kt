@@ -11,17 +11,17 @@ import com.muammarahlnn.learnyscape.feature.assignment.AssignmentRoute
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file AssignmentNavigation, 03/08/2023 15.54 by Muammar Ahlan Abimanyu
  */
-const val assignmentRoute = "assignment_route"
+const val ASSIGNMENT_ROUTE = "assignment_route"
 
 fun NavController.navigateToAssignment(navOptions: NavOptions? = null) {
-    this.navigate(assignmentRoute, navOptions)
+    this.navigate(ASSIGNMENT_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.assignmentScreen(
     onAssignmentClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
-    composable(route = assignmentRoute) {
+    composable(route = ASSIGNMENT_ROUTE) {
         AssignmentRoute(
             onAssignmentClick = onAssignmentClick,
             onBackClick = onBackClick

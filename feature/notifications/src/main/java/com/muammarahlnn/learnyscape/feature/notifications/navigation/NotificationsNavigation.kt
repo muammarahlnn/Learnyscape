@@ -12,16 +12,16 @@ import com.muammarahlnn.learnyscape.feature.notifications.NotificationsRoute
  * @file NotificationsNavigation, 01/08/2023 13.19 by Muammar Ahlan Abimanyu
  */
 
-const val notificationsRoute = "notifications_route"
+const val NOTIFICATIONS_ROUTE = "notifications_route"
 
 fun NavController.navigateToNotifications(navOptions: NavOptions? = null) {
-    this.navigate(notificationsRoute, navOptions)
+    this.navigate(NOTIFICATIONS_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.notificationsScreen(
     onBackClick: () -> Unit,
 ) {
-    composable(route = notificationsRoute) {
+    composable(route = NOTIFICATIONS_ROUTE) {
         NotificationsRoute(
             onBackClick = onBackClick,
         )
