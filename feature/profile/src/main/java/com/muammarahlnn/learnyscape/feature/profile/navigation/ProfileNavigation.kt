@@ -12,14 +12,14 @@ import com.muammarahlnn.learnyscape.feature.profile.ProfileRoute
  * @file ProfileNavigation, 20/07/2023 21.46 by Muammar Ahlan Abimanyu
  */
 
-const val profileRoute = "profile_route"
+const val PROFILE_ROUTE = "profile_route"
 
 fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
-    this.navigate(profileRoute, navOptions)
+    this.navigate(PROFILE_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.profileScreen() {
-    composable(route = profileRoute) {
+    composable(route = PROFILE_ROUTE) {
         ProfileRoute()
     }
 }

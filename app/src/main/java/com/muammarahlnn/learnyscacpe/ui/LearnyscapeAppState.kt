@@ -13,26 +13,26 @@ import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
 import com.muammarahlnn.learnyscacpe.navigation.destination.Destination.ClassDestination
 import com.muammarahlnn.learnyscacpe.navigation.destination.Destination.TopLevelDestination
-import com.muammarahlnn.learnyscape.feature.aclass.navigation.classRoute
+import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_ROUTE
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph
-import com.muammarahlnn.learnyscape.feature.assignment.navigation.assignmentRoute
+import com.muammarahlnn.learnyscape.feature.assignment.navigation.ASSIGNMENT_ROUTE
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.navigateToAssignment
-import com.muammarahlnn.learnyscape.feature.home.navigation.homeRoute
+import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_ROUTE
 import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHomeGraph
-import com.muammarahlnn.learnyscape.feature.member.navigation.memberRoute
+import com.muammarahlnn.learnyscape.feature.member.navigation.MEMBER_ROUTE
 import com.muammarahlnn.learnyscape.feature.member.navigation.navigateToMember
-import com.muammarahlnn.learnyscape.feature.module.navigation.moduleRoute
+import com.muammarahlnn.learnyscape.feature.module.navigation.MODULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.module.navigation.navigateToModule
-import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsRoute
+import com.muammarahlnn.learnyscape.feature.notifications.navigation.NOTIFICATIONS_ROUTE
+import com.muammarahlnn.learnyscape.feature.profile.navigation.PROFILE_ROUTE
 import com.muammarahlnn.learnyscape.feature.profile.navigation.navigateToProfile
-import com.muammarahlnn.learnyscape.feature.profile.navigation.profileRoute
+import com.muammarahlnn.learnyscape.feature.quiz.navigation.QUIZ_ROUTE
 import com.muammarahlnn.learnyscape.feature.quiz.navigation.navigateToQuiz
-import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizRoute
-import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.resourceDetailsRoute
+import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.RESOURCE_DETAILS_ROUTE
+import com.muammarahlnn.learnyscape.feature.schedule.navigation.SCHEDULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.navigateToSchedule
-import com.muammarahlnn.learnyscape.feature.schedule.navigation.scheduleRoute
+import com.muammarahlnn.learnyscape.feature.search.navigation.SEARCH_ROUTE
 import com.muammarahlnn.learnyscape.feature.search.navigation.navigateToSearch
-import com.muammarahlnn.learnyscape.feature.search.navigation.searchRoute
 
 
 /**
@@ -82,15 +82,15 @@ class LearnyscapeAppState(
         get() = currentDestination?.route
 
     private val withoutBottomBarRoutes = listOf(
-        notificationsRoute, resourceDetailsRoute,
+        NOTIFICATIONS_ROUTE, RESOURCE_DETAILS_ROUTE,
     )
 
     private val learnyscapeBottomBarRoutes = listOf(
-        homeRoute, searchRoute, scheduleRoute, profileRoute,
+        HOME_ROUTE, SEARCH_ROUTE, SCHEDULE_ROUTE, PROFILE_ROUTE,
     )
 
     private val classBottomBarRoutes = listOf(
-        classRoute, moduleRoute, assignmentRoute, quizRoute, memberRoute,
+        CLASS_ROUTE, MODULE_ROUTE, ASSIGNMENT_ROUTE, QUIZ_ROUTE, MEMBER_ROUTE,
     )
 
     private val showLearnyscapeBottomBar: Boolean

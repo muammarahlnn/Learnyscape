@@ -12,14 +12,14 @@ import com.muammarahlnn.learnyscape.feature.search.SearchRoute
  * @file SearchNavigation, 20/07/2023 22.07 by Muammar Ahlan Abimanyu
  */
 
-const val searchRoute = "search_route"
+const val SEARCH_ROUTE = "search_route"
 
 fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
-    this.navigate(searchRoute, navOptions)
+    this.navigate(SEARCH_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.searchScreen() {
-    composable(route = searchRoute) {
+    composable(route = SEARCH_ROUTE) {
         SearchRoute()
     }
 }

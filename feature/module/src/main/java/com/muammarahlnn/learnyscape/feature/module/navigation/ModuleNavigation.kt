@@ -11,17 +11,17 @@ import com.muammarahlnn.learnyscape.feature.module.ModuleRoute
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file ModuleNavigation, 03/08/2023 15.55 by Muammar Ahlan Abimanyu
  */
-const val moduleRoute = "module_route"
+const val MODULE_ROUTE = "module_route"
 
 fun NavController.navigateToModule(navOptions: NavOptions? = null) {
-    this.navigate(moduleRoute, navOptions)
+    this.navigate(MODULE_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.moduleScreen(
     onModuleClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
-    composable(route = moduleRoute) {
+    composable(route = MODULE_ROUTE) {
         ModuleRoute(
             onModuleClick = onModuleClick,
             onBackClick = onBackClick

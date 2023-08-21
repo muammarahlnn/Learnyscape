@@ -7,8 +7,8 @@ import com.muammarahlnn.learnyscacpe.ui.LearnyscapeAppState
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.classGraph
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.assignmentScreen
+import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_GRAPH_ROUTE_PATTERH
 import com.muammarahlnn.learnyscape.feature.home.navigation.homeGraph
-import com.muammarahlnn.learnyscape.feature.home.navigation.homeGraphRoutePattern
 import com.muammarahlnn.learnyscape.feature.member.navigation.memberScreen
 import com.muammarahlnn.learnyscape.feature.module.navigation.moduleScreen
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
@@ -30,7 +30,7 @@ import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
 fun LearnyscapeNavHost(
     appState: LearnyscapeAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = homeGraphRoutePattern,
+    startDestination: String = HOME_GRAPH_ROUTE_PATTERH,
 ) {
     val navController = appState.navController
     NavHost(

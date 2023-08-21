@@ -1,15 +1,15 @@
 package com.muammarahlnn.learnyscacpe.navigation.destination
 
 import androidx.annotation.DrawableRes
-import com.muammarahlnn.learnyscape.feature.aclass.navigation.classRoute
-import com.muammarahlnn.learnyscape.feature.assignment.navigation.assignmentRoute
-import com.muammarahlnn.learnyscape.feature.home.navigation.homeRoute
-import com.muammarahlnn.learnyscape.feature.member.navigation.memberRoute
-import com.muammarahlnn.learnyscape.feature.module.navigation.moduleRoute
-import com.muammarahlnn.learnyscape.feature.profile.navigation.profileRoute
-import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizRoute
-import com.muammarahlnn.learnyscape.feature.schedule.navigation.scheduleRoute
-import com.muammarahlnn.learnyscape.feature.search.navigation.searchRoute
+import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_ROUTE
+import com.muammarahlnn.learnyscape.feature.assignment.navigation.ASSIGNMENT_ROUTE
+import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_ROUTE
+import com.muammarahlnn.learnyscape.feature.member.navigation.MEMBER_ROUTE
+import com.muammarahlnn.learnyscape.feature.module.navigation.MODULE_ROUTE
+import com.muammarahlnn.learnyscape.feature.profile.navigation.PROFILE_ROUTE
+import com.muammarahlnn.learnyscape.feature.quiz.navigation.QUIZ_ROUTE
+import com.muammarahlnn.learnyscape.feature.schedule.navigation.SCHEDULE_ROUTE
+import com.muammarahlnn.learnyscape.feature.search.navigation.SEARCH_ROUTE
 import com.muammarahlnn.learnyscape.feature.aclass.R as classR
 import com.muammarahlnn.learnyscape.feature.assignment.R as assignmentR
 import com.muammarahlnn.learnyscape.feature.home.R as homeR
@@ -43,22 +43,22 @@ sealed interface Destination {
     ) : Destination {
 
         HOME(
-            route = homeRoute,
+            route = HOME_ROUTE,
             selectedIconId = homeR.drawable.ic_home,
             unselectedIconId = homeR.drawable.ic_home_border,
         ),
         SEARCH(
-            route = searchRoute,
+            route = SEARCH_ROUTE,
             selectedIconId = searchR.drawable.ic_search,
             unselectedIconId = searchR.drawable.ic_search,
         ),
         SCHEDULE(
-            route = scheduleRoute,
+            route = SCHEDULE_ROUTE,
             selectedIconId = scheduleR.drawable.ic_calendar_today,
             unselectedIconId = scheduleR.drawable.ic_calendary_today_border,
         ),
         PROFILE(
-            route = profileRoute,
+            route = PROFILE_ROUTE,
             selectedIconId = profileR.drawable.ic_person,
             unselectedIconId = profileR.drawable.ic_person_border,
         ),
@@ -71,27 +71,27 @@ sealed interface Destination {
     ) : Destination {
 
         CLASS(
-            route = classRoute,
+            route = CLASS_ROUTE,
             selectedIconId = classR.drawable.ic_announcement,
             unselectedIconId = classR.drawable.ic_announcement_border,
         ),
         MODULE(
-            route = moduleRoute,
+            route = MODULE_ROUTE,
             selectedIconId = moduleR.drawable.ic_book,
             unselectedIconId = moduleR.drawable.ic_book_border,
         ),
         ASSIGNMENT(
-            route = assignmentRoute,
+            route = ASSIGNMENT_ROUTE,
             selectedIconId = assignmentR.drawable.ic_assignment,
             unselectedIconId = assignmentR.drawable.ic_assignment_border,
         ),
         QUIZ(
-            route = quizRoute,
+            route = QUIZ_ROUTE,
             selectedIconId = quizR.drawable.ic_quiz,
             unselectedIconId = quizR.drawable.ic_quiz_border,
         ),
         MEMBER(
-            route = memberRoute,
+            route = MEMBER_ROUTE,
             selectedIconId = memberR.drawable.ic_group,
             unselectedIconId = memberR.drawable.ic_group_border,
         ),

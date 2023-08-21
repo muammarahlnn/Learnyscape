@@ -11,16 +11,16 @@ import com.muammarahlnn.learnyscape.feature.member.MemberRoute
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file MemberNavigation, 03/08/2023 15.54 by Muammar Ahlan Abimanyu
  */
-const val memberRoute = "member_route"
+const val MEMBER_ROUTE = "member_route"
 
 fun NavController.navigateToMember(navOptions: NavOptions? = null) {
-    this.navigate(memberRoute, navOptions)
+    this.navigate(MEMBER_ROUTE, navOptions)
 }
 
 fun NavGraphBuilder.memberScreen(
     onBackClick: () -> Unit,
 ) {
-    composable(route = memberRoute) {
+    composable(route = MEMBER_ROUTE) {
         MemberRoute(
             onBackClick = onBackClick,
         )
