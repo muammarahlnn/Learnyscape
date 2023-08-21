@@ -10,7 +10,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -96,5 +95,5 @@ private fun LearnyscapeBottomBar(
 @Composable
 private fun NavDestination?.isDestinationInHierarchy(destination: Destination) =
     this?.hierarchy?.any {
-        it.route?.contains(stringResource(id = destination.nameId), true) ?: false
+        it.route?.equals(destination.route, true) ?: false
     } ?: false
