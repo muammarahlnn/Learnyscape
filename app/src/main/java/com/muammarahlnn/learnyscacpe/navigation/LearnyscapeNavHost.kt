@@ -49,16 +49,17 @@ fun LearnyscapeNavHost(
             notificationsScreen(
                 onBackClick = navController::popBackStack
             )
-            classGraph(
-                onPostClick = {
-                    navController.navigateToResourceDetails()
-                },
-                onBackClick = navController::popBackStack
-            ) {
-                resourceDetailsScreen(
-                    onBackClick = navController::popBackStack
-                )
-            }
+        }
+        searchScreen()
+        scheduleScreen()
+        profileScreen()
+
+        classGraph(
+            onPostClick = {
+                navController.navigateToResourceDetails()
+            },
+            onBackClick = navController::popBackStack
+        ) {
             moduleScreen(
                 onModuleClick = {
                     navController.navigateToResourceDetails()
@@ -80,10 +81,9 @@ fun LearnyscapeNavHost(
             memberScreen(
                 onBackClick = navController::popBackStack
             )
+            resourceDetailsScreen(
+                onBackClick = navController::popBackStack
+            )
         }
-        searchScreen()
-        scheduleScreen()
-        profileScreen()
-
     }
 }
