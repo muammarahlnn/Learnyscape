@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="aclass">Class</string>
+    <string name="announcement">Announcement</string>
+    <string name="module">Module</string>
+    <string name="assignment">Assignment</string>
+    <string name="quiz">Quiz</string>
 </resources>
