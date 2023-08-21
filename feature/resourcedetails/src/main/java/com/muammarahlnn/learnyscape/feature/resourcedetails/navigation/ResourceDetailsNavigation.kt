@@ -17,7 +17,7 @@ import kotlin.text.Charsets.UTF_8
  * @file ResourceDetailsNavigation, 18/08/2023 01.19 by Muammar Ahlan Abimanyu
  */
 
-const val RESOURCE_DETAILS_ROUTE = "resource_details_route"
+private const val RESOURCE_DETAILS_ROUTE = "resource_details_route"
 private const val RESOURCE_TYPE_ARG = "resource_type"
 const val RESOURCE_DETAILS_ROUTE_WITH_ARGS =
     "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_TYPE_ARG}"

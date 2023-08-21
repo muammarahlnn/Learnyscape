@@ -28,7 +28,7 @@ import com.muammarahlnn.learnyscape.feature.profile.navigation.PROFILE_ROUTE
 import com.muammarahlnn.learnyscape.feature.profile.navigation.navigateToProfile
 import com.muammarahlnn.learnyscape.feature.quiz.navigation.QUIZ_ROUTE
 import com.muammarahlnn.learnyscape.feature.quiz.navigation.navigateToQuiz
-import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.RESOURCE_DETAILS_ROUTE
+import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.RESOURCE_DETAILS_ROUTE_WITH_ARGS
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.SCHEDULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.navigateToSchedule
 import com.muammarahlnn.learnyscape.feature.search.navigation.SEARCH_ROUTE
@@ -82,7 +82,7 @@ class LearnyscapeAppState(
         get() = currentDestination?.route
 
     private val withoutBottomBarRoutes = listOf(
-        NOTIFICATIONS_ROUTE, RESOURCE_DETAILS_ROUTE,
+        NOTIFICATIONS_ROUTE, RESOURCE_DETAILS_ROUTE_WITH_ARGS,
     )
 
     private val learnyscapeBottomBarRoutes = listOf(
