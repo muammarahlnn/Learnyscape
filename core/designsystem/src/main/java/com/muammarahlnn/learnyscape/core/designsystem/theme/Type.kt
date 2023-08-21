@@ -15,8 +15,9 @@ import com.muammarahlnn.learnyscape.core.designsystem.R
  */
 
 private val poppinsFontFamily = FontFamily(
-    Font(R.font.poppins_regular),
-    Font(R.font.poppins_light, FontWeight.Light),
+    Font(R.font.poppins_regular, FontWeight.Normal),
+    Font(R.font.poppins_medium, FontWeight.Medium),
+    Font(R.font.poppins_semi_bold, FontWeight.SemiBold),
     Font(R.font.poppins_bold, FontWeight.Bold),
 )
 
