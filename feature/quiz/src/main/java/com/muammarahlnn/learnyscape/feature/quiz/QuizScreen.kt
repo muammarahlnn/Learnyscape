@@ -24,10 +24,12 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun QuizRoute(
+    onQuizClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     QuizScreen(
+        onQuizClick = onQuizClick,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -36,6 +38,7 @@ internal fun QuizRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizScreen(
+    onQuizClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,13 +48,17 @@ private fun QuizScreen(
             scrollBehavior = scrollBehavior,
             onBackClick = onBackClick
         )
-        QuizContent(scrollBehavior = scrollBehavior)
+        QuizContent(
+            onQuizClick = onQuizClick,
+            scrollBehavior = scrollBehavior
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizContent(
+    onQuizClick: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
@@ -65,7 +72,8 @@ private fun QuizContent(
                 ClassResourceCard(
                     classResourceType = ClassResourceType.MODULE,
                     title = "Quiz Local Data Persistent dan Database",
-                    timeLabel = "Start at 21 May 2023, 21:21"
+                    timeLabel = "Start at 21 May 2023, 21:21",
+                    onItemClick = onQuizClick,
                 )
             }
         }

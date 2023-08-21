@@ -24,10 +24,12 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun ModuleRoute(
+    onModuleClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ModuleScreen(
+        onModuleClick = onModuleClick,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -36,6 +38,7 @@ internal fun ModuleRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ModuleScreen(
+    onModuleClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,7 +48,10 @@ private fun ModuleScreen(
             scrollBehavior = scrollBehavior,
             onBackClick = onBackClick
         )
-        ModuleContent(scrollBehavior = scrollBehavior)
+        ModuleContent(
+            scrollBehavior = scrollBehavior,
+            onModuleClick = onModuleClick,
+        )
     }
 }
 
@@ -53,6 +59,7 @@ private fun ModuleScreen(
 @Composable
 private fun ModuleContent(
     scrollBehavior: TopAppBarScrollBehavior,
+    onModuleClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -65,7 +72,8 @@ private fun ModuleContent(
                 ClassResourceCard(
                     classResourceType = ClassResourceType.MODULE,
                     title = "Materi Networking dan Background Thread",
-                    timeLabel = "Posted 21 May 2023, 21:21"
+                    timeLabel = "Posted 21 May 2023, 21:21",
+                    onItemClick = onModuleClick,
                 )
             }
         }

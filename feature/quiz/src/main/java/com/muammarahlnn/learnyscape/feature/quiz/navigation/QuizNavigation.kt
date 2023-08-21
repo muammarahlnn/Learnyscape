@@ -18,10 +18,12 @@ fun NavController.navigateToQuiz(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.quizScreen(
+    onQuizClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     composable(route = quizRoute) {
         QuizRoute(
+            onQuizClick = onQuizClick,
             onBackClick = onBackClick,
         )
     }

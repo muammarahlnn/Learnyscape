@@ -37,12 +37,6 @@ fun LearnyscapeNavHost(
         navController = navController,
         startDestination = startDestination,
         modifier = modifier,
-//        enterTransition = {
-//            EnterTransition.None
-//        },
-//        exitTransition = {
-//            ExitTransition.None
-//        },
     ) {
         homeGraph(
             onNotificationsClick = {
@@ -66,12 +60,21 @@ fun LearnyscapeNavHost(
                 )
             }
             moduleScreen(
+                onModuleClick = {
+                    navController.navigateToResourceDetails()
+                },
                 onBackClick = navController::popBackStack
             )
             assignmentScreen(
+                onAssignmentClick = {
+                    navController.navigateToResourceDetails()
+                },
                 onBackClick = navController::popBackStack
             )
             quizScreen(
+                onQuizClick = {
+                    navController.navigateToResourceDetails()
+                },
                 onBackClick = navController::popBackStack
             )
             memberScreen(

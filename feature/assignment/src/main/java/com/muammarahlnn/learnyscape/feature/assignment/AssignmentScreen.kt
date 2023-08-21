@@ -24,10 +24,12 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun AssignmentRoute(
+    onAssignmentClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AssignmentScreen(
+        onAssignmentClick = onAssignmentClick,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -36,6 +38,7 @@ internal fun AssignmentRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AssignmentScreen(
+    onAssignmentClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,7 +48,10 @@ private fun AssignmentScreen(
             scrollBehavior = scrollBehavior,
             onBackClick = onBackClick
         )
-        AssignmentContent(scrollBehavior = scrollBehavior)
+        AssignmentContent(
+            onAssignmentClick = onAssignmentClick,
+            scrollBehavior = scrollBehavior
+        )
     }
 }
 
@@ -53,6 +59,7 @@ private fun AssignmentScreen(
 @Composable
 private fun AssignmentContent(
     scrollBehavior: TopAppBarScrollBehavior,
+    onAssignmentClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -65,7 +72,8 @@ private fun AssignmentContent(
                 ClassResourceCard(
                     classResourceType = ClassResourceType.ASSIGNMENT,
                     title = "Tugas Background Thread",
-                    timeLabel = "Due 21 May 2023, 21:21"
+                    timeLabel = "Due 21 May 2023, 21:21",
+                    onItemClick = onAssignmentClick,
                 )
             }
         }
