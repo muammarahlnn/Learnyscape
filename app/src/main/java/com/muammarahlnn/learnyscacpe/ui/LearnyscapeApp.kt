@@ -10,13 +10,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscacpe.navigation.LearnyscapeNavHost
-import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
 import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
-import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
@@ -71,13 +70,7 @@ private fun LearnyscapeBottomBar(
         modifier = modifier,
     ) {
         destinations.forEach { destination ->
-            val selected = when (destination) {
-                is TopLevelDestination ->
-                    currentDestination.isTopLevelDestinationInHierarchy(destination)
-                is ClassDestination ->
-                    currentDestination.isClassDestinationInHierarchy(destination)
-                else -> throw IllegalArgumentException("")
-            }
+            val selected = currentDestination.isDestinationInHierarchy(destination)
             LearnyscapeNavigationBarItem(
                 selected = selected,
                 onClick = {
@@ -99,13 +92,9 @@ private fun LearnyscapeBottomBar(
         }
     }
 }
-private fun NavDestination?.isRouteContainedInHierarchy(route: String) =
+
+@Composable
+private fun NavDestination?.isDestinationInHierarchy(destination: Destination) =
     this?.hierarchy?.any {
-        it.route?.contains(route, true) ?: false
+        it.route?.contains(stringResource(id = destination.nameId), true) ?: false
     } ?: false
-
-private fun NavDestination?.isTopLevelDestinationInHierarchy(destination: TopLevelDestination) =
-    isRouteContainedInHierarchy(destination.name)
-
-private fun NavDestination?.isClassDestinationInHierarchy(destination: ClassDestination) =
-    isRouteContainedInHierarchy(destination.name)

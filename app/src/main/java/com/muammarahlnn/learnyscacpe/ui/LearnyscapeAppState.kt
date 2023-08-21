@@ -6,20 +6,18 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavDestination
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.muammarahlnn.learnyscacpe.navigation.destination.ClassDestination
 import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
-import com.muammarahlnn.learnyscacpe.navigation.destination.TopLevelDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.Destination.ClassDestination
+import com.muammarahlnn.learnyscacpe.navigation.destination.Destination.TopLevelDestination
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.classRoute
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.assignmentRoute
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.navigateToAssignment
 import com.muammarahlnn.learnyscape.feature.home.navigation.homeRoute
-import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHomeGraph
 import com.muammarahlnn.learnyscape.feature.member.navigation.memberRoute
 import com.muammarahlnn.learnyscape.feature.member.navigation.navigateToMember
 import com.muammarahlnn.learnyscape.feature.module.navigation.moduleRoute
@@ -106,28 +104,22 @@ class LearnyscapeAppState(
         @Composable
         get() = currentRoute in withoutBottomBarRoutes
 
-    private val navOptions by lazy {
-        navOptions {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
+    fun navigateToDestination(destination: Destination) {
+        val destinationNavOptions = navOptions {
             launchSingleTop = true
             restoreState = true
         }
-    }
-
-    fun navigateToDestination(destination: Destination) {
         when (destination) {
-            TopLevelDestination.HOME -> navController.navigateToHomeGraph(navOptions)
-            TopLevelDestination.SEARCH -> navController.navigateToSearch(navOptions)
-            TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(navOptions)
-            TopLevelDestination.PROFILE -> navController.navigateToProfile(navOptions)
+            TopLevelDestination.HOME -> navController.navigateToClassGraph(destinationNavOptions)
+            TopLevelDestination.SEARCH -> navController.navigateToSearch(destinationNavOptions)
+            TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(destinationNavOptions)
+            TopLevelDestination.PROFILE -> navController.navigateToProfile(destinationNavOptions)
 
-            ClassDestination.CLASS -> navController.navigateToClassGraph(navOptions)
-            ClassDestination.MODULE -> navController.navigateToModule(navOptions)
-            ClassDestination.ASSIGNMENT -> navController.navigateToAssignment(navOptions)
-            ClassDestination.QUIZ -> navController.navigateToQuiz(navOptions)
-            ClassDestination.MEMBER -> navController.navigateToMember(navOptions)
+            ClassDestination.CLASS -> navController.navigateToClassGraph(destinationNavOptions)
+            ClassDestination.MODULE -> navController.navigateToModule(destinationNavOptions)
+            ClassDestination.ASSIGNMENT -> navController.navigateToAssignment(destinationNavOptions)
+            ClassDestination.QUIZ -> navController.navigateToQuiz(destinationNavOptions)
+            ClassDestination.MEMBER -> navController.navigateToMember(destinationNavOptions)
         }
     }
 }
