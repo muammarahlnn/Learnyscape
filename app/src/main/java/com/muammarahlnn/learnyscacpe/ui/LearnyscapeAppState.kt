@@ -106,9 +106,11 @@ class LearnyscapeAppState(
 
     fun navigateToDestination(destination: Destination) {
         val destinationNavOptions = navOptions {
+            popUpTo(destination.route)
             launchSingleTop = true
             restoreState = true
         }
+
         when (destination) {
             TopLevelDestination.HOME -> navController.navigateToClassGraph(destinationNavOptions)
             TopLevelDestination.SEARCH -> navController.navigateToSearch(destinationNavOptions)
