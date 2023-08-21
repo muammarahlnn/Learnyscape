@@ -11,6 +11,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.model.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
@@ -24,7 +25,7 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun QuizRoute(
-    onQuizClick: () -> Unit,
+    onQuizClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -38,7 +39,7 @@ internal fun QuizRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizScreen(
-    onQuizClick: () -> Unit,
+    onQuizClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -58,10 +59,11 @@ private fun QuizScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun QuizContent(
-    onQuizClick: () -> Unit,
+    onQuizClick: (String) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
+    val resourceType = stringResource(id = R.string.quiz)
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -73,7 +75,9 @@ private fun QuizContent(
                     classResourceType = ClassResourceType.MODULE,
                     title = "Quiz Local Data Persistent dan Database",
                     timeLabel = "Start at 21 May 2023, 21:21",
-                    onItemClick = onQuizClick,
+                    onItemClick = {
+                        onQuizClick(resourceType)
+                    },
                 )
             }
         }

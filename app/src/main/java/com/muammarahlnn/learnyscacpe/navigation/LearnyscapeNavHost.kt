@@ -55,26 +55,26 @@ fun LearnyscapeNavHost(
         profileScreen()
 
         classGraph(
-            onPostClick = {
-                navController.navigateToResourceDetails()
+            onPostClick = { resourceType ->
+                navController.navigateToResourceDetails(resourceType)
             },
             onBackClick = navController::popBackStack
         ) {
             moduleScreen(
-                onModuleClick = {
-                    navController.navigateToResourceDetails()
+                onModuleClick = { resourceType ->
+                    navController.navigateToResourceDetails(resourceType)
                 },
                 onBackClick = navController::popBackStack
             )
             assignmentScreen(
-                onAssignmentClick = {
-                    navController.navigateToResourceDetails()
+                onAssignmentClick = { resourceType ->
+                    navController.navigateToResourceDetails(resourceType)
                 },
                 onBackClick = navController::popBackStack
             )
             quizScreen(
-                onQuizClick = {
-                    navController.navigateToResourceDetails()
+                onQuizClick = { resourceType ->
+                    navController.navigateToResourceDetails(resourceType)
                 },
                 onBackClick = navController::popBackStack
             )

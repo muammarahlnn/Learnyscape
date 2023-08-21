@@ -48,7 +48,7 @@ import com.muammarahlnn.learnyscape.core.ui.getClassResourceIcon
 
 @Composable
 internal fun ClassRoute(
-    onPostClick: () -> Unit,
+    onPostClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -62,7 +62,7 @@ internal fun ClassRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassScreen(
-    onPostClick: () -> Unit,
+    onPostClick: (String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -83,7 +83,7 @@ private fun ClassScreen(
 @Composable
 private fun ClassContent(
     scrollBehavior: TopAppBarScrollBehavior,
-    onPostClick: () -> Unit,
+    onPostClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -235,7 +235,7 @@ private fun AnnouncementPostCard(
     authorName: String,
     timePosted: String,
     caption: String,
-    onPostClick: () -> Unit,
+    onPostClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BasePostCard(
@@ -251,7 +251,9 @@ private fun AnnouncementPostCard(
         title = authorName,
         timePosted = timePosted,
         caption = caption,
-        onPostClick = onPostClick,
+        onPostClick = {
+            onPostClick("Announcement")
+        },
         modifier = modifier,
     )
 }
@@ -262,7 +264,7 @@ fun ClassResourcePostCard(
     title: String,
     timePosted: String,
     caption: String,
-    onPostClick: () -> Unit,
+    onPostClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BasePostCard(
@@ -284,7 +286,15 @@ fun ClassResourcePostCard(
         title = title,
         timePosted = timePosted,
         caption = caption,
-        onPostClick = onPostClick,
+        onPostClick = {
+            onPostClick(
+                when (classResourceType) {
+                    ClassResourceType.MODULE -> "Module"
+                    ClassResourceType.ASSIGNMENT -> "Assignment"
+                    ClassResourceType.QUIZ -> "Quiz"
+                }
+            )
+        },
         modifier = modifier,
     )
 }
