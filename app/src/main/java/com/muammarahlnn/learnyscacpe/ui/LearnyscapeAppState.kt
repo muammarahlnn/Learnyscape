@@ -18,6 +18,7 @@ import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGra
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.assignmentRoute
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.navigateToAssignment
 import com.muammarahlnn.learnyscape.feature.home.navigation.homeRoute
+import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHomeGraph
 import com.muammarahlnn.learnyscape.feature.member.navigation.memberRoute
 import com.muammarahlnn.learnyscape.feature.member.navigation.navigateToMember
 import com.muammarahlnn.learnyscape.feature.module.navigation.moduleRoute
@@ -112,7 +113,7 @@ class LearnyscapeAppState(
         }
 
         when (destination) {
-            TopLevelDestination.HOME -> navController.navigateToClassGraph(destinationNavOptions)
+            TopLevelDestination.HOME -> navController.navigateToHomeGraph(destinationNavOptions)
             TopLevelDestination.SEARCH -> navController.navigateToSearch(destinationNavOptions)
             TopLevelDestination.SCHEDULE -> navController.navigateToSchedule(destinationNavOptions)
             TopLevelDestination.PROFILE -> navController.navigateToProfile(destinationNavOptions)
