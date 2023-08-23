@@ -106,6 +106,7 @@ private fun ResourceDetailsContent(
                 top = 16.dp,
                 start = 16.dp,
                 end = 16.dp,
+                bottom = if (isAssignment) 0.dp else 16.dp,
             ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
