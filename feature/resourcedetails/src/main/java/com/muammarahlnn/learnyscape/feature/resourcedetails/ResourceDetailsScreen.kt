@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -101,7 +102,11 @@ private fun ResourceDetailsContent(
         }
 
         LazyColumn(
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+            ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
@@ -120,31 +125,14 @@ private fun ResourceDetailsContent(
         }
         
         if (isAssignment) {
-            Button(
-                onClick = {
-                    
-                },
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp)
-                    .onGloballyPositioned { coordinates ->
-                        addWorkButtonHeight = with(localDensity) {
-                            coordinates.size.height.toDp()
-                        }
+            AddWorkButton(
+                onButtonGloballyPositioned = { coordinates ->
+                    addWorkButtonHeight = with(localDensity) {
+                        coordinates.size.height.toDp()
                     }
-            ) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_add), 
-                    contentDescription = stringResource(
-                        id = designSystemR.string.add_icon_description,
-                    ) 
-                )
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = stringResource(id = R.string.add_work))
-            }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
     }
 }
@@ -275,6 +263,54 @@ private fun AttachmentItem(
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
         )
+    }
+}
+
+@Composable
+private fun AddWorkButton(
+    onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        shape = RoundedCornerShape(
+            topStart = 10.dp,
+            topEnd = 10.dp,
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { coordinates ->
+                onButtonGloballyPositioned(coordinates)
+            }
+    ) {
+        Button(
+            onClick = {
+
+            },
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 16.dp,
+                    bottom = 8.dp,
+                )
+        ) {
+            Icon(
+                painter = painterResource(id = designSystemR.drawable.ic_add),
+                contentDescription = stringResource(
+                    id = designSystemR.string.add_icon_description,
+                )
+            )
+            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = stringResource(id = R.string.add_work))
+        }
     }
 }
 
