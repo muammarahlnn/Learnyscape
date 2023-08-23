@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="attachments">Attachments</string>
+    <string name="add_work">Add work</string>
     <string name="document_icon_description">Attachment document</string>
 </resources>
