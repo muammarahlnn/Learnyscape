@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,8 +24,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,8 +59,10 @@ internal fun ResourceDetailsRoute(
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
 ) {
     val resourceType = viewModel.resourceType
+    val isAssignment = resourceType == stringResource(id = uiR.string.assignment)
     ResourceDetailsScreen(
         resourceType = resourceType,
+        isAssignment = isAssignment,
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -61,6 +71,7 @@ internal fun ResourceDetailsRoute(
 @Composable
 private fun ResourceDetailsScreen(
     resourceType: String,
+    isAssignment: Boolean,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -70,26 +81,70 @@ private fun ResourceDetailsScreen(
             onBackClick = onBackClick,
         )
 
-        ResourceDetailsContent(resourceType = resourceType)
+        ResourceDetailsContent(
+            resourceType = resourceType,
+            isAssignment = isAssignment,
+        )
     }
 }
 
 @Composable
 private fun ResourceDetailsContent(
     resourceType: String,
+    isAssignment: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier,
-    ) {
-        item {
-            DetailPostCard(resourceType = resourceType)
+    val localDensity = LocalDensity.current
+    Box(modifier = modifier) {
+        var addWorkButtonHeight by remember {
+            mutableStateOf(0.dp)
         }
 
-        item {
-            AttachmentCard()
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item {
+                DetailPostCard(resourceType = resourceType)
+            }
+
+            item {
+                AttachmentCard()
+            }
+
+            if (isAssignment) {
+                item {
+                    Spacer(modifier = Modifier.height(addWorkButtonHeight))
+                }
+            }
+        }
+        
+        if (isAssignment) {
+            Button(
+                onClick = {
+                    
+                },
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 8.dp)
+                    .onGloballyPositioned { coordinates ->
+                        addWorkButtonHeight = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    }
+            ) {
+                Icon(
+                    painter = painterResource(id = designSystemR.drawable.ic_add), 
+                    contentDescription = stringResource(
+                        id = designSystemR.string.add_icon_description,
+                    ) 
+                )
+                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+                Text(text = stringResource(id = R.string.add_work))
+            }
         }
     }
 }
