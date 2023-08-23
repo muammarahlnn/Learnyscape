@@ -128,7 +128,9 @@ private fun BasePostCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
         ),
-        modifier = modifier.clickable {
+        modifier = modifier.clickable(
+            enabled = isCaptionOverflowed
+        ) {
             onPostClick()
         },
     ) {
