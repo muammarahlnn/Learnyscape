@@ -92,6 +92,7 @@ private fun ClassContent(
                 timePosted = "21 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 onPostClick = onPostClick,
+                isCaptionOverflowed = true,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -104,6 +105,7 @@ private fun ClassContent(
                 timePosted = "11 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 onPostClick = onPostClick,
+                isCaptionOverflowed = true,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -116,6 +118,7 @@ private fun ClassContent(
                 timePosted = "10 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 onPostClick = onPostClick,
+                isCaptionOverflowed = true,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -127,6 +130,7 @@ private fun ClassContent(
                 timePosted = "2 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 onPostClick = onPostClick,
+                isCaptionOverflowed = true,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))

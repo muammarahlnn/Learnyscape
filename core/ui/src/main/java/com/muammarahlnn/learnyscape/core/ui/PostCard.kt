@@ -39,8 +39,9 @@ fun AnnouncementPostCard(
     authorName: String,
     timePosted: String,
     caption: String,
-    onPostClick: (String) -> Unit,
+    isCaptionOverflowed: Boolean,
     modifier: Modifier = Modifier,
+    onPostClick: (String) -> Unit = {},
 ) {
     val postType = stringResource(id = R.string.announcement)
     BasePostCard(
@@ -59,6 +60,7 @@ fun AnnouncementPostCard(
         onPostClick = {
             onPostClick(postType)
         },
+        isCaptionOverflowed = isCaptionOverflowed,
         modifier = modifier,
     )
 }
@@ -69,8 +71,9 @@ fun ClassResourcePostCard(
     title: String,
     timePosted: String,
     caption: String,
-    onPostClick: (String) -> Unit,
+    isCaptionOverflowed: Boolean,
     modifier: Modifier = Modifier,
+    onPostClick: (String) -> Unit = {},
 ) {
     val postType = stringResource(
         id = when (classResourceType) {
@@ -102,6 +105,7 @@ fun ClassResourcePostCard(
         onPostClick = {
             onPostClick(postType)
         },
+        isCaptionOverflowed = isCaptionOverflowed,
         modifier = modifier,
     )
 }
@@ -112,6 +116,7 @@ private fun BasePostCard(
     title: String,
     timePosted: String,
     caption: String,
+    isCaptionOverflowed: Boolean,
     onPostClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -174,8 +179,10 @@ private fun BasePostCard(
                     text = caption,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2,
+                    overflow =
+                        if (isCaptionOverflowed) TextOverflow.Ellipsis
+                        else TextOverflow.Clip,
+                    maxLines = if (isCaptionOverflowed) 2 else Int.MAX_VALUE,
                 )
             }
         }
