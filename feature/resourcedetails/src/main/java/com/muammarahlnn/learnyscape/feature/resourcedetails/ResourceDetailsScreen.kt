@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -22,11 +24,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -59,11 +64,21 @@ internal fun ResourceDetailsRoute(
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
 ) {
+    var showAddWorkBottomSheet by rememberSaveable {
+        mutableStateOf(false)
+    }
     val resourceType = viewModel.resourceType
     val isAssignment = resourceType == stringResource(id = uiR.string.assignment)
     ResourceDetailsScreen(
         resourceType = resourceType,
         isAssignment = isAssignment,
+        showAddWorkBottomSheet = showAddWorkBottomSheet,
+        onAddWorkButtonClick = {
+            showAddWorkBottomSheet = true
+        },
+        onDismissAddWorkBottomSheet = {
+            showAddWorkBottomSheet = false
+        },
         onBackClick = onBackClick,
         modifier = modifier,
     )
@@ -73,9 +88,17 @@ internal fun ResourceDetailsRoute(
 private fun ResourceDetailsScreen(
     resourceType: String,
     isAssignment: Boolean,
+    showAddWorkBottomSheet: Boolean,
+    onAddWorkButtonClick: () -> Unit,
+    onDismissAddWorkBottomSheet: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (showAddWorkBottomSheet) {
+        AddWorkBottomSheet(
+            onDismiss = onDismissAddWorkBottomSheet
+        )
+    }
     Column(modifier = modifier.fillMaxSize()) {
         ResourceDetailsTopAppBar(
             title = resourceType,
@@ -85,6 +108,7 @@ private fun ResourceDetailsScreen(
         ResourceDetailsContent(
             resourceType = resourceType,
             isAssignment = isAssignment,
+            onAddWorkButtonClick = onAddWorkButtonClick,
         )
     }
 }
@@ -93,6 +117,7 @@ private fun ResourceDetailsScreen(
 private fun ResourceDetailsContent(
     resourceType: String,
     isAssignment: Boolean,
+    onAddWorkButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val localDensity = LocalDensity.current
@@ -127,6 +152,7 @@ private fun ResourceDetailsContent(
         
         if (isAssignment) {
             AddWorkButton(
+                onButtonClick = onAddWorkButtonClick,
                 onButtonGloballyPositioned = { coordinates ->
                     addWorkButtonHeight = with(localDensity) {
                         coordinates.size.height.toDp()
@@ -269,6 +295,7 @@ private fun AttachmentItem(
 
 @Composable
 private fun AddWorkButton(
+    onButtonClick: () -> Unit,
     onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -290,9 +317,7 @@ private fun AddWorkButton(
             }
     ) {
         Button(
-            onClick = {
-
-            },
+            onClick = onButtonClick,
             shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -332,4 +357,65 @@ private fun ResourceDetailsTopAppBar(
         onNavigationClick = onBackClick,
         modifier = modifier,
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddWorkBottomSheet(
+    onDismiss: () -> Unit,
+) {
+    val bottomSheetState = rememberModalBottomSheetState()
+    ModalBottomSheet(
+        sheetState = bottomSheetState,
+        containerColor = MaterialTheme.colorScheme.onPrimary,
+        onDismissRequest = onDismiss,
+        dragHandle = {
+            BottomSheetDefaults.DragHandle()
+        }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(0.5f),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_upload),
+                    contentDescription = stringResource(id = R.string.upload_file),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.upload_file),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(0.5f),
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_add_a_photo),
+                    contentDescription = stringResource(id = R.string.take_a_photo),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.take_a_photo),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+    }
 }
