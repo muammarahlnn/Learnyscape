@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
@@ -69,8 +70,10 @@ internal fun ResourceDetailsRoute(
     }
     val resourceType = viewModel.resourceType
     val isAssignment = resourceType == stringResource(id = uiR.string.assignment)
+    val isQuiz = resourceType == stringResource(id = uiR.string.quiz)
     ResourceDetailsScreen(
         resourceType = resourceType,
+        isQuiz = isQuiz,
         isAssignment = isAssignment,
         showAddWorkBottomSheet = showAddWorkBottomSheet,
         onAddWorkButtonClick = {
@@ -88,6 +91,7 @@ internal fun ResourceDetailsRoute(
 private fun ResourceDetailsScreen(
     resourceType: String,
     isAssignment: Boolean,
+    isQuiz: Boolean,
     showAddWorkBottomSheet: Boolean,
     onAddWorkButtonClick: () -> Unit,
     onDismissAddWorkBottomSheet: () -> Unit,
@@ -107,6 +111,7 @@ private fun ResourceDetailsScreen(
 
         ResourceDetailsContent(
             resourceType = resourceType,
+            isQuiz = isQuiz,
             isAssignment = isAssignment,
             onAddWorkButtonClick = onAddWorkButtonClick,
         )
@@ -116,6 +121,7 @@ private fun ResourceDetailsScreen(
 @Composable
 private fun ResourceDetailsContent(
     resourceType: String,
+    isQuiz: Boolean,
     isAssignment: Boolean,
     onAddWorkButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -140,7 +146,14 @@ private fun ResourceDetailsContent(
             }
 
             item {
-                AttachmentCard()
+                if (isQuiz) {
+                    QuizDetailsCard(
+                        quizStartTime = "12 August 2023, 11:12",
+                        quizDuration = "10 Minutes"
+                    )
+                } else {
+                    AttachmentCard()
+                }
             }
 
             if (isAssignment) {
@@ -290,6 +303,75 @@ private fun AttachmentItem(
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
         )
+    }
+}
+
+@Composable
+private fun QuizDetailsCard(
+    quizStartTime: String,
+    quizDuration: String,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.details),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontSize = 13.sp,
+                )
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_play_arrow),
+                    contentDescription = stringResource(id = R.string.start_icon_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = quizStartTime,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_timer),
+                    contentDescription = stringResource(id = R.string.timer_icon_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = quizDuration,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
     }
 }
 
