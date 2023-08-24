@@ -7,5 +7,4 @@
     <string name="join_request_dialog_title">Join request</string>
     <string name="join_request_dialog_text">Request to join %1$s class?</string>
     <string name="join_request_dialog_confirm_button_text">Request</string>
-    <string name="join_request_dialog_dismiss_button_text">Cancel</string>
 </resources>
