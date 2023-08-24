@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 import com.muammarahlnn.learnyscape.core.model.ClassResourceType
@@ -69,19 +70,32 @@ internal fun ResourceDetailsRoute(
     var showAddWorkBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
+    var showStartQuizDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     val resourceType = viewModel.resourceType
     val isAssignment = resourceType == stringResource(id = uiR.string.assignment)
     val isQuiz = resourceType == stringResource(id = uiR.string.quiz)
+
     ResourceDetailsScreen(
         resourceType = resourceType,
         isQuiz = isQuiz,
         isAssignment = isAssignment,
         showAddWorkBottomSheet = showAddWorkBottomSheet,
+        showStartQuizDialog = showStartQuizDialog,
         onAddWorkButtonClick = {
             showAddWorkBottomSheet = true
         },
+        onStartQuizButtonClick = {
+            showStartQuizDialog = true
+        },
         onDismissAddWorkBottomSheet = {
             showAddWorkBottomSheet = false
+        },
+        onConfirmStartQuizDialog = {},
+        onDismissStartQuizDialog = {
+            showStartQuizDialog = false
         },
         onBackClick = onBackClick,
         modifier = modifier,
@@ -94,8 +108,12 @@ private fun ResourceDetailsScreen(
     isAssignment: Boolean,
     isQuiz: Boolean,
     showAddWorkBottomSheet: Boolean,
+    showStartQuizDialog: Boolean,
     onAddWorkButtonClick: () -> Unit,
+    onStartQuizButtonClick: () -> Unit,
     onDismissAddWorkBottomSheet: () -> Unit,
+    onConfirmStartQuizDialog: () -> Unit,
+    onDismissStartQuizDialog: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -104,6 +122,14 @@ private fun ResourceDetailsScreen(
             onDismiss = onDismissAddWorkBottomSheet
         )
     }
+
+    if (showStartQuizDialog) {
+        StartQuizDialog(
+            onConfirm = onConfirmStartQuizDialog,
+            onDismiss = onDismissStartQuizDialog,
+        )
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         ResourceDetailsTopAppBar(
             title = resourceType,
@@ -115,6 +141,7 @@ private fun ResourceDetailsScreen(
             isQuiz = isQuiz,
             isAssignment = isAssignment,
             onAddWorkButtonClick = onAddWorkButtonClick,
+            onStartQuizButtonClick = onStartQuizButtonClick,
         )
     }
 }
@@ -125,6 +152,7 @@ private fun ResourceDetailsContent(
     isQuiz: Boolean,
     isAssignment: Boolean,
     onAddWorkButtonClick: () -> Unit,
+    onStartQuizButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val localDensity = LocalDensity.current
@@ -181,7 +209,7 @@ private fun ResourceDetailsContent(
 
             isQuiz -> {
                 StartQuizButton(
-                    onButtonClick = onAddWorkButtonClick,
+                    onButtonClick = onStartQuizButtonClick,
                     onButtonGloballyPositioned = onButtonGloballyPositioned,
                     modifier = actionButtonModifier,
                 )
@@ -543,4 +571,25 @@ private fun AddWorkBottomSheet(
             }
         }
     }
+}
+
+@Composable
+private fun StartQuizDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseAlertDialog(
+        title = stringResource(id = R.string.start_quiz),
+        dialogText = stringResource(
+            R.string.start_quiz_dialog_text,
+            "Lorem Ipsum Dolor Sit Amet"
+        ),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        confirmText = stringResource(
+            id = R.string.start_quiz_dialog_confirm_button_text,
+        ),
+        modifier = modifier,
+    )
 }
