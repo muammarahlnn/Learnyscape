@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -101,4 +102,11 @@ fun getClassResourceIcon(type: ClassResourceType) = when (type) {
     ClassResourceType.MODULE -> painterResource(id = designSystemR.drawable.ic_book)
     ClassResourceType.ASSIGNMENT -> painterResource(id = designSystemR.drawable.ic_assignment)
     ClassResourceType.QUIZ -> painterResource(id = designSystemR.drawable.ic_quiz)
+}
+
+@Composable
+fun getClassResourceName(type: ClassResourceType) = when (type) {
+    ClassResourceType.MODULE -> stringResource(id = R.string.module)
+    ClassResourceType.ASSIGNMENT -> stringResource(id = R.string.assignment)
+    ClassResourceType.QUIZ -> stringResource(id = R.string.quiz)
 }

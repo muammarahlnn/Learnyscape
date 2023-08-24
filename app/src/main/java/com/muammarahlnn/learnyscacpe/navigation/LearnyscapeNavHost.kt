@@ -47,6 +47,9 @@ fun LearnyscapeNavHost(
             },
         ) {
             notificationsScreen(
+                onNotificationClick = { resourceType ->
+                    navController.navigateToResourceDetails(resourceType)
+                },
                 onBackClick = navController::popBackStack
             )
         }

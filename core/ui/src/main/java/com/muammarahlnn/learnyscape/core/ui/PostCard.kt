@@ -75,13 +75,7 @@ fun ClassResourcePostCard(
     modifier: Modifier = Modifier,
     onPostClick: (String) -> Unit = {},
 ) {
-    val postType = stringResource(
-        id = when (classResourceType) {
-            ClassResourceType.MODULE -> R.string.module
-            ClassResourceType.ASSIGNMENT -> R.string.assignment
-            ClassResourceType.QUIZ -> R.string.quiz
-        }
-    )
+    val postType = getClassResourceName(type = classResourceType)
 
     BasePostCard(
         indicatorImage = {
