@@ -121,7 +121,7 @@ private fun ResourceDetailsContent(
     modifier: Modifier = Modifier,
 ) {
     val localDensity = LocalDensity.current
-    Box(modifier = modifier) {
+    Box(modifier = modifier.fillMaxSize()) {
         var addWorkButtonHeight by remember {
             mutableStateOf(0.dp)
         }
