@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscacpe.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.muammarahlnn.learnyscacpe.ui.LearnyscapeAppState
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_GRAPH_ROUTE_PATTERN
@@ -48,9 +49,7 @@ fun LearnyscapeNavHost(
             },
         ) {
             notificationsScreen(
-                onNotificationClick = { resourceType ->
-                    navController.navigateToResourceDetails(resourceType)
-                },
+                onNotificationClick = toResourceDetails(navController),
                 onBackClick = navController::popBackStack
             )
         }
@@ -59,56 +58,23 @@ fun LearnyscapeNavHost(
         profileScreen()
 
         classGraph(
-            onPostClick = { resourceType ->
-                navController.navigateToResourceDetails(resourceType)
-            },
-            onBackClick = {
-                navController.popBackStack(
-                    route = CLASS_GRAPH_ROUTE_PATTERN,
-                    inclusive = true,
-                )
-            }
+            onPostClick = toResourceDetails(navController),
+            onBackClick = classGraphOnBackClick(navController)
         ) {
             moduleScreen(
-                onModuleClick = { resourceType ->
-                    navController.navigateToResourceDetails(resourceType)
-                },
-                onBackClick = {
-                    navController.popBackStack(
-                        route = CLASS_GRAPH_ROUTE_PATTERN,
-                        inclusive = true,
-                    )
-                }
+                onModuleClick = toResourceDetails(navController),
+                onBackClick = classGraphOnBackClick(navController)
             )
             assignmentScreen(
-                onAssignmentClick = { resourceType ->
-                    navController.navigateToResourceDetails(resourceType)
-                },
-                onBackClick = {
-                    navController.popBackStack(
-                        route = CLASS_GRAPH_ROUTE_PATTERN,
-                        inclusive = true,
-                    )
-                }
+                onAssignmentClick = toResourceDetails(navController),
+                onBackClick = classGraphOnBackClick(navController)
             )
             quizScreen(
-                onQuizClick = { resourceType ->
-                    navController.navigateToResourceDetails(resourceType)
-                },
-                onBackClick = {
-                    navController.popBackStack(
-                        route = CLASS_GRAPH_ROUTE_PATTERN,
-                        inclusive = true,
-                    )
-                }
+                onQuizClick = toResourceDetails(navController),
+                onBackClick = classGraphOnBackClick(navController)
             )
             memberScreen(
-                onBackClick = {
-                    navController.popBackStack(
-                        route = CLASS_GRAPH_ROUTE_PATTERN,
-                        inclusive = true,
-                    )
-                }
+                onBackClick = classGraphOnBackClick(navController)
             )
             resourceDetailsScreen(
                 onBackClick = navController::popBackStack
@@ -116,3 +82,15 @@ fun LearnyscapeNavHost(
         }
     }
 }
+
+fun toResourceDetails(navController: NavHostController): (String) -> Unit = { resourceType ->
+    navController.navigateToResourceDetails(resourceType)
+}
+
+private fun classGraphOnBackClick(navController: NavHostController): () -> Unit = {
+    navController.popBackStack(
+        route = CLASS_GRAPH_ROUTE_PATTERN,
+        inclusive = true,
+    )
+}
+
