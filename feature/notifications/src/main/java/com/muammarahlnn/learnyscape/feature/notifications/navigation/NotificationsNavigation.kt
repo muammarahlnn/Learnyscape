@@ -19,10 +19,12 @@ fun NavController.navigateToNotifications(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.notificationsScreen(
+    onNotificationClick: (String) -> Unit,
     onBackClick: () -> Unit,
 ) {
     composable(route = NOTIFICATIONS_ROUTE) {
         NotificationsRoute(
+            onNotificationClick = onNotificationClick,
             onBackClick = onBackClick,
         )
     }
