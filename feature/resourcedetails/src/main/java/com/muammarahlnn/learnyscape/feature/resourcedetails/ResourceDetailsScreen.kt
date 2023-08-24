@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -156,23 +157,35 @@ private fun ResourceDetailsContent(
                 }
             }
 
-            if (isAssignment) {
+            if (isAssignment || isQuiz) {
                 item {
                     Spacer(modifier = Modifier.height(addWorkButtonHeight))
                 }
             }
         }
-        
-        if (isAssignment) {
-            AddWorkButton(
-                onButtonClick = onAddWorkButtonClick,
-                onButtonGloballyPositioned = { coordinates ->
-                    addWorkButtonHeight = with(localDensity) {
-                        coordinates.size.height.toDp()
-                    }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+
+        val actionButtonModifier = Modifier.align(Alignment.BottomCenter)
+        val onButtonGloballyPositioned: (LayoutCoordinates) -> Unit = { coordinates ->
+            addWorkButtonHeight = with(localDensity) {
+                coordinates.size.height.toDp()
+            }
+        }
+        when {
+            isAssignment -> {
+                AddWorkButton(
+                    onButtonClick = onAddWorkButtonClick,
+                    onButtonGloballyPositioned = onButtonGloballyPositioned,
+                    modifier = actionButtonModifier,
+                )
+            }
+
+            isQuiz -> {
+                StartQuizButton(
+                    onButtonClick = onAddWorkButtonClick,
+                    onButtonGloballyPositioned = onButtonGloballyPositioned,
+                    modifier = actionButtonModifier,
+                )
+            }
         }
     }
 }
@@ -375,11 +388,68 @@ private fun QuizDetailsCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ResourceDetailsTopAppBar(
+    title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LearnyscapeTopAppBar(
+        title = title,
+        navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
+        navigationIconContentDescription = stringResource(
+            id = designSystemR.string.navigation_back_icon_description,
+        ),
+        colors = defaultTopAppBarColors(),
+        onNavigationClick = onBackClick,
+        modifier = modifier,
+    )
+}
+
 @Composable
 private fun AddWorkButton(
     onButtonClick: () -> Unit,
     onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
     modifier: Modifier = Modifier,
+) {
+    BaseActionButton(
+        onButtonClick = onButtonClick,
+        onButtonGloballyPositioned = onButtonGloballyPositioned,
+        modifier = modifier,
+    ) {
+        Icon(
+            painter = painterResource(id = designSystemR.drawable.ic_add),
+            contentDescription = stringResource(
+                id = designSystemR.string.add_icon_description,
+            )
+        )
+        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
+        Text(text = stringResource(id = R.string.add_work))
+    }
+}
+
+@Composable
+private fun StartQuizButton(
+    onButtonClick: () -> Unit,
+    onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseActionButton(
+        onButtonClick = onButtonClick,
+        onButtonGloballyPositioned = onButtonGloballyPositioned,
+        modifier = modifier,
+    ) {
+        Text(text = stringResource(id = R.string.start_quiz))
+    }
+}
+
+@Composable
+private fun BaseActionButton(
+    onButtonClick: () -> Unit,
+    onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
+    modifier: Modifier = Modifier,
+    buttonContent: @Composable RowScope.() -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(
@@ -408,37 +478,10 @@ private fun AddWorkButton(
                     end = 16.dp,
                     top = 16.dp,
                     bottom = 8.dp,
-                )
-        ) {
-            Icon(
-                painter = painterResource(id = designSystemR.drawable.ic_add),
-                contentDescription = stringResource(
-                    id = designSystemR.string.add_icon_description,
-                )
-            )
-            Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = stringResource(id = R.string.add_work))
-        }
+                ),
+            content = buttonContent,
+        )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ResourceDetailsTopAppBar(
-    title: String,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LearnyscapeTopAppBar(
-        title = title,
-        navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
-        navigationIconContentDescription = stringResource(
-            id = designSystemR.string.navigation_back_icon_description,
-        ),
-        colors = defaultTopAppBarColors(),
-        onNavigationClick = onBackClick,
-        modifier = modifier,
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
