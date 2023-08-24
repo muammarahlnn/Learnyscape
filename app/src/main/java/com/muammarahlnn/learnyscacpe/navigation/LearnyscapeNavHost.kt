@@ -83,7 +83,7 @@ fun LearnyscapeNavHost(
     }
 }
 
-fun toResourceDetails(navController: NavHostController): (String) -> Unit = { resourceType ->
+private fun toResourceDetails(navController: NavHostController): (String) -> Unit = { resourceType ->
     navController.navigateToResourceDetails(resourceType)
 }
 
