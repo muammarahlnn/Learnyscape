@@ -28,12 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.model.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.getClassResourceIcon
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -84,18 +85,18 @@ private fun NotificationContent(
     ) {
         // dummy list only for test ui purpose
         listOf(
-            NotificationType.MODULE,
-            NotificationType.ASSIGNMENT,
-            NotificationType.QUIZ,
-            NotificationType.MODULE,
-            NotificationType.ASSIGNMENT,
-            NotificationType.QUIZ,
-            NotificationType.MODULE,
-            NotificationType.ASSIGNMENT,
-            NotificationType.QUIZ,
-            NotificationType.MODULE,
-            NotificationType.ASSIGNMENT,
-            NotificationType.QUIZ,
+            ClassResourceType.MODULE,
+            ClassResourceType.ASSIGNMENT,
+            ClassResourceType.QUIZ,
+            ClassResourceType.MODULE,
+            ClassResourceType.ASSIGNMENT,
+            ClassResourceType.QUIZ,
+            ClassResourceType.MODULE,
+            ClassResourceType.ASSIGNMENT,
+            ClassResourceType.QUIZ,
+            ClassResourceType.MODULE,
+            ClassResourceType.ASSIGNMENT,
+            ClassResourceType.QUIZ,
         ).forEach {
             item {
                 NotificationItem(type = it)
@@ -126,7 +127,7 @@ private fun NotificationsTopAppBar(
 
 @Composable
 private fun NotificationItem(
-    type: NotificationType,
+    type: ClassResourceType,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -152,7 +153,7 @@ private fun NotificationItem(
                     .padding(10.dp)
             ) {
                 Image(
-                    painter = getNotificationIcon(type = type),
+                    painter = getClassResourceIcon(type = type),
                     contentDescription = null,
                     modifier = Modifier
                         .size(20.dp)
@@ -187,17 +188,4 @@ private fun NotificationItem(
             )
         }
     }
-}
-
-@Composable
-private fun getNotificationIcon(type: NotificationType) = when (type) {
-    NotificationType.MODULE -> painterResource(id = designSystemR.drawable.ic_book)
-    NotificationType.ASSIGNMENT -> painterResource(id = designSystemR.drawable.ic_assignment)
-    NotificationType.QUIZ -> painterResource(id = designSystemR.drawable.ic_quiz)
-}
-
-enum class NotificationType {
-    MODULE,
-    ASSIGNMENT,
-    QUIZ,
 }
