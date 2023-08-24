@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -18,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
@@ -39,9 +37,9 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
@@ -237,54 +235,17 @@ private fun JoinRequestClassDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = stringResource(id = R.string.join_request_dialog_title),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        },
-        text = {
-            Text(
-                text = stringResource(
-                    R.string.join_request_dialog_text,
-                    "Pemrograman Mobile B"
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(
-                    text = stringResource(
-                        id = R.string.join_request_dialog_confirm_button_text
-                    ),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(
-                    text = stringResource(
-                        id = R.string.join_request_dialog_dismiss_button_text
-                    ),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.onPrimary,
+    BaseAlertDialog(
+        title = stringResource(id = R.string.join_request_dialog_title),
+        dialogText = stringResource(
+            R.string.join_request_dialog_text,
+            "Pemrograman Mobile B"
+        ),
+        onConfirm = onDismiss,
+        onDismiss = onDismiss,
+        confirmText = stringResource(
+            id = R.string.join_request_dialog_confirm_button_text
+        ),
         modifier = modifier,
     )
 }

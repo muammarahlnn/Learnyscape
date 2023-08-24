@@ -2,4 +2,6 @@
 <resources>
     <string name="navigation_back_icon_description">Back</string>
     <string name="add_icon_description">Add</string>
+    <string name="alert_dialog_dismiss_button_text">Cancel</string>
+    <string name="alert_dialog_confirm_button_text">Confirm</string>
 </resources>
