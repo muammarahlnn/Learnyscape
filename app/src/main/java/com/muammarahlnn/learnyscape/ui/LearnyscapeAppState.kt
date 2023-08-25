@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscacpe.ui
+package com.muammarahlnn.learnyscape.ui
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -10,9 +10,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.muammarahlnn.learnyscacpe.navigation.destination.Destination
-import com.muammarahlnn.learnyscacpe.navigation.destination.Destination.ClassDestination
-import com.muammarahlnn.learnyscacpe.navigation.destination.Destination.TopLevelDestination
+import com.muammarahlnn.learnyscape.navigation.destination.Destination
+import com.muammarahlnn.learnyscape.navigation.destination.Destination.ClassDestination
+import com.muammarahlnn.learnyscape.navigation.destination.Destination.TopLevelDestination
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_ROUTE
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.ASSIGNMENT_ROUTE

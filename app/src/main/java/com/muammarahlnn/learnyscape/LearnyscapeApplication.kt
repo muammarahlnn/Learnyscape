@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscacpe
+package com.muammarahlnn.learnyscape
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
