@@ -40,6 +40,7 @@
             <option value="$PROJECT_DIR$/feature/notifications" />
             <option value="$PROJECT_DIR$/feature/profile" />
             <option value="$PROJECT_DIR$/feature/quiz" />
+            <option value="$PROJECT_DIR$/feature/quizsession" />
             <option value="$PROJECT_DIR$/feature/resourcedetails" />
             <option value="$PROJECT_DIR$/feature/schedule" />
             <option value="$PROJECT_DIR$/feature/search" />
