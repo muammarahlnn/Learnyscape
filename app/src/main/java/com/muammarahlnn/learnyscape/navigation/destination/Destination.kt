@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscacpe.navigation.destination
+package com.muammarahlnn.learnyscape.navigation.destination
 
 import androidx.annotation.DrawableRes
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_ROUTE

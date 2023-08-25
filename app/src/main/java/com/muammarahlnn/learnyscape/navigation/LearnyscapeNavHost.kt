@@ -1,10 +1,10 @@
-package com.muammarahlnn.learnyscacpe.navigation
+package com.muammarahlnn.learnyscape.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import com.muammarahlnn.learnyscacpe.ui.LearnyscapeAppState
+import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_GRAPH_ROUTE_PATTERN
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.classGraph
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClassGraph

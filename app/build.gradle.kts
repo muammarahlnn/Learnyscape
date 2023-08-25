@@ -5,10 +5,10 @@ plugins {
 }
 
 android {
-    namespace = "com.muammarahlnn.learnyscacpe"
+    namespace = "com.muammarahlnn.learnyscape"
 
     defaultConfig {
-        applicationId = "com.muammarahlnn.learnyscacpe"
+        applicationId = "com.muammarahlnn.learnyscape"
         versionCode = 1
         versionName = "1.0"
 
