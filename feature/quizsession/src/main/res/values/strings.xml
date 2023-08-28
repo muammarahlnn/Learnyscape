@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="quiz">Quiz</string>
+    <string name="quiz_name">Quiz %1$s</string>
+    <string name="remaining_time">Remaining time: %1$s</string>
+</resources>
