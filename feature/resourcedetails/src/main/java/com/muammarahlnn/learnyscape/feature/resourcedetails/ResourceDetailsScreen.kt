@@ -63,6 +63,7 @@ import com.muammarahlnn.learnyscape.core.ui.R as uiR
 
 @Composable
 internal fun ResourceDetailsRoute(
+    onConfirmStartQuizDialog: (String, Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
@@ -93,7 +94,10 @@ internal fun ResourceDetailsRoute(
         onDismissAddWorkBottomSheet = {
             showAddWorkBottomSheet = false
         },
-        onConfirmStartQuizDialog = {},
+        onConfirmStartQuizDialog = { quizName, quizDuration ->
+            onConfirmStartQuizDialog(quizName, quizDuration)
+            showStartQuizDialog = false
+        },
         onDismissStartQuizDialog = {
             showStartQuizDialog = false
         },
@@ -112,7 +116,7 @@ private fun ResourceDetailsScreen(
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     onDismissAddWorkBottomSheet: () -> Unit,
-    onConfirmStartQuizDialog: () -> Unit,
+    onConfirmStartQuizDialog: (String, Int) -> Unit,
     onDismissStartQuizDialog: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -575,7 +579,7 @@ private fun AddWorkBottomSheet(
 
 @Composable
 private fun StartQuizDialog(
-    onConfirm: () -> Unit,
+    onConfirm: (String, Int) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -585,7 +589,12 @@ private fun StartQuizDialog(
             R.string.start_quiz_dialog_text,
             "Lorem Ipsum Dolor Sit Amet"
         ),
-        onConfirm = onConfirm,
+        onConfirm = {
+            onConfirm(
+                "Lorem Ipsum Dolor Sit Amat Lorem Ipsum Dolor Sit Amet",
+                300
+            )
+        },
         onDismiss = onDismiss,
         confirmText = stringResource(
             id = R.string.start_quiz_dialog_confirm_button_text,
