@@ -14,9 +14,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import kotlinx.coroutines.delay
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -76,11 +78,16 @@ private fun QuizSessionTopAppBar(
     quizDuration: Int,
     modifier: Modifier = Modifier,
 ) {
-    val minutes = quizDuration / 60
-    val seconds = minutes % 60
-    val time = LocalTime.of(minutes, seconds)
-    val formatter = DateTimeFormatter.ofPattern("mm:ss")
-    val formattedTime = time.format(formatter)
+    var currentQuizTime by rememberSaveable { mutableIntStateOf(quizDuration) }
+    var formattedTime by rememberSaveable { mutableStateOf("") }
+    LaunchedEffect(currentQuizTime) {
+        val minutes = currentQuizTime / 60
+        val seconds = currentQuizTime % 60
+        formattedTime = String.format("%02d:%02d", minutes, seconds)
+
+        delay(1000L)
+        currentQuizTime--
+    }
 
     // TODO: Make it stateless
     var isQuizNameSingleLine by remember { mutableStateOf(false) }
