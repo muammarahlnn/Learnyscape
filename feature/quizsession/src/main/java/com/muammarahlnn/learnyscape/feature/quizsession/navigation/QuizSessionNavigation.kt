@@ -6,10 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.muammarahlnn.learnyscape.core.common.decoder.StringCodec
 import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionRoute
-import java.net.URLDecoder
-import java.net.URLEncoder
-import kotlin.text.Charsets.UTF_8
 
 
 /**
@@ -23,8 +21,6 @@ private const val QUIZ_DURATION_ARG = "quiz_duration"
 const val QUIZ_SESSION_ROUTE_WITH_ARGS =
         "$QUIZ_SESSION_ROUTE/{$QUIZ_NAME_ARG}/{$QUIZ_DURATION_ARG}"
 
-private val urlCharacterEncoding = UTF_8.name()
-
 internal class QuizSessionArgs(
     val quizName: String,
     val quizDuration: Int,
@@ -33,10 +29,7 @@ internal class QuizSessionArgs(
     constructor(
         savedStateHandle: SavedStateHandle,
     ) : this(
-        quizName = URLDecoder.decode(
-            checkNotNull(savedStateHandle[QUIZ_NAME_ARG]),
-            urlCharacterEncoding,
-        ),
+        quizName = StringCodec.decode(checkNotNull(savedStateHandle[QUIZ_NAME_ARG])),
         quizDuration = checkNotNull(savedStateHandle[QUIZ_DURATION_ARG]),
     )
 }
@@ -45,7 +38,7 @@ fun NavHostController.navigateToQuizSession(
     quizName: String,
     quizDuration: Int,
 ) {
-    val encodedQuizName = URLEncoder.encode(quizName, urlCharacterEncoding)
+    val encodedQuizName = StringCodec.encode(quizName)
     this.navigate("$QUIZ_SESSION_ROUTE/$encodedQuizName/$quizDuration") {
         launchSingleTop = true
     }

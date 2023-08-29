@@ -13,7 +13,7 @@ object StringCodec {
 
     private val urlCharacterEncoding = UTF_8.name()
 
-    fun encodeString(string: String): String = URLEncoder.encode(string, urlCharacterEncoding)
+    fun encode(string: String): String = URLEncoder.encode(string, urlCharacterEncoding)
 
-    fun decodeString(string: String) : String = URLDecoder.decode(string, urlCharacterEncoding)
+    fun decode(string: String) : String = URLDecoder.decode(string, urlCharacterEncoding)
 }

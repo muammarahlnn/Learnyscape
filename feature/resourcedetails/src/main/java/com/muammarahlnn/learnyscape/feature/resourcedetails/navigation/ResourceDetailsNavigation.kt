@@ -6,10 +6,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.muammarahlnn.learnyscape.core.common.decoder.StringCodec
 import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
-import java.net.URLDecoder
-import java.net.URLEncoder
-import kotlin.text.Charsets.UTF_8
 
 
 /**
@@ -22,8 +20,6 @@ private const val RESOURCE_TYPE_ARG = "resource_type"
 const val RESOURCE_DETAILS_ROUTE_WITH_ARGS =
     "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_TYPE_ARG}"
 
-private val urlCharacterEncoding = UTF_8.name()
-
 internal class ResourceDetailsArgs(
     val resourceType: String,
 ) {
@@ -31,14 +27,14 @@ internal class ResourceDetailsArgs(
     constructor(
         savedStateHandle: SavedStateHandle
     ) : this(
-        URLDecoder.decode(checkNotNull(savedStateHandle[RESOURCE_TYPE_ARG]), urlCharacterEncoding)
+        resourceType = StringCodec.decode(checkNotNull(savedStateHandle[RESOURCE_TYPE_ARG]))
     )
 }
 
 fun NavController.navigateToResourceDetails(
     resourceType: String,
 ) {
-    val encodedResourceType = URLEncoder.encode(resourceType, urlCharacterEncoding)
+    val encodedResourceType = StringCodec.encode(resourceType)
     this.navigate("$RESOURCE_DETAILS_ROUTE/$encodedResourceType") {
         launchSingleTop = true
     }
