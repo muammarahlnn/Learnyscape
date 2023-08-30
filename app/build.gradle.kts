@@ -48,6 +48,7 @@ dependencies {
     implementation(project(":feature:member"))
     implementation(project(":feature:resourcedetails"))
     implementation(project(":feature:quizsession"))
+    implementation(project(":feature:splash"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
