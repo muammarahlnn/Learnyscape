@@ -23,13 +23,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.toMutableStateList
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +46,8 @@ internal fun QuizSessionRoute(
     QuizSessionScreen(
         quizName = viewModel.quizName,
         quizDuration = viewModel.quizDuration,
+        questions = viewModel.questions,
+        selectedOptionLetters = viewModel.selectedOptionLetters,
         modifier = modifier,
     )
 }
@@ -56,6 +56,8 @@ internal fun QuizSessionRoute(
 private fun QuizSessionScreen(
     quizName: String,
     quizDuration: Int,
+    questions: List<MultipleChoiceQuestion>,
+    selectedOptionLetters: SnapshotStateList<OptionLetter>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -63,22 +65,19 @@ private fun QuizSessionScreen(
             quizName = quizName,
             quizDuration = quizDuration,
         )
-        QuizSessionContent()
+        QuizSessionContent(
+            questions = questions,
+            selectedOptionLetters = selectedOptionLetters,
+        )
     }
 }
 
 @Composable
 private fun QuizSessionContent(
+    questions: List<MultipleChoiceQuestion>,
+    selectedOptionLetters: SnapshotStateList<OptionLetter>,
     modifier: Modifier = Modifier,
 ) {
-    val questions = generateDummyQuestions()
-    // TODO: Save it to View Model so it will survive the activity or process recreation
-    val selectedOptionLetters = remember {
-        List(questions.size) {
-            OptionLetter.UNSELECTED
-        }.toMutableStateList()
-    }
-
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -248,20 +247,4 @@ enum class OptionLetter {
     A, B, C, D, E,
     UNSELECTED,
 }
-
-@Composable
-fun generateDummyQuestions(): List<MultipleChoiceQuestion> =
-    List(10) { index ->
-        MultipleChoiceQuestion(
-            id = index,
-            question = stringResource(id = R.string.dummy_question),
-            options = listOf(
-                Option(OptionLetter.A, "Lorem Ipsum Dolor Sit Amet"),
-                Option(OptionLetter.B, "Lorem ipsum dolor sit amet. Est rerum fugit sed quia rerum qui nihil asperiores aut mollitia numquam"),
-                Option(OptionLetter.C, "Lorem Ipsum Dolor Sit Amet"),
-                Option(OptionLetter.D, "Lorem ipsum dolor sit amet. Est rerum fugit sed quia rerum qui nihil asperiores aut mollitia numquam"),
-                Option(OptionLetter.E, "Lorem Ipsum Dolor Sit Amet"),
-            )
-        )
-    }
 
