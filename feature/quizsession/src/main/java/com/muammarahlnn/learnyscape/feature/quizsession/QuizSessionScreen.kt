@@ -2,7 +2,6 @@ package com.muammarahlnn.learnyscape.feature.quizsession
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -119,9 +118,12 @@ private fun QuizSessionContent(
             end = 16.dp,
             bottom = 16.dp,
         ),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier,
     ) {
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        
         itemsIndexed(
             items = questions,
             key = { _, item ->
@@ -134,7 +136,8 @@ private fun QuizSessionContent(
                 selectedOptionLetter = selectedOptionLetters[index],
                 onOptionSelect = { optionLetter ->
                     selectedOptionLetters[index] = optionLetter
-                }
+                },
+                modifier = Modifier.padding(bottom = 16.dp)
             )
         }
     }
