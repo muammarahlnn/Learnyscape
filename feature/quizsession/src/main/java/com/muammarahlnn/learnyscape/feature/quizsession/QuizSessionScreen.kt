@@ -25,7 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
@@ -42,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 
 
 /**
@@ -51,14 +54,30 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 internal fun QuizSessionRoute(
+    onConfirmSubmitAnswerDialog: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: QuizSessionViewModel = hiltViewModel()
 ) {
+    var showSubmitAnswerDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     QuizSessionScreen(
         quizName = viewModel.quizName,
         quizDuration = viewModel.quizDuration,
         questions = viewModel.questions,
+        showSubmitAnswerDialog = showSubmitAnswerDialog,
         selectedOptionLetters = viewModel.selectedOptionLetters,
+        onSubmitButtonClick = {
+            showSubmitAnswerDialog = true
+        },
+        onConfirmSubmitAnswerDialog = {
+            onConfirmSubmitAnswerDialog()
+            showSubmitAnswerDialog = false
+        },
+        onDismissSubmitAnswerDialog = {
+            showSubmitAnswerDialog = false
+        },
         modifier = modifier,
     )
 }
@@ -67,10 +86,21 @@ internal fun QuizSessionRoute(
 private fun QuizSessionScreen(
     quizName: String,
     quizDuration: Int,
+    showSubmitAnswerDialog: Boolean,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
+    onSubmitButtonClick: () -> Unit,
+    onConfirmSubmitAnswerDialog: () -> Unit,
+    onDismissSubmitAnswerDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (showSubmitAnswerDialog) {
+        SubmitAnswerDialog(
+            onConfirm = onConfirmSubmitAnswerDialog,
+            onDismiss = onDismissSubmitAnswerDialog,
+        )
+    }
+
     var topAppBarHeightPx by remember { mutableFloatStateOf(0f) }
     var topAppBarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
     var submitButtonHeightPx by remember { mutableFloatStateOf(0f) }
@@ -105,9 +135,7 @@ private fun QuizSessionScreen(
             }
         )
         SubmitButton(
-            onButtonClick = {
-
-            },
+            onButtonClick = onSubmitButtonClick,
             onButtonGloballyPositioned = { height ->
                 submitButtonHeightPx = height
             },
@@ -348,4 +376,20 @@ private fun SubmitButton(
             Text(text = stringResource(id = R.string.submit))
         }
     }
+}
+
+@Composable
+private fun SubmitAnswerDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseAlertDialog(
+        title = stringResource(id = R.string.submit_answer_dialog_title),
+        dialogText = stringResource(id = R.string.submit_answer_dialog_text),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        confirmText = stringResource(id = R.string.submit),
+        modifier = modifier,
+    )
 }
