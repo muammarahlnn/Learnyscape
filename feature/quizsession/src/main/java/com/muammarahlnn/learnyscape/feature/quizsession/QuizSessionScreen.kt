@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +36,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -70,6 +73,7 @@ private fun QuizSessionScreen(
 ) {
     var topAppBarHeightPx by remember { mutableFloatStateOf(0f) }
     var topAppBarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
+    var submitButtonHeightPx by remember { mutableFloatStateOf(0f) }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -87,7 +91,8 @@ private fun QuizSessionScreen(
         .nestedScroll(nestedScrollConnection)
     ) {
         QuizSessionContent(
-            paddingTop = topAppBarHeightPx,
+            topPadding = topAppBarHeightPx,
+            bottomPadding = submitButtonHeightPx,
             questions = questions,
             selectedOptionLetters = selectedOptionLetters,
         )
@@ -99,24 +104,37 @@ private fun QuizSessionScreen(
                 topAppBarHeightPx = topAppBarHeight
             }
         )
+        SubmitButton(
+            onButtonClick = {
+
+            },
+            onButtonGloballyPositioned = { height ->
+                submitButtonHeightPx = height
+            },
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
 @Composable
 private fun QuizSessionContent(
-    paddingTop: Float,
+    topPadding: Float,
+    bottomPadding: Float,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
     modifier: Modifier = Modifier,
 ) {
+    val localDensity = LocalDensity.current
     LazyColumn(
         contentPadding = PaddingValues(
-            top = with(LocalDensity.current) {
-                paddingTop.toDp()
+            top = with(localDensity) {
+                topPadding.toDp()
             },
             start = 16.dp,
             end = 16.dp,
-            bottom = 16.dp,
+            bottom = with(localDensity) {
+                bottomPadding.toDp()
+            },
         ),
         modifier = modifier,
     ) {
@@ -290,3 +308,44 @@ enum class OptionLetter {
     UNSELECTED,
 }
 
+@Composable
+private fun SubmitButton(
+    onButtonClick: () -> Unit,
+    onButtonGloballyPositioned: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        shape = RoundedCornerShape(
+            topStart = 10.dp,
+            topEnd = 10.dp,
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.onPrimary,
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp,
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { layoutCoordinates ->
+                onButtonGloballyPositioned(
+                    layoutCoordinates.size.height.toFloat()
+                )
+            }
+    ) {
+        Button(
+            onClick = onButtonClick,
+            shape = RoundedCornerShape(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 16.dp,
+                    bottom = 8.dp,
+                ),
+        ) {
+            Text(text = stringResource(id = R.string.submit))
+        }
+    }
+}
