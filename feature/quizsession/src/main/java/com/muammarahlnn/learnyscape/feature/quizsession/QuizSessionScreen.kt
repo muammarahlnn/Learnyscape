@@ -23,11 +23,20 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,26 +69,56 @@ private fun QuizSessionScreen(
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    var topAppBarHeightPx by remember { mutableFloatStateOf(0f) }
+    var topAppBarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                // Updates the toolbar offset based on the scroll to enable collapsible behaviour
+                val newOffset = topAppBarOffsetHeightPx + available.y
+                topAppBarOffsetHeightPx = newOffset.coerceIn(-topAppBarHeightPx, 0f)
+
+                return Offset.Zero
+            }
+        }
+    }
+    Box(modifier = modifier
+        .fillMaxSize()
+        .nestedScroll(nestedScrollConnection)
+    ) {
+        QuizSessionContent(
+            paddingTop = topAppBarHeightPx,
+            questions = questions,
+            selectedOptionLetters = selectedOptionLetters,
+        )
         QuizSessionTopAppBar(
             quizName = quizName,
             quizDuration = quizDuration,
-        )
-        QuizSessionContent(
-            questions = questions,
-            selectedOptionLetters = selectedOptionLetters,
+            topAppBarOffsetHeightPx = topAppBarOffsetHeightPx,
+            onGloballyPositioned = { topAppBarHeight ->
+                topAppBarHeightPx = topAppBarHeight
+            }
         )
     }
 }
 
 @Composable
 private fun QuizSessionContent(
+    paddingTop: Float,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(
+            top = with(LocalDensity.current) {
+                paddingTop.toDp()
+            },
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp,
+        ),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier,
     ) {

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -22,12 +23,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlin.math.roundToInt
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -40,6 +45,8 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 fun QuizSessionTopAppBar(
     quizName: String,
     quizDuration: Int,
+    topAppBarOffsetHeightPx: Float,
+    onGloballyPositioned: (Float) -> Unit,
     modifier: Modifier = Modifier,
     state: QuizSessionTopAppBarState = rememberQuizSessionTopAppBarState(
         quizDuration = quizDuration,
@@ -50,12 +57,27 @@ fun QuizSessionTopAppBar(
         state.updateCurrentRemainingTime()
     }
 
+    val localDensity = LocalDensity.current
+    val topAppBarPadding = 16.dp
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxWidth()
+            .offset {
+                IntOffset(x = 0, y = topAppBarOffsetHeightPx.roundToInt())
+            }
             .background(MaterialTheme.colorScheme.primary)
-            .padding(16.dp),
+            .padding(topAppBarPadding)
+            .onGloballyPositioned { layoutCoordinates ->
+                with(localDensity) {
+                    // topAppBarHeight = content height + top padding + bottom padding
+                    onGloballyPositioned(
+                        layoutCoordinates.size.height.toFloat()
+                        + topAppBarPadding.toPx()
+                        + topAppBarPadding.toPx()
+                    )
+                }
+            }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
