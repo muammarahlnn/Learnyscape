@@ -49,7 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import kotlin.math.roundToInt
-
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.ui.graphics.Color
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -298,12 +301,27 @@ private fun QuestionMultipleChoice(
 ) {
     options.forEach { option ->
         val isSelected = currentSelectedOptionLetter == option.letter
-        // TODO: Animated this colors
-        val (backgroundColor, textColor) = if (isSelected) {
-            MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
-        } else {
-            MaterialTheme.colorScheme.onPrimary to MaterialTheme.colorScheme.onBackground
-        }
+        val colorAnimationSpec: SpringSpec<Color> = SpringSpec(
+            stiffness = Spring.StiffnessLow
+        )
+        val backgroundColor by animateColorAsState(
+            targetValue = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.onPrimary
+            },
+            animationSpec = colorAnimationSpec,
+            label = "Question multiple choice background color",
+        )
+        val textColor by animateColorAsState(
+            targetValue = if (isSelected) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onBackground
+            },
+            animationSpec = colorAnimationSpec,
+            label = "Question multiple choice background color",
+        )
 
         Card(
             shape = RoundedCornerShape(10.dp),
