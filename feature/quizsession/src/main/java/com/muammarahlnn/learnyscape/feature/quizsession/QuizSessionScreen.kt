@@ -10,11 +10,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -42,9 +44,11 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
+import kotlin.math.roundToInt
 
 
 /**
@@ -103,14 +107,24 @@ private fun QuizSessionScreen(
 
     var topAppBarHeightPx by remember { mutableFloatStateOf(0f) }
     var topAppBarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
+
     var submitButtonHeightPx by remember { mutableFloatStateOf(0f) }
+    var submitButtonOffsetHeightPx by remember { mutableFloatStateOf(0f) }
+
+    var currentIsAtBottomList by remember { mutableStateOf(false) }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                // Updates the toolbar offset based on the scroll to enable collapsible behaviour
-                val newOffset = topAppBarOffsetHeightPx + available.y
-                topAppBarOffsetHeightPx = newOffset.coerceIn(-topAppBarHeightPx, 0f)
+                // Updates the top app bar and submit offset
+                // based on the scroll to enable collapsible behaviour
+                val delta = available.y
+
+                val newTopAppBarOffset = topAppBarOffsetHeightPx + delta
+                topAppBarOffsetHeightPx = newTopAppBarOffset.coerceIn(-topAppBarHeightPx, 0f)
+
+                val newSubmitButtonOffset = submitButtonOffsetHeightPx - delta
+                submitButtonOffsetHeightPx = newSubmitButtonOffset.coerceIn(0f, submitButtonHeightPx)
 
                 return Offset.Zero
             }
@@ -125,6 +139,9 @@ private fun QuizSessionScreen(
             bottomPadding = submitButtonHeightPx,
             questions = questions,
             selectedOptionLetters = selectedOptionLetters,
+            onAtBottomList = { isAtBottomList ->
+                currentIsAtBottomList = isAtBottomList
+            },
         )
         QuizSessionTopAppBar(
             quizName = quizName,
@@ -135,9 +152,11 @@ private fun QuizSessionScreen(
             }
         )
         SubmitButton(
+            buttonOffsetHeightPx = submitButtonOffsetHeightPx,
+            isAtBottomList = currentIsAtBottomList,
             onButtonClick = onSubmitButtonClick,
-            onButtonGloballyPositioned = { height ->
-                submitButtonHeightPx = height
+            onButtonGloballyPositioned = { buttonHeight ->
+                submitButtonHeightPx = buttonHeight
             },
             modifier = Modifier.align(Alignment.BottomCenter)
         )
@@ -150,10 +169,16 @@ private fun QuizSessionContent(
     bottomPadding: Float,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
+    onAtBottomList: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val localDensity = LocalDensity.current
+
+    val listState = rememberLazyListState()
+    onAtBottomList(!listState.canScrollForward)
+
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(
             top = with(localDensity) {
                 topPadding.toDp()
@@ -338,6 +363,8 @@ enum class OptionLetter {
 
 @Composable
 private fun SubmitButton(
+    buttonOffsetHeightPx: Float,
+    isAtBottomList: Boolean,
     onButtonClick: () -> Unit,
     onButtonGloballyPositioned: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -355,6 +382,16 @@ private fun SubmitButton(
         ),
         modifier = modifier
             .fillMaxWidth()
+            .then(
+                if (!isAtBottomList) {
+                    Modifier.offset {
+                        IntOffset(
+                            x = 0,
+                            y = buttonOffsetHeightPx.roundToInt()
+                        )
+                    }
+                } else Modifier
+            )
             .onGloballyPositioned { layoutCoordinates ->
                 onButtonGloballyPositioned(
                     layoutCoordinates.size.height.toFloat()
