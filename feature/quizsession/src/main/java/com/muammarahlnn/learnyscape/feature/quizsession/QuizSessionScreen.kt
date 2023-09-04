@@ -52,6 +52,7 @@ import kotlin.math.roundToInt
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -108,13 +109,26 @@ private fun QuizSessionScreen(
         )
     }
 
+    var isAtBottomList by remember { mutableStateOf(false) }
+
+    val collapsingAnimationSpec = SpringSpec<Float>(
+        stiffness = Spring.StiffnessLow
+    )
     var topAppBarHeightPx by remember { mutableFloatStateOf(0f) }
     var topAppBarOffsetHeightPx by remember { mutableFloatStateOf(0f) }
+    val animateTopAppBarOffset by animateFloatAsState(
+        targetValue = topAppBarOffsetHeightPx,
+        animationSpec = collapsingAnimationSpec,
+        label = "Top app bar offset"
+    )
 
     var submitButtonHeightPx by remember { mutableFloatStateOf(0f) }
     var submitButtonOffsetHeightPx by remember { mutableFloatStateOf(0f) }
-
-    var currentIsAtBottomList by remember { mutableStateOf(false) }
+    val animateSubmitButtonOffset by animateFloatAsState(
+        targetValue = if (!isAtBottomList) submitButtonOffsetHeightPx else 0f,
+        animationSpec = collapsingAnimationSpec,
+        label = "Submit button offset"
+    )
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
@@ -142,21 +156,20 @@ private fun QuizSessionScreen(
             bottomPadding = submitButtonHeightPx,
             questions = questions,
             selectedOptionLetters = selectedOptionLetters,
-            onAtBottomList = { isAtBottomList ->
-                currentIsAtBottomList = isAtBottomList
+            onAtBottomList = { updatedIsAtBottomList ->
+                isAtBottomList = updatedIsAtBottomList
             },
         )
         QuizSessionTopAppBar(
             quizName = quizName,
             quizDuration = quizDuration,
-            topAppBarOffsetHeightPx = topAppBarOffsetHeightPx,
+            topAppBarOffsetHeightPx = animateTopAppBarOffset,
             onGloballyPositioned = { topAppBarHeight ->
                 topAppBarHeightPx = topAppBarHeight
             }
         )
         SubmitButton(
-            buttonOffsetHeightPx = submitButtonOffsetHeightPx,
-            isAtBottomList = currentIsAtBottomList,
+            buttonOffsetHeightPx = animateSubmitButtonOffset,
             onButtonClick = onSubmitButtonClick,
             onButtonGloballyPositioned = { buttonHeight ->
                 submitButtonHeightPx = buttonHeight
@@ -382,7 +395,6 @@ enum class OptionLetter {
 @Composable
 private fun SubmitButton(
     buttonOffsetHeightPx: Float,
-    isAtBottomList: Boolean,
     onButtonClick: () -> Unit,
     onButtonGloballyPositioned: (Float) -> Unit,
     modifier: Modifier = Modifier,
@@ -400,16 +412,12 @@ private fun SubmitButton(
         ),
         modifier = modifier
             .fillMaxWidth()
-            .then(
-                if (!isAtBottomList) {
-                    Modifier.offset {
-                        IntOffset(
-                            x = 0,
-                            y = buttonOffsetHeightPx.roundToInt()
-                        )
-                    }
-                } else Modifier
-            )
+            .offset {
+                IntOffset(
+                    x = 0,
+                    y = buttonOffsetHeightPx.roundToInt()
+                )
+            }
             .onGloballyPositioned { layoutCoordinates ->
                 onButtonGloballyPositioned(
                     layoutCoordinates.size.height.toFloat()
