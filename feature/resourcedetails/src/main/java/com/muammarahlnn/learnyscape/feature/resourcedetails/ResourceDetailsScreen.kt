@@ -592,7 +592,7 @@ private fun StartQuizDialog(
         onConfirm = {
             onConfirm(
                 "Lorem Ipsum Dolor Sit Amat Lorem Ipsum Dolor Sit Amet",
-                300
+                10
             )
         },
         onDismiss = onDismiss,

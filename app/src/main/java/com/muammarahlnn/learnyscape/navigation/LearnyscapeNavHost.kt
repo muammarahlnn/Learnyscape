@@ -85,7 +85,7 @@ fun LearnyscapeNavHost(
                 onBackClick = navController::popBackStack
             )
             quizSessionScreen(
-                onConfirmSubmitAnswerDialog = navController::popBackStack
+                onQuizIsOver = navController::popBackStack
             )
         }
     }

@@ -45,7 +45,7 @@ fun NavHostController.navigateToQuizSession(
 }
 
 fun NavGraphBuilder.quizSessionScreen(
-    onConfirmSubmitAnswerDialog: () -> Unit,
+    onQuizIsOver: () -> Unit,
 ) {
     composable(
         route = QUIZ_SESSION_ROUTE_WITH_ARGS,
@@ -59,7 +59,7 @@ fun NavGraphBuilder.quizSessionScreen(
         )
     ) {
         QuizSessionRoute(
-            onConfirmSubmitAnswerDialog = onConfirmSubmitAnswerDialog,
+            onQuizIsOver = onQuizIsOver,
         )
     }
 }

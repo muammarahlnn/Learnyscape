@@ -4,6 +4,9 @@
     <string name="quiz_name">Quiz %1$s</string>
     <string name="remaining_time">Remaining time: %1$s</string>
     <string name="submit">Submit</string>
+    <string name="_continue">Continue</string>
     <string name="submit_answer_dialog_title">Submit Answer</string>
     <string name="submit_answer_dialog_text">Are you sure want to submit your answer?</string>
+    <string name="timeout_dialog_title">Time\'s up</string>
+    <string name="timeout_dialog_text">Don’t worry, all your current answers will be automatically saved</string>
 </resources>
