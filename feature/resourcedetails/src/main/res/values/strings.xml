@@ -11,4 +11,6 @@
     <string name="document_icon_description">Attachment document</string>
     <string name="start_icon_description">Start quiz</string>
     <string name="timer_icon_description">Quiz duration</string>
+    <string name="quiz_type_icon_description">Quiz type</string>
+    <string name="multiple_choice_questions">Multiple choice questions</string>
 </resources>

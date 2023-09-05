@@ -416,6 +416,25 @@ private fun QuizDetailsCard(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_quiz_type),
+                    contentDescription = stringResource(id = R.string.quiz_type_icon_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(id = R.string.multiple_choice_questions),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
     }
 }
