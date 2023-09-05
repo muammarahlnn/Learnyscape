@@ -17,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -47,6 +48,7 @@ fun QuizSessionTopAppBar(
     quizDuration: Int,
     topAppBarOffsetHeightPx: Float,
     onGloballyPositioned: (Float) -> Unit,
+    onTimeout: () -> Unit,
     modifier: Modifier = Modifier,
     state: QuizSessionTopAppBarState = rememberQuizSessionTopAppBarState(
         quizDuration = quizDuration,
@@ -55,6 +57,13 @@ fun QuizSessionTopAppBar(
     LaunchedEffect(state.currentRemainingTime) {
         delay(1000L)
         state.updateCurrentRemainingTime()
+    }
+
+    val currentTimeout by rememberUpdatedState(onTimeout)
+    LaunchedEffect(state.isTimeout) {
+        if (state.isTimeout) {
+            currentTimeout()
+        }
     }
 
     val localDensity = LocalDensity.current
@@ -73,8 +82,8 @@ fun QuizSessionTopAppBar(
                     // topAppBarHeight = content height + top padding + bottom padding
                     onGloballyPositioned(
                         layoutCoordinates.size.height.toFloat()
-                        + topAppBarPadding.toPx()
-                        + topAppBarPadding.toPx()
+                                + topAppBarPadding.toPx()
+                                + topAppBarPadding.toPx()
                     )
                 }
             }
@@ -139,7 +148,14 @@ class QuizSessionTopAppBarState(quizDuration: Int) {
     var isQuizNameSingleLine by mutableStateOf(false)
         private set
 
+    var isTimeout by mutableStateOf(false)
+        private set
+
     fun updateCurrentRemainingTime() {
+        if (currentRemainingTime <= 0) {
+            isTimeout = true
+            return
+        }
         currentRemainingTime--
         textTime = formatToMinutesAndSeconds()
     }

@@ -1,5 +1,9 @@
 package com.muammarahlnn.learnyscape.feature.quizsession
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.SpringSpec
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -19,11 +23,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -37,11 +44,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
@@ -49,11 +58,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import kotlin.math.roundToInt
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.SpringSpec
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.ui.graphics.Color
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -62,11 +66,15 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 internal fun QuizSessionRoute(
-    onConfirmSubmitAnswerDialog: () -> Unit,
+    onQuizIsOver: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: QuizSessionViewModel = hiltViewModel()
 ) {
     var showSubmitAnswerDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showTimeoutDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -75,16 +83,24 @@ internal fun QuizSessionRoute(
         quizDuration = viewModel.quizDuration,
         questions = viewModel.questions,
         showSubmitAnswerDialog = showSubmitAnswerDialog,
+        showTimeoutDialog = showTimeoutDialog,
         selectedOptionLetters = viewModel.selectedOptionLetters,
         onSubmitButtonClick = {
             showSubmitAnswerDialog = true
         },
         onConfirmSubmitAnswerDialog = {
-            onConfirmSubmitAnswerDialog()
+            onQuizIsOver()
             showSubmitAnswerDialog = false
         },
         onDismissSubmitAnswerDialog = {
             showSubmitAnswerDialog = false
+        },
+        onTimeout = {
+            showTimeoutDialog = true
+        },
+        onContinueTimeoutDialog = {
+            onQuizIsOver()
+            showTimeoutDialog = false
         },
         modifier = modifier,
     )
@@ -95,17 +111,26 @@ private fun QuizSessionScreen(
     quizName: String,
     quizDuration: Int,
     showSubmitAnswerDialog: Boolean,
+    showTimeoutDialog: Boolean,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
     onSubmitButtonClick: () -> Unit,
     onConfirmSubmitAnswerDialog: () -> Unit,
     onDismissSubmitAnswerDialog: () -> Unit,
+    onTimeout: () -> Unit,
+    onContinueTimeoutDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (showSubmitAnswerDialog) {
         SubmitAnswerDialog(
             onConfirm = onConfirmSubmitAnswerDialog,
             onDismiss = onDismissSubmitAnswerDialog,
+        )
+    }
+
+    if (showTimeoutDialog) {
+        TimeoutDialog(
+            onContinue = onContinueTimeoutDialog,
         )
     }
 
@@ -166,7 +191,8 @@ private fun QuizSessionScreen(
             topAppBarOffsetHeightPx = animateTopAppBarOffset,
             onGloballyPositioned = { topAppBarHeight ->
                 topAppBarHeightPx = topAppBarHeight
-            }
+            },
+            onTimeout = onTimeout,
         )
         SubmitButton(
             buttonOffsetHeightPx = animateSubmitButtonOffset,
@@ -453,6 +479,56 @@ private fun SubmitAnswerDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
         confirmText = stringResource(id = R.string.submit),
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun TimeoutDialog(
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AlertDialog(
+        onDismissRequest = {
+            // do nothing, to prevent user to dismiss the dialog 
+            // by clicking outside the dialog or pressing the back button 
+        },
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_timer_off),
+                contentDescription = stringResource(id = R.string.timeout_dialog_title),
+                tint = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.size(48.dp)
+            )
+        },
+        title = {
+            Text(
+                text = stringResource(id = R.string.timeout_dialog_title),
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(id = R.string.timeout_dialog_text),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onContinue
+            ) {
+                Text(
+                    text = stringResource(id = R.string._continue),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.tertiary
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.onPrimary,
         modifier = modifier,
     )
 }
