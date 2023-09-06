@@ -50,6 +50,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 import com.muammarahlnn.learnyscape.core.model.ClassResourceType
+import com.muammarahlnn.learnyscape.core.model.QuizType
 import com.muammarahlnn.learnyscape.core.ui.AnnouncementPostCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourcePostCard
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -182,7 +183,8 @@ private fun ResourceDetailsContent(
                 if (isQuiz) {
                     QuizDetailsCard(
                         quizStartTime = "12 August 2023, 11:12",
-                        quizDuration = "10 Minutes"
+                        quizDuration = "10 Minutes",
+                        quizType = QuizType.MULTIPLE_CHOICE_QUESTIONS,
                     )
                 } else {
                     AttachmentCard()
@@ -355,6 +357,7 @@ private fun AttachmentItem(
 private fun QuizDetailsCard(
     quizStartTime: String,
     quizDuration: String,
+    quizType: QuizType,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -430,7 +433,12 @@ private fun QuizDetailsCard(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(id = R.string.multiple_choice_questions),
+                    text = stringResource(
+                        id = when (quizType) {
+                            QuizType.MULTIPLE_CHOICE_QUESTIONS -> R.string.multiple_choice_questions
+                            QuizType.PHOTO_ANSWER -> R.string.photo_answer
+                        }
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
