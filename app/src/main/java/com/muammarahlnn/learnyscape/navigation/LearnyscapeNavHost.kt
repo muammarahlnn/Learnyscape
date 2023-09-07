@@ -79,8 +79,8 @@ fun LearnyscapeNavHost(
                 onBackClick = classGraphOnBackClick(navController)
             )
             resourceDetailsScreen(
-                onConfirmStartQuizDialog = { quizName, quizDuration ->
-                    navController.navigateToQuizSession(quizName, quizDuration)
+                onConfirmStartQuizDialog = { quizTypeOrdinal, quizName, quizDuration ->
+                    navController.navigateToQuizSession(quizTypeOrdinal, quizName, quizDuration)
                 },
                 onBackClick = navController::popBackStack
             )

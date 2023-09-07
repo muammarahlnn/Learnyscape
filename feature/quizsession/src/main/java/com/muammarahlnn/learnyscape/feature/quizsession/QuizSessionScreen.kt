@@ -57,7 +57,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
+import com.muammarahlnn.learnyscape.core.model.QuizType
 import kotlin.math.roundToInt
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -79,6 +81,7 @@ internal fun QuizSessionRoute(
     }
 
     QuizSessionScreen(
+        quizType = viewModel.quizType,
         quizName = viewModel.quizName,
         quizDuration = viewModel.quizDuration,
         questions = viewModel.questions,
@@ -108,6 +111,7 @@ internal fun QuizSessionRoute(
 
 @Composable
 private fun QuizSessionScreen(
+    quizType: QuizType,
     quizName: String,
     quizDuration: Int,
     showSubmitAnswerDialog: Boolean,
@@ -179,6 +183,7 @@ private fun QuizSessionScreen(
         QuizSessionContent(
             topPadding = topAppBarHeightPx,
             bottomPadding = submitButtonHeightPx,
+            quizType = quizType,
             questions = questions,
             selectedOptionLetters = selectedOptionLetters,
             onAtBottomList = { updatedIsAtBottomList ->
@@ -209,6 +214,7 @@ private fun QuizSessionScreen(
 private fun QuizSessionContent(
     topPadding: Float,
     bottomPadding: Float,
+    quizType: QuizType,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
     onAtBottomList: (Boolean) -> Unit,
@@ -243,26 +249,37 @@ private fun QuizSessionContent(
                 item.id
             }
         ) { index, question ->
-            QuestionItem(
-                number = index + 1,
-                question = question,
-                selectedOptionLetter = selectedOptionLetters[index],
-                onOptionSelect = { optionLetter ->
-                    selectedOptionLetters[index] = optionLetter
-                },
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            when (quizType) {
+                QuizType.MULTIPLE_CHOICE_QUESTIONS -> {
+                    MultipleChoiceQuestion(
+                        number = index + 1,
+                        question = question,
+                        selectedOptionLetter = selectedOptionLetters[index],
+                        onOptionSelect = { optionLetter ->
+                            selectedOptionLetters[index] = optionLetter
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+
+                QuizType.PHOTO_ANSWER -> {
+                    PhotoAnswerQuestion(
+                        number = index + 1,
+                        question = question.question,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 @Composable
-private fun QuestionItem(
+private fun BaseQuestion(
     number: Int,
-    question: MultipleChoiceQuestion,
-    selectedOptionLetter: OptionLetter,
-    onOptionSelect: (OptionLetter) -> Unit,
+    question: String,
     modifier: Modifier = Modifier,
+    answerContent: @Composable () -> Unit,
 ) {
     Row(modifier = modifier) {
         QuestionNumber(number = number)
@@ -270,15 +287,80 @@ private fun QuestionItem(
         Spacer(modifier = Modifier.width(10.dp))
 
         Column {
-            QuestionText(question = question.question)
-            
+            QuestionText(question = question)
+
             Spacer(modifier = Modifier.height(10.dp))
 
-            QuestionMultipleChoice(
-                options = question.options,
-                currentSelectedOptionLetter = selectedOptionLetter,
-                onOptionSelect = onOptionSelect
-            )
+            answerContent()
+        }
+    }
+}
+
+@Composable
+private fun MultipleChoiceQuestion(
+    number: Int,
+    question: MultipleChoiceQuestion,
+    selectedOptionLetter: OptionLetter,
+    onOptionSelect: (OptionLetter) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseQuestion(
+        number = number,
+        question = question.question,
+        modifier = modifier,
+    ) {
+        MultipleChoiceAnswer(
+            options = question.options,
+            currentSelectedOptionLetter = selectedOptionLetter,
+            onOptionSelect = onOptionSelect
+        )
+    }
+}
+
+@Composable
+private fun PhotoAnswerQuestion(
+    number: Int,
+    question: String,
+    modifier: Modifier = Modifier,
+) {
+    BaseQuestion(
+        number = number,
+        question = question,
+        modifier = modifier,
+    ) {
+        Card(
+            shape = RoundedCornerShape(10.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.onPrimary,
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 2.dp,
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(10.dp),
+            ) {
+                Icon(
+                    painter = painterResource(id = designSystemR.drawable.ic_add),
+                    contentDescription = stringResource(
+                        id = designSystemR.string.add_icon_description
+                    ),
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier.size(22.dp)
+                )
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = stringResource(id = R.string.photo_answer_button_text),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.tertiary,
+                )
+            }
         }
     }
 }
@@ -333,7 +415,7 @@ private fun QuestionText(
 }
 
 @Composable
-private fun QuestionMultipleChoice(
+private fun MultipleChoiceAnswer(
     options: List<Option>,
     currentSelectedOptionLetter: OptionLetter,
     onOptionSelect: (OptionLetter) -> Unit,
