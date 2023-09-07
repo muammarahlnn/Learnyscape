@@ -91,8 +91,10 @@ fun LearnyscapeNavHost(
     }
 }
 
-private fun toResourceDetails(navController: NavHostController): (String) -> Unit = { resourceType ->
-    navController.navigateToResourceDetails(resourceType)
+private fun toResourceDetails(
+    navController: NavHostController
+): (Int) -> Unit = { resourceTypeOrdinal ->
+    navController.navigateToResourceDetails(resourceTypeOrdinal)
 }
 
 private fun classGraphOnBackClick(navController: NavHostController): () -> Unit = {

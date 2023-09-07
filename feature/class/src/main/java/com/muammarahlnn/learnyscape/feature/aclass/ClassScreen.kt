@@ -26,10 +26,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.muammarahlnn.learnyscape.core.model.ClassResourceType
-import com.muammarahlnn.learnyscape.core.ui.AnnouncementPostCard
-import com.muammarahlnn.learnyscape.core.ui.ClassResourcePostCard
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
+import com.muammarahlnn.learnyscape.core.ui.PostCard
 
 
 /**
@@ -39,7 +38,7 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun ClassRoute(
-    onPostClick: (String) -> Unit,
+    onPostClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -53,7 +52,7 @@ internal fun ClassRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassScreen(
-    onPostClick: (String) -> Unit,
+    onPostClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -74,7 +73,7 @@ private fun ClassScreen(
 @Composable
 private fun ClassContent(
     scrollBehavior: TopAppBarScrollBehavior,
-    onPostClick: (String) -> Unit,
+    onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -86,51 +85,52 @@ private fun ClassContent(
         }
 
         item {
-            ClassResourcePostCard(
+            PostCard(
                 classResourceType = ClassResourceType.ASSIGNMENT,
                 title = "Tugas Fragment",
                 timePosted = "21 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-                onPostClick = onPostClick,
                 isCaptionOverflowed = true,
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
-            ClassResourcePostCard(
+            PostCard(
                 classResourceType = ClassResourceType.MODULE,
                 title = "Materi Background Thread",
                 timePosted = "11 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-                onPostClick = onPostClick,
                 isCaptionOverflowed = true,
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
-            ClassResourcePostCard(
+            PostCard(
                 classResourceType = ClassResourceType.QUIZ,
                 title = "Quiz Networking",
                 timePosted = "10 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-                onPostClick = onPostClick,
                 isCaptionOverflowed = true,
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
-            AnnouncementPostCard(
-                authorName = "Andi Muh. Amil Siddik, S.Si., M.Si",
+            PostCard(
+                classResourceType = ClassResourceType.ANNOUNCEMENT,
+                title = "Andi Muh. Amil Siddik, S.Si., M.Si",
                 timePosted = "2 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-                onPostClick = onPostClick,
                 isCaptionOverflowed = true,
+                onPostClick = onPostClick,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))

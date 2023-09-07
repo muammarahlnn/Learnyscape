@@ -49,12 +49,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
-import com.muammarahlnn.learnyscape.core.model.ClassResourceType
 import com.muammarahlnn.learnyscape.core.model.QuizType
-import com.muammarahlnn.learnyscape.core.ui.AnnouncementPostCard
-import com.muammarahlnn.learnyscape.core.ui.ClassResourcePostCard
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.PostCard
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
-import com.muammarahlnn.learnyscape.core.ui.R as uiR
 
 
 /**
@@ -76,14 +74,8 @@ internal fun ResourceDetailsRoute(
         mutableStateOf(false)
     }
 
-    val resourceType = viewModel.resourceType
-    val isAssignment = resourceType == stringResource(id = uiR.string.assignment)
-    val isQuiz = resourceType == stringResource(id = uiR.string.quiz)
-
     ResourceDetailsScreen(
-        resourceType = resourceType,
-        isQuiz = isQuiz,
-        isAssignment = isAssignment,
+        resourceType = viewModel.classResourceType,
         showAddWorkBottomSheet = showAddWorkBottomSheet,
         showStartQuizDialog = showStartQuizDialog,
         onAddWorkButtonClick = {
@@ -109,9 +101,7 @@ internal fun ResourceDetailsRoute(
 
 @Composable
 private fun ResourceDetailsScreen(
-    resourceType: String,
-    isAssignment: Boolean,
-    isQuiz: Boolean,
+    resourceType: ClassResourceType,
     showAddWorkBottomSheet: Boolean,
     showStartQuizDialog: Boolean,
     onAddWorkButtonClick: () -> Unit,
@@ -137,14 +127,12 @@ private fun ResourceDetailsScreen(
 
     Column(modifier = modifier.fillMaxSize()) {
         ResourceDetailsTopAppBar(
-            title = resourceType,
+            titleRes = resourceType.nameRes,
             onBackClick = onBackClick,
         )
 
         ResourceDetailsContent(
             resourceType = resourceType,
-            isQuiz = isQuiz,
-            isAssignment = isAssignment,
             onAddWorkButtonClick = onAddWorkButtonClick,
             onStartQuizButtonClick = onStartQuizButtonClick,
         )
@@ -153,13 +141,14 @@ private fun ResourceDetailsScreen(
 
 @Composable
 private fun ResourceDetailsContent(
-    resourceType: String,
-    isQuiz: Boolean,
-    isAssignment: Boolean,
+    resourceType: ClassResourceType,
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isAssignment = resourceType == ClassResourceType.ASSIGNMENT
+    val isQuiz = resourceType == ClassResourceType.QUIZ
+
     val localDensity = LocalDensity.current
     Box(modifier = modifier.fillMaxSize()) {
         var addWorkButtonHeight by remember {
@@ -226,34 +215,22 @@ private fun ResourceDetailsContent(
 
 @Composable
 private fun DetailPostCard(
-    resourceType: String,
+    resourceType: ClassResourceType,
     modifier: Modifier = Modifier,
 ) {
-    if (resourceType == stringResource(id = uiR.string.announcement)) {
-        AnnouncementPostCard(
-            authorName = "Andi Muh. Amil Siddik, S.Si., M.Si",
-            timePosted = "2 May 2023",
-            caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-            isCaptionOverflowed = false,
-            modifier = modifier,
-        )
+    val title = if (resourceType == ClassResourceType.ANNOUNCEMENT) {
+        "Andi Muh. Amil Siddik, S.Si., M.Si"
     } else {
-        val classResourceType = when (resourceType) {
-            stringResource(id = uiR.string.module) -> ClassResourceType.MODULE
-            stringResource(id = uiR.string.assignment) -> ClassResourceType.ASSIGNMENT
-            stringResource(id = uiR.string.quiz) -> ClassResourceType.QUIZ
-            else -> throw IllegalArgumentException("ResourceType arguments not match any ClassResourceType")
-        }
-
-        ClassResourcePostCard(
-            classResourceType = classResourceType,
-            title = "Lorem Ipsum Dolor Sit Amet",
-            timePosted = "10 May 2023",
-            caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
-            isCaptionOverflowed = false,
-            modifier = modifier,
-        )
+        "Lorem Ipsum Dolor Sit Amet"
     }
+    PostCard(
+        classResourceType = resourceType,
+        title = title,
+        timePosted = "2 May 2023",
+        caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+        isCaptionOverflowed = false,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -450,12 +427,12 @@ private fun QuizDetailsCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ResourceDetailsTopAppBar(
-    title: String,
+    titleRes: Int,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LearnyscapeTopAppBar(
-        title = title,
+        title = stringResource(id = titleRes),
         navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
         navigationIconContentDescription = stringResource(
             id = designSystemR.string.navigation_back_icon_description,

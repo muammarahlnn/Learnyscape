@@ -29,14 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
-import com.muammarahlnn.learnyscape.core.model.ClassResourceType
-import com.muammarahlnn.learnyscape.core.ui.getClassResourceIcon
-import com.muammarahlnn.learnyscape.core.ui.getClassResourceName
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -47,7 +46,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun NotificationsRoute(
-    onNotificationClick: (String) -> Unit,
+    onNotificationClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -61,7 +60,7 @@ internal fun NotificationsRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotificationsScreen(
-    onNotificationClick: (String) -> Unit,
+    onNotificationClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -82,7 +81,7 @@ private fun NotificationsScreen(
 @Composable
 private fun NotificationContent(
     scrollBehavior: TopAppBarScrollBehavior,
-    onNotificationClick: (String) -> Unit,
+    onNotificationClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -138,10 +137,9 @@ private fun NotificationsTopAppBar(
 @Composable
 private fun NotificationItem(
     type: ClassResourceType,
-    onNotificationClick: (String) -> Unit,
+    onNotificationClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val typeName = getClassResourceName(type = type)
     Card(
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
@@ -153,7 +151,7 @@ private fun NotificationItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                onNotificationClick(typeName)
+                onNotificationClick(type.ordinal)
             }
     ) {
         Row(
@@ -168,7 +166,7 @@ private fun NotificationItem(
                     .padding(10.dp)
             ) {
                 Image(
-                    painter = getClassResourceIcon(type = type),
+                    painter = painterResource(id = type.iconRes),
                     contentDescription = null,
                     modifier = Modifier
                         .size(20.dp)

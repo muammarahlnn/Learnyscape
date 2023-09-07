@@ -134,6 +134,7 @@ fun LearnyscapeTopAppBar(
     )
 }
 
+// TODO: wrap all these colors below in an object
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(

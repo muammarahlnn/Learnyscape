@@ -13,11 +13,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
-import com.muammarahlnn.learnyscape.navigation.destination.Destination
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
+import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
+import com.muammarahlnn.learnyscape.navigation.destination.Destination
 
 
 /**
