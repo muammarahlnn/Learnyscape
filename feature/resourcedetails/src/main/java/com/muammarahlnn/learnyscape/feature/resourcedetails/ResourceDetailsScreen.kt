@@ -170,10 +170,14 @@ private fun ResourceDetailsContent(
 
             item {
                 if (isQuiz) {
+                    val quizType = when ((0..1).random()) {
+                        0 -> QuizType.MULTIPLE_CHOICE_QUESTIONS
+                        else -> QuizType.PHOTO_ANSWER
+                    }
                     QuizDetailsCard(
                         quizStartTime = "12 August 2023, 11:12",
                         quizDuration = "10 Minutes",
-                        quizType = QuizType.MULTIPLE_CHOICE_QUESTIONS,
+                        quizType = quizType
                     )
                 } else {
                     AttachmentCard()
