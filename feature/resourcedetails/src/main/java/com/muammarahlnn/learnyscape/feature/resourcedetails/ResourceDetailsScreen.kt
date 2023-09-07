@@ -62,7 +62,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ResourceDetailsRoute(
-    onConfirmStartQuizDialog: (String, Int) -> Unit,
+    onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
@@ -87,8 +87,8 @@ internal fun ResourceDetailsRoute(
         onDismissAddWorkBottomSheet = {
             showAddWorkBottomSheet = false
         },
-        onConfirmStartQuizDialog = { quizName, quizDuration ->
-            onConfirmStartQuizDialog(quizName, quizDuration)
+        onConfirmStartQuizDialog = { quizTypeOrdinal, quizName, quizDuration ->
+            onConfirmStartQuizDialog(quizTypeOrdinal, quizName, quizDuration)
             showStartQuizDialog = false
         },
         onDismissStartQuizDialog = {
@@ -107,7 +107,7 @@ private fun ResourceDetailsScreen(
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     onDismissAddWorkBottomSheet: () -> Unit,
-    onConfirmStartQuizDialog: (String, Int) -> Unit,
+    onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
     onDismissStartQuizDialog: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -170,10 +170,6 @@ private fun ResourceDetailsContent(
 
             item {
                 if (isQuiz) {
-                    val quizType = when ((0..1).random()) {
-                        0 -> QuizType.MULTIPLE_CHOICE_QUESTIONS
-                        else -> QuizType.PHOTO_ANSWER
-                    }
                     QuizDetailsCard(
                         quizStartTime = "12 August 2023, 11:12",
                         quizDuration = "10 Minutes",
@@ -587,7 +583,7 @@ private fun AddWorkBottomSheet(
 
 @Composable
 private fun StartQuizDialog(
-    onConfirm: (String, Int) -> Unit,
+    onConfirm: (Int, String, Int) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -599,6 +595,7 @@ private fun StartQuizDialog(
         ),
         onConfirm = {
             onConfirm(
+                quizType.ordinal,
                 "Lorem Ipsum Dolor Sit Amat Lorem Ipsum Dolor Sit Amet",
                 10
             )
@@ -609,4 +606,12 @@ private fun StartQuizDialog(
         ),
         modifier = modifier,
     )
+}
+
+// dummy quiz type that random generated
+private val quizType by lazy {
+    when ((0..1).random()) {
+        0 -> QuizType.MULTIPLE_CHOICE_QUESTIONS
+        else -> QuizType.PHOTO_ANSWER
+    }
 }
