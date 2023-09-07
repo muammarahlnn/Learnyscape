@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.feature.resourcedetails
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
 
 
@@ -15,5 +16,14 @@ class ResourceDetailsViewModel(
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
 
-    val resourceType = resourceDetailsArgs.resourceType
+    val classResourceType = getClassResourceType(resourceDetailsArgs.resourceTypeOrdinal)
+
+    private fun getClassResourceType(classResourceTypeOrdinal: Int) =
+        when (classResourceTypeOrdinal) {
+            ClassResourceType.ANNOUNCEMENT.ordinal -> ClassResourceType.ANNOUNCEMENT
+            ClassResourceType.MODULE.ordinal -> ClassResourceType.MODULE
+            ClassResourceType.ASSIGNMENT.ordinal -> ClassResourceType.ASSIGNMENT
+            ClassResourceType.QUIZ.ordinal -> ClassResourceType.QUIZ
+            else -> throw IllegalStateException("The given ordinal not matched any ClassResourceType ordinal")
+        }
 }

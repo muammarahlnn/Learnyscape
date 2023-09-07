@@ -20,7 +20,7 @@ fun NavController.navigateToClassGraph(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.classGraph(
-    onPostClick: (String) -> Unit,
+    onPostClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     nestedGraph: NavGraphBuilder.() -> Unit,
 ) {

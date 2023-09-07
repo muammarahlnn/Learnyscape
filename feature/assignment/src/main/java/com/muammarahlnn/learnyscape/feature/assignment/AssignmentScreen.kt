@@ -11,10 +11,9 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.learnyscape.core.model.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 
@@ -25,7 +24,7 @@ import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 
 @Composable
 internal fun AssignmentRoute(
-    onAssignmentClick: (String) -> Unit,
+    onAssignmentClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -39,7 +38,7 @@ internal fun AssignmentRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AssignmentScreen(
-    onAssignmentClick: (String) -> Unit,
+    onAssignmentClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -60,10 +59,9 @@ private fun AssignmentScreen(
 @Composable
 private fun AssignmentContent(
     scrollBehavior: TopAppBarScrollBehavior,
-    onAssignmentClick: (String) -> Unit,
+    onAssignmentClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val resourceType = stringResource(id = R.string.assignment)
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -75,9 +73,7 @@ private fun AssignmentContent(
                     classResourceType = ClassResourceType.ASSIGNMENT,
                     title = "Tugas Background Thread",
                     timeLabel = "Due 21 May 2023, 21:21",
-                    onItemClick = {
-                        onAssignmentClick(resourceType)
-                    },
+                    onItemClick = onAssignmentClick,
                 )
             }
         }

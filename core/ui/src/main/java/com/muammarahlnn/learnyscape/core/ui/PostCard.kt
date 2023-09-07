@@ -22,11 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.learnyscape.core.model.ClassResourceType
 
 
 /**
@@ -35,84 +33,14 @@ import com.muammarahlnn.learnyscape.core.model.ClassResourceType
  */
 
 @Composable
-fun AnnouncementPostCard(
-    authorName: String,
-    timePosted: String,
-    caption: String,
-    isCaptionOverflowed: Boolean,
-    modifier: Modifier = Modifier,
-    onPostClick: (String) -> Unit = {},
-) {
-    val postType = stringResource(id = R.string.announcement)
-    BasePostCard(
-        indicatorImage = {
-            Image(
-                painter = painterResource(id = R.drawable.ava_luffy),
-                contentDescription = null,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(36.dp)
-            )
-        },
-        title = authorName,
-        timePosted = timePosted,
-        caption = caption,
-        onPostClick = {
-            onPostClick(postType)
-        },
-        isCaptionOverflowed = isCaptionOverflowed,
-        modifier = modifier,
-    )
-}
-
-@Composable
-fun ClassResourcePostCard(
+fun PostCard(
     classResourceType: ClassResourceType,
     title: String,
     timePosted: String,
     caption: String,
     isCaptionOverflowed: Boolean,
     modifier: Modifier = Modifier,
-    onPostClick: (String) -> Unit = {},
-) {
-    val postType = getClassResourceName(type = classResourceType)
-
-    BasePostCard(
-        indicatorImage = {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(8.dp)
-            ) {
-                Image(
-                    painter = getClassResourceIcon(type = classResourceType),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        },
-        title = title,
-        timePosted = timePosted,
-        caption = caption,
-        onPostClick = {
-            onPostClick(postType)
-        },
-        isCaptionOverflowed = isCaptionOverflowed,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun BasePostCard(
-    indicatorImage: @Composable () -> Unit,
-    title: String,
-    timePosted: String,
-    caption: String,
-    isCaptionOverflowed: Boolean,
-    onPostClick: () -> Unit,
-    modifier: Modifier = Modifier,
+    onPostClick: (Int) -> Unit = {},
 ) {
     Card(
         shape = RoundedCornerShape(10.dp),
@@ -125,11 +53,10 @@ private fun BasePostCard(
         modifier = modifier.clickable(
             enabled = isCaptionOverflowed
         ) {
-            onPostClick()
+            onPostClick(classResourceType.ordinal)
         },
     ) {
         Column {
-            // header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(
@@ -139,12 +66,39 @@ private fun BasePostCard(
                     bottom = 12.dp,
                 )
             ) {
-                indicatorImage()
+                when (classResourceType) {
+                    ClassResourceType.ANNOUNCEMENT -> {
+                        Image(
+                            painter = painterResource(id = R.drawable.ava_luffy),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(36.dp)
+                        )
+                    }
+
+                    ClassResourceType.MODULE,
+                    ClassResourceType.ASSIGNMENT,
+                    ClassResourceType.QUIZ -> {
+                        Box(
+                            contentAlignment = Alignment.Center,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .padding(8.dp)
+                        ) {
+                            Image(
+                                painter = painterResource(id = classResourceType.iconRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column {
-                    // this is a hardcoded text just for dummy purpose
                     Text(
                         text = title,
                         color = MaterialTheme.colorScheme.onBackground,
@@ -169,7 +123,6 @@ private fun BasePostCard(
                 color = MaterialTheme.colorScheme.background,
             )
 
-            // content
             Box(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = caption,

@@ -6,7 +6,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.muammarahlnn.learnyscape.core.common.decoder.StringCodec
 import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
 
 
@@ -16,26 +15,25 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
  */
 
 private const val RESOURCE_DETAILS_ROUTE = "resource_details_route"
-private const val RESOURCE_TYPE_ARG = "resource_type"
+private const val RESOURCE_TYPE_ORDINAL_ARG = "resource_type_ordinal"
 const val RESOURCE_DETAILS_ROUTE_WITH_ARGS =
-    "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_TYPE_ARG}"
+    "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_TYPE_ORDINAL_ARG}"
 
 internal class ResourceDetailsArgs(
-    val resourceType: String,
+    val resourceTypeOrdinal: Int,
 ) {
 
     constructor(
         savedStateHandle: SavedStateHandle
     ) : this(
-        resourceType = StringCodec.decode(checkNotNull(savedStateHandle[RESOURCE_TYPE_ARG]))
+        resourceTypeOrdinal = checkNotNull(savedStateHandle[RESOURCE_TYPE_ORDINAL_ARG])
     )
 }
 
 fun NavController.navigateToResourceDetails(
-    resourceType: String,
+    resourceTypeOrdinal: Int,
 ) {
-    val encodedResourceType = StringCodec.encode(resourceType)
-    this.navigate("$RESOURCE_DETAILS_ROUTE/$encodedResourceType") {
+    this.navigate("$RESOURCE_DETAILS_ROUTE/$resourceTypeOrdinal") {
         launchSingleTop = true
     }
 }
@@ -47,8 +45,8 @@ fun NavGraphBuilder.resourceDetailsScreen(
     composable(
         route = RESOURCE_DETAILS_ROUTE_WITH_ARGS,
         arguments = listOf(
-            navArgument(RESOURCE_TYPE_ARG) {
-                type = NavType.StringType
+            navArgument(RESOURCE_TYPE_ORDINAL_ARG) {
+                type = NavType.IntType
             },
         ),
     ) {
