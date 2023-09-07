@@ -70,7 +70,7 @@ private fun QuizContent(
         repeat(20) {
             item {
                 ClassResourceCard(
-                    classResourceType = ClassResourceType.MODULE,
+                    classResourceType = ClassResourceType.QUIZ,
                     title = "Quiz Local Data Persistent dan Database",
                     timeLabel = "Start at 21 May 2023, 21:21",
                     onItemClick = onQuizClick,
