@@ -1,5 +1,9 @@
 package com.muammarahlnn.learnyscape.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -7,9 +11,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -41,7 +47,19 @@ fun LearnyscapeApp(
             contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
             bottomBar = {
-                if (!appState.shouldNotShowBottomBar) {
+                AnimatedVisibility(
+                    visible = !appState.shouldNotShowBottomBar,
+                    enter = slideInVertically(
+                        initialOffsetY = { fullHeight ->
+                            fullHeight
+                        },
+                    ),
+                    exit = slideOutVertically(
+                        targetOffsetY = { fullHeight ->
+                            fullHeight
+                        },
+                    ),
+                ) {
                     LearnyscapeBottomBar(
                         destinations = appState.currentBottomBarDestinations,
                         onNavigateToDestination = appState::navigateToDestination,
@@ -50,9 +68,17 @@ fun LearnyscapeApp(
                 }
             }
         ) { innerPadding ->
+            val animateBottomPadding by animateDpAsState(
+                targetValue = if (!appState.shouldNotShowBottomBar){
+                    innerPadding.calculateBottomPadding()
+                } else {
+                    0.dp
+                },
+                label = "Animate bottom padding"
+            )
             LearnyscapeNavHost(
                 appState = appState,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(bottom = animateBottomPadding)
             )
         }
     }
