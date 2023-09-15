@@ -20,7 +20,7 @@ import com.muammarahlnn.learnyscape.navigation.destination.ClassDestination
  */
 
 @Composable
-fun ClassNavigatorRoute(
+internal fun ClassNavigatorRoute(
     onResourceClassClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -33,7 +33,7 @@ fun ClassNavigatorRoute(
 }
 
 @Composable
-fun ClassNavigator(
+private fun ClassNavigator(
     onResourceClassClick: (Int) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
