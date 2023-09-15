@@ -16,6 +16,7 @@ import com.muammarahlnn.learnyscape.navigation.classNavigator
 import com.muammarahlnn.learnyscape.navigation.navigateToClassNavigator
 import com.muammarahlnn.learnyscape.navigation.HOME_NAVIGATOR_ROUTE
 import com.muammarahlnn.learnyscape.navigation.homeNavigator
+import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
 
 
 /**
@@ -25,10 +26,11 @@ import com.muammarahlnn.learnyscape.navigation.homeNavigator
 
 @Composable
 fun LearnyscapeNavHost(
-    navController: NavHostController,
+    appState: LearnyscapeAppState,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_NAVIGATOR_ROUTE,
 ) {
+    val navController = appState.navController
     NavHost(
         navController = navController,
         startDestination = startDestination,

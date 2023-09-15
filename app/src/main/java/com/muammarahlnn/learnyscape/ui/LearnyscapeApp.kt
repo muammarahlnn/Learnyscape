@@ -24,7 +24,6 @@ import com.muammarahlnn.learnyscape.navigation.navhost.LearnyscapeNavHost
 fun LearnyscapeApp(
     appState: LearnyscapeAppState = rememberLearnyscapeAppState(),
 ) {
-    val navController = appState.navController
     LearnyscapeBackground {
         Scaffold(
             containerColor = Color.Transparent,
@@ -32,7 +31,7 @@ fun LearnyscapeApp(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
             LearnyscapeNavHost(
-                navController = navController,
+                appState = appState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
