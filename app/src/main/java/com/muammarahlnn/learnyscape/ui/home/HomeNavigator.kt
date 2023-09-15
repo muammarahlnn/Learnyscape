@@ -23,7 +23,7 @@ import com.muammarahlnn.learnyscape.navigation.destination.HomeDestination
  */
 
 @Composable
-fun HomeNavigatorRoute(
+internal fun HomeNavigatorRoute(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -36,7 +36,7 @@ fun HomeNavigatorRoute(
 }
 
 @Composable
-fun HomeNavigator(
+private fun HomeNavigator(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -65,7 +65,7 @@ fun HomeNavigator(
 }
 
 @Composable
-fun HomeBottomBar(
+private fun HomeBottomBar(
     destinations: List<HomeDestination>,
     onNavigateToDestination: (HomeDestination) -> Unit,
     currentDestination: NavDestination?,
