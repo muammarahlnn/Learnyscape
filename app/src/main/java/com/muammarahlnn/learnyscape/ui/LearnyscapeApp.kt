@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
-import com.muammarahlnn.learnyscape.navigation.navhost.LearnyscapeNavHost
+import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
 
 
 /**
