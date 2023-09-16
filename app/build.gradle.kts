@@ -36,16 +36,9 @@ kapt {
 }
 
 dependencies {
-    implementation(project(":feature:home"))
-    implementation(project(":feature:profile"))
-    implementation(project(":feature:schedule"))
-    implementation(project(":feature:search"))
+    implementation(project(":feature:homenavigator"))
+    implementation(project(":feature:classnavigator"))
     implementation(project(":feature:notifications"))
-    implementation(project(":feature:class"))
-    implementation(project(":feature:module"))
-    implementation(project(":feature:assignment"))
-    implementation(project(":feature:quiz"))
-    implementation(project(":feature:member"))
     implementation(project(":feature:resourcedetails"))
     implementation(project(":feature:quizsession"))
 
