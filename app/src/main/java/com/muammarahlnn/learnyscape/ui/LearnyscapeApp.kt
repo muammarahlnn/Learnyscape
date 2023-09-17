@@ -38,7 +38,7 @@ fun LearnyscapeApp(
             color = statusBarColor
         )
     }
-
+    
     LearnyscapeBackground {
         Scaffold(
             containerColor = Color.Transparent,
