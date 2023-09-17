@@ -104,6 +104,7 @@ internal fun QuizSessionRoute(
         onContinueTimeoutDialog = {
             onQuizIsOver()
             showTimeoutDialog = false
+            showSubmitAnswerDialog = false
         },
         modifier = modifier,
     )
