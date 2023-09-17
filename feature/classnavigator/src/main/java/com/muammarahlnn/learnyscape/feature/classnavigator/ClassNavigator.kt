@@ -1,15 +1,19 @@
 package com.muammarahlnn.learnyscape.feature.classnavigator
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
+import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassDestination
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHost
 
@@ -32,6 +36,7 @@ internal fun ClassNavigatorRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassNavigator(
     onResourceClassClick: (Int) -> Unit,
@@ -39,7 +44,14 @@ private fun ClassNavigator(
     modifier: Modifier = Modifier,
     state: ClassNavigatorState = rememberClassNavigatorState()
 ) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
+        topBar = {
+            ClassTopAppBar(
+                onBackClick = onBackClick,
+                scrollBehavior = scrollBehavior,
+            )
+        },
         bottomBar = {
             ClassBottomBar(
                 destinations = state.classDestinations,
@@ -52,8 +64,9 @@ private fun ClassNavigator(
         ClassNavHost(
             state = state,
             onResourceClassClick = onResourceClassClick,
-            onBackClick = onBackClick,
-            modifier = Modifier.padding(padding)
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .padding(padding)
         )
     }
 }

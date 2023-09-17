@@ -21,7 +21,6 @@ import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizScreen
 internal fun ClassNavHost(
     state: ClassNavigatorState,
     onResourceClassClick: (Int) -> Unit,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = CLASS_ROUTE,
 ) {
@@ -33,22 +32,16 @@ internal fun ClassNavHost(
     ) {
         classScreen(
             onPostClick = onResourceClassClick,
-            onBackClick = onBackClick,
         )
         moduleScreen(
             onModuleClick = onResourceClassClick,
-            onBackClick = onBackClick,
         )
         assignmentScreen(
             onAssignmentClick = onResourceClassClick,
-            onBackClick = onBackClick,
         )
         quizScreen(
             onQuizClick = onResourceClassClick,
-            onBackClick = onBackClick,
         )
-        memberScreen(
-            onBackClick = onBackClick,
-        )
+        memberScreen()
     }
 }

@@ -17,12 +17,8 @@ fun NavController.navigateToMember(navOptions: NavOptions? = null) {
     this.navigate(MEMBER_ROUTE, navOptions)
 }
 
-fun NavGraphBuilder.memberScreen(
-    onBackClick: () -> Unit,
-) {
+fun NavGraphBuilder.memberScreen() {
     composable(route = MEMBER_ROUTE) {
-        MemberRoute(
-            onBackClick = onBackClick,
-        )
+        MemberRoute()
     }
 }
