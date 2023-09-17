@@ -12,14 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
@@ -27,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
-import com.muammarahlnn.learnyscape.core.ui.ClassTopAppBar
 import com.muammarahlnn.learnyscape.core.ui.PostCard
 
 
@@ -39,45 +34,21 @@ import com.muammarahlnn.learnyscape.core.ui.PostCard
 @Composable
 internal fun ClassRoute(
     onPostClick: (Int) -> Unit,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ClassScreen(
         onPostClick = onPostClick,
-        onBackClick = onBackClick,
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassScreen(
-    onPostClick: (Int) -> Unit,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Column(modifier = modifier) {
-        ClassTopAppBar(
-            scrollBehavior = scrollBehavior,
-            onBackClick = onBackClick,
-        )
-        ClassContent(
-            scrollBehavior = scrollBehavior,
-            onPostClick = onPostClick,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ClassContent(
-    scrollBehavior: TopAppBarScrollBehavior,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        modifier = modifier
     ) {
         item {
             ClassHeader()
