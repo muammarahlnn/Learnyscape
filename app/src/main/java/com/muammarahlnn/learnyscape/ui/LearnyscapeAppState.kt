@@ -1,10 +1,15 @@
 package com.muammarahlnn.learnyscape.ui
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.CLASS_NAVIGATOR_ROUTE
 
 
 /**
@@ -24,4 +29,20 @@ fun rememberLearnyscapeAppState(
 @Stable
 class LearnyscapeAppState(
     val navController: NavHostController
-)
+) {
+
+    private val currentDestination: NavDestination?
+        @Composable
+        get() = navController.currentBackStackEntryAsState().value?.destination
+
+    private val currentRoute: String?
+        @Composable
+        get() = currentDestination?.route
+
+    val currentStatusBarColor: Color
+        @Composable
+        get() = when (currentRoute) {
+            CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.onPrimary
+            else -> MaterialTheme.colorScheme.primary
+        }
+}
