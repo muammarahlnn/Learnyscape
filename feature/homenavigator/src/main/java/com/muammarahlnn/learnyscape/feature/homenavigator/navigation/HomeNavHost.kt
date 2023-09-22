@@ -35,7 +35,9 @@ internal fun HomeNavHost(
             onClassClick = onClassClick,
         )
         searchScreen()
-        scheduleScreen()
+        scheduleScreen(
+            onClassClick = onClassClick
+        )
         profileScreen()
     }
 }
