@@ -18,8 +18,12 @@ fun NavController.navigateToSchedule(navOptions: NavOptions? = null) {
     this.navigate(SCHEDULE_ROUTE, navOptions)
 }
 
-fun NavGraphBuilder.scheduleScreen() {
+fun NavGraphBuilder.scheduleScreen(
+    onClassClick: () -> Unit,
+) {
     composable(route = SCHEDULE_ROUTE) {
-        ScheduleRoute()
+        ScheduleRoute(
+            onClassClick = onClassClick
+        )
     }
 }

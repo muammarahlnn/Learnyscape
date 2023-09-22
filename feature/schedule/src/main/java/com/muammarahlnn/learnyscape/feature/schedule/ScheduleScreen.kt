@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.schedule
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,16 +35,21 @@ import kotlinx.datetime.LocalTime
  */
 @Composable
 internal fun ScheduleRoute(
+    onClassClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ScheduleScreen(
+        onClassClick = onClassClick,
         modifier = modifier,
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ScheduleScreen(modifier: Modifier = Modifier) {
+private fun ScheduleScreen(
+    onClassClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier) {
         ScheduleTopAppBar(
@@ -51,6 +57,7 @@ private fun ScheduleScreen(modifier: Modifier = Modifier) {
         )
         ScheduleDateHeader()
         ScheduleContent(
+             onClassClick = onClassClick,
             scrollBehavior = scrollBehavior
         )
     }
@@ -59,6 +66,7 @@ private fun ScheduleScreen(modifier: Modifier = Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleContent(
+    onClassClick: () -> Unit,
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
@@ -78,6 +86,7 @@ private fun ScheduleContent(
                         className = scheduleClass.className,
                         startTime = scheduleClass.startTime,
                         endTime = scheduleClass.endTime,
+                        onClassClick = onClassClick,
                         modifier = Modifier.scheduleClassCard(
                             startTime = scheduleClass.startTime,
                             endTime = scheduleClass.endTime,
@@ -143,6 +152,7 @@ private fun ScheduleClassCard(
     className: String,
     startTime: LocalTime,
     endTime: LocalTime,
+    onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -153,7 +163,10 @@ private fun ScheduleClassCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp,
         ),
-        modifier = modifier,
+        modifier = modifier
+            .clickable {
+                onClassClick()
+            },
     ) {
         Column(
             modifier = Modifier.padding(
