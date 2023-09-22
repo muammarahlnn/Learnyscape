@@ -14,9 +14,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -30,24 +32,41 @@ import kotlinx.datetime.LocalTime
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file ScheduleScreen, 20/07/2023 22.04 by Muammar Ahlan Abimanyu
  */
+@Composable
+internal fun ScheduleRoute(
+    modifier: Modifier = Modifier
+) {
+    ScheduleScreen(
+        modifier = modifier,
+    )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ScheduleScreen(modifier: Modifier = Modifier) {
+private fun ScheduleScreen(modifier: Modifier = Modifier) {
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier) {
-        ScheduleTopAppBar()
+        ScheduleTopAppBar(
+            scrollBehavior = scrollBehavior
+        )
         ScheduleDateHeader()
-        ScheduleContent()
+        ScheduleContent(
+            scrollBehavior = scrollBehavior
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleContent(
+    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
     ) {
         item {
             TodayScheduleCalendar(
