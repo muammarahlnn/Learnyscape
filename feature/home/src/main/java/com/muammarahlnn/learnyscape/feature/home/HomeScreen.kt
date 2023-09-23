@@ -12,20 +12,17 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.homeTopAppBarColors
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
+import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
 
 
 /**
@@ -106,25 +103,5 @@ private fun HomeTopAppBar(
         scrollBehavior = scrollBehavior,
         modifier = modifier,
         onActionClick = onNotificationsClick
-    )
-}
-
-@Composable
-private fun LearnyscapeText() {
-    val learnyscapeString = stringResource(id = R.string.learnyscape)
-    val scapeStartIndex = 6
-    Text(
-        text = AnnotatedString(
-            text = learnyscapeString,
-            spanStyles = listOf(
-                AnnotatedString.Range(
-                    SpanStyle(color = MaterialTheme.colorScheme.primary),
-                    start = scapeStartIndex,
-                    end = learnyscapeString.length
-                ),
-            ),
-        ),
-        style = MaterialTheme.typography.titleLarge,
-        color = MaterialTheme.colorScheme.onBackground,
     )
 }
