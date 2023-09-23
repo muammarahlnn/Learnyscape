@@ -38,6 +38,7 @@
             <option value="$PROJECT_DIR$/feature/classnavigator" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/homenavigator" />
+            <option value="$PROJECT_DIR$/feature/login" />
             <option value="$PROJECT_DIR$/feature/member" />
             <option value="$PROJECT_DIR$/feature/module" />
             <option value="$PROJECT_DIR$/feature/notifications" />
