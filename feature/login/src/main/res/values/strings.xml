@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="learning_illustration_image_desc">Learning illustration</string>
+    <string name="login">Login</string>
+    <string name="username_text_field_placeholder">NIM / NIP</string>
+    <string name="user_icon_desc">Username</string>
+    <string name="password_icon_desc">Password</string>
+    <string name="visibility_icon_desc">Show password</string>
+    <string name="visibility_off_icon_desc">Hide password</string>
+</resources>
