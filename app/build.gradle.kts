@@ -41,6 +41,7 @@ dependencies {
     implementation(project(":feature:notifications"))
     implementation(project(":feature:resourcedetails"))
     implementation(project(":feature:quizsession"))
+    implementation(project(":feature:login"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))

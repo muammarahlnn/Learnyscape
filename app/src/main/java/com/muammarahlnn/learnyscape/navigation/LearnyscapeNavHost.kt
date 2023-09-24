@@ -6,10 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavigator
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
-import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.homeNavigator
+import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.navigateToHomeNavigator
+import com.muammarahlnn.learnyscape.feature.login.navigation.LOGIN_ROUTE
+import com.muammarahlnn.learnyscape.feature.login.navigation.loginScreen
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.navigateToQuizSession
@@ -28,7 +31,7 @@ import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
 fun LearnyscapeNavHost(
     appState: LearnyscapeAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = HOME_NAVIGATOR_ROUTE,
+    startDestination: String = LOGIN_ROUTE,
 ) {
     val navController = appState.navController
     NavHost(
@@ -60,6 +63,17 @@ fun LearnyscapeNavHost(
             )
         }
     ) {
+        loginScreen(
+            onLoginButtonClick = {
+                navController.navigateToHomeNavigator(
+                    navOptions = navOptions {
+                        popUpTo(LOGIN_ROUTE) {
+                            inclusive = true
+                        }
+                    }
+                )
+            }
+        )
         homeNavigator(
             onNotificationsClick = {
                 navController.navigateToNotifications()
