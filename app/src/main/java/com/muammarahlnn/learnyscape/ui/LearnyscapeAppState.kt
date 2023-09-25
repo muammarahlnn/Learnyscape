@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.CLASS_NAVIGATOR_ROUTE
+import com.muammarahlnn.learnyscape.feature.login.navigation.LOGIN_ROUTE
 
 
 /**
@@ -43,6 +44,7 @@ class LearnyscapeAppState(
         @Composable
         get() = when (currentRoute) {
             CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.onPrimary
+            LOGIN_ROUTE -> MaterialTheme.colorScheme.background
             else -> MaterialTheme.colorScheme.primary
         }
 }
