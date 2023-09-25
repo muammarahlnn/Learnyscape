@@ -9,10 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavigator
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
+import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.homeNavigator
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.navigateToHomeNavigator
 import com.muammarahlnn.learnyscape.feature.login.navigation.LOGIN_ROUTE
 import com.muammarahlnn.learnyscape.feature.login.navigation.loginScreen
+import com.muammarahlnn.learnyscape.feature.login.navigation.navigateToLogin
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.navigateToQuizSession
@@ -81,6 +83,15 @@ fun LearnyscapeNavHost(
             onClassClick = {
                 navController.navigateToClassNavigator()
             },
+            onLogoutButtonClick = {
+                navController.navigateToLogin(
+                    navOptions = navOptions {
+                        popUpTo(HOME_NAVIGATOR_ROUTE) {
+                            inclusive = true
+                        }
+                    }
+                )
+            }
         )
         classNavigator(
             onResourceClassClick = navigateToResourceDetails(navController),
