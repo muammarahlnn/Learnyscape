@@ -548,14 +548,14 @@ private fun AddWorkBottomSheet(
                 modifier = Modifier.weight(0.5f),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_upload),
-                    contentDescription = stringResource(id = R.string.upload_file),
+                    painter = painterResource(id = R.drawable.ic_camera),
+                    contentDescription = stringResource(id = R.string.camera),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(id = R.string.upload_file),
+                    text = stringResource(id = R.string.camera),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -565,14 +565,14 @@ private fun AddWorkBottomSheet(
                 modifier = Modifier.weight(0.5f),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_add_a_photo),
-                    contentDescription = stringResource(id = R.string.take_a_photo),
+                    painter = painterResource(id = R.drawable.ic_upload),
+                    contentDescription = stringResource(id = R.string.upload_file),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(id = R.string.take_a_photo),
+                    text = stringResource(id = R.string.upload_file),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
