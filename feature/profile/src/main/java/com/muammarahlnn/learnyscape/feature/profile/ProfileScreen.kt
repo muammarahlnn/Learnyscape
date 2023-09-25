@@ -38,17 +38,26 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBar
 
 @Composable
 internal fun ProfileRoute(
+    onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    ProfileScreen(modifier = modifier)
+    ProfileScreen(
+        onLogoutButtonClick = onLogoutButtonClick,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileScreen(modifier: Modifier = Modifier) {
+private fun ProfileScreen(
+    onLogoutButtonClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(modifier = modifier.fillMaxSize()) {
         ProfileTopAppBar()
-        ProfileContent()
+        ProfileContent(
+            onLogoutButtonClick = onLogoutButtonClick,
+        )
     }
 }
 
@@ -68,6 +77,7 @@ private fun ProfileTopAppBar(
 
 @Composable
 private fun ProfileContent(
+    onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -121,9 +131,7 @@ private fun ProfileContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = {
-                    // will implement later
-                },
+                onClick = onLogoutButtonClick,
                 shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()

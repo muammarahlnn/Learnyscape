@@ -21,6 +21,7 @@ internal fun HomeNavHost(
     state: HomeNavigatorState,
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
+    onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -38,6 +39,8 @@ internal fun HomeNavHost(
         scheduleScreen(
             onClassClick = onClassClick
         )
-        profileScreen()
+        profileScreen(
+            onLogoutButtonClick = onLogoutButtonClick,
+        )
     }
 }
