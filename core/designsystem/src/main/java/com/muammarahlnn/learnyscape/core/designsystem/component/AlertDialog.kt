@@ -29,9 +29,10 @@ fun BaseAlertDialog(
     dismissText: String = stringResource(
         id = R.string.alert_dialog_dismiss_button_text,
     ),
+    onDismissRequest: (() -> Unit)? = null,
 ) {
     AlertDialog(
-        onDismissRequest = onDismiss,
+        onDismissRequest = onDismissRequest ?: onDismiss,
         title = {
             Text(
                 text = title,

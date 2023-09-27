@@ -7,6 +7,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navOptions
+import com.muammarahlnn.learnyscape.feature.camera.navigation.cameraScreen
+import com.muammarahlnn.learnyscape.feature.camera.navigation.navigateToCamera
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavigator
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
@@ -109,10 +111,16 @@ fun LearnyscapeNavHost(
                     quizDuration
                 )
             },
+            onCameraActionClick = {
+                navController.navigateToCamera()
+            },
             onBackClick = navController::popBackStack
         )
         quizSessionScreen(
             onQuizIsOver = navController::popBackStack
+        )
+        cameraScreen(
+            onCameraPermissionDenied = navController::popBackStack
         )
     }
 }

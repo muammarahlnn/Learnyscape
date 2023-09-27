@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,6 +64,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 @Composable
 internal fun ResourceDetailsRoute(
     onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
+    onCameraActionClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
@@ -83,6 +85,10 @@ internal fun ResourceDetailsRoute(
         },
         onStartQuizButtonClick = {
             showStartQuizDialog = true
+        },
+        onCameraActionClick = {
+            onCameraActionClick()
+            showAddWorkBottomSheet = false
         },
         onDismissAddWorkBottomSheet = {
             showAddWorkBottomSheet = false
@@ -106,6 +112,7 @@ private fun ResourceDetailsScreen(
     showStartQuizDialog: Boolean,
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
+    onCameraActionClick: () -> Unit,
     onDismissAddWorkBottomSheet: () -> Unit,
     onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
     onDismissStartQuizDialog: () -> Unit,
@@ -114,6 +121,7 @@ private fun ResourceDetailsScreen(
 ) {
     if (showAddWorkBottomSheet) {
         AddWorkBottomSheet(
+            onCameraActionClick = onCameraActionClick,
             onDismiss = onDismissAddWorkBottomSheet
         )
     }
@@ -523,6 +531,7 @@ private fun BaseActionButton(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AddWorkBottomSheet(
+    onCameraActionClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState()
@@ -545,7 +554,11 @@ private fun AddWorkBottomSheet(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .weight(0.5f)
+                    .clickable {
+                        onCameraActionClick()
+                    },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_camera),
