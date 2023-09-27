@@ -21,12 +21,14 @@ fun NavController.navigateToHomeNavigator(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.homeNavigator(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
+    onCameraActionClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
 ) {
     composable(route = HOME_NAVIGATOR_ROUTE) {
         HomeNavigatorRoute(
             onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
+            onCameraActionClick = onCameraActionClick,
             onLogoutButtonClick = onLogoutButtonClick,
         )
     }

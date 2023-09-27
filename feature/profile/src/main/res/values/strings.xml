@@ -4,4 +4,5 @@
     <string name="logout">Logout</string>
     <string name="camera_icon_description">Camera</string>
     <string name="logout_icon_description">Logout</string>
+    <string name="gallery_icon_description">Gallery</string>
 </resources>

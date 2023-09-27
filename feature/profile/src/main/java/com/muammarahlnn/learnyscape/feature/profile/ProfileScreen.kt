@@ -1,8 +1,10 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,9 +20,15 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,10 +46,25 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBar
 
 @Composable
 internal fun ProfileRoute(
+    onCameraActionClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var showChangePhotoProfileBottomSheet by rememberSaveable {
+        mutableStateOf(false)
+    }
     ProfileScreen(
+        showChangePhotoProfileBottomSheet = showChangePhotoProfileBottomSheet,
+        onChangePhotoProfileButtonClick = {
+            showChangePhotoProfileBottomSheet = true
+        },
+        onCameraActionClick = {
+            onCameraActionClick()
+            showChangePhotoProfileBottomSheet = false
+        },
+        onDismissChangePhotoProfileBottomSheet = {
+          showChangePhotoProfileBottomSheet = false
+        },
         onLogoutButtonClick = onLogoutButtonClick,
         modifier = modifier,
     )
@@ -50,12 +73,27 @@ internal fun ProfileRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreen(
+    showChangePhotoProfileBottomSheet: Boolean,
+    onChangePhotoProfileButtonClick: () -> Unit,
+    onCameraActionClick: () -> Unit,
+    onDismissChangePhotoProfileBottomSheet: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    if (showChangePhotoProfileBottomSheet) {
+        ChangePhotoProfileBottomSheet(
+            onCameraActionClick = onCameraActionClick,
+            onGalleryActionClick = {
+                // will implement later
+            },
+            onDismiss = onDismissChangePhotoProfileBottomSheet,
+        )
+    }
+
     Column(modifier = modifier.fillMaxSize()) {
         ProfileTopAppBar()
         ProfileContent(
+            onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
             onLogoutButtonClick = onLogoutButtonClick,
         )
     }
@@ -77,6 +115,7 @@ private fun ProfileTopAppBar(
 
 @Composable
 private fun ProfileContent(
+    onChangePhotoProfileButtonClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -102,9 +141,7 @@ private fun ProfileContent(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
-                    onClick = {
-                        // will implement later
-                    },
+                    onClick = onChangePhotoProfileButtonClick,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .size(48.dp)
@@ -142,6 +179,74 @@ private fun ProfileContent(
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = stringResource(id = R.string.logout))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ChangePhotoProfileBottomSheet(
+    onCameraActionClick: () -> Unit,
+    onGalleryActionClick: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val bottomSheetState = rememberModalBottomSheetState()
+    ModalBottomSheet(
+        sheetState = bottomSheetState,
+        containerColor = MaterialTheme.colorScheme.onPrimary,
+        onDismissRequest = onDismiss,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
+                )
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .weight(0.5f)
+                    .clickable {
+                        onCameraActionClick()
+                    },
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_photo_camera_border),
+                    contentDescription = stringResource(id = R.string.camera_icon_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.camera_icon_description),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .weight(0.5f)
+                    .clickable {
+                        onGalleryActionClick()
+                    },
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_gallery),
+                    contentDescription = stringResource(id = R.string.gallery_icon_description),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(id = R.string.gallery_icon_description),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
         }
     }
