@@ -40,6 +40,7 @@ fun NavController.navigateToResourceDetails(
 
 fun NavGraphBuilder.resourceDetailsScreen(
     onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
+    onCameraActionClick: () -> Unit,
     onBackClick: () -> Unit,
 ) {
     composable(
@@ -52,6 +53,7 @@ fun NavGraphBuilder.resourceDetailsScreen(
     ) {
         ResourceDetailsRoute(
             onConfirmStartQuizDialog = onConfirmStartQuizDialog,
+            onCameraActionClick = onCameraActionClick,
             onBackClick = onBackClick,
         )
     }

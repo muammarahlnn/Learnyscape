@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":feature:resourcedetails"))
     implementation(project(":feature:quizsession"))
     implementation(project(":feature:login"))
+    implementation(project(":feature:camera"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))
