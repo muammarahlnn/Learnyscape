@@ -19,10 +19,12 @@ fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.profileScreen(
+    onCameraActionClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
 ) {
     composable(route = PROFILE_ROUTE) {
         ProfileRoute(
+            onCameraActionClick = onCameraActionClick,
             onLogoutButtonClick = onLogoutButtonClick,
         )
     }

@@ -85,6 +85,9 @@ fun LearnyscapeNavHost(
             onClassClick = {
                 navController.navigateToClassNavigator()
             },
+            onCameraActionClick = {
+                navController.navigateToCamera()
+            },
             onLogoutButtonClick = {
                 navController.navigateToLogin(
                     navOptions = navOptions {

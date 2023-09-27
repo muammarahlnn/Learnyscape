@@ -26,12 +26,14 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeNavHost
 internal fun HomeNavigatorRoute(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
+    onCameraActionClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeNavigator(
         onNotificationsClick = onNotificationsClick,
         onClassClick = onClassClick,
+        onCameraActionClick = onCameraActionClick,
         onLogoutButtonClick = onLogoutButtonClick,
         modifier = modifier,
     )
@@ -41,6 +43,7 @@ internal fun HomeNavigatorRoute(
 private fun HomeNavigator(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
+    onCameraActionClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     state: HomeNavigatorState = rememberHomeNavigatorState()
@@ -62,6 +65,7 @@ private fun HomeNavigator(
             state = state,
             onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
+            onCameraActionClick = onCameraActionClick,
             onLogoutButtonClick = onLogoutButtonClick,
             modifier = Modifier.padding(paddingValues)
         )
