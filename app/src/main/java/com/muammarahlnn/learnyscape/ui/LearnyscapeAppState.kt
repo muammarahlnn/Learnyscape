@@ -46,7 +46,7 @@ class LearnyscapeAppState(
         get() = when (currentRoute) {
             CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.onPrimary
             LOGIN_ROUTE -> MaterialTheme.colorScheme.background
-            CAMERA_ROUTE -> MaterialTheme.colorScheme.onBackground
+            CAMERA_ROUTE -> Color.Black
             else -> MaterialTheme.colorScheme.primary
         }
 }
