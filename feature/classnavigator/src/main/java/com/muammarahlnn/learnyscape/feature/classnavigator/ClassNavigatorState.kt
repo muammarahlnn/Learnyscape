@@ -8,11 +8,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.muammarahlnn.learnyscape.feature.aclass.navigation.CLASS_ROUTE
 import com.muammarahlnn.learnyscape.feature.aclass.navigation.navigateToClass
+import com.muammarahlnn.learnyscape.feature.assignment.navigation.ASSIGNMENT_ROUTE
 import com.muammarahlnn.learnyscape.feature.assignment.navigation.navigateToAssignment
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassDestination
+import com.muammarahlnn.learnyscape.feature.member.navigation.MEMBER_ROUTE
 import com.muammarahlnn.learnyscape.feature.member.navigation.navigateToMember
+import com.muammarahlnn.learnyscape.feature.module.navigation.MODULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.module.navigation.navigateToModule
+import com.muammarahlnn.learnyscape.feature.quiz.navigation.QUIZ_ROUTE
 import com.muammarahlnn.learnyscape.feature.quiz.navigation.navigateToQuiz
 
 
@@ -36,6 +41,17 @@ internal class ClassNavigatorState(
     val currentDestination: NavDestination?
         @Composable
         get() = navController.currentBackStackEntryAsState().value?.destination
+
+    val currentClassDestination: ClassDestination?
+        @Composable
+        get() = when (currentDestination?.route) {
+            CLASS_ROUTE -> ClassDestination.CLASS
+            MODULE_ROUTE -> ClassDestination.MODULE
+            ASSIGNMENT_ROUTE -> ClassDestination.ASSIGNMENT
+            QUIZ_ROUTE -> ClassDestination.QUIZ
+            MEMBER_ROUTE -> ClassDestination.MEMBER
+            else -> null
+        }
 
     val classDestinations: List<ClassDestination> = ClassDestination.values().asList()
 
