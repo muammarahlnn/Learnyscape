@@ -20,6 +20,7 @@ include(":core:designsystem")
 include(":core:ui")
 include(":core:model")
 include(":core:common")
+include(":core:network")
 
 include(":feature:home")
 include(":feature:search")
