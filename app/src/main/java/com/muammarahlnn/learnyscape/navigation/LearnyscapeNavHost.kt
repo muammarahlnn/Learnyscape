@@ -123,7 +123,7 @@ fun LearnyscapeNavHost(
             onQuizIsOver = navController::popBackStack
         )
         cameraScreen(
-            onCameraPermissionDenied = navController::popBackStack
+            onCameraClosed = navController::popBackStack
         )
     }
 }

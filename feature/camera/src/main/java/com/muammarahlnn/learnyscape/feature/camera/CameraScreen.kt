@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -35,6 +38,7 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import android.graphics.Color as androidColor
 import androidx.compose.ui.graphics.Color as composeColor
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -44,11 +48,12 @@ import androidx.compose.ui.graphics.Color as composeColor
 
 @Composable
 internal fun CameraRoute(
-    onCameraPermissionDenied: () -> Unit,
+    onCameraClosed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CameraScreen(
-        onCameraPermissionDenied = onCameraPermissionDenied,
+        onCameraPermissionDenied = onCameraClosed,
+        onCameraClosed = onCameraClosed,
         modifier = modifier,
     )
 }
@@ -57,6 +62,7 @@ internal fun CameraRoute(
 @Composable
 private fun CameraScreen(
     onCameraPermissionDenied: () -> Unit,
+    onCameraClosed: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isCameraPermissionGranted by rememberSaveable {
@@ -77,6 +83,7 @@ private fun CameraScreen(
 
     if (isCameraPermissionGranted) {
         CameraContent(
+            onCloseButtonClick = onCameraClosed,
             modifier = modifier,
         )
     } else {
@@ -93,39 +100,85 @@ private fun CameraScreen(
 
 @Composable
 private fun CameraContent(
+    onCloseButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraController = remember { LifecycleCameraController(context) }
 
+    var isTorchEnabled by rememberSaveable { mutableStateOf(false) }
+    cameraController.enableTorch(isTorchEnabled)
+
     Scaffold(
         modifier = modifier.fillMaxSize()
     ) { padding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            AndroidView(
-                factory = { context ->
-                    PreviewView(context).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            MATCH_PARENT,
-                            MATCH_PARENT
-                        )
-                        setBackgroundColor(androidColor.BLACK)
-                        scaleType = PreviewView.ScaleType.FILL_START
-                    }.also { previewView ->
-                        previewView.controller = cameraController
-                        cameraController.bindToLifecycle(lifecycleOwner)
-                    }
-                },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(padding)
-            )
+            ) {
+                AndroidView(
+                    factory = { context ->
+                        PreviewView(context).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                MATCH_PARENT,
+                                MATCH_PARENT
+                            )
+                            setBackgroundColor(androidColor.BLACK)
+                            scaleType = PreviewView.ScaleType.FILL_START
+                        }.also { previewView ->
+                            previewView.controller = cameraController
+                            cameraController.bindToLifecycle(lifecycleOwner)
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+                IconButton(
+                    onClick = onCloseButtonClick,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopStart)
+                ) {
+                    Icon(
+                        painter =  painterResource(id = designSystemR.drawable.ic_close), 
+                        contentDescription = stringResource(id = designSystemR.string.navigation_close_icon_description),
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        isTorchEnabled = !isTorchEnabled
+                    },
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopEnd)
+                ) {
+                    val torchIconModifier = Modifier.size(32.dp)
+                    val torchIconTint = MaterialTheme.colorScheme.onPrimary
+                    if (!isTorchEnabled) {
+                        Icon(
+                            painter =  painterResource(id = R.drawable.ic_flash_on),
+                            contentDescription = stringResource(id = R.string.flash_on_icon_desc),
+                            tint = torchIconTint,
+                            modifier = torchIconModifier,
+                        )
+                    } else {
+                        Icon(
+                            painter =  painterResource(id = R.drawable.ic_flash_off),
+                            contentDescription = stringResource(id = R.string.flash_off_icon_desc),
+                            tint = torchIconTint,
+                            modifier = torchIconModifier,
+                        )
+                    }
+                }
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

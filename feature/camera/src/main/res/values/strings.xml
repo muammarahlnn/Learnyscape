@@ -4,4 +4,6 @@
     <string name="request_camera_permission_dialog_content">We need to access your camera in order to capture photos. Granting camera access will enhance your experience with our app.</string>
     <string name="request_camera_permission_dialog_confirm_text">Allow</string>
     <string name="request_camera_permission_dialog_dismiss_text">Cancel</string>
+    <string name="flash_on_icon_desc">Flash on</string>
+    <string name="flash_off_icon_desc">Flash off</string>
 </resources>
