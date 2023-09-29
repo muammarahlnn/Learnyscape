@@ -7,9 +7,9 @@ import com.muammarahlnn.learnyscape.feature.module.navigation.MODULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.quiz.navigation.QUIZ_ROUTE
 import com.muammarahlnn.learnyscape.feature.aclass.R as classR
 import com.muammarahlnn.learnyscape.feature.assignment.R as assignmentR
+import com.muammarahlnn.learnyscape.feature.member.R as memberR
 import com.muammarahlnn.learnyscape.feature.module.R as moduleR
 import com.muammarahlnn.learnyscape.feature.quiz.R as quizR
-import com.muammarahlnn.learnyscape.feature.member.R as memberR
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -44,5 +44,10 @@ internal enum class ClassDestination(
         route = MEMBER_ROUTE,
         selectedIconId = memberR.drawable.ic_group,
         unselectedIconId = memberR.drawable.ic_group_border,
-    ),
+    );
+
+    override fun toString(): String =
+        name.lowercase().replaceFirstChar { firstChar ->
+            firstChar.uppercase()
+        }
 }
