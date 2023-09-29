@@ -19,11 +19,11 @@ fun NavController.navigateToCamera(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.cameraScreen(
-    onCameraPermissionDenied: () -> Unit,
+    onCameraClosed: () -> Unit,
 ) {
     composable(route = CAMERA_ROUTE) {
         CameraRoute(
-            onCameraPermissionDenied = onCameraPermissionDenied
+            onCameraClosed = onCameraClosed
         )
     }
 }
