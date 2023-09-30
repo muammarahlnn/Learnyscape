@@ -4,6 +4,9 @@ plugins {
     id("kotlinx-serialization")
 }
 
+// gradle.properties variables
+val BASE_URL: String by project
+
 android {
     namespace = "com.muammarahlnn.learnyscape.core.network"
     buildFeatures {
@@ -13,6 +16,9 @@ android {
         unitTests {
             isIncludeAndroidResources = true
         }
+    }
+    defaultConfig {
+        buildConfigField("String", "BASE_URL", BASE_URL)
     }
 }
 
