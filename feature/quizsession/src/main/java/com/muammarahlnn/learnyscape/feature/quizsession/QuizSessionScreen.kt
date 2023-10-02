@@ -57,7 +57,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
-import com.muammarahlnn.learnyscape.core.model.QuizType
+import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import kotlin.math.roundToInt
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 

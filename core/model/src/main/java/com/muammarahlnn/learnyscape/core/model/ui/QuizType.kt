@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.core.model
+package com.muammarahlnn.learnyscape.core.model.ui
 
 
 /**
