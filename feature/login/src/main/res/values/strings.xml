@@ -3,8 +3,11 @@
     <string name="learning_illustration_image_desc">Learning illustration</string>
     <string name="login">Login</string>
     <string name="username_text_field_placeholder">NIM / NIP</string>
+    <string name="password_text_field_placeholder">Password</string>
     <string name="user_icon_desc">Username</string>
     <string name="password_icon_desc">Password</string>
     <string name="visibility_icon_desc">Show password</string>
     <string name="visibility_off_icon_desc">Hide password</string>
+    <string name="error_icon_desc">Error</string>
+    <string name="unfilled_text_field_error_message">Please fill this text field</string>
 </resources>

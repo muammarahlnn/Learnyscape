@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,7 +50,24 @@ internal fun LoginRoute(
     onLoginButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var isLoginButtonEnabled by rememberSaveable { mutableStateOf(false) }
+    val onTextFieldsChange = {
+        isLoginButtonEnabled = username.isNotEmpty() && password.isNotEmpty()
+    }
     LoginScreen(
+        username = username,
+        password = password,
+        isLoginButtonEnabled = isLoginButtonEnabled,
+        onUsernameChange = { newUsername ->
+            username = newUsername
+            onTextFieldsChange()
+        },
+        onPasswordChange = { newPassword ->
+            password = newPassword
+            onTextFieldsChange()
+        },
         onLoginButtonClick = onLoginButtonClick,
         modifier = modifier,
     )
@@ -57,6 +75,11 @@ internal fun LoginRoute(
 
 @Composable
 private fun LoginScreen(
+    username: String,
+    password: String,
+    isLoginButtonEnabled: Boolean,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -96,6 +119,11 @@ private fun LoginScreen(
         )
 
         LoginBody(
+            username = username,
+            password = password,
+            isLoginButtonEnabled = isLoginButtonEnabled,
+            onUsernameChange = onUsernameChange,
+            onPasswordChange = onPasswordChange,
             onLoginButtonClick = onLoginButtonClick,
             modifier = Modifier.constrainAs(loginBody) {
                 top.linkTo(learningIllustrationImageBottomGuideline)
@@ -140,6 +168,11 @@ private fun LearningIllustrationImage(
 
 @Composable
 private fun LoginBody(
+    username: String,
+    password: String,
+    isLoginButtonEnabled: Boolean,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -155,24 +188,34 @@ private fun LoginBody(
             color = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.height(16.dp))
-        UsernameTextField()
+
+        UsernameTextField(
+            username = username,
+            onUsernameChange = onUsernameChange,
+        )
         Spacer(modifier = Modifier.height(10.dp))
-        PasswordTextField()
+
+        PasswordTextField(
+            password = password,
+            onPasswordChange = onPasswordChange
+        )
         Spacer(modifier = Modifier.height(20.dp))
+
         LoginButton(
+            isEnabled = isLoginButtonEnabled,
             onButtonClick = onLoginButtonClick,
         )
     }
 }
 
 @Composable
-private fun UsernameTextField() {
-    var usernameValue by rememberSaveable { mutableStateOf("") }
+private fun UsernameTextField(
+    username: String,
+    onUsernameChange: (String) -> Unit,
+) {
     OutlinedTextField(
-        value = usernameValue,
-        onValueChange = { value ->
-            usernameValue = value
-        },
+        value = username,
+        onValueChange = onUsernameChange,
         placeholder = {
             Text(text = stringResource(id = R.string.username_text_field_placeholder))
         },
@@ -202,16 +245,16 @@ private fun UsernameTextField() {
 }
 
 @Composable
-private fun PasswordTextField() {
-    var passwordValue by rememberSaveable { mutableStateOf("") }
-    var showPassword by rememberSaveable { mutableStateOf(false) }
+private fun PasswordTextField(
+    password: String,
+    onPasswordChange: (String) -> Unit,
+) {
+    var showPassword by remember { mutableStateOf(false) }
     OutlinedTextField(
-        value = passwordValue,
-        onValueChange = { value ->
-            passwordValue = value
-        },
+        value = password,
+        onValueChange = onPasswordChange,
         placeholder = {
-            Text(text = stringResource(id = R.string.username_text_field_placeholder))
+            Text(text = stringResource(id = R.string.password_text_field_placeholder))
         },
         leadingIcon = {
             Icon(
@@ -221,7 +264,7 @@ private fun PasswordTextField() {
         },
         trailingIcon = {
             IconButton(
-                onClick = { 
+                onClick = {
                     showPassword = !showPassword
                 }
             ) {
@@ -265,13 +308,16 @@ private fun PasswordTextField() {
     )
 }
 
+
 @Composable
 private fun LoginButton(
+    isEnabled: Boolean,
     onButtonClick: () -> Unit,
 ) {
     Button(
         onClick = onButtonClick,
         shape = RoundedCornerShape(10.dp),
+        enabled = isEnabled,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
