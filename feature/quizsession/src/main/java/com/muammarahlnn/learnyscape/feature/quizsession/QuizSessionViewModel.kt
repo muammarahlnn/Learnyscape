@@ -3,7 +3,7 @@ package com.muammarahlnn.learnyscape.feature.quizsession
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.muammarahlnn.learnyscape.core.model.QuizType
+import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.QuizSessionArgs
 
 
