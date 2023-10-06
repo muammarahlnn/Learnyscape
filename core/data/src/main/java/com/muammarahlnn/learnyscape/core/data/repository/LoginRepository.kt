@@ -15,4 +15,6 @@ interface LoginRepository {
         username: String,
         password: String,
     ): Flow<Result<LoginModel>>
+
+    suspend fun saveAccessToken(accessToken: String)
 }

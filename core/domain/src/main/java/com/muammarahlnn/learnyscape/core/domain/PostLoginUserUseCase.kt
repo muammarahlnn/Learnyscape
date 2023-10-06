@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain
 
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
+import com.muammarahlnn.learnyscape.core.domain.base.BaseUseCase
 import com.muammarahlnn.learnyscape.core.model.data.LoginModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
