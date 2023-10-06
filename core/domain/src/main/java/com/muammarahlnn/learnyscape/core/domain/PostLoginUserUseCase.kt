@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.domain
 
+import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.model.data.LoginModel
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +13,12 @@ import javax.inject.Inject
  */
 class PostLoginUserUseCase @Inject constructor(
     private val loginRepository: LoginRepository
-) : BaseUseCase<PostLoginUserUseCase.Params, LoginModel> {
+) : BaseUseCase<PostLoginUserUseCase.Params, Result<LoginModel>> {
 
-    override fun execute(params: Params): Flow<LoginModel> =
+    override fun execute(params: Params): Flow<Result<LoginModel>> =
         loginRepository.postLoginUser(
             username = params.username,
-            password = params.password
+            password = params.password,
         )
 
     class Params(

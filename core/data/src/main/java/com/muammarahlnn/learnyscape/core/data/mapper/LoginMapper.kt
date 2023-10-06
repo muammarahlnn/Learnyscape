@@ -9,7 +9,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
  * @file LoginMapper, 02/10/2023 16.48 by Muammar Ahlan Abimanyu
  */
 
-internal fun LoginResponse.toLoginModel() = LoginModel(
+fun LoginResponse.toLoginModel() = LoginModel(
     accessToken = accessToken,
     refreshToken = refreshToken,
 )
