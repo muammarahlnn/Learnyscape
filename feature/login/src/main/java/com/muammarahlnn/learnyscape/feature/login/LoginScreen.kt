@@ -14,13 +14,19 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
 
 
@@ -49,14 +57,18 @@ import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
 internal fun LoginRoute(
     onLoginButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
+    val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var isLoginButtonEnabled by rememberSaveable { mutableStateOf(false) }
     val onTextFieldsChange = {
         isLoginButtonEnabled = username.isNotEmpty() && password.isNotEmpty()
     }
+    
     LoginScreen(
+        loginUiState = loginUiState,
         username = username,
         password = password,
         isLoginButtonEnabled = isLoginButtonEnabled,
@@ -68,7 +80,12 @@ internal fun LoginRoute(
             password = newPassword
             onTextFieldsChange()
         },
-        onLoginButtonClick = onLoginButtonClick,
+        onLoginButtonClick = {
+            viewModel.userLogin(username,password)
+        },
+        onPostLoginUserSuccess = {
+
+        },
         modifier = modifier,
     )
 }
@@ -78,6 +95,61 @@ private fun LoginScreen(
     username: String,
     password: String,
     isLoginButtonEnabled: Boolean,
+    onUsernameChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginButtonClick: () -> Unit,
+    onPostLoginUserSuccess: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    loginUiState: LoginUiState = LoginUiState.None,
+) {
+    val isLoading = loginUiState is LoginUiState.Loading
+    val isSuccess = loginUiState is LoginUiState.Success
+    val isError = loginUiState is LoginUiState.Error
+    LaunchedEffect(isSuccess) {
+        if (isSuccess) {
+            val accessToken = (loginUiState as LoginUiState.Success)
+                .loginModel.accessToken
+            onPostLoginUserSuccess(accessToken)
+        }
+    }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(isError) {
+        if (isError) {
+            val errorMessage = (loginUiState as LoginUiState.Error).message
+            snackbarHostState.showSnackbar(
+                message = errorMessage,
+                withDismissAction = true,
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { padding ->
+        LoginContent(
+            username = username,
+            password = password,
+            isLoginButtonEnabled = isLoginButtonEnabled,
+            isLoading = isLoading,
+            onUsernameChange = onUsernameChange,
+            onPasswordChange = onPasswordChange,
+            onLoginButtonClick = onLoginButtonClick,
+            modifier = modifier.padding(padding),
+        )
+    }
+}
+
+
+@Composable
+private fun LoginContent(
+    username: String,
+    password: String,
+    isLoginButtonEnabled: Boolean,
+    isLoading: Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
@@ -122,6 +194,7 @@ private fun LoginScreen(
             username = username,
             password = password,
             isLoginButtonEnabled = isLoginButtonEnabled,
+            isLoading = isLoading,
             onUsernameChange = onUsernameChange,
             onPasswordChange = onPasswordChange,
             onLoginButtonClick = onLoginButtonClick,
@@ -136,7 +209,6 @@ private fun LoginScreen(
         )
     }
 }
-
 @Composable
 private fun LearnyscapeHeader(
     modifier: Modifier = Modifier,
@@ -171,6 +243,7 @@ private fun LoginBody(
     username: String,
     password: String,
     isLoginButtonEnabled: Boolean,
+    isLoading: Boolean,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
@@ -203,6 +276,7 @@ private fun LoginBody(
 
         LoginButton(
             isEnabled = isLoginButtonEnabled,
+            isLoading = isLoading,
             onButtonClick = onLoginButtonClick,
         )
     }
@@ -312,18 +386,27 @@ private fun PasswordTextField(
 @Composable
 private fun LoginButton(
     isEnabled: Boolean,
+    isLoading: Boolean,
     onButtonClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onButtonClick,
         shape = RoundedCornerShape(10.dp),
-        enabled = isEnabled,
-        modifier = Modifier.fillMaxWidth()
+        enabled = if (isLoading) false else isEnabled,
+        modifier = modifier.fillMaxWidth()
     ) {
-        Text(
-            text = stringResource(id = R.string.login),
-            fontSize = 16.sp,
-            modifier = Modifier.padding(vertical = 4.dp)
-        )
+        if (isLoading) {
+            CircularProgressIndicator(
+                color = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(28.dp)
+            )
+        } else {
+            Text(
+                text = stringResource(id = R.string.login),
+                fontSize = 16.sp,
+                modifier = Modifier.padding(vertical = 4.dp)
+            )
+        }
     }
 }

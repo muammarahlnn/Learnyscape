@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.base.NetworkResult
 import kotlinx.coroutines.flow.Flow
 
 
@@ -13,5 +14,5 @@ interface LoginNetworkDataSource {
     fun postLogin(
         username: String,
         password: String,
-    ): Flow<LoginResponse>
+    ): Flow<NetworkResult<LoginResponse>>
 }
