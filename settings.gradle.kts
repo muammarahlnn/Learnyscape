@@ -23,6 +23,7 @@ include(":core:common")
 include(":core:network")
 include(":core:data")
 include(":core:domain")
+include(":core:datastore")
 
 include(":feature:home")
 include(":feature:search")
