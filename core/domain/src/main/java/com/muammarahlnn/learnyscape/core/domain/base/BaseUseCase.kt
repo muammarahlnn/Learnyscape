@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.core.domain
+package com.muammarahlnn.learnyscape.core.domain.base
 
 import kotlinx.coroutines.flow.Flow
 

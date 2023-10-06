@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.mapper.toLoginModel
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
+import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
 import com.muammarahlnn.learnyscape.core.model.data.LoginModel
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.model.response.base.NetworkResult
@@ -18,6 +19,7 @@ import javax.inject.Inject
  */
 class LoginRepositoryImpl @Inject constructor(
     private val loginNetworkDataSource: LoginNetworkDataSource,
+    private val learnyscapePreferences: LearnyscapePreferencesDataSource,
 ) : LoginRepository {
 
     override fun postLoginUser(
@@ -40,4 +42,8 @@ class LoginRepositoryImpl @Inject constructor(
         }.onStart {
             emit(Result.Loading)
         }
+
+    override suspend fun saveAccessToken(accessToken: String) {
+        learnyscapePreferences.saveAccessToken(accessToken)
+    }
 }
