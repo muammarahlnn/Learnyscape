@@ -1,11 +1,14 @@
 package com.muammarahlnn.learnyscape.core.network.di
 
+import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
+import com.muammarahlnn.learnyscape.core.network.interceptor.NetworkConnectionInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -40,7 +43,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient(): OkHttpClient =
+    fun providesOkHttpClient(@ApplicationContext context: Context): OkHttpClient =
         OkHttpClient.Builder()
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
@@ -49,6 +52,7 @@ object NetworkModule {
                     }
                 }
             )
+            .addInterceptor(NetworkConnectionInterceptor(context))
             .connectTimeout(120, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
             .build()

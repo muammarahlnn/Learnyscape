@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.model.response.base
 
+import com.muammarahlnn.learnyscape.core.network.interceptor.NoConnectivityException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.HttpException
@@ -28,6 +29,13 @@ fun <T: Any> handleApi(
         val response = execute()
         val data = response.data
         emit(NetworkResult.Success(data))
+    } catch (e: NoConnectivityException) {
+        emit(
+            NetworkResult.Error(
+                code = "503",
+                message = e.message
+            )
+        )
     } catch (e: HttpException) {
         val responseBody = e.response()?.errorBody()?.string()
         val errorResponse = responseBody?.convertToErrorResponse()
