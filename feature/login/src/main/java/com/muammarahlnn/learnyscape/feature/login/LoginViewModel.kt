@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.domain.PostLoginUserUseCase
+import com.muammarahlnn.learnyscape.core.domain.SaveAccessTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val postLoginUserUseCase: PostLoginUserUseCase,
+    private val postLoginUser: PostLoginUserUseCase,
+    private val saveAccessToken: SaveAccessTokenUseCase,
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow<LoginUiState>(LoginUiState.None)
@@ -32,7 +34,7 @@ class LoginViewModel @Inject constructor(
         password: String,
     ) {
         viewModelScope.launch {
-            postLoginUserUseCase.execute(
+            postLoginUser.execute(
                 params = PostLoginUserUseCase.Params(
                     username = username,
                     password = password,
@@ -65,6 +67,16 @@ class LoginViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun saveAccessToken(accessToken: String) {
+        viewModelScope.launch {
+            saveAccessToken.execute(
+                params = SaveAccessTokenUseCase.Params(
+                    accessToken = accessToken,
+                )
+            )
         }
     }
 }
