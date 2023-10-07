@@ -83,8 +83,8 @@ internal fun LoginRoute(
         onLoginButtonClick = {
             viewModel.userLogin(username,password)
         },
-        onPostLoginUserSuccess = {
-
+        onPostLoginUserSuccess = { accessToken ->
+            viewModel.saveAccessToken(accessToken)
         },
         modifier = modifier,
     )
