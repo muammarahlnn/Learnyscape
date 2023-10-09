@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
 /**
@@ -141,6 +142,7 @@ private fun ProfileContent(
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
@@ -177,13 +179,13 @@ private fun ProfileContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // hardcoded text just for dummy purpose
+            val user = LocalUserModel.current
             Text(
-                text = "Muammar Ahlan Abimanyu",
+                text = user.fullName,
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
-                text = "H071191032",
+                text = user.username,
                 style = MaterialTheme.typography.bodyLarge
             )
 
