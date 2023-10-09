@@ -6,6 +6,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.muammarahlnn.learnyscape.core.datastore.model.UserEntity
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 
@@ -22,12 +25,45 @@ class LearnyscapePreferencesDataSource @Inject constructor(
 
     private object PreferencesKeys {
 
-        val ACCESS_TOKEN = stringPreferencesKey("access_token")
+        val ID = stringPreferencesKey("id")
+
+        val TOKEN = stringPreferencesKey("token")
+
+        val FULL_NAME = stringPreferencesKey("full_name")
+
+        val USERNAME = stringPreferencesKey("username")
+
+        val ROLE = stringPreferencesKey("role")
     }
+
+    suspend fun saveUser(user: UserEntity) {
+        preferences.edit { pref ->
+            pref[PreferencesKeys.ID] = user.id
+            pref[PreferencesKeys.FULL_NAME] = user.fullName
+            pref[PreferencesKeys.USERNAME] = user.username
+            pref[PreferencesKeys.ROLE] = user.role
+        }
+    }
+
+    fun getUser(): Flow<UserEntity> =
+        preferences.data.map { pref ->
+            UserEntity(
+                id = pref[PreferencesKeys.ID] ?: "",
+                username = pref[PreferencesKeys.USERNAME] ?: "",
+                fullName = pref[PreferencesKeys.FULL_NAME] ?: "",
+                role = pref[PreferencesKeys.ROLE] ?: "",
+            )
+        }
 
     suspend fun saveAccessToken(accessToken: String) {
         preferences.edit { pref ->
-            pref[PreferencesKeys.ACCESS_TOKEN] = accessToken
+            pref[PreferencesKeys.TOKEN] = accessToken
         }
     }
+
+    fun getAccessToken(): Flow<String> =
+        preferences.data.map { pref ->
+            pref[PreferencesKeys.TOKEN] ?: ""
+        }
+
 }

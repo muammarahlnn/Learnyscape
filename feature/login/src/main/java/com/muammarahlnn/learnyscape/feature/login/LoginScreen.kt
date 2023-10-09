@@ -54,8 +54,7 @@ import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
  */
 
 @Composable
-internal fun LoginRoute(
-    onLoginButtonClick: () -> Unit,
+fun LoginRoute(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
@@ -84,7 +83,7 @@ internal fun LoginRoute(
             viewModel.userLogin(username,password)
         },
         onPostLoginUserSuccess = { accessToken ->
-            viewModel.saveAccessToken(accessToken)
+            viewModel.saveUser(accessToken)
         },
         modifier = modifier,
     )
@@ -103,16 +102,16 @@ private fun LoginScreen(
     loginUiState: LoginUiState = LoginUiState.None,
 ) {
     val isLoading = loginUiState is LoginUiState.Loading
-    val isSuccess = loginUiState is LoginUiState.Success
-    val isError = loginUiState is LoginUiState.Error
-    LaunchedEffect(isSuccess) {
-        if (isSuccess) {
+    val isSuccessPostLogin = loginUiState is LoginUiState.Success
+    LaunchedEffect(isSuccessPostLogin) {
+        if (isSuccessPostLogin) {
             val accessToken = (loginUiState as LoginUiState.Success)
                 .loginModel.accessToken
             onPostLoginUserSuccess(accessToken)
         }
     }
 
+    val isError = loginUiState is LoginUiState.Error
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(isError) {
         if (isError) {

@@ -13,7 +13,7 @@ sealed interface LoginUiState {
 
     data class Error(val message: String) : LoginUiState
 
-    object Loading : LoginUiState
+    data object Loading : LoginUiState
 
-    object None : LoginUiState
+    data object None : LoginUiState
 }
