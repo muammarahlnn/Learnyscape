@@ -13,9 +13,6 @@ import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavig
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.homeNavigator
-import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.navigateToHomeNavigator
-import com.muammarahlnn.learnyscape.feature.login.navigation.LOGIN_ROUTE
-import com.muammarahlnn.learnyscape.feature.login.navigation.loginScreen
 import com.muammarahlnn.learnyscape.feature.login.navigation.navigateToLogin
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
@@ -35,7 +32,7 @@ import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
 fun LearnyscapeNavHost(
     appState: LearnyscapeAppState,
     modifier: Modifier = Modifier,
-    startDestination: String = LOGIN_ROUTE,
+    startDestination: String = HOME_NAVIGATOR_ROUTE,
 ) {
     val navController = appState.navController
     NavHost(
@@ -67,17 +64,6 @@ fun LearnyscapeNavHost(
             )
         }
     ) {
-        loginScreen(
-            onLoginButtonClick = {
-                navController.navigateToHomeNavigator(
-                    navOptions = navOptions {
-                        popUpTo(LOGIN_ROUTE) {
-                            inclusive = true
-                        }
-                    }
-                )
-            }
-        )
         homeNavigator(
             onNotificationsClick = {
                 navController.navigateToNotifications()

@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.domain.PostLoginUserUseCase
-import com.muammarahlnn.learnyscape.core.domain.SaveAccessTokenUseCase
+import com.muammarahlnn.learnyscape.core.domain.SaveUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val postLoginUser: PostLoginUserUseCase,
-    private val saveAccessToken: SaveAccessTokenUseCase,
+    private val saveUser: SaveUserUseCase
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow<LoginUiState>(LoginUiState.None)
@@ -70,13 +70,42 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun saveAccessToken(accessToken: String) {
+    fun saveUser(accessToken: String) {
         viewModelScope.launch {
-            saveAccessToken.execute(
-                params = SaveAccessTokenUseCase.Params(
-                    accessToken = accessToken,
+            saveUser.execute(
+                params = SaveUserUseCase.Params(
+                    token = accessToken
                 )
-            )
+            ).collect { result ->
+                when (result) {
+                    Result.Loading -> {
+                        _loginUiState.update {
+                            LoginUiState.Loading
+                        }
+                    }
+
+                    is Result.Success -> {
+                        val userModel = result.data
+                        Log.d(
+                            "LoginViewModel",
+                            "User logged in: ${userModel.fullName} role -> ${userModel.role.name}"
+                        )
+                    }
+
+                    is Result.Error -> {
+                        _loginUiState.update {
+                            LoginUiState.Error(result.message)
+                        }
+                    }
+
+                    is Result.Exception -> {
+                        _loginUiState.update {
+                            Log.e("LoginViewModel", result.exception?.message.toString())
+                            LoginUiState.Error("System is busy, please try again later")
+                        }
+                    }
+                }
+            }
         }
     }
 }

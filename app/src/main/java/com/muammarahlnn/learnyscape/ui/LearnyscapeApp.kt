@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
+import com.muammarahlnn.learnyscape.feature.login.LoginRoute
 import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
 
 
@@ -26,6 +27,7 @@ import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LearnyscapeApp(
+    isLoggedIn: Boolean,
     appState: LearnyscapeAppState = rememberLearnyscapeAppState(),
 ) {
     val systemUiController = rememberSystemUiController()
@@ -38,20 +40,28 @@ fun LearnyscapeApp(
             color = statusBarColor
         )
     }
-    
+
     LearnyscapeBackground {
         Scaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
-            LearnyscapeNavHost(
-                appState = appState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .consumeWindowInsets(padding)
-            )
+            if (isLoggedIn) {
+                LearnyscapeNavHost(
+                    appState = appState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .consumeWindowInsets(padding)
+                )
+            } else {
+                LoginRoute(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                )
+            }
         }
     }
 }
