@@ -18,4 +18,6 @@ interface LoginRepository {
     ): Flow<Result<LoginModel>>
 
     fun saveUser(token: String): Flow<Result<UserModel>>
+
+    fun isUserLoggedIn(): Flow<Boolean>
 }

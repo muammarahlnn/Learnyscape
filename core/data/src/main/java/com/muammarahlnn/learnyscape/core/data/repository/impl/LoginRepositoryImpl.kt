@@ -67,4 +67,9 @@ class LoginRepositoryImpl @Inject constructor(
         }.onStart {
             emit(Result.Loading)
         }
+
+    override fun isUserLoggedIn(): Flow<Boolean> =
+        learnyscapePreferences.getAccessToken().map { accessToken ->
+            accessToken.isNotEmpty()
+        }
 }
