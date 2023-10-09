@@ -37,17 +37,6 @@ fun LearnyscapeApp(
         getLoggedInUser = getLoggedInUser,
     ),
 ) {
-    val systemUiController = rememberSystemUiController()
-    val statusBarColor by animateColorAsState(
-        targetValue = appState.currentStatusBarColor,
-        label = "Status bar color"
-    )
-    LaunchedEffect(systemUiController, statusBarColor) {
-        systemUiController.setStatusBarColor(
-            color = statusBarColor
-        )
-    }
-
     LearnyscapeBackground {
         Scaffold(
             containerColor = Color.Transparent,
@@ -55,6 +44,17 @@ fun LearnyscapeApp(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
             if (isLoggedIn) {
+                val systemUiController = rememberSystemUiController()
+                val statusBarColor by animateColorAsState(
+                    targetValue = appState.currentStatusBarColor,
+                    label = "Status bar color"
+                )
+                LaunchedEffect(systemUiController, statusBarColor) {
+                    systemUiController.setStatusBarColor(
+                        color = statusBarColor
+                    )
+                }
+
                 val user by appState.user.collectAsStateWithLifecycle()
                 CompositionLocalProvider(LocalUserModel provides user) {
                     LearnyscapeNavHost(
