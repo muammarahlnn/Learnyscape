@@ -8,6 +8,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
+import com.muammarahlnn.learnyscape.core.model.data.UserModel
+import com.muammarahlnn.learnyscape.core.model.data.UserRole
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHome
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeDestination
 import com.muammarahlnn.learnyscape.feature.profile.navigation.navigateToProfile
@@ -22,21 +25,42 @@ import com.muammarahlnn.learnyscape.feature.search.navigation.navigateToSearch
 
 @Composable
 internal fun rememberHomeNavigatorState(
-    navController: NavHostController = rememberNavController()
-): HomeNavigatorState = remember(navController) {
-    HomeNavigatorState(navController)
+    navController: NavHostController = rememberNavController(),
+    user: UserModel = LocalUserModel.current,
+): HomeNavigatorState {
+    return remember(
+        navController,
+        user,
+    ) {
+        HomeNavigatorState(
+            navController,
+            user,
+        )
+    }
 }
 
 @Stable
 internal class HomeNavigatorState(
     val navController: NavHostController,
+    private val user: UserModel,
 ) {
 
     val currentDestination: NavDestination?
         @Composable
         get() = navController.currentBackStackEntryAsState().value?.destination
 
-    val homeDestinations: List<HomeDestination> = HomeDestination.values().asList()
+    val homeDestinations = mutableListOf(
+        HomeDestination.HOME,
+        HomeDestination.SCHEDULE,
+        HomeDestination.PROFILE,
+    ).also {
+        if (user.role == UserRole.STUDENT) {
+            it.add(
+                index = HomeDestination.SEARCH.ordinal,
+                element = HomeDestination.SEARCH
+            )
+        }
+    }.toList()
 
     fun navigateToHomeDestination(homeDestination: HomeDestination) {
         val navOptions = navOptions {
