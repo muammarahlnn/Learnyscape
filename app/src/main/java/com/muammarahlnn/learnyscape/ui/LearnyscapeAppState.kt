@@ -15,7 +15,6 @@ import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.feature.camera.navigation.CAMERA_ROUTE
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.CLASS_NAVIGATOR_ROUTE
-import com.muammarahlnn.learnyscape.feature.login.navigation.LOGIN_ROUTE
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -71,7 +70,6 @@ class LearnyscapeAppState(
         @Composable
         get() = when (currentRoute) {
             CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.onPrimary
-            LOGIN_ROUTE -> MaterialTheme.colorScheme.background
             CAMERA_ROUTE -> Color.Black
             else -> MaterialTheme.colorScheme.primary
         }
