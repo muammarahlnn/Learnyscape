@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
+import com.muammarahlnn.learnyscape.core.domain.GetLoggedInUserUseCase
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.feature.login.LoginRoute
 import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
 
@@ -28,7 +32,10 @@ import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
 @Composable
 fun LearnyscapeApp(
     isLoggedIn: Boolean,
-    appState: LearnyscapeAppState = rememberLearnyscapeAppState(),
+    getLoggedInUser: GetLoggedInUserUseCase,
+    appState: LearnyscapeAppState = rememberLearnyscapeAppState(
+        getLoggedInUser = getLoggedInUser,
+    ),
 ) {
     val systemUiController = rememberSystemUiController()
     val statusBarColor by animateColorAsState(
@@ -48,13 +55,16 @@ fun LearnyscapeApp(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
             if (isLoggedIn) {
-                LearnyscapeNavHost(
-                    appState = appState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .consumeWindowInsets(padding)
-                )
+                val user by appState.user.collectAsStateWithLifecycle()
+                CompositionLocalProvider(LocalUserModel provides user) {
+                    LearnyscapeNavHost(
+                        appState = appState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .consumeWindowInsets(padding)
+                    )
+                }
             } else {
                 LoginRoute(
                     modifier = Modifier
