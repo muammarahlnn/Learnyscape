@@ -22,7 +22,6 @@ internal fun HomeNavHost(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
-    onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -42,7 +41,6 @@ internal fun HomeNavHost(
         )
         profileScreen(
             onCameraActionClick = onCameraActionClick,
-            onLogoutButtonClick = onLogoutButtonClick,
         )
     }
 }
