@@ -22,7 +22,6 @@ fun UserResponse.toUserModel() = UserModel(
     id = id,
     username = username,
     fullName = fullName,
-    email = email,
     role = UserRole.getRole(role)
 )
 
@@ -33,3 +32,9 @@ fun UserResponse.toUserEntity() = UserEntity(
     role = role,
 )
 
+fun UserEntity.toUserModel() = UserModel(
+    id = id,
+    username = username,
+    fullName = fullName,
+    role = UserRole.getRole(role)
+)
