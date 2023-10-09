@@ -49,7 +49,6 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBar
 @Composable
 internal fun ProfileRoute(
     onCameraActionClick: () -> Unit,
-    onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
