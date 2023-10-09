@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile">Profile</string>
-    <string name="logout">Logout</string>
+    <string name="logout">Log out</string>
     <string name="camera_icon_description">Camera</string>
-    <string name="logout_icon_description">Logout</string>
     <string name="gallery_icon_description">Gallery</string>
+    <string name="logout_dialog_text">Are you sure want to log out?</string>
 </resources>

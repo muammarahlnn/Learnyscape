@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 
@@ -55,8 +56,12 @@ internal fun ProfileRoute(
     var showChangePhotoProfileBottomSheet by rememberSaveable {
         mutableStateOf(false)
     }
+    var showLogoutDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
     ProfileScreen(
         showChangePhotoProfileBottomSheet = showChangePhotoProfileBottomSheet,
+        showLogoutDialog = showLogoutDialog,
         onChangePhotoProfileButtonClick = {
             showChangePhotoProfileBottomSheet = true
         },
@@ -67,7 +72,13 @@ internal fun ProfileRoute(
         onDismissChangePhotoProfileBottomSheet = {
           showChangePhotoProfileBottomSheet = false
         },
-        onLogoutButtonClick = viewModel::logout,
+        onLogoutButtonClick = {
+            showLogoutDialog = true
+        },
+        onConfirmLogoutDialog = viewModel::logout,
+        onDismissLogoutDialog = {
+            showLogoutDialog = false
+        },
         modifier = modifier,
     )
 }
@@ -76,10 +87,13 @@ internal fun ProfileRoute(
 @Composable
 private fun ProfileScreen(
     showChangePhotoProfileBottomSheet: Boolean,
+    showLogoutDialog: Boolean,
     onChangePhotoProfileButtonClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onDismissChangePhotoProfileBottomSheet: () -> Unit,
     onLogoutButtonClick: () -> Unit,
+    onConfirmLogoutDialog: () -> Unit,
+    onDismissLogoutDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (showChangePhotoProfileBottomSheet) {
@@ -89,6 +103,13 @@ private fun ProfileScreen(
                 // will implement later
             },
             onDismiss = onDismissChangePhotoProfileBottomSheet,
+        )
+    }
+
+    if (showLogoutDialog) {
+        LogoutDialog(
+            onLogout = onConfirmLogoutDialog,
+            onDismiss = onDismissLogoutDialog,
         )
     }
 
@@ -177,7 +198,7 @@ private fun ProfileContent(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_logout),
-                    contentDescription = stringResource(id = R.string.logout_icon_description)
+                    contentDescription = stringResource(id = R.string.logout)
                 )
                 Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
                 Text(text = stringResource(id = R.string.logout))
@@ -252,4 +273,20 @@ private fun ChangePhotoProfileBottomSheet(
             }
         }
     }
+}
+
+@Composable
+private fun LogoutDialog(
+    onLogout: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseAlertDialog(
+        title = stringResource(id = R.string.logout),
+        dialogText = stringResource(id = R.string.logout_dialog_text),
+        onConfirm = onLogout,
+        onDismiss = onDismiss,
+        confirmText = stringResource(id = R.string.logout),
+        modifier = modifier,
+    )
 }
