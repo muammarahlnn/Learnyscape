@@ -35,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
 
@@ -49,6 +50,7 @@ internal fun ProfileRoute(
     onCameraActionClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     var showChangePhotoProfileBottomSheet by rememberSaveable {
         mutableStateOf(false)
@@ -65,7 +67,7 @@ internal fun ProfileRoute(
         onDismissChangePhotoProfileBottomSheet = {
           showChangePhotoProfileBottomSheet = false
         },
-        onLogoutButtonClick = onLogoutButtonClick,
+        onLogoutButtonClick = viewModel::logout,
         modifier = modifier,
     )
 }

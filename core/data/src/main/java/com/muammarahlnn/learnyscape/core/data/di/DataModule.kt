@@ -1,7 +1,9 @@
 package com.muammarahlnn.learnyscape.core.data.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
+import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.LoginRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.ProfileRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,9 @@ interface DataModule {
     fun bindsLoginRepository(
         loginRepository: LoginRepositoryImpl
     ): LoginRepository
+
+    @Binds
+    fun bindsProfileRepository(
+        profileRepository: ProfileRepositoryImpl
+    ): ProfileRepository
 }
