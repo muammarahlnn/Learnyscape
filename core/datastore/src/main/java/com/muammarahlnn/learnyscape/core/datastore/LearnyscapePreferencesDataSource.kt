@@ -45,6 +45,16 @@ class LearnyscapePreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun removeUser() {
+        preferences.edit { pref ->
+            pref[PreferencesKeys.ID] = ""
+            pref[PreferencesKeys.TOKEN] = ""
+            pref[PreferencesKeys.FULL_NAME] = ""
+            pref[PreferencesKeys.USERNAME] = ""
+            pref[PreferencesKeys.ROLE] = ""
+        }
+    }
+
     fun getUser(): Flow<UserEntity> =
         preferences.data.map { pref ->
             UserEntity(
