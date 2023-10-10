@@ -22,6 +22,7 @@ internal fun HomeNavHost(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -35,7 +36,9 @@ internal fun HomeNavHost(
             onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
         )
-        searchScreen()
+        searchScreen(
+            onPendingClassRequestClick = onPendingClassRequestClick,
+        )
         scheduleScreen(
             onClassClick = onClassClick
         )
