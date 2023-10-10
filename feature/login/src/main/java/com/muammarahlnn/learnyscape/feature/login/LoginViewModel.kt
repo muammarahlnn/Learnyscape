@@ -90,6 +90,10 @@ class LoginViewModel @Inject constructor(
                             "LoginViewModel",
                             "User logged in: ${userModel.fullName} role -> ${userModel.role.name}"
                         )
+
+                        _loginUiState.update {
+                            LoginUiState.None
+                        }
                     }
 
                     is Result.Error -> {
