@@ -27,12 +27,14 @@ internal fun HomeNavigatorRoute(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeNavigator(
         onNotificationsClick = onNotificationsClick,
         onClassClick = onClassClick,
         onCameraActionClick = onCameraActionClick,
+        onPendingClassRequestClick = onPendingClassRequestClick,
         modifier = modifier,
     )
 }
@@ -42,6 +44,7 @@ private fun HomeNavigator(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
     state: HomeNavigatorState = rememberHomeNavigatorState()
 ) {
@@ -63,6 +66,7 @@ private fun HomeNavigator(
             onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
             onCameraActionClick = onCameraActionClick,
+            onPendingClassRequestClick = onPendingClassRequestClick,
             modifier = Modifier.padding(paddingValues)
         )
     }

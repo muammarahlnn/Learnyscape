@@ -53,6 +53,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun SearchRoute(
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showJoinRequestDialog by rememberSaveable {
@@ -67,6 +68,7 @@ internal fun SearchRoute(
         onDismissJoinRequestDialog = {
             showJoinRequestDialog = false
         },
+        onPendingClassRequestClick = onPendingClassRequestClick,
         modifier = modifier,
     )
 }
@@ -77,6 +79,7 @@ private fun SearchScreen(
     showJoinRequestDialog: Boolean,
     onClassItemClick: () -> Unit,
     onDismissJoinRequestDialog: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (showJoinRequestDialog) {
@@ -88,7 +91,8 @@ private fun SearchScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Column(modifier = modifier.fillMaxSize()) {
         SearchTopAppBar(
-            scrollBehavior = scrollBehavior
+            scrollBehavior = scrollBehavior,
+            onPendingClassRequestClick = onPendingClassRequestClick,
         )
 
         SearchTextField()
@@ -103,13 +107,23 @@ private fun SearchScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchTopAppBar(
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     LearnyscapeTopAppBar(
-        title = R.string.search,
-        scrollBehavior = scrollBehavior,
+        title = {
+            Text(
+                text = stringResource(id = R.string.search)
+            )
+        },
+        actionIconRes = R.drawable.ic_hourglass,
+        actionIconContentDescription = stringResource(
+            id = R.string.pending_request_icon_description
+        ),
+        onActionClick = onPendingClassRequestClick,
         colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
+        scrollBehavior = scrollBehavior,
         modifier = modifier
     )
 }

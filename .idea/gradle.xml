@@ -47,6 +47,7 @@
             <option value="$PROJECT_DIR$/feature/member" />
             <option value="$PROJECT_DIR$/feature/module" />
             <option value="$PROJECT_DIR$/feature/notifications" />
+            <option value="$PROJECT_DIR$/feature/pendingrequest" />
             <option value="$PROJECT_DIR$/feature/profile" />
             <option value="$PROJECT_DIR$/feature/quiz" />
             <option value="$PROJECT_DIR$/feature/quizsession" />

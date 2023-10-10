@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":feature:quizsession"))
     implementation(project(":feature:login"))
     implementation(project(":feature:camera"))
+    implementation(project(":feature:pendingrequest"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))

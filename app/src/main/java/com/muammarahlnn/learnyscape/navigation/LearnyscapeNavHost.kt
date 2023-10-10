@@ -14,6 +14,8 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGA
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.homeNavigator
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
+import com.muammarahlnn.learnyscape.feature.pendingrequest.navigation.navigateToPendingRequest
+import com.muammarahlnn.learnyscape.feature.pendingrequest.navigation.pendingRequestScreen
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.navigateToQuizSession
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.quizSessionScreen
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.navigateToResourceDetails
@@ -72,6 +74,9 @@ fun LearnyscapeNavHost(
             onCameraActionClick = {
                 navController.navigateToCamera()
             },
+            onPendingClassRequestClick = {
+                navController.navigateToPendingRequest()
+            }
         )
         classNavigator(
             onResourceClassClick = navigateToResourceDetails(navController),
@@ -99,6 +104,9 @@ fun LearnyscapeNavHost(
         )
         cameraScreen(
             onCameraClosed = navController::popBackStack
+        )
+        pendingRequestScreen(
+            onBackClick = navController::popBackStack
         )
     }
 }

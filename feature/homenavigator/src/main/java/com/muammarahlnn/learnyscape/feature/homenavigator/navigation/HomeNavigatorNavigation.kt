@@ -16,12 +16,14 @@ fun NavGraphBuilder.homeNavigator(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
 ) {
     composable(route = HOME_NAVIGATOR_ROUTE) {
         HomeNavigatorRoute(
             onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
             onCameraActionClick = onCameraActionClick,
+            onPendingClassRequestClick = onPendingClassRequestClick,
         )
     }
 }
