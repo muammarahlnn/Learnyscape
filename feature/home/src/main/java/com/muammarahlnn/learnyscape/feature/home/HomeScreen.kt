@@ -19,10 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
+import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
 /**
@@ -53,8 +56,7 @@ private fun HomeScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val listState = rememberLazyListState()
     Column(
-        modifier = modifier
-            .fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
         Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.safeDrawing))
 
@@ -93,6 +95,30 @@ private fun HomeTopAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
+    val user = LocalUserModel.current
+    when (user.role) {
+        UserRole.STUDENT -> StudentHomeTopAppBar(
+            onNotificationsClick = onNotificationsClick,
+            modifier = modifier,
+            scrollBehavior = scrollBehavior,
+        )
+        UserRole.LECTURER -> LecturerHomeTopApBar(
+            modifier = modifier,
+            scrollBehavior = scrollBehavior,
+        )
+        UserRole.NOT_LOGGED_IN -> {
+            // no op
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun StudentHomeTopAppBar(
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
     LearnyscapeTopAppBar(
         title = {
             LearnyscapeText()
@@ -103,5 +129,21 @@ private fun HomeTopAppBar(
         scrollBehavior = scrollBehavior,
         modifier = modifier,
         onActionClick = onNotificationsClick
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LecturerHomeTopApBar(
+    modifier: Modifier = Modifier,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    LearnyscapeCenterTopAppBar(
+        title = {
+            LearnyscapeText()
+        },
+        colors = LearnyscapeTopAppbarDefaults.homeTopAppBarColors(),
+        scrollBehavior = scrollBehavior,
+        modifier = modifier,
     )
 }

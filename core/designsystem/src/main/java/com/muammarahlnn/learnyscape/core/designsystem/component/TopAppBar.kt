@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.designsystem.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -128,6 +129,22 @@ fun LearnyscapeTopAppBar(
                 )
             }
         },
+        colors = colors,
+        scrollBehavior = scrollBehavior,
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LearnyscapeCenterTopAppBar(
+    title: @Composable () -> Unit,
+    modifier: Modifier = Modifier,
+    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+) {
+    CenterAlignedTopAppBar(
+        title = title,
         colors = colors,
         scrollBehavior = scrollBehavior,
         modifier = modifier,
