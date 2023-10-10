@@ -20,7 +20,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.homeTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
 
@@ -99,7 +99,7 @@ private fun HomeTopAppBar(
         },
         actionIconRes = R.drawable.ic_notification,
         actionIconContentDescription = stringResource(id = R.string.top_app_bar_navigation_icon_description),
-        colors = homeTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.homeTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         modifier = modifier,
         onActionClick = onNotificationsClick

@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PostCard
@@ -445,7 +445,7 @@ private fun ResourceDetailsTopAppBar(
         navigationIconContentDescription = stringResource(
             id = designSystemR.string.navigation_back_icon_description,
         ),
-        colors = defaultTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
         onNavigationClick = onBackClick,
         modifier = modifier,
     )

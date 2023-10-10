@@ -134,33 +134,35 @@ fun LearnyscapeTopAppBar(
     )
 }
 
-// TODO: wrap all these colors below in an object
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
-    // TODO: fix top app bar color changing when scrolled stick to the top
-    containerColor = MaterialTheme.colorScheme.background,
-    scrolledContainerColor = MaterialTheme.colorScheme.background,
-    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-    actionIconContentColor = MaterialTheme.colorScheme.onBackground,
-)
+object LearnyscapeTopAppbarDefaults {
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun defaultTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.primary,
-    scrolledContainerColor = MaterialTheme.colorScheme.primary,
-    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-)
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+        // TODO: fix top app bar color changing when scrolled stick to the top
+        containerColor = MaterialTheme.colorScheme.background,
+        scrolledContainerColor = MaterialTheme.colorScheme.background,
+        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+        actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+    )
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun classTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
-    containerColor = MaterialTheme.colorScheme.onPrimary,
-    scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
-    navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-    actionIconContentColor = MaterialTheme.colorScheme.onBackground,
-    titleContentColor = MaterialTheme.colorScheme.onBackground,
-)
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun defaultTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        scrolledContainerColor = MaterialTheme.colorScheme.primary,
+        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+    )
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    fun classTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.onPrimary,
+        scrolledContainerColor = MaterialTheme.colorScheme.onPrimary,
+        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
+        actionIconContentColor = MaterialTheme.colorScheme.onBackground,
+        titleContentColor = MaterialTheme.colorScheme.onBackground,
+    )
+}

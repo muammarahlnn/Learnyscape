@@ -41,7 +41,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -109,7 +109,7 @@ private fun SearchTopAppBar(
     LearnyscapeTopAppBar(
         title = R.string.search,
         scrollBehavior = scrollBehavior,
-        colors = defaultTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
         modifier = modifier
     )
 }

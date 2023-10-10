@@ -16,7 +16,7 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.classTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassDestination
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHost
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -93,7 +93,7 @@ fun ClassTopAppBar(
         navigationIconContentDescription = stringResource(
             id = designSystemR.string.navigation_back_icon_description,
         ),
-        colors = classTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.classTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         onNavigationClick = onBackClick,
         modifier = modifier,
