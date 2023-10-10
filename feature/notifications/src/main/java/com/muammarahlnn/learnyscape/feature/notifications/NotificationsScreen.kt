@@ -34,7 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -127,7 +127,7 @@ private fun NotificationsTopAppBar(
         navigationIconContentDescription = stringResource(
             id = designSystemR.string.navigation_back_icon_description
         ),
-        colors = defaultTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         onNavigationClick = onBackClick,
         modifier = modifier,

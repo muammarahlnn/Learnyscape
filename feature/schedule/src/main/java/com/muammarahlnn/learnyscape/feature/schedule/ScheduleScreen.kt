@@ -25,7 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import kotlinx.datetime.LocalTime
 
 
@@ -205,7 +205,7 @@ private fun ScheduleTopAppBar(
     LearnyscapeTopAppBar(
         title = R.string.schedule,
         scrollBehavior = scrollBehavior,
-        colors = defaultTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
         modifier = modifier,
     )
 }

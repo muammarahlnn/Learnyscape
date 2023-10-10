@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.defaultTopAppBarColors
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
@@ -131,7 +131,7 @@ private fun ProfileTopAppBar(
     LearnyscapeTopAppBar(
         title = R.string.profile,
         scrollBehavior = scrollBehavior,
-        colors = defaultTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
         modifier = modifier,
     )
 }
