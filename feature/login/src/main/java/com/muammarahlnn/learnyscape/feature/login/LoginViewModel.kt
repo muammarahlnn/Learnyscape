@@ -56,9 +56,7 @@ class LoginViewModel @Inject constructor(
             _loginUiState.update {
                 LoginUiState.Loading
             }
-        }
-
-        result.onSuccess { loginModel ->
+        }.onSuccess { loginModel ->
             val accessToken = loginModel.accessToken
             saveUser.execute(
                 params = SaveUserUseCase.Params(
@@ -67,19 +65,15 @@ class LoginViewModel @Inject constructor(
             ).collect { result ->
                 handleSaveUserResult(result)
             }
-        }
-
-        result.onError { _, message ->
+        }.onError { _, message ->
             _loginUiState.update {
                 LoginUiState.Error(message)
             }
-        }
-
-        result.onException { exception ->
+        }.onException { exception, message ->
             Log.e("LoginViewModel", exception?.message.toString())
 
             _loginUiState.update {
-                LoginUiState.Error("System is busy, please try again later")
+                LoginUiState.Error(message)
             }
         }
     }
@@ -89,26 +83,20 @@ class LoginViewModel @Inject constructor(
             _loginUiState.update {
                 LoginUiState.Loading
             }
-        }
-
-        result.onSuccess { userModel ->
+        }.onSuccess { userModel ->
             Log.d(
                 "LoginViewModel",
                 "User logged in: ${userModel.fullName} role -> ${userModel.role.name}"
             )
-        }
-
-        result.onError { _, message ->
+        }.onError { _, message ->
             _loginUiState.update {
                 LoginUiState.Error(message)
             }
-        }
-
-        result.onException { exception ->
+        }.onException { exception, message ->
             Log.e("LoginViewModel", exception?.message.toString())
 
             _loginUiState.update {
-                LoginUiState.Error("System is busy, please try again later")
+                LoginUiState.Error(message)
             }
         }
     }
