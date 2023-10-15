@@ -94,10 +94,7 @@ fun LoginRoute(
             onTextFieldsChange()
         },
         onLoginButtonClick = {
-            viewModel.userLogin(username,password)
-        },
-        onPostLoginUserSuccess = { accessToken ->
-            viewModel.saveUser(accessToken)
+            viewModel.postLoginUser(username,password)
         },
         modifier = modifier,
     )
@@ -112,20 +109,9 @@ private fun LoginScreen(
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
-    onPostLoginUserSuccess: (String) -> Unit,
     modifier: Modifier = Modifier,
     loginUiState: LoginUiState = LoginUiState.None,
 ) {
-    val isLoading = loginUiState is LoginUiState.Loading
-    val isSuccessPostLogin = loginUiState is LoginUiState.Success
-    LaunchedEffect(isSuccessPostLogin) {
-        if (isSuccessPostLogin) {
-            val accessToken = (loginUiState as LoginUiState.Success)
-                .loginModel.accessToken
-            onPostLoginUserSuccess(accessToken)
-        }
-    }
-
     val isError = loginUiState is LoginUiState.Error
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(isError) {
@@ -139,6 +125,7 @@ private fun LoginScreen(
         }
     }
 
+    val isLoading = loginUiState is LoginUiState.Loading
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = {
