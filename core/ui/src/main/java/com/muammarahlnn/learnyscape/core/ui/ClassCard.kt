@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ClassCard(
     modifier: Modifier = Modifier,
+    className: String = "",
+    lecturerName: String = "",
     onItemClick: () -> Unit = {},
 ) {
     Card(
@@ -70,17 +72,18 @@ fun ClassCard(
                 }
             }
             Spacer(modifier = Modifier.width(12.dp))
+
+
             Column {
-                // this is a hardcoded text just for dummy purpose
                 Text(
-                    text = "Pemrograman Mobile B",
+                    text = className,
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.SemiBold
                     )
                 )
                 Text(
-                    text = "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet",
+                    text = lecturerName,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
                     overflow = TextOverflow.Ellipsis,

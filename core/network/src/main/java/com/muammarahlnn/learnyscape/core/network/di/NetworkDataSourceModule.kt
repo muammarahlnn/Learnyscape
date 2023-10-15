@@ -1,6 +1,8 @@
 package com.muammarahlnn.learnyscape.core.network.di
 
+import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.LoginNetworkDataSourceImpl
 import dagger.Binds
 import dagger.Module
@@ -21,4 +23,9 @@ interface NetworkDataSourceModule {
     fun bindsLoginNetworkDataSource(
         loginNetworkDataSource: LoginNetworkDataSourceImpl
     ): LoginNetworkDataSource
+
+    @Binds
+    fun bindsHomeNetworkDataSource(
+        homeNetworkDataSource: HomeNetworkDataSourceImpl
+    ): HomeNetworkDataSource
 }

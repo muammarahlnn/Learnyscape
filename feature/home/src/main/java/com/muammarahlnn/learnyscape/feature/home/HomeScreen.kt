@@ -1,30 +1,43 @@
 package com.muammarahlnn.learnyscape.feature.home
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeText
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
@@ -38,8 +51,11 @@ internal fun HomeRoute(
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     HomeScreen(
+        uiState = uiState,
         onNotificationsClick = onNotificationsClick,
         onClassClick = onClassClick,
         modifier = modifier,
@@ -49,12 +65,12 @@ internal fun HomeRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeScreen(
+    uiState: HomeUiState,
     onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val listState = rememberLazyListState()
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -65,26 +81,117 @@ private fun HomeScreen(
             scrollBehavior = scrollBehavior,
         )
 
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-        ) {
-            // for now this items just for dummy purpose
-            items(
-                items = (1..10).toList(),
-                key = { it },
+        HomeContent(
+            uiState = uiState,
+            scrollBehavior = scrollBehavior,
+            onClassClick = onClassClick,
+        )
+
+        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeContent(
+    uiState: HomeUiState,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onClassClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    when (uiState) {
+        HomeUiState.Loading -> {
+            LoadingScreen()
+        }
+
+        is HomeUiState.Success -> {
+            LazyColumn(
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
             ) {
-                ClassCard(
-                    onItemClick = onClassClick,
-                    modifier = Modifier.padding(
-                        vertical = 4.dp,
-                        horizontal = 16.dp,
+                items(
+                    items = uiState.classes,
+                    key = {
+                        it.id
+                    }
+                ) { classInfo ->
+                    ClassCard(
+                        className = classInfo.className,
+                        lecturerName = classInfo.lecturerNames.first(),
+                        onItemClick = onClassClick,
                     )
-                )
+                }
             }
         }
 
-        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.safeDrawing))
+        HomeUiState.SuccessEmptyClasses -> {
+            EmptyClassesContent(
+                modifier = modifier,
+            )
+        }
+
+        is HomeUiState.Error -> {
+            NoInternetContent(
+                modifier = modifier,
+            )
+        }
+    }
+}
+
+@Composable
+private fun EmptyClassesContent(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.no_data_illustration),
+            contentDescription = null,
+            modifier = Modifier.size(128.dp),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(id = R.string.empty_class_illustration_desc),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+
+}
+
+@Composable
+private fun NoInternetContent(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_wifi_off),
+            contentDescription = stringResource(id = R.string.wifi_off_icon_desc),
+            tint = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.size(128.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(id = R.string.wifi_off_icon_desc),
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
     }
 }
 
