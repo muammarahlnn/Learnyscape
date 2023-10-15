@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.onStart
 
 sealed interface Result<out T> {
 
+    data object Loading : Result<Nothing>
+
     data class Success<T>(val data: T) : Result<T>
 
     data class Error(
@@ -21,8 +23,41 @@ sealed interface Result<out T> {
     ) : Result<Nothing>
 
     data class Exception(val exception: Throwable? = null) : Result<Nothing>
+}
 
-    object Loading : Result<Nothing>
+inline fun <reified T> Result<T>.onLoading(
+    callback: () -> Unit
+) {
+    if (this is Result.Loading) {
+        callback()
+    }
+}
+
+inline fun <reified T> Result<T>.onSuccess(
+    callback: (data: T) -> Unit,
+) {
+    if (this is Result.Success) {
+        callback(data)
+    }
+}
+
+inline fun <reified T> Result<T>.onError(
+    callback: (
+        code: String,
+        message: String
+    ) -> Unit,
+) {
+    if (this is Result.Error) {
+        callback(code, message)
+    }
+}
+
+inline fun <reified T> Result<T>.onException(
+    callback: (Throwable?) -> Unit,
+) {
+    if (this is Result.Exception) {
+        callback(exception)
+    }
 }
 
 fun <T> Flow<T>.asResult(): Flow<Result<T>> {
