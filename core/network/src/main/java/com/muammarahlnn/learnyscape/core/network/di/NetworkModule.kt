@@ -4,6 +4,7 @@ import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
+import com.muammarahlnn.learnyscape.core.network.api.HomeApi
 import com.muammarahlnn.learnyscape.core.network.api.LoginApi
 import com.muammarahlnn.learnyscape.core.network.interceptor.BearerTokenInterceptor
 import com.muammarahlnn.learnyscape.core.network.interceptor.NetworkConnectionInterceptor
@@ -31,6 +32,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
+
+    @Provides
+    @Singleton
+    fun providesHomeApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_OK_HTTP_CLIENT_QUALIFIER) client: OkHttpClient,
+    ): HomeApi = buildRetrofit(networkJson, client).create(HomeApi::class.java)
 
     @Provides
     @Singleton
