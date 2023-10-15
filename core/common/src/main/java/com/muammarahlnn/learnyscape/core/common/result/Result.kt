@@ -22,12 +22,15 @@ sealed interface Result<out T> {
         val message: String,
     ) : Result<Nothing>
 
-    data class Exception(val exception: Throwable? = null) : Result<Nothing>
+    data class Exception(
+        val exception: Throwable? = null,
+        val message: String = "System is busy, please try again later"
+    ) : Result<Nothing>
 }
 
 inline fun <reified T> Result<T>.onLoading(
     callback: () -> Unit
-) {
+) = apply {
     if (this is Result.Loading) {
         callback()
     }
@@ -35,7 +38,7 @@ inline fun <reified T> Result<T>.onLoading(
 
 inline fun <reified T> Result<T>.onSuccess(
     callback: (data: T) -> Unit,
-) {
+) = apply {
     if (this is Result.Success) {
         callback(data)
     }
@@ -46,17 +49,20 @@ inline fun <reified T> Result<T>.onError(
         code: String,
         message: String
     ) -> Unit,
-) {
+) = apply {
     if (this is Result.Error) {
         callback(code, message)
     }
 }
 
 inline fun <reified T> Result<T>.onException(
-    callback: (Throwable?) -> Unit,
-) {
+    callback: (
+        exception: Throwable?,
+        message: String,
+    ) -> Unit,
+) = apply {
     if (this is Result.Exception) {
-        callback(exception)
+        callback(exception, message)
     }
 }
 
