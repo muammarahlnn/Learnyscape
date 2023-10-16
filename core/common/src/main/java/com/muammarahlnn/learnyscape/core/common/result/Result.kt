@@ -66,6 +66,32 @@ inline fun <reified T> Result<T>.onException(
     }
 }
 
+inline fun <reified T, reified R> Flow<Result<T>>.map(
+    crossinline onLoading: () -> R,
+    crossinline onSuccess: (data: T) -> R,
+    crossinline onError: (
+        code: String,
+        message: String,
+    ) -> R,
+    crossinline onException: (
+        exception: Throwable?,
+        message: String,
+    ) -> R,
+): Flow<R> = this.map { result ->
+    when (result) {
+        Result.Loading -> onLoading()
+        is Result.Success -> onSuccess(result.data)
+        is Result.Error -> onError(
+            result.code,
+            result.message,
+        )
+        is Result.Exception -> onException(
+            result.exception,
+            result.message,
+        )
+    }
+}
+
 fun <T> Flow<T>.asResult(): Flow<Result<T>> {
     return this.map<T, Result<T>> {
         Result.Success(it)
