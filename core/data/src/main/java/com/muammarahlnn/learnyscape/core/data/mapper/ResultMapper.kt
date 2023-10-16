@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.onStart
  */
 
 inline fun <reified T: Any, reified R> Flow<NetworkResult<T>>.toResult(
-    crossinline transform: (T) -> R
+    crossinline transform: suspend (T) -> R
 ): Flow<Result<R>> = this.map { networkResult ->
     when (networkResult) {
         is NetworkResult.Success -> Result.Success(

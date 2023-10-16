@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.mapper.toLoginModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toResult
+import com.muammarahlnn.learnyscape.core.data.mapper.toUserEntity
 import com.muammarahlnn.learnyscape.core.data.mapper.toUserModel
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
@@ -33,6 +34,11 @@ class LoginRepositoryImpl @Inject constructor(
 
     override fun saveUser(token: String): Flow<Result<UserModel>> =
         loginNetworkDataSource.getCredential(token).toResult { userResponse ->
+            learnyscapePreferences.saveAccessToken(token)
+            learnyscapePreferences.saveUser(
+                userResponse.toUserEntity()
+            )
+
             userResponse.toUserModel()
         }
 
