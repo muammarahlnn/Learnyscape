@@ -1,14 +1,14 @@
 package com.muammarahlnn.learnyscape.feature.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.muammarahlnn.learnyscape.core.common.result.Result
+import com.muammarahlnn.learnyscape.core.common.result.map
 import com.muammarahlnn.learnyscape.core.domain.GetClassesUseCase
 import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -22,23 +22,28 @@ class HomeViewModel @Inject constructor(
     getClasses: GetClassesUseCase,
 ) : ViewModel() {
 
-    val homeUiState: StateFlow<HomeUiState> =
-        getClasses.execute(NoParams).map { result ->
-            when (result) {
-                Result.Loading -> HomeUiState.Loading
-                is Result.Success -> {
-                    if (result.data.isNotEmpty()) {
-                        HomeUiState.Success(result.data)
-                    } else {
-                        HomeUiState.SuccessEmptyClasses
-                    }
-                }
-                is Result.Error -> HomeUiState.Error(result.message)
-                is Result.Exception -> HomeUiState.Error("System is busy, please try again later")
+    val homeUiState: StateFlow<HomeUiState> = getClasses.execute(NoParams).map(
+        onLoading = {
+            HomeUiState.Loading
+        },
+        onSuccess = { classInfos ->
+            if (classInfos.isNotEmpty()) {
+                HomeUiState.Success(classInfos)
+            } else {
+                HomeUiState.SuccessEmptyClasses
             }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = HomeUiState.Loading,
-        )
+        },
+        onError = { code, message ->
+            Log.e("HomeViewModel", "code: $code - message: $message")
+            HomeUiState.Error(message)
+        },
+        onException = { exception, message ->
+            Log.e("HomeViewModel", exception?.message.toString())
+            HomeUiState.Error(message)
+        }
+    ).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = HomeUiState.Loading,
+    )
 }
