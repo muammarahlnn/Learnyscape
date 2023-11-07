@@ -149,7 +149,7 @@ private fun SearchTextField() {
         },
         leadingIcon = {
             Icon(
-                painter = painterResource(id = R.drawable.ic_search_border),
+                painter = painterResource(id = designSystemR.drawable.ic_search),
                 contentDescription = stringResource(id = R.string.search),
             )
         },
@@ -172,11 +172,11 @@ private fun SearchTextField() {
         singleLine = true,
         shape = RoundedCornerShape(10.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant ,
-            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedTrailingIconColor = MaterialTheme.colorScheme.surfaceVariant ,
+            unfocusedPlaceholderColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedTextColor = MaterialTheme.colorScheme.surfaceVariant,
             focusedBorderColor = MaterialTheme.colorScheme.onSurface,
             focusedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
             focusedTrailingIconColor = MaterialTheme.colorScheme.onSurface,

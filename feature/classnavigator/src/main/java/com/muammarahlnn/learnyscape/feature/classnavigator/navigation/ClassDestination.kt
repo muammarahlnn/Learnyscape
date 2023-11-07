@@ -17,33 +17,33 @@ import com.muammarahlnn.learnyscape.feature.quiz.R as quizR
  */
 internal enum class ClassDestination(
     val route: String,
-    val selectedIconId: Int,
-    val unselectedIconId: Int,
+    val titleId: Int,
+    val iconId: Int,
 ) {
     CLASS(
         route = CLASS_ROUTE,
-        selectedIconId = classR.drawable.ic_announcement,
-        unselectedIconId = classR.drawable.ic_announcement_border,
+        titleId = classR.string.clazz,
+        iconId = classR.drawable.ic_announcement,
     ),
     MODULE(
         route = MODULE_ROUTE,
-        selectedIconId = moduleR.drawable.ic_book,
-        unselectedIconId = moduleR.drawable.ic_book_border,
+        titleId = moduleR.string.module,
+        iconId = moduleR.drawable.ic_book,
     ),
     ASSIGNMENT(
         route = ASSIGNMENT_ROUTE,
-        selectedIconId = assignmentR.drawable.ic_assignment,
-        unselectedIconId = assignmentR.drawable.ic_assignment_border,
+        titleId = assignmentR.string.assignment,
+        iconId = assignmentR.drawable.ic_assignment,
     ),
     QUIZ(
         route = QUIZ_ROUTE,
-        selectedIconId = quizR.drawable.ic_quiz,
-        unselectedIconId = quizR.drawable.ic_quiz_border,
+        titleId = quizR.string.quiz,
+        iconId = quizR.drawable.ic_quiz,
     ),
     MEMBER(
         route = MEMBER_ROUTE,
-        selectedIconId = memberR.drawable.ic_group,
-        unselectedIconId = memberR.drawable.ic_group_border,
+        titleId = memberR.string.member,
+        iconId = memberR.drawable.ic_group,
     );
 
     override fun toString(): String =

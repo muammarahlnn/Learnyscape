@@ -307,7 +307,7 @@ private fun AttachmentItem(
             ),
             border = BorderStroke(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.surfaceVariant,
             ),
         ) {
             Box(

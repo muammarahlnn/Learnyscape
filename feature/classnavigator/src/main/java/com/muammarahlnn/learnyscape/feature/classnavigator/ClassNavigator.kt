@@ -54,7 +54,7 @@ private fun ClassNavigator(
             val classDestination = state.currentClassDestination
             if (classDestination != null) {
                 ClassTopAppBar(
-                    title = classDestination.toString(),
+                    title = stringResource(id = classDestination.titleId),
                     onBackClick = onBackClick,
                     scrollBehavior = scrollBehavior,
                 )
@@ -119,16 +119,10 @@ private fun ClassBottomBar(
                 },
                 icon = {
                     Icon(
-                        painter = painterResource(id = destination.unselectedIconId),
+                        painter = painterResource(id = destination.iconId),
                         contentDescription = null
                     )
                 },
-                selectedIcon = {
-                    Icon(
-                        painter = painterResource(id = destination.selectedIconId),
-                        contentDescription = null
-                    )
-                }
             )
         }
     }
