@@ -12,7 +12,7 @@ import java.io.File
  * @file AndroidCompose, 08/07/2023 21.51 by Muammar Ahlan Abimanyu
  */
 internal fun Project.configureAndroidCompose(
-    commonExtension: CommonExtension<*, *, *, *>
+    commonExtension: CommonExtension<*, *, *, *, *>,
 ) {
     commonExtension.apply {
         buildFeatures {
@@ -27,6 +27,8 @@ internal fun Project.configureAndroidCompose(
             val bom = libs.findLibrary("androidx-compose-bom").get()
             add("implementation", platform(bom))
             add("androidTestImplementation", platform(bom))
+            // Add ComponentActivity to debug manifest
+            add("debugImplementation", libs.findLibrary("androidx.compose.ui.testManifest").get())
         }
     }
 
@@ -37,14 +39,14 @@ internal fun Project.configureAndroidCompose(
     }
 }
 
-
 private fun Project.buildComposeMetricsParameters(): List<String> {
     val metricParameters = mutableListOf<String>()
-
     val enableMetricsProvider = project.providers.gradleProperty("enableComposeCompilerMetrics")
-    val enableMetrics = enableMetricsProvider.orNull == "true"
+    val relativePath = projectDir.relativeTo(rootDir)
+    val buildDir = layout.buildDirectory.get().asFile
+    val enableMetrics = (enableMetricsProvider.orNull == "true")
     if (enableMetrics) {
-        val metricsFolder = File(project.buildDir, "compose-metrics")
+        val metricsFolder = buildDir.resolve("compose-metrics").resolve(relativePath)
         metricParameters.add("-P")
         metricParameters.add(
             "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" + metricsFolder.absolutePath
@@ -52,14 +54,13 @@ private fun Project.buildComposeMetricsParameters(): List<String> {
     }
 
     val enableReportsProvider = project.providers.gradleProperty("enableComposeCompilerReports")
-    val enableReports = enableReportsProvider.orNull == "true"
+    val enableReports = (enableReportsProvider.orNull == "true")
     if (enableReports) {
-        val reportsFolder = File(project.buildDir, "compose-reports")
+        val reportsFolder = buildDir.resolve("compose-reports").resolve(relativePath)
         metricParameters.add("-P")
         metricParameters.add(
             "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" + reportsFolder.absolutePath
         )
     }
-
     return metricParameters.toList()
 }
