@@ -15,7 +15,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
  * @file KotlinAndroid, 09/07/2023 20.25 by Muammar Ahlan Abimanyu
  */
 internal fun Project.configureKotlinAndroid(
-    commonExtension: CommonExtension<*, *, *, *>,
+    commonExtension: CommonExtension<*, *, *, *, *>,
 ) {
     commonExtension.apply {
         compileSdk = 34
@@ -25,6 +25,8 @@ internal fun Project.configureKotlinAndroid(
         }
 
         compileOptions {
+            // Up to Java 11 APIs are available through desugaring
+            // https://developer.android.com/studio/write/java11-minimal-support-table
             sourceCompatibility = JavaVersion.VERSION_11
             targetCompatibility = JavaVersion.VERSION_11
             isCoreLibraryDesugaringEnabled = true
@@ -38,8 +40,13 @@ internal fun Project.configureKotlinAndroid(
     }
 }
 
+/**
+ * Configure base Kotlin options for JVM (non-Android)
+ */
 internal fun Project.configureKotlinJvm() {
     extensions.configure<JavaPluginExtension> {
+        // Up to Java 11 APIs are available through desugaring
+        // https://developer.android.com/studio/write/java11-minimal-support-table
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -47,13 +54,19 @@ internal fun Project.configureKotlinJvm() {
     configureKotlin()
 }
 
+/**
+ * Configure base Kotlin options
+ */
 private fun Project.configureKotlin() {
+    // Use withType to workaround https://youtrack.jetbrains.com/issue/KT-55947
     tasks.withType<KotlinCompile>().configureEach {
         kotlinOptions {
+            // Set JVM target to 11
             jvmTarget = JavaVersion.VERSION_11.toString()
 
             freeCompilerArgs = freeCompilerArgs + listOf(
                 "-opt-in=kotlin.RequiresOptIn",
+                // Enable experimental coroutines APIs, including Flow
                 "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                 "-opt-in=kotlinx.coroutines.FlowPreview",
             )
