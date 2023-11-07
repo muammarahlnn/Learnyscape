@@ -15,27 +15,27 @@ import com.muammarahlnn.learnyscape.feature.profile.R as profileR
  */
 internal enum class HomeDestination(
     val route: String,
-    val selectedIconId: Int,
-    val unselectedIconId: Int,
+    val titleId: Int,
+    val iconId: Int,
 ) {
     HOME(
         route = HOME_ROUTE,
-        selectedIconId = homeR.drawable.ic_home,
-        unselectedIconId = homeR.drawable.ic_home_border
+        titleId = homeR.string.learnyscape,
+        iconId = homeR.drawable.ic_home,
     ),
     SEARCH(
         route = SEARCH_ROUTE,
-        selectedIconId = searchR.drawable.ic_search,
-        unselectedIconId = searchR.drawable.ic_search_border,
+        titleId = searchR.string.search,
+        iconId = searchR.drawable.ic_search,
     ),
     SCHEDULE(
         route = SCHEDULE_ROUTE,
-        selectedIconId = scheduleR.drawable.ic_calendar_today,
-        unselectedIconId = scheduleR.drawable.ic_calendary_today_border,
+        titleId = scheduleR.string.schedule,
+        iconId = scheduleR.drawable.ic_calendar_today,
     ),
     PROFILE(
         route = PROFILE_ROUTE,
-        selectedIconId = profileR.drawable.ic_person,
-        unselectedIconId = profileR.drawable.ic_person_border,
+        titleId = profileR.string.profile,
+        iconId = profileR.drawable.ic_person,
     ),
 }

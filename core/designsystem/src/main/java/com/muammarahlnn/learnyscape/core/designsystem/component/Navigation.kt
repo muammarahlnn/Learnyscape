@@ -7,6 +7,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 
 
@@ -21,11 +22,14 @@ fun LearnyscapeNavigationBar(
     content: @Composable RowScope.() -> Unit,
 ) {
     NavigationBar(
-        modifier = modifier,
         contentColor = LearnyscapeNavigationDefaults.navigationContentColor(),
         tonalElevation = 0.dp,
-        containerColor = MaterialTheme.colorScheme.primary,
-        content = content
+        containerColor = MaterialTheme.colorScheme.background,
+        content = content,
+        modifier = modifier
+            .shadow(
+                elevation = 16.dp,
+            ),
     )
 }
 
@@ -35,7 +39,6 @@ fun RowScope.LearnyscapeNavigationBarItem(
     onClick: () -> Unit,
     icon: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    selectedIcon: @Composable () -> Unit,
     enabled: Boolean = true,
     label: @Composable (() -> Unit)? = null,
     alwaysShowLabel: Boolean = true,
@@ -43,7 +46,7 @@ fun RowScope.LearnyscapeNavigationBarItem(
     NavigationBarItem(
         selected = selected,
         onClick = onClick,
-        icon = if (selected) selectedIcon else icon,
+        icon = icon,
         modifier = modifier,
         enabled = enabled,
         label = label,
@@ -61,11 +64,11 @@ fun RowScope.LearnyscapeNavigationBarItem(
 object LearnyscapeNavigationDefaults {
 
     @Composable
-    fun navigationContentColor() = MaterialTheme.colorScheme.background
+    fun navigationContentColor() = MaterialTheme.colorScheme.surfaceVariant
 
     @Composable
-    fun navigationSelectedItemColor() = MaterialTheme.colorScheme.background
+    fun navigationSelectedItemColor() = MaterialTheme.colorScheme.primary
 
     @Composable
-    fun navigationIndicatorColor() = MaterialTheme.colorScheme.primaryContainer
+    fun navigationIndicatorColor() = MaterialTheme.colorScheme.background
 }

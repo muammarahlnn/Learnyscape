@@ -91,16 +91,10 @@ private fun HomeBottomBar(
                 },
                 icon = {
                     Icon(
-                        painter = painterResource(id = destination.unselectedIconId),
+                        painter = painterResource(id = destination.iconId),
                         contentDescription = null
                     )
                 },
-                selectedIcon = {
-                    Icon(
-                        painter = painterResource(id = destination.selectedIconId),
-                        contentDescription = null
-                    )
-                }
             )
         }
     }

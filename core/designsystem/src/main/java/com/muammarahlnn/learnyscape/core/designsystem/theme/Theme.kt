@@ -17,14 +17,13 @@ val LightColorScheme = lightColorScheme(
     onPrimary = White,
     primaryContainer = LightRed,
     secondary = Gray,
-    onSecondary = White,
     tertiary = Blue,
     onTertiary = MediumWhite,
-    background = WhiteSmoke,
+    background = White,
     onBackground = Black,
-    surface = WhiteSmoke,
+    surface = White,
     onSurface = Gray,
-    onSurfaceVariant = LightGray,
+    surfaceVariant = LightGray,
 )
 
 @Composable
