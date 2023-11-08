@@ -69,7 +69,7 @@ class LearnyscapeAppState(
     val currentStatusBarColor: Color
         @Composable
         get() = when (currentRoute) {
-            CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.onPrimary
+            CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.background
             CAMERA_ROUTE -> Color.Black
             else -> MaterialTheme.colorScheme.primary
         }

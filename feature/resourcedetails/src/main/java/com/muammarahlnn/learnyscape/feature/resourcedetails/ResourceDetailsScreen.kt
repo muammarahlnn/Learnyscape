@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.ui.QuizType
@@ -246,16 +247,8 @@ private fun DetailPostCard(
 private fun AttachmentCard(
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        ),
-        modifier = modifier
-            .fillMaxWidth()
+    BaseCard(
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -301,9 +294,9 @@ private fun AttachmentItem(
         modifier = modifier
     ) {
         Card(
-            shape = RoundedCornerShape(7.dp),
+            shape = RoundedCornerShape(8.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onTertiary,
+                containerColor = MaterialTheme.colorScheme.onSecondary,
             ),
             border = BorderStroke(
                 width = 1.dp,
@@ -345,16 +338,8 @@ private fun QuizDetailsCard(
     quizType: QuizType,
     modifier: Modifier = Modifier,
 ) {
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        ),
-        modifier = modifier
-            .fillMaxWidth()
+    BaseCard(
+        modifier = modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -495,16 +480,10 @@ private fun BaseActionButton(
     modifier: Modifier = Modifier,
     buttonContent: @Composable RowScope.() -> Unit,
 ) {
-    Card(
+    BaseCard(
         shape = RoundedCornerShape(
             topStart = 10.dp,
             topEnd = 10.dp,
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
         ),
         modifier = modifier
             .fillMaxWidth()
