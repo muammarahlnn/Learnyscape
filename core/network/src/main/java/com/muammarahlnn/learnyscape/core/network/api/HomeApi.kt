@@ -1,7 +1,7 @@
 package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.model.response.ClassInfoResponse
-import com.muammarahlnn.learnyscape.core.network.model.response.base.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import retrofit2.http.GET
 
 

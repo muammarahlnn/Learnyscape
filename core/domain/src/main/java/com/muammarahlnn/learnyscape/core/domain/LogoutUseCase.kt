@@ -13,6 +13,7 @@ import javax.inject.Inject
 class LogoutUseCase @Inject constructor(
     private val profileRepository: ProfileRepository
 ) : BaseSuspendUseCase<NoParams> {
+
     override suspend fun execute(params: NoParams) {
         profileRepository.logout()
     }

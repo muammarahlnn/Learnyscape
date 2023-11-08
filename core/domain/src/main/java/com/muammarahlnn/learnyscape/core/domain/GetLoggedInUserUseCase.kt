@@ -15,6 +15,7 @@ import javax.inject.Inject
 class GetLoggedInUserUseCase @Inject constructor(
     private val homeRepository: HomeRepository,
 ) : BaseUseCase<NoParams, UserModel> {
+
     override fun execute(params: NoParams): Flow<UserModel> =
         homeRepository.getLoggedInUser()
 }

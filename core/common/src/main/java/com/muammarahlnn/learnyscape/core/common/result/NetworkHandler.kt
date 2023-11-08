@@ -1,13 +1,14 @@
-package com.muammarahlnn.learnyscape.core.network.model.response.base
+package com.muammarahlnn.learnyscape.core.common.result
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.io.IOException
 
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
- * @file ErrorResponse, 06/10/2023 16.39 by Muammar Ahlan Abimanyu
+ * @file NetworkHandler, 08/11/2023 20.32 by Muammar Ahlan Abimanyu
  */
 
 @Serializable
@@ -31,3 +32,9 @@ private val json = Json {
 
 internal fun String.convertToErrorResponse() =
     json.decodeFromString<ErrorResponse>(this)
+
+object NoConnectivityException : IOException() {
+
+    override val message: String
+        get() = "You aren't connected to the internet"
+}

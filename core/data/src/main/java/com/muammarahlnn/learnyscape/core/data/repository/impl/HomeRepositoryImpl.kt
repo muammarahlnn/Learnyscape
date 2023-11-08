@@ -1,8 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.repository.impl
 
-import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.mapper.toClassesInfoModel
-import com.muammarahlnn.learnyscape.core.data.mapper.toResult
 import com.muammarahlnn.learnyscape.core.data.mapper.toUserModel
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
@@ -28,8 +26,8 @@ class HomeRepositoryImpl @Inject constructor(
             userEntity.toUserModel()
         }
 
-    override fun getClasses(): Flow<Result<List<ClassInfoModel>>> =
-        homeNetworkDataSource.getClasses().toResult { classesInfoResponse ->
-            classesInfoResponse.toClassesInfoModel()
+    override fun getClasses(): Flow<List<ClassInfoModel>> =
+        homeNetworkDataSource.getClasses().map { classInfoResponses ->
+            classInfoResponses.toClassesInfoModel()
         }
 }

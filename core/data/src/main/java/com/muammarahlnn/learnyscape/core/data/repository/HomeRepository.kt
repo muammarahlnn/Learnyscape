@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
-import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import kotlinx.coroutines.flow.Flow
@@ -14,5 +13,5 @@ interface HomeRepository {
 
     fun getLoggedInUser(): Flow<UserModel>
 
-    fun getClasses(): Flow<Result<List<ClassInfoModel>>>
+    fun getClasses(): Flow<List<ClassInfoModel>>
 }

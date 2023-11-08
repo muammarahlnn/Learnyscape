@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.core.network.model.response.base
+package com.muammarahlnn.learnyscape.core.network.model.response
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

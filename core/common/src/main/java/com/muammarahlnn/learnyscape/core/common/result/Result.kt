@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import retrofit2.HttpException
 
 
 /**
@@ -17,6 +18,8 @@ sealed interface Result<out T> {
 
     data class Success<T>(val data: T) : Result<T>
 
+    data class NoInternet(val message: String) : Result<Nothing>
+
     data class Error(
         val code: String,
         val message: String,
@@ -24,7 +27,7 @@ sealed interface Result<out T> {
 
     data class Exception(
         val exception: Throwable? = null,
-        val message: String = "System is busy, please try again later"
+        val message: String = "Something went wrong, please try again."
     ) : Result<Nothing>
 }
 
@@ -41,6 +44,14 @@ inline fun <reified T> Result<T>.onSuccess(
 ) = apply {
     if (this is Result.Success) {
         callback(data)
+    }
+}
+
+inline fun <reified T> Result<T>.onNoInternet(
+    callback: (String) -> Unit,
+) = apply {
+    if (this is Result.NoInternet) {
+        callback(message)
     }
 }
 
@@ -66,38 +77,35 @@ inline fun <reified T> Result<T>.onException(
     }
 }
 
-inline fun <reified T, reified R> Flow<Result<T>>.map(
-    crossinline onLoading: () -> R,
-    crossinline onSuccess: (data: T) -> R,
-    crossinline onError: (
-        code: String,
-        message: String,
-    ) -> R,
-    crossinline onException: (
-        exception: Throwable?,
-        message: String,
-    ) -> R,
-): Flow<R> = this.map { result ->
-    when (result) {
-        Result.Loading -> onLoading()
-        is Result.Success -> onSuccess(result.data)
-        is Result.Error -> onError(
-            result.code,
-            result.message,
-        )
-        is Result.Exception -> onException(
-            result.exception,
-            result.message,
-        )
-    }
-}
-
 fun <T> Flow<T>.asResult(): Flow<Result<T>> {
     return this.map<T, Result<T>> {
         Result.Success(it)
     }.onStart {
         emit(Result.Loading)
     }.catch {
-        emit(Result.Exception(it))
+        when (it) {
+            is NoConnectivityException -> {
+                emit(
+                    Result.NoInternet(
+                        message = it.message,
+                    )
+                )
+            }
+
+            is HttpException -> {
+                val responseBody = it.response()?.errorBody()?.string()
+                val errorResponse = responseBody?.convertToErrorResponse()
+                errorResponse?.error?.let { error ->
+                    emit(
+                        Result.Error(
+                            code = error.code,
+                            message = error.message,
+                        )
+                    )
+                } ?: emit(Result.Exception(it))
+            }
+
+            else -> emit(Result.Exception(it))
+        }
     }
 }
