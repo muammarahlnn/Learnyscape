@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.core.domain
 
-import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.domain.base.BaseUseCase
 import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
@@ -15,8 +14,8 @@ import javax.inject.Inject
  */
 class GetClassesUseCase @Inject constructor(
     private val homeRepository: HomeRepository
-) : BaseUseCase<NoParams, Result<List<ClassInfoModel>>> {
+) : BaseUseCase<NoParams, List<ClassInfoModel>> {
 
-    override fun execute(params: NoParams): Flow<Result<List<ClassInfoModel>>> =
+    override fun execute(params: NoParams): Flow<List<ClassInfoModel>> =
         homeRepository.getClasses()
 }

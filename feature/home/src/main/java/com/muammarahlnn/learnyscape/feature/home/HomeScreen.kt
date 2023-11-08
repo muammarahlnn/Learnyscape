@@ -132,6 +132,10 @@ private fun HomeContent(
         }
 
         is HomeUiState.Error -> {
+            // TODO: Add onError content
+        }
+
+        is HomeUiState.NoInternet -> {
             NoInternetContent(
                 modifier = modifier,
             )

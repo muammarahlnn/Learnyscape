@@ -2,7 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.UserResponse
-import com.muammarahlnn.learnyscape.core.network.model.response.base.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST

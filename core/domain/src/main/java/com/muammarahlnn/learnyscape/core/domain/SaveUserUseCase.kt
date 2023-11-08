@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.core.domain
 
-import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.domain.base.BaseUseCase
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
@@ -14,9 +13,9 @@ import javax.inject.Inject
  */
 class SaveUserUseCase @Inject constructor(
     private val loginRepository: LoginRepository,
-) : BaseUseCase<SaveUserUseCase.Params, Result<UserModel>> {
+) : BaseUseCase<SaveUserUseCase.Params, UserModel> {
 
-    override fun execute(params: Params): Flow<Result<UserModel>> =
+    override fun execute(params: Params): Flow<UserModel> =
         loginRepository.saveUser(params.token)
 
     class Params(

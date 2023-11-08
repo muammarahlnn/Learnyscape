@@ -15,5 +15,7 @@ sealed interface HomeUiState {
 
     data object SuccessEmptyClasses : HomeUiState
 
+    data class NoInternet(val message: String) : HomeUiState
+
     data class Error(val message: String) : HomeUiState
 }

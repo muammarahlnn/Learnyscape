@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
-import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.model.data.LoginModel
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import kotlinx.coroutines.flow.Flow
@@ -15,9 +14,9 @@ interface LoginRepository {
     fun postLoginUser(
         username: String,
         password: String,
-    ): Flow<Result<LoginModel>>
+    ): Flow<LoginModel>
 
-    fun saveUser(token: String): Flow<Result<UserModel>>
+    fun saveUser(token: String): Flow<UserModel>
 
     fun isUserLoggedIn(): Flow<Boolean>
 }

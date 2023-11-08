@@ -4,9 +4,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import com.muammarahlnn.learnyscape.core.common.result.NoConnectivityException
 import okhttp3.Interceptor
 import okhttp3.Response
-import java.io.IOException
 
 
 /**
@@ -51,10 +51,4 @@ class NetworkConnectionInterceptor(
 
         return connected
     }
-}
-
-object NoConnectivityException : IOException() {
-
-    override val message: String
-        get() = "No internet connection"
 }

@@ -4,9 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.common.result.Result
+import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
+import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.PostLoginUserUseCase
 import com.muammarahlnn.learnyscape.core.domain.SaveUserUseCase
@@ -45,7 +47,7 @@ class LoginViewModel @Inject constructor(
                     username = username,
                     password = password,
                 )
-            ).collect { result ->
+            ).asResult().collect { result ->
                 handlePostLoginResult(result)
             }
         }
@@ -53,36 +55,28 @@ class LoginViewModel @Inject constructor(
 
     private suspend fun handlePostLoginResult(result: Result<LoginModel>) {
         result.onLoading {
-            _loginUiState.update {
-                LoginUiState.Loading
-            }
+            onLoadingResult()
         }.onSuccess { loginModel ->
             val accessToken = loginModel.accessToken
             saveUser.execute(
                 params = SaveUserUseCase.Params(
                     token = accessToken
                 )
-            ).collect { result ->
+            ).asResult().collect { result ->
                 handleSaveUserResult(result)
             }
+        }.onNoInternet { message ->
+            onNoInternetResult(message)
         }.onError { _, message ->
-            _loginUiState.update {
-                LoginUiState.Error(message)
-            }
+            onErrorResult(message)
         }.onException { exception, message ->
-            Log.e("LoginViewModel", exception?.message.toString())
-
-            _loginUiState.update {
-                LoginUiState.Error(message)
-            }
+            onExceptionResult(exception, message)
         }
     }
 
     private fun handleSaveUserResult(result: Result<UserModel>) {
         result.onLoading {
-            _loginUiState.update {
-                LoginUiState.Loading
-            }
+            onLoadingResult()
         }.onSuccess { userModel ->
             Log.d(
                 "LoginViewModel",
@@ -92,16 +86,38 @@ class LoginViewModel @Inject constructor(
             _loginUiState.update {
                 LoginUiState.None
             }
+        }.onNoInternet { message ->
+            onNoInternetResult(message)
         }.onError { _, message ->
-            _loginUiState.update {
-                LoginUiState.Error(message)
-            }
+            onErrorResult(message)
         }.onException { exception, message ->
-            Log.e("LoginViewModel", exception?.message.toString())
+            onExceptionResult(exception, message)
+        }
+    }
 
-            _loginUiState.update {
-                LoginUiState.Error(message)
-            }
+    private fun onLoadingResult() {
+        _loginUiState.update {
+            LoginUiState.Loading
+        }
+    }
+
+    private fun onNoInternetResult(message: String) {
+        _loginUiState.update {
+            LoginUiState.Error(message)
+        }
+    }
+
+    private fun onErrorResult(message: String) {
+        _loginUiState.update {
+            LoginUiState.Error(message)
+        }
+    }
+
+    private fun onExceptionResult(exception: Throwable?, message: String) {
+        Log.e("LoginViewModel", exception?.message.toString())
+
+        _loginUiState.update {
+            LoginUiState.Error(message)
         }
     }
 }
