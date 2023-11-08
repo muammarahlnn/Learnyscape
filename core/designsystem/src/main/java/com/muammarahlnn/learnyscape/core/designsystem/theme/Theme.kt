@@ -15,21 +15,21 @@ import androidx.compose.ui.unit.dp
 val LightColorScheme = lightColorScheme(
     primary = Red,
     onPrimary = White,
-    primaryContainer = LightRed,
     secondary = Gray,
+    onSecondary = MediumWhite,
     tertiary = Blue,
-    onTertiary = MediumWhite,
     background = White,
     onBackground = Black,
     surface = White,
     onSurface = Gray,
     surfaceVariant = LightGray,
+    surfaceTint = White,
 )
 
 @Composable
 fun LearnyscapeTheme(content: @Composable () -> Unit) {
     val defaultBackgroundTheme = BackgroundTheme(
-        color = LightColorScheme.surface,
+        color = LightColorScheme.background,
         tonalElevation = 0.dp
     )
     CompositionLocalProvider(

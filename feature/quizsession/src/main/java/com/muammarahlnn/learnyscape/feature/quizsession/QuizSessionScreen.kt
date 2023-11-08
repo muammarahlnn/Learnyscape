@@ -25,8 +25,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -57,6 +55,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import kotlin.math.roundToInt
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -329,14 +328,7 @@ private fun PhotoAnswerQuestion(
         question = question,
         modifier = modifier,
     ) {
-        Card(
-            shape = RoundedCornerShape(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onPrimary,
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp,
-            ),
+        BaseCard(
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
@@ -394,16 +386,8 @@ private fun QuestionNumber(number: Int) {
 private fun QuestionText(
     question: String,
 ) {
-    Card(
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
+    BaseCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(10.dp)) {
             Text(
@@ -445,14 +429,8 @@ private fun MultipleChoiceAnswer(
             label = "Question multiple choice background color",
         )
 
-        Card(
-            shape = RoundedCornerShape(10.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = backgroundColor,
-            ),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 2.dp,
-            ),
+        BaseCard(
+            backgroundColor = backgroundColor,
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
@@ -508,16 +486,10 @@ private fun SubmitButton(
     onButtonGloballyPositioned: (Float) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(
+    BaseCard(
         shape = RoundedCornerShape(
             topStart = 10.dp,
             topEnd = 10.dp,
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onPrimary,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp,
         ),
         modifier = modifier
             .fillMaxWidth()
