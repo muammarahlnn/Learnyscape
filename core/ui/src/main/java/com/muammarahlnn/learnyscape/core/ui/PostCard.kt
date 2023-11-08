@@ -111,7 +111,7 @@ fun PostCard(
 
             Divider(
                 thickness = 2.dp,
-                color = MaterialTheme.colorScheme.background,
+                color = MaterialTheme.colorScheme.onSecondary,
             )
 
             Box(modifier = Modifier.padding(16.dp)) {
