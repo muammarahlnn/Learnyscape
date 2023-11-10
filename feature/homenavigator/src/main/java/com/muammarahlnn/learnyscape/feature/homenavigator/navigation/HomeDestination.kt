@@ -25,7 +25,7 @@ internal enum class HomeDestination(
     ),
     SEARCH(
         route = SEARCH_ROUTE,
-        titleId = searchR.string.search,
+        titleId = searchR.string.available_class,
         iconId = searchR.drawable.ic_search,
     ),
     SCHEDULE(

@@ -11,10 +11,14 @@ import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_ROUTE
 import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHome
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeDestination
+import com.muammarahlnn.learnyscape.feature.profile.navigation.PROFILE_ROUTE
 import com.muammarahlnn.learnyscape.feature.profile.navigation.navigateToProfile
+import com.muammarahlnn.learnyscape.feature.schedule.navigation.SCHEDULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.navigateToSchedule
+import com.muammarahlnn.learnyscape.feature.search.navigation.SEARCH_ROUTE
 import com.muammarahlnn.learnyscape.feature.search.navigation.navigateToSearch
 
 
@@ -61,6 +65,16 @@ internal class HomeNavigatorState(
             )
         }
     }.toList()
+
+    val currentHomeDestination: HomeDestination?
+        @Composable
+        get() = when (currentDestination?.route) {
+            HOME_ROUTE -> HomeDestination.HOME
+            SEARCH_ROUTE -> HomeDestination.SEARCH
+            SCHEDULE_ROUTE -> HomeDestination.SCHEDULE
+            PROFILE_ROUTE -> HomeDestination.PROFILE
+            else -> null
+        }
 
     fun navigateToHomeDestination(homeDestination: HomeDestination) {
         val navOptions = navOptions {

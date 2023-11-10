@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="search">Search</string>
+    <string name="available_class">Available Class</string>
     <string name="top_app_bar_navigation_icon_description">Back</string>
     <string name="search_text_field_clear_icon_description">Clear</string>
-    <string name="search_text_field_placeholder">Search class…</string>
+    <string name="search_text_field_placeholder">Search available class…</string>
     <string name="join_request_dialog_title">Join request</string>
     <string name="join_request_dialog_text">Request to join %1$s class?</string>
     <string name="join_request_dialog_confirm_button_text">Request</string>
