@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.search
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,15 +9,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,15 +29,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -53,7 +46,6 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun SearchRoute(
-    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var showJoinRequestDialog by rememberSaveable {
@@ -68,18 +60,15 @@ internal fun SearchRoute(
         onDismissJoinRequestDialog = {
             showJoinRequestDialog = false
         },
-        onPendingClassRequestClick = onPendingClassRequestClick,
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreen(
     showJoinRequestDialog: Boolean,
     onClassItemClick: () -> Unit,
     onDismissJoinRequestDialog: () -> Unit,
-    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (showJoinRequestDialog) {
@@ -88,49 +77,37 @@ private fun SearchScreen(
         )
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Column(modifier = modifier.fillMaxSize()) {
-        SearchTopAppBar(
-            scrollBehavior = scrollBehavior,
-            onPendingClassRequestClick = onPendingClassRequestClick,
-        )
-
-        SearchTextField()
-
-        SearchResult(
-            scrollBehavior = scrollBehavior,
-            onClassItemClick = onClassItemClick,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchTopAppBar(
-    onPendingClassRequestClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    LearnyscapeTopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = R.string.search)
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        modifier = modifier.fillMaxSize()
+    ) {
+        item {
+            SearchTextField(
+                modifier = Modifier.padding(
+                    bottom = 12.dp,
+                )
             )
-        },
-        actionIconRes = R.drawable.ic_hourglass,
-        actionIconContentDescription = stringResource(
-            id = R.string.pending_request_icon_description
-        ),
-        onActionClick = onPendingClassRequestClick,
-        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
-        scrollBehavior = scrollBehavior,
-        modifier = modifier
-    )
+        }
+
+        items(
+            items = (1..10).toList(),
+            key = { it }
+        ) {
+            ClassCard(
+                onItemClick = onClassItemClick,
+                modifier = Modifier.padding(
+                    vertical = 12.dp,
+                )
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-private fun SearchTextField() {
+private fun SearchTextField(
+    modifier: Modifier = Modifier,
+) {
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -145,12 +122,17 @@ private fun SearchTextField() {
             searchQuery = it
         },
         placeholder = {
-            Text(text = stringResource(id = R.string.search_text_field_placeholder))
+            Text(
+                text = stringResource(id = R.string.search_text_field_placeholder),
+                style = MaterialTheme.typography.bodySmall
+            )
         },
         leadingIcon = {
             Icon(
                 painter = painterResource(id = designSystemR.drawable.ic_search),
-                contentDescription = stringResource(id = R.string.search),
+                contentDescription = stringResource(
+                    id = R.string.search_text_field_placeholder
+                ),
             )
         },
         trailingIcon = {
@@ -192,13 +174,8 @@ private fun SearchTextField() {
                 onSearchExplicitlyTriggered()
             }
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-            )
             .focusRequester(focusRequester)
             .onKeyEvent {
                 if (it.key == Key.Enter) {
@@ -212,35 +189,6 @@ private fun SearchTextField() {
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun SearchResult(
-    scrollBehavior: TopAppBarScrollBehavior,
-    onClassItemClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(
-            horizontal = 16.dp,
-            vertical = 12.dp, // 16 - 4 (from its item) = 12
-        ),
-        modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) {
-        items(
-            items = (1..10).toList(),
-            key = { it }
-        ) {
-            ClassCard(
-                onItemClick = onClassItemClick,
-                modifier = Modifier.padding(
-                    vertical = 4.dp,
-                )
-            )
-        }
     }
 }
 

@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,8 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
@@ -83,7 +80,6 @@ internal fun ProfileRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreen(
     showChangePhotoProfileBottomSheet: Boolean,
@@ -113,25 +109,9 @@ private fun ProfileScreen(
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        ProfileTopAppBar()
-        ProfileContent(
-            onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
-            onLogoutButtonClick = onLogoutButtonClick,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ProfileTopAppBar(
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    LearnyscapeTopAppBar(
-        title = R.string.profile,
-        scrollBehavior = scrollBehavior,
-        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
+    ProfileContent(
+        onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
+        onLogoutButtonClick = onLogoutButtonClick,
         modifier = modifier,
     )
 }
@@ -142,7 +122,6 @@ private fun ProfileContent(
     onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier

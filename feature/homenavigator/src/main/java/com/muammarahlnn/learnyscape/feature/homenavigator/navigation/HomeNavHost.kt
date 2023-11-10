@@ -19,10 +19,8 @@ import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
 @Composable
 internal fun HomeNavHost(
     state: HomeNavigatorState,
-    onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
-    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -33,12 +31,9 @@ internal fun HomeNavHost(
         modifier = modifier,
     ) {
         homeScreen(
-            onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
         )
-        searchScreen(
-            onPendingClassRequestClick = onPendingClassRequestClick,
-        )
+        searchScreen()
         scheduleScreen(
             onClassClick = onClassClick
         )

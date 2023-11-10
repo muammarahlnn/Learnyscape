@@ -18,12 +18,8 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
     this.navigate(SEARCH_ROUTE, navOptions)
 }
 
-fun NavGraphBuilder.searchScreen(
-    onPendingClassRequestClick: () -> Unit,
-) {
+fun NavGraphBuilder.searchScreen() {
     composable(route = SEARCH_ROUTE) {
-        SearchRoute(
-            onPendingClassRequestClick = onPendingClassRequestClick,
-        )
+        SearchRoute()
     }
 }
