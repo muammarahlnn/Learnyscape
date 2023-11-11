@@ -1,5 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.home.navigation
 
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -18,12 +20,15 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
     this.navigate(HOME_ROUTE, navOptions)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.homeScreen(
+    scrollBehavior: TopAppBarScrollBehavior,
     onClassClick: () -> Unit,
 ) {
     composable(route = HOME_ROUTE) {
         HomeRoute(
             onClassClick = onClassClick,
+            scrollBehavior = scrollBehavior,
         )
     }
 }

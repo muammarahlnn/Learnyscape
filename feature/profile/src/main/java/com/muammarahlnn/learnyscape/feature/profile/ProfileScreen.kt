@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,8 +46,10 @@ import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
  * @file ProfileScreen, 20/07/2023 21.48 by Muammar Ahlan Abimanyu
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileRoute(
+    scrollBehavior: TopAppBarScrollBehavior,
     onCameraActionClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel()
@@ -57,6 +61,7 @@ internal fun ProfileRoute(
         mutableStateOf(false)
     }
     ProfileScreen(
+        scrollBehavior = scrollBehavior,
         showChangePhotoProfileBottomSheet = showChangePhotoProfileBottomSheet,
         showLogoutDialog = showLogoutDialog,
         onChangePhotoProfileButtonClick = {
@@ -80,8 +85,10 @@ internal fun ProfileRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreen(
+    scrollBehavior: TopAppBarScrollBehavior,
     showChangePhotoProfileBottomSheet: Boolean,
     showLogoutDialog: Boolean,
     onChangePhotoProfileButtonClick: () -> Unit,
@@ -112,7 +119,8 @@ private fun ProfileScreen(
     ProfileContent(
         onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
         onLogoutButtonClick = onLogoutButtonClick,
-        modifier = modifier,
+        modifier = modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
     )
 }
 
