@@ -1,5 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.search
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,12 +11,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +33,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,8 +49,10 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  * @file SearchScreen, 20/07/2023 22.06 by Muammar Ahlan Abimanyu
  */
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun SearchRoute(
+    scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
     var showJoinRequestDialog by rememberSaveable {
@@ -53,6 +60,7 @@ internal fun SearchRoute(
     }
 
     SearchScreen(
+        scrollBehavior = scrollBehavior,
         showJoinRequestDialog = showJoinRequestDialog,
         onClassItemClick = {
             showJoinRequestDialog = true
@@ -64,8 +72,10 @@ internal fun SearchRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchScreen(
+    scrollBehavior: TopAppBarScrollBehavior,
     showJoinRequestDialog: Boolean,
     onClassItemClick: () -> Unit,
     onDismissJoinRequestDialog: () -> Unit,
@@ -77,28 +87,33 @@ private fun SearchScreen(
         )
     }
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        modifier = modifier.fillMaxSize()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
     ) {
-        item {
-            SearchTextField(
-                modifier = Modifier.padding(
-                    bottom = 12.dp,
-                )
+        SearchTextField(
+            modifier = Modifier.padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = 12.dp,
             )
-        }
-
-        items(
-            items = (1..10).toList(),
-            key = { it }
+        )
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .weight(1f)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
         ) {
-            ClassCard(
-                onItemClick = onClassItemClick,
-                modifier = Modifier.padding(
-                    vertical = 12.dp,
+            items(
+                items = (1..10).toList(),
+                key = { it }
+            ) {
+                ClassCard(
+                    onItemClick = onClassItemClick
                 )
-            )
+            }
         }
     }
 }
