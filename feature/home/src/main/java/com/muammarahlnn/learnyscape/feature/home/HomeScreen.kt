@@ -120,7 +120,6 @@ private fun HomeContent(
                     start = 16.dp,
                     top = 16.dp,
                     end = 16.dp,
-                    bottom = 12.dp,
                 )
         )
 
