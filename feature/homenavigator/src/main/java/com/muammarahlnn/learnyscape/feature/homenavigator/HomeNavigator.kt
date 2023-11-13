@@ -218,7 +218,7 @@ private fun SearchTopAppBar(
     modifier: Modifier = Modifier,
 ) {
     val user = LocalUserModel.current
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = {
             Text(
                 text = stringResource(id = searchR.string.available_class),
@@ -252,7 +252,7 @@ private fun DefaultHomeNavigatorTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = {
             Text(
                 text = stringResource(id = titleId),
@@ -316,7 +316,7 @@ object HomeNavigatorTopAppBarDefaults {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun defaultTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
+    fun defaultTopAppBarColors() = TopAppBarDefaults.centerAlignedTopAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         scrolledContainerColor = MaterialTheme.colorScheme.primary,
         navigationIconContentColor = MaterialTheme.colorScheme.background,
