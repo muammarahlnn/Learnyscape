@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.homenavigator
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -15,10 +16,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
@@ -145,14 +148,21 @@ private fun HomeTopAppBar(
     modifier: Modifier = Modifier,
 ) {
     val user = LocalUserModel.current
+    val homeTopAppBarModifier = modifier.shadow(
+        elevation = 2.dp,
+        shape = RoundedCornerShape(
+            bottomStart = 16.dp,
+            bottomEnd = 16.dp,
+        )
+    )
     when (user.role) {
         UserRole.STUDENT -> StudentHomeTopAppBar(
             onNotificationsClick = onNotificationsClick,
-            modifier = modifier,
+            modifier = homeTopAppBarModifier,
             scrollBehavior = scrollBehavior,
         )
         UserRole.LECTURER -> LecturerHomeTopAppBar(
-            modifier = modifier,
+            modifier = homeTopAppBarModifier,
             scrollBehavior = scrollBehavior,
         )
         UserRole.NOT_LOGGED_IN -> Unit
