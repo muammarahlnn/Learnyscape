@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.home
 
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.common.result.asResult
@@ -25,8 +26,11 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val getClasses: GetClassesUseCase,
 ) : ViewModel() {
+
+    val searchQuery = savedStateHandle.getStateFlow(key = SEARCH_QUERY, initialValue = "")
 
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
 
@@ -68,4 +72,10 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun onSearchQueryChanged(query: String) {
+        savedStateHandle[SEARCH_QUERY] = query
+    }
 }
+
+private const val SEARCH_QUERY = "search_query"

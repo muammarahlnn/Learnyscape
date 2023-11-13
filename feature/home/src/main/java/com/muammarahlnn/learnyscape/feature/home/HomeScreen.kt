@@ -26,8 +26,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
+import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 
 
 /**
@@ -43,10 +45,13 @@ internal fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     HomeScreen(
         uiState = uiState,
         scrollBehavior = scrollBehavior,
+        searchQuery = searchQuery,
+        onSearchQueryChanged = viewModel::onSearchQueryChanged,
         onClassClick = onClassClick,
         modifier = modifier,
     )
@@ -57,6 +62,8 @@ internal fun HomeRoute(
 private fun HomeScreen(
     uiState: HomeUiState,
     scrollBehavior: TopAppBarScrollBehavior,
+    searchQuery: String,
+    onSearchQueryChanged: (String) -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -66,26 +73,15 @@ private fun HomeScreen(
         }
 
         is HomeUiState.Success -> {
-            LazyColumn(
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+            HomeContent(
+                searchQuery = searchQuery,
+                classes = uiState.classes,
+                onSearchQueryChanged = onSearchQueryChanged,
+                onClassClick = onClassClick,
                 modifier = modifier
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
-            ) {
-                items(
-                    items = uiState.classes,
-                    key = {
-                        it.id
-                    }
-                ) { classInfo ->
-                    ClassCard(
-                        className = classInfo.className,
-                        lecturerName = classInfo.lecturerNames.first(),
-                        onItemClick = onClassClick,
-                    )
-                }
-            }
+            )
         }
 
         HomeUiState.SuccessEmptyClasses -> {
@@ -102,6 +98,48 @@ private fun HomeScreen(
             NoInternetContent(
                 modifier = modifier,
             )
+        }
+    }
+}
+
+@Composable
+private fun HomeContent(
+    searchQuery: String,
+    classes: List<ClassInfoModel>,
+    onSearchQueryChanged: (String) -> Unit,
+    onClassClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier) {
+        SearchTextField(
+            searchQuery = searchQuery,
+            placeholderText = stringResource(id = R.string.search_placeholder_text),
+            onSearchQueryChanged = onSearchQueryChanged,
+            modifier = Modifier
+                .padding(
+                    start = 16.dp,
+                    top = 16.dp,
+                    end = 16.dp,
+                    bottom = 12.dp,
+                )
+        )
+
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            items(
+                items = classes,
+                key = {
+                    it.id
+                }
+            ) { classInfo ->
+                ClassCard(
+                    className = classInfo.className,
+                    lecturerName = classInfo.lecturerNames.first(),
+                    onItemClick = onClassClick,
+                )
+            }
         }
     }
 }
