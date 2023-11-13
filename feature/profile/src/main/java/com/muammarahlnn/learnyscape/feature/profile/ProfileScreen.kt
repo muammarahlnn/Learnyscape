@@ -1,20 +1,20 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -33,11 +33,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.designsystem.theme.WhiteLightGray
+import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
@@ -74,6 +78,9 @@ internal fun ProfileRoute(
         onDismissChangePhotoProfileBottomSheet = {
           showChangePhotoProfileBottomSheet = false
         },
+        onChangePasswordButtonClick = {
+
+        },
         onLogoutButtonClick = {
             showLogoutDialog = true
         },
@@ -94,6 +101,7 @@ private fun ProfileScreen(
     onChangePhotoProfileButtonClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onDismissChangePhotoProfileBottomSheet: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
     onConfirmLogoutDialog: () -> Unit,
     onDismissLogoutDialog: () -> Unit,
@@ -116,81 +124,250 @@ private fun ProfileScreen(
         )
     }
 
-    ProfileContent(
-        onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
-        onLogoutButtonClick = onLogoutButtonClick,
+    Column(
         modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-    )
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .padding(16.dp),
+    ) {
+        ProfileContent(
+            onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ChangePasswordCard(
+            onClick = onChangePasswordButtonClick
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LogoutCard(
+            onClick = onLogoutButtonClick,
+        )
+    }
 }
 
 @Composable
 private fun ProfileContent(
     onChangePhotoProfileButtonClick: () -> Unit,
-    onLogoutButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
+    Box(modifier = modifier.fillMaxWidth()) {
+        ProfileDetailInfoCard(
+            modifier = Modifier.padding(top = photoProfileSize / 2)
+        )
+        PhotoProfile(
+            onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+    }
+}
+
+@Composable
+private fun ProfileDetailInfoCard(modifier: Modifier = Modifier) {
+    val user = LocalUserModel.current
+    BaseCard(
         modifier = modifier
-            .fillMaxSize()
-            .padding(32.dp)
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.ava_luffy),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(160.dp)
-                        .clip(CircleShape)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 16.dp,
+                    top = photoProfileSize / 2 + 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp,
                 )
-                FilledIconButton(
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                    onClick = onChangePhotoProfileButtonClick,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size(48.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_photo_camera),
-                        contentDescription = stringResource(id = R.string.camera_icon_description),
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val user = LocalUserModel.current
-            Text(
-                text = user.fullName,
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                text = user.username,
-                style = MaterialTheme.typography.bodyLarge
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = onLogoutButtonClick,
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_logout),
-                    contentDescription = stringResource(id = R.string.logout)
+                    painter = painterResource(id = R.drawable.ic_info),
+                    contentDescription = stringResource(id = R.string.user_info),
+                    tint = MaterialTheme.colorScheme.primary,
                 )
-                Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-                Text(text = stringResource(id = R.string.logout))
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = when (user.role) {
+                        UserRole.STUDENT -> stringResource(
+                            id = R.string.student_data
+                        )
+                        UserRole.LECTURER -> stringResource(
+                            id = R.string.lecturer_data
+                        )
+                        UserRole.NOT_LOGGED_IN -> ""
+                    },
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            BaseProfileInfoText(
+                title = stringResource(id = R.string.name),
+                value = user.fullName
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            BaseProfileInfoText(
+                title = when (user.role) {
+                    UserRole.STUDENT -> stringResource(
+                        id = R.string.nim
+                    )
+                    UserRole.LECTURER -> stringResource(
+                        id = R.string. nip
+                    )
+                    UserRole.NOT_LOGGED_IN -> ""
+                },
+                value = user.id
+            )
+        }
+    }
+}
+
+@Composable
+private fun BaseProfileInfoText(
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(WhiteLightGray)
+                .padding(
+                    vertical = 16.dp,
+                    horizontal = 16.dp,
+                )
+        )
+    }
+}
+
+@Composable
+private fun PhotoProfile(
+    onChangePhotoProfileButtonClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        val photoProfileModifier = Modifier
+            .size(photoProfileSize)
+            .clip(CircleShape)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.onSecondary,
+                shape = CircleShape
+            )
+
+        Image(
+            painter = painterResource(id = R.drawable.ava_luffy),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = photoProfileModifier
+        )
+
+        FilledIconButton(
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.background,
+            ),
+            onClick = onChangePhotoProfileButtonClick,
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.BottomEnd)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_photo_camera),
+                contentDescription = stringResource(id = R.string.camera_icon_description),
+                modifier = Modifier.size(20.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChangePasswordCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_vpn_key),
+                contentDescription = stringResource(id = R.string.change_password),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = stringResource(id = R.string.change_password),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+    }
+}
+
+@Composable
+private fun LogoutCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable {
+                onClick()
+            }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_logout),
+                contentDescription = stringResource(id = R.string.logout),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = stringResource(id = R.string.logout),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
         }
     }
 }
@@ -278,3 +455,5 @@ private fun LogoutDialog(
         modifier = modifier,
     )
 }
+
+private val photoProfileSize = 100.dp
