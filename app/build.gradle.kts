@@ -50,7 +50,6 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
 
-    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

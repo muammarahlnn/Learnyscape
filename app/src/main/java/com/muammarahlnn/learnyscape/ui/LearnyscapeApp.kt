@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.ui
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -10,14 +9,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
 import com.muammarahlnn.learnyscape.core.domain.GetLoggedInUserUseCase
+import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.feature.login.LoginRoute
 import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
@@ -44,16 +42,7 @@ fun LearnyscapeApp(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
             if (isLoggedIn) {
-                val systemUiController = rememberSystemUiController()
-                val statusBarColor by animateColorAsState(
-                    targetValue = appState.currentStatusBarColor,
-                    label = "Status bar color"
-                )
-                LaunchedEffect(systemUiController, statusBarColor) {
-                    systemUiController.setStatusBarColor(
-                        color = statusBarColor
-                    )
-                }
+                ChangeStatusBarColor(statusBarColor = appState.currentStatusBarColor)
 
                 val user by appState.user.collectAsStateWithLifecycle()
                 CompositionLocalProvider(LocalUserModel provides user) {
