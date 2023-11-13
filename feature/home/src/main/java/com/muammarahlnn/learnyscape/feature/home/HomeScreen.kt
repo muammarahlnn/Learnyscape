@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -33,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
 import com.muammarahlnn.learnyscape.core.ui.ClassCard
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 
@@ -106,8 +106,10 @@ private fun HomeScreen(
         }
 
         is HomeUiState.NoInternet -> {
-            NoInternetContent(
-                modifier = modifier,
+            NoInternetScreen(
+                text = uiState.message,
+                onRefresh = onRefresh,
+                modifier = modifier.fillMaxSize()
             )
         }
     }
@@ -207,35 +209,6 @@ private fun EmptyClassesContent(
 
         Text(
             text = stringResource(id = R.string.empty_class_illustration_desc),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-
-}
-
-@Composable
-private fun NoInternetContent(
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp),
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_wifi_off),
-            contentDescription = stringResource(id = R.string.wifi_off_icon_desc),
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(128.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(id = R.string.wifi_off_icon_desc),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )

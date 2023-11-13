@@ -3,7 +3,6 @@
     <string name="learnyscape">Learnyscape</string>
     <string name="home">Home</string>
     <string name="notifications">Notifications</string>
-    <string name="wifi_off_icon_desc">You are not connected to the internet</string>
     <string name="empty_class_illustration_desc">You haven\'t join any class yet</string>
     <string name="search_placeholder_text">Search your class…</string>
 </resources>
