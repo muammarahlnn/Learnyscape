@@ -36,6 +36,10 @@ class HomeViewModel @Inject constructor(
 
     val homeUiState = _homeUiState.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     init {
         fetchClasses()
     }

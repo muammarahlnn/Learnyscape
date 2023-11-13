@@ -14,6 +14,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.PullRefreshState
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -42,7 +47,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
  * @file HomeScreen, 20/07/2023 19.56 by Muammar Ahlan Abimanyu
  */
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 internal fun HomeRoute(
     scrollBehavior: TopAppBarScrollBehavior,
@@ -50,11 +55,19 @@ internal fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
+    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = refreshing,
+        onRefresh = viewModel::fetchClasses
+    )
+
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     HomeScreen(
         uiState = uiState,
         scrollBehavior = scrollBehavior,
+        pullRefreshState = pullRefreshState,
+        isRefreshing = refreshing,
         searchQuery = searchQuery,
         onRefresh = viewModel::fetchClasses,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
@@ -63,55 +76,69 @@ internal fun HomeRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun HomeScreen(
     uiState: HomeUiState,
     scrollBehavior: TopAppBarScrollBehavior,
+    pullRefreshState: PullRefreshState,
+    isRefreshing: Boolean,
     searchQuery: String,
     onRefresh: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when (uiState) {
-        HomeUiState.Loading -> {
-            HomeContentLoading()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(pullRefreshState)
+    ) {
+        when (uiState) {
+            HomeUiState.Loading -> {
+                HomeContentLoading()
+            }
+
+            is HomeUiState.Success -> {
+                HomeContent(
+                    searchQuery = searchQuery,
+                    classes = uiState.classes,
+                    onSearchQueryChanged = onSearchQueryChanged,
+                    onClassClick = onClassClick,
+                    modifier = modifier
+                        .fillMaxSize()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                )
+            }
+
+            HomeUiState.SuccessEmptyClasses -> {
+                EmptyClassesContent(
+                    modifier = modifier,
+                )
+            }
+
+            is HomeUiState.Error -> {
+                ErrorScreen(
+                    text = uiState.message,
+                    onRefresh = onRefresh,
+                    modifier = modifier.fillMaxSize()
+                )
+            }
+
+            is HomeUiState.NoInternet -> {
+                NoInternetScreen(
+                    text = uiState.message,
+                    onRefresh = onRefresh,
+                    modifier = modifier.fillMaxSize()
+                )
+            }
         }
 
-        is HomeUiState.Success -> {
-            HomeContent(
-                searchQuery = searchQuery,
-                classes = uiState.classes,
-                onSearchQueryChanged = onSearchQueryChanged,
-                onClassClick = onClassClick,
-                modifier = modifier
-                    .fillMaxSize()
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-            )
-        }
-
-        HomeUiState.SuccessEmptyClasses -> {
-            EmptyClassesContent(
-                modifier = modifier,
-            )
-        }
-
-        is HomeUiState.Error -> {
-            ErrorScreen(
-                text = uiState.message,
-                onRefresh = onRefresh,
-                modifier = modifier.fillMaxSize()
-            )
-        }
-
-        is HomeUiState.NoInternet -> {
-            NoInternetScreen(
-                text = uiState.message,
-                onRefresh = onRefresh,
-                modifier = modifier.fillMaxSize()
-            )
-        }
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
     }
 }
 
@@ -139,6 +166,7 @@ private fun HomeContent(
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.weight(1f)
         ) {
             items(
                 items = classes,
