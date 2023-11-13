@@ -5,10 +5,9 @@ import com.muammarahlnn.learnyscape.feature.profile.navigation.PROFILE_ROUTE
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.SCHEDULE_ROUTE
 import com.muammarahlnn.learnyscape.feature.search.navigation.SEARCH_ROUTE
 import com.muammarahlnn.learnyscape.feature.home.R as homeR
-import com.muammarahlnn.learnyscape.feature.search.R as searchR
-import com.muammarahlnn.learnyscape.feature.schedule.R as scheduleR
 import com.muammarahlnn.learnyscape.feature.profile.R as profileR
-import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
+import com.muammarahlnn.learnyscape.feature.schedule.R as scheduleR
+import com.muammarahlnn.learnyscape.feature.search.R as searchR
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -27,7 +26,7 @@ internal enum class HomeDestination(
     SEARCH(
         route = SEARCH_ROUTE,
         titleId = searchR.string.available_class,
-        iconId = designSystemR.drawable.ic_search,
+        iconId = searchR.drawable.ic_school,
     ),
     SCHEDULE(
         route = SCHEDULE_ROUTE,
