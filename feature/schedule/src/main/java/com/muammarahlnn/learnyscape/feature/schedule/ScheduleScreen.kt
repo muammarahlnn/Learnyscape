@@ -93,8 +93,8 @@ private fun ScheduleDateHeader(
 ) {
     BaseCard(
         shape = RoundedCornerShape(
-            bottomStart = 10.dp,
-            bottomEnd = 10.dp,
+            bottomStart = 16.dp,
+            bottomEnd = 16.dp,
         ),
         elevation = 0.dp,
         modifier = modifier
@@ -103,8 +103,8 @@ private fun ScheduleDateHeader(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.onSecondary,
                 shape = RoundedCornerShape(
-                    bottomStart = 10.dp,
-                    bottomEnd = 10.dp,
+                    bottomStart = 16.dp,
+                    bottomEnd = 16.dp,
                 ),
             )
     ) {
