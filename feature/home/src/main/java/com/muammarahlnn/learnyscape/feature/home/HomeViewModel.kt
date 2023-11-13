@@ -40,7 +40,7 @@ class HomeViewModel @Inject constructor(
         fetchClasses()
     }
 
-    private fun fetchClasses() {
+    fun fetchClasses() {
         viewModelScope.launch {
             getClasses.execute(NoParams).asResult().collect { result ->
                 result.onLoading {
