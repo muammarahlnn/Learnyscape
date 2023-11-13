@@ -47,8 +47,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
+import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
 
 
 /**
@@ -61,13 +61,7 @@ fun LoginRoute(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    val systemUiController = rememberSystemUiController()
-    val statusBarColor = MaterialTheme.colorScheme.background
-    LaunchedEffect(systemUiController) {
-        systemUiController.setStatusBarColor(
-            color = statusBarColor,
-        )
-    }
+    ChangeStatusBarColor(statusBarColor = MaterialTheme.colorScheme.background)
 
     val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
     var username by rememberSaveable { mutableStateOf("") }
