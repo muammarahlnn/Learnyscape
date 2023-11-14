@@ -43,9 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.designsystem.theme.WhiteLightGray
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -58,6 +58,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 internal fun ProfileRoute(
     scrollBehavior: TopAppBarScrollBehavior,
     onCameraActionClick: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
@@ -81,9 +82,7 @@ internal fun ProfileRoute(
         onDismissChangePhotoProfileBottomSheet = {
           showChangePhotoProfileBottomSheet = false
         },
-        onChangePasswordButtonClick = {
-
-        },
+        onChangePasswordButtonClick = onChangePasswordButtonClick,
         onLogoutButtonClick = {
             showLogoutDialog = true
         },
@@ -229,7 +228,7 @@ private fun ProfileDetailInfoCard(modifier: Modifier = Modifier) {
                     )
                     UserRole.NOT_LOGGED_IN -> ""
                 },
-                value = user.id
+                value = user.username
             )
         }
     }
@@ -257,7 +256,7 @@ private fun BaseProfileInfoText(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(8.dp))
-                .background(WhiteLightGray)
+                .background(MaterialTheme.colorScheme.outline)
                 .padding(
                     vertical = 16.dp,
                     horizontal = 16.dp,
@@ -326,7 +325,7 @@ private fun ChangePasswordCard(
                 .padding(16.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_vpn_key),
+                painter = painterResource(id = designSystemR.drawable.ic_vpn_key),
                 contentDescription = stringResource(id = R.string.change_password),
                 tint = MaterialTheme.colorScheme.primary,
             )

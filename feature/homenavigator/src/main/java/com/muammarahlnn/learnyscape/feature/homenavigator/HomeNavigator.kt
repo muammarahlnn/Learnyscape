@@ -46,6 +46,7 @@ internal fun HomeNavigatorRoute(
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeNavigator(
@@ -53,6 +54,7 @@ internal fun HomeNavigatorRoute(
         onClassClick = onClassClick,
         onCameraActionClick = onCameraActionClick,
         onPendingClassRequestClick = onPendingClassRequestClick,
+        onChangePasswordButtonClick = onChangePasswordButtonClick,
         modifier = modifier,
     )
 }
@@ -64,6 +66,7 @@ private fun HomeNavigator(
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     state: HomeNavigatorState = rememberHomeNavigatorState()
 ) {
@@ -97,6 +100,7 @@ private fun HomeNavigator(
             scrollBehavior = scrollBehavior,
             onClassClick = onClassClick,
             onCameraActionClick = onCameraActionClick,
+            onChangePasswordButtonClick = onChangePasswordButtonClick,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)

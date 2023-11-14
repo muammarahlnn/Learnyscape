@@ -44,6 +44,7 @@ dependencies {
     implementation(project(":feature:login"))
     implementation(project(":feature:camera"))
     implementation(project(":feature:pendingrequest"))
+    implementation(project(":feature:changepassword"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))

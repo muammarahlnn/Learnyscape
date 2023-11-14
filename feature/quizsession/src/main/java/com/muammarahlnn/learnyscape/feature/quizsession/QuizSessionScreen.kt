@@ -488,8 +488,8 @@ private fun SubmitButton(
 ) {
     BaseCard(
         shape = RoundedCornerShape(
-            topStart = 10.dp,
-            topEnd = 10.dp,
+            topStart = 8.dp,
+            topEnd = 8.dp,
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -507,7 +507,7 @@ private fun SubmitButton(
     ) {
         Button(
             onClick = onButtonClick,
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

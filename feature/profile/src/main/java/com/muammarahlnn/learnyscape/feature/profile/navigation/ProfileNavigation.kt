@@ -24,11 +24,13 @@ fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.profileScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     onCameraActionClick: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
 ) {
     composable(route = PROFILE_ROUTE) {
         ProfileRoute(
             scrollBehavior = scrollBehavior,
             onCameraActionClick = onCameraActionClick,
+            onChangePasswordButtonClick = onChangePasswordButtonClick,
         )
     }
 }

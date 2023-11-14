@@ -16,5 +16,4 @@ internal val Blue = Color(0xFF0079FF)
 internal val Black = Color(0xFF2D2727)
 internal val Gray = Color(0xFF6A6A6A)
 internal val LightGray = Color(0xFFBFBFBF)
-
-val WhiteLightGray = Color(0xFFF3F4F8)
+internal val WhiteLightGray = Color(0xFFF3F4F8)

@@ -49,7 +49,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
-
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -279,7 +279,7 @@ private fun UsernameTextField(
             )
         },
         singleLine = true,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
             unfocusedLeadingIconColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -326,13 +326,13 @@ private fun PasswordTextField(
             ) {
                 if (!showPassword) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_visibility),
-                        contentDescription = stringResource(id = R.string.visibility_icon_desc)
+                        painter = painterResource(id = designSystemR.drawable.ic_visibility),
+                        contentDescription = stringResource(id = designSystemR.string.visibility_icon_desc)
                     )
                 } else {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_visibility_off),
-                        contentDescription = stringResource(id = R.string.visibility_off_icon_desc)
+                        painter = painterResource(id = designSystemR.drawable.ic_visibility_off),
+                        contentDescription = stringResource(id = designSystemR.string.visibility_off_icon_desc)
                     )
                 }
             }
@@ -346,7 +346,7 @@ private fun PasswordTextField(
             keyboardType = KeyboardType.Password
         ),
         singleLine = true,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = MaterialTheme.colorScheme.surfaceVariant,
             unfocusedLeadingIconColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -374,7 +374,7 @@ private fun LoginButton(
 ) {
     Button(
         onClick = onButtonClick,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(8.dp),
         enabled = if (isLoading) false else isEnabled,
         modifier = modifier.fillMaxWidth()
     ) {
