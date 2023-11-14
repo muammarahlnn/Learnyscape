@@ -8,6 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.muammarahlnn.learnyscape.feature.camera.navigation.cameraScreen
 import com.muammarahlnn.learnyscape.feature.camera.navigation.navigateToCamera
+import com.muammarahlnn.learnyscape.feature.changepassword.navigation.changePasswordScreen
+import com.muammarahlnn.learnyscape.feature.changepassword.navigation.navigateToChangePassword
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavigator
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
@@ -76,7 +78,8 @@ fun LearnyscapeNavHost(
             },
             onPendingClassRequestClick = {
                 navController.navigateToPendingRequest()
-            }
+            },
+            onChangePasswordButtonClick = navController::navigateToChangePassword
         )
         classNavigator(
             onResourceClassClick = navigateToResourceDetails(navController),
@@ -106,6 +109,9 @@ fun LearnyscapeNavHost(
             onCameraClosed = navController::popBackStack
         )
         pendingRequestScreen(
+            onBackClick = navController::popBackStack
+        )
+        changePasswordScreen(
             onBackClick = navController::popBackStack
         )
     }

@@ -24,6 +24,7 @@ val LightColorScheme = lightColorScheme(
     onSurface = Gray,
     surfaceVariant = LightGray,
     surfaceTint = White,
+    outline = WhiteLightGray,
 )
 
 @Composable

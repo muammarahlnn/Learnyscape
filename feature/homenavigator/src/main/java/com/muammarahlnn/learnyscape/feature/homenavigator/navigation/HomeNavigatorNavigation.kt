@@ -17,6 +17,7 @@ fun NavGraphBuilder.homeNavigator(
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
 ) {
     composable(route = HOME_NAVIGATOR_ROUTE) {
         HomeNavigatorRoute(
@@ -24,6 +25,7 @@ fun NavGraphBuilder.homeNavigator(
             onClassClick = onClassClick,
             onCameraActionClick = onCameraActionClick,
             onPendingClassRequestClick = onPendingClassRequestClick,
+            onChangePasswordButtonClick = onChangePasswordButtonClick,
         )
     }
 }

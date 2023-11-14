@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.designsystem.component
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 
 
 /**
@@ -138,14 +140,24 @@ fun LearnyscapeTopAppBar(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearnyscapeCenterTopAppBar(
-    title: @Composable () -> Unit,
+    title: String,
     modifier: Modifier = Modifier,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
+    navigationIcon: @Composable () -> Unit = {},
+    actionsIcon: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
     CenterAlignedTopAppBar(
-        title = title,
-        colors = colors,
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+            )
+        },
+        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
+        navigationIcon = navigationIcon,
+        actions = actionsIcon,
         scrollBehavior = scrollBehavior,
         modifier = modifier,
     )
@@ -168,9 +180,9 @@ object LearnyscapeTopAppbarDefaults {
     fun defaultTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         scrolledContainerColor = MaterialTheme.colorScheme.primary,
-        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+        navigationIconContentColor = MaterialTheme.colorScheme.background,
+        actionIconContentColor = MaterialTheme.colorScheme.background,
+        titleContentColor = MaterialTheme.colorScheme.background,
     )
 
     @OptIn(ExperimentalMaterial3Api::class)

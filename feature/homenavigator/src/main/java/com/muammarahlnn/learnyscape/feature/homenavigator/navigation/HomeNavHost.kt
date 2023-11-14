@@ -25,6 +25,7 @@ internal fun HomeNavHost(
     scrollBehavior: TopAppBarScrollBehavior,
     onClassClick: () -> Unit,
     onCameraActionClick: () -> Unit,
+    onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -48,6 +49,7 @@ internal fun HomeNavHost(
         profileScreen(
             scrollBehavior = scrollBehavior,
             onCameraActionClick = onCameraActionClick,
+            onChangePasswordButtonClick = onChangePasswordButtonClick,
         )
     }
 }

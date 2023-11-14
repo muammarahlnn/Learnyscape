@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.learnyscape.core.designsystem.theme.WhiteLightGray
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -87,14 +86,14 @@ fun SearchTextField(
         maxLines = 1,
         singleLine = true,
         textStyle = MaterialTheme.typography.bodySmall,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = TextFieldDefaults.colors(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            unfocusedContainerColor = WhiteLightGray,
-            focusedContainerColor = WhiteLightGray,
-            disabledContainerColor = WhiteLightGray,
+            unfocusedContainerColor = MaterialTheme.colorScheme.outline,
+            focusedContainerColor = MaterialTheme.colorScheme.outline,
+            disabledContainerColor = MaterialTheme.colorScheme.outline,
             unfocusedTextColor = MaterialTheme.colorScheme.surfaceVariant,
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
             cursorColor = MaterialTheme.colorScheme.onSurface,

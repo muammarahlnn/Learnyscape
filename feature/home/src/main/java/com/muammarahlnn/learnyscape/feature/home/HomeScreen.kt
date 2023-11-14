@@ -208,7 +208,7 @@ private fun HomeContentLoading(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .shimmerEffect()
             )
             Spacer(modifier = Modifier.height(16.dp))
