@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
@@ -222,16 +223,9 @@ private fun SearchTopAppBar(
     modifier: Modifier = Modifier,
 ) {
     val user = LocalUserModel.current
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = searchR.string.available_class),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
-            )
-        },
-        actions = {
+    LearnyscapeCenterTopAppBar(
+        title = stringResource(id = searchR.string.available_class),
+        actionsIcon = {
             if (user.role == UserRole.STUDENT) {
                 IconButton(onClick = onPendingClassRequestClick) {
                     Icon(
@@ -243,7 +237,6 @@ private fun SearchTopAppBar(
                 }
             }
         },
-        colors = HomeNavigatorTopAppBarDefaults.defaultTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         modifier = modifier,
     )
@@ -256,16 +249,8 @@ private fun DefaultHomeNavigatorTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     modifier: Modifier = Modifier,
 ) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = titleId),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
-            )
-        },
-        colors = HomeNavigatorTopAppBarDefaults.defaultTopAppBarColors(),
+    LearnyscapeCenterTopAppBar(
+        title = stringResource(id = titleId),
         scrollBehavior = scrollBehavior,
         modifier = modifier,
     )

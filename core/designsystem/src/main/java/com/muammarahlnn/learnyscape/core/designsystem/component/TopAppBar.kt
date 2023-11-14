@@ -150,8 +150,8 @@ fun LearnyscapeCenterTopAppBar(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold,
                 ),
             )
         },
