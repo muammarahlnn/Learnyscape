@@ -10,7 +10,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -20,13 +19,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
@@ -193,7 +192,7 @@ private fun StudentHomeTopAppBar(
                 )
             }
         },
-        colors = HomeNavigatorTopAppBarDefaults.homeTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.homeTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         modifier = modifier,
     )
@@ -209,7 +208,7 @@ private fun LecturerHomeTopAppBar(
         title = {
             LearnyscapeLogoText()
         },
-        colors = HomeNavigatorTopAppBarDefaults.homeTopAppBarColors(),
+        colors = LearnyscapeTopAppbarDefaults.homeTopAppBarColors(),
         scrollBehavior = scrollBehavior,
         modifier = modifier,
     )
@@ -290,26 +289,3 @@ private fun NavDestination?.isDestinationInHierarchy(destination: HomeDestinatio
     this?.hierarchy?.any {
         it.route?.equals(destination.route, true) ?: false
     } ?: false
-
-
-object HomeNavigatorTopAppBarDefaults {
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.background,
-        scrolledContainerColor = MaterialTheme.colorScheme.background,
-        navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
-        actionIconContentColor = MaterialTheme.colorScheme.onBackground,
-    )
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun defaultTopAppBarColors() = TopAppBarDefaults.centerAlignedTopAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        scrolledContainerColor = MaterialTheme.colorScheme.primary,
-        navigationIconContentColor = MaterialTheme.colorScheme.background,
-        actionIconContentColor = MaterialTheme.colorScheme.background,
-        titleContentColor = MaterialTheme.colorScheme.background,
-    )
-}

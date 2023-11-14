@@ -168,7 +168,6 @@ object LearnyscapeTopAppbarDefaults {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun homeTopAppBarColors() = TopAppBarDefaults.topAppBarColors(
-        // TODO: fix top app bar color changing when scrolled stick to the top
         containerColor = MaterialTheme.colorScheme.background,
         scrolledContainerColor = MaterialTheme.colorScheme.background,
         navigationIconContentColor = MaterialTheme.colorScheme.onBackground,
