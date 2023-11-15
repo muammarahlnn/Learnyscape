@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -31,8 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -119,15 +120,19 @@ private fun NotificationsTopAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    LearnyscapeTopAppBar(
-        titleRes = R.string.notifications,
-        navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
-        navigationIconContentDescription = stringResource(
-            id = designSystemR.string.navigation_back_icon_description
-        ),
-        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
+    LearnyscapeCenterTopAppBar(
+        title = stringResource(id = R.string.notifications),
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
+                    contentDescription = stringResource(
+                        id = designSystemR.string.navigation_back_icon_description,
+                    ),
+                )
+            }
+        },
         scrollBehavior = scrollBehavior,
-        onNavigationClick = onBackClick,
         modifier = modifier,
     )
 }
