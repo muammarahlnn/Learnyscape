@@ -13,7 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.theme.LearnyscapeTheme
-import com.muammarahlnn.learnyscape.core.domain.GetLoggedInUserUseCase
+import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
 import com.muammarahlnn.learnyscape.ui.LearnyscapeApp
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect

@@ -2,7 +2,7 @@ package com.muammarahlnn.learnyscape.feature.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.muammarahlnn.learnyscape.core.domain.LogoutUseCase
+import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch

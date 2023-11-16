@@ -10,7 +10,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
-import com.muammarahlnn.learnyscape.core.domain.GetClassesUseCase
+import com.muammarahlnn.learnyscape.core.domain.home.GetClassesUseCase
 import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

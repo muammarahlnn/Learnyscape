@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.core.domain
+package com.muammarahlnn.learnyscape.core.domain.home
 
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.domain.base.BaseUseCase
