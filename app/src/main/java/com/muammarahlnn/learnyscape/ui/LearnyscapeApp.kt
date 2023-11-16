@@ -30,9 +30,9 @@ import com.muammarahlnn.learnyscape.navigation.LearnyscapeNavHost
 @Composable
 fun LearnyscapeApp(
     isLoggedIn: Boolean,
-    getLoggedInUser: GetLoggedInUserUseCase,
+    getLoggedInUserUseCase: GetLoggedInUserUseCase,
     appState: LearnyscapeAppState = rememberLearnyscapeAppState(
-        getLoggedInUser = getLoggedInUser,
+        getLoggedInUserUseCase = getLoggedInUserUseCase,
     ),
 ) {
     LearnyscapeBackground {

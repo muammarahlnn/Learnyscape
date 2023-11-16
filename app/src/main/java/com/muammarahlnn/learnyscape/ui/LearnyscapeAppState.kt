@@ -11,7 +11,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
-import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.feature.camera.navigation.CAMERA_ROUTE
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.CLASS_NAVIGATOR_ROUTE
@@ -27,18 +26,18 @@ import kotlinx.coroutines.flow.stateIn
 
 @Composable
 fun rememberLearnyscapeAppState(
-    getLoggedInUser: GetLoggedInUserUseCase,
+    getLoggedInUserUseCase: GetLoggedInUserUseCase,
     navController: NavHostController = rememberNavController(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): LearnyscapeAppState {
     return remember(
-        getLoggedInUser,
+        getLoggedInUserUseCase,
         navController,
         coroutineScope,
     ) {
         LearnyscapeAppState(
             navController,
-            getLoggedInUser,
+            getLoggedInUserUseCase,
             coroutineScope,
         )
     }
@@ -47,11 +46,11 @@ fun rememberLearnyscapeAppState(
 @Stable
 class LearnyscapeAppState(
     val navController: NavHostController,
-    getLoggedInUser: GetLoggedInUserUseCase,
+    getLoggedInUserUseCase: GetLoggedInUserUseCase,
     coroutineScope: CoroutineScope,
 ) {
 
-    val user = getLoggedInUser.execute(NoParams)
+    val user = getLoggedInUserUseCase()
         .stateIn(
             scope = coroutineScope,
             started = SharingStarted.WhileSubscribed(5_000),

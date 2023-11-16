@@ -29,8 +29,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val postLoginUser: PostLoginUserUseCase,
-    private val saveUser: SaveUserUseCase
+    private val postLoginUserUseCase: PostLoginUserUseCase,
+    private val saveUserUseCase: SaveUserUseCase
 ) : ViewModel() {
 
     private val _loginUiState = MutableStateFlow<LoginUiState>(LoginUiState.None)
@@ -42,14 +42,11 @@ class LoginViewModel @Inject constructor(
         password: String,
     ) {
         viewModelScope.launch {
-            postLoginUser.execute(
-                params = PostLoginUserUseCase.Params(
-                    username = username,
-                    password = password,
-                )
-            ).asResult().collect { result ->
-                handlePostLoginResult(result)
-            }
+            postLoginUserUseCase(username, password)
+                .asResult()
+                .collect { result ->
+                    handlePostLoginResult(result)
+                }
         }
     }
 
@@ -58,11 +55,7 @@ class LoginViewModel @Inject constructor(
             onLoadingResult()
         }.onSuccess { loginModel ->
             val accessToken = loginModel.accessToken
-            saveUser.execute(
-                params = SaveUserUseCase.Params(
-                    token = accessToken
-                )
-            ).asResult().collect { result ->
+            saveUserUseCase(accessToken).asResult().collect { result ->
                 handleSaveUserResult(result)
             }
         }.onNoInternet { message ->

@@ -25,7 +25,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject
-    lateinit var getLoggedInUser: GetLoggedInUserUseCase
+    lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
 
     private val viewModel: MainActivityViewModel by viewModels()
 
@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
             LearnyscapeTheme {
                 LearnyscapeApp(
                     isLoggedIn = isUserLogin(mainActivityUiState),
-                    getLoggedInUser = getLoggedInUser,
+                    getLoggedInUserUseCase = getLoggedInUserUseCase,
                 )
             }
         }
