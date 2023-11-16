@@ -2,7 +2,7 @@ package com.muammarahlnn.learnyscape
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.muammarahlnn.learnyscape.core.domain.IsUserLoggedInUseCase
+import com.muammarahlnn.learnyscape.core.domain.login.IsUserLoggedInUseCase
 import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted

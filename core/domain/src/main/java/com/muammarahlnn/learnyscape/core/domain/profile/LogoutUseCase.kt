@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.core.domain
+package com.muammarahlnn.learnyscape.core.domain.profile
 
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
 import com.muammarahlnn.learnyscape.core.domain.base.BaseSuspendUseCase

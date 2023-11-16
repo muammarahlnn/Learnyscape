@@ -10,7 +10,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.muammarahlnn.learnyscape.core.domain.GetLoggedInUserUseCase
+import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
 import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.feature.camera.navigation.CAMERA_ROUTE

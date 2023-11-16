@@ -10,8 +10,8 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
-import com.muammarahlnn.learnyscape.core.domain.PostLoginUserUseCase
-import com.muammarahlnn.learnyscape.core.domain.SaveUserUseCase
+import com.muammarahlnn.learnyscape.core.domain.login.PostLoginUserUseCase
+import com.muammarahlnn.learnyscape.core.domain.login.SaveUserUseCase
 import com.muammarahlnn.learnyscape.core.model.data.LoginModel
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel

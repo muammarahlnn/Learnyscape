@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeBackground
-import com.muammarahlnn.learnyscape.core.domain.GetLoggedInUserUseCase
+import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
 import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.feature.login.LoginRoute
