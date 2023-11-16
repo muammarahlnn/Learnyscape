@@ -2,7 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import com.muammarahlnn.learnyscape.core.network.api.HomeApi
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
-import com.muammarahlnn.learnyscape.core.network.model.response.ClassInfoResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class HomeNetworkDataSourceImpl @Inject constructor(
     private val homeApi: HomeApi,
 ) : HomeNetworkDataSource {
 
-    override fun getClasses(): Flow<List<ClassInfoResponse>> = flow {
+    override fun getClasses(): Flow<List<EnrolledClassInfoResponse>> = flow {
         emit(homeApi.getClasses().data)
     }
 }

@@ -2,7 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain
 
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.domain.base.BaseUseCase
-import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
+import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -14,8 +14,8 @@ import javax.inject.Inject
  */
 class GetClassesUseCase @Inject constructor(
     private val homeRepository: HomeRepository
-) : BaseUseCase<NoParams, List<ClassInfoModel>> {
+) : BaseUseCase<NoParams, List<EnrolledClassInfoModel>> {
 
-    override fun execute(params: NoParams): Flow<List<ClassInfoModel>> =
+    override fun execute(params: NoParams): Flow<List<EnrolledClassInfoModel>> =
         homeRepository.getClasses()
 }
