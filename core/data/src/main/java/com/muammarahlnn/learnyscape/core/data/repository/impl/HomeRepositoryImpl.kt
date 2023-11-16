@@ -1,10 +1,10 @@
 package com.muammarahlnn.learnyscape.core.data.repository.impl
 
-import com.muammarahlnn.learnyscape.core.data.mapper.toClassesInfoModel
+import com.muammarahlnn.learnyscape.core.data.mapper.toEnrolledClassInfoModels
 import com.muammarahlnn.learnyscape.core.data.mapper.toUserModel
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
-import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
+import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
 import kotlinx.coroutines.flow.Flow
@@ -26,8 +26,8 @@ class HomeRepositoryImpl @Inject constructor(
             userEntity.toUserModel()
         }
 
-    override fun getClasses(): Flow<List<ClassInfoModel>> =
-        homeNetworkDataSource.getClasses().map { classInfoResponses ->
-            classInfoResponses.toClassesInfoModel()
+    override fun getClasses(): Flow<List<EnrolledClassInfoModel>> =
+        homeNetworkDataSource.getClasses().map { enrolledClassInfoResponses ->
+            enrolledClassInfoResponses.toEnrolledClassInfoModels()
         }
 }

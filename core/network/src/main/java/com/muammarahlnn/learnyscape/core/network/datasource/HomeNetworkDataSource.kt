@@ -1,6 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
-import com.muammarahlnn.learnyscape.core.network.model.response.ClassInfoResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import kotlinx.coroutines.flow.Flow
 
 
@@ -10,5 +10,5 @@ import kotlinx.coroutines.flow.Flow
  */
 interface HomeNetworkDataSource {
 
-    fun getClasses(): Flow<List<ClassInfoResponse>>
+    fun getClasses(): Flow<List<EnrolledClassInfoResponse>>
 }

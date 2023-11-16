@@ -1,6 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.home
 
-import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
+import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 
 
 /**
@@ -11,7 +11,7 @@ sealed interface HomeUiState {
 
     data object Loading : HomeUiState
 
-    data class Success(val classes: List<ClassInfoModel>) : HomeUiState
+    data class Success(val classes: List<EnrolledClassInfoModel>) : HomeUiState
 
     data object SuccessEmptyClasses : HomeUiState
 

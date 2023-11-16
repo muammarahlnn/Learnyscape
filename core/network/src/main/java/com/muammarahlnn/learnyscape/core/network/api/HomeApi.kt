@@ -1,6 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.api
 
-import com.muammarahlnn.learnyscape.core.network.model.response.ClassInfoResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import retrofit2.http.GET
 
@@ -12,7 +12,7 @@ import retrofit2.http.GET
 interface HomeApi {
 
     @GET(GET_CLASSES_END_POINT)
-    suspend fun getClasses(): BaseResponse<List<ClassInfoResponse>>
+    suspend fun getClasses(): BaseResponse<List<EnrolledClassInfoResponse>>
 
     companion object {
 

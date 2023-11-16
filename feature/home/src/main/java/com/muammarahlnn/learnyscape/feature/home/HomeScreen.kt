@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.model.data.ClassInfoModel
+import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
@@ -152,7 +152,7 @@ private fun HomeScreen(
 @Composable
 private fun HomeContent(
     searchQuery: String,
-    classes: List<ClassInfoModel>,
+    classes: List<EnrolledClassInfoModel>,
     onSearchQueryChanged: (String) -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
