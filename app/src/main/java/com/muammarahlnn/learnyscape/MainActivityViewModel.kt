@@ -3,7 +3,6 @@ package com.muammarahlnn.learnyscape
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.domain.login.IsUserLoggedInUseCase
-import com.muammarahlnn.learnyscape.core.model.data.NoParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,11 +17,11 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
-    isUserLoggedIn: IsUserLoggedInUseCase,
+    isUserLoggedInUseCase: IsUserLoggedInUseCase,
 ) : ViewModel() {
 
     val mainActivityUiState: StateFlow<MainActivityUiState> =
-        isUserLoggedIn.execute(NoParams).map { isLoggedIn ->
+        isUserLoggedInUseCase().map { isLoggedIn ->
             MainActivityUiState.Success(isLoggedIn)
         }.stateIn(
             scope = viewModelScope,
