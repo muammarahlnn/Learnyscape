@@ -7,4 +7,5 @@
     <string name="join_request_dialog_text">Request to join %1$s class?</string>
     <string name="join_request_dialog_confirm_button_text">Request</string>
     <string name="pending_request_icon_description">Pending class request</string>
+    <string name="empty_classes_text">Currently there are no available classes yet</string>
 </resources>
