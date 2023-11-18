@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.ui.util
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
@@ -10,17 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.unit.IntSize
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 
@@ -32,33 +28,46 @@ import com.muammarahlnn.learnyscape.core.model.data.UserModel
 
 val LocalUserModel = staticCompositionLocalOf { UserModel() }
 
-fun Modifier.shimmerEffect(): Modifier = composed {
-    var size by remember { mutableStateOf(IntSize.Zero) }
+fun Modifier.shimmerEffect(
+    shadowBrushWidth: Int = 500,
+    axisYAngle: Float = 270f,
+    effectDuration: Int = 1000,
+): Modifier = composed {
+    val shimmerColors = listOf(
+        MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.3f),
+        MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f),
+        MaterialTheme.colorScheme.onSecondary.copy(alpha = 1f),
+        MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.5f),
+        MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.3f),
+    )
     val transition = rememberInfiniteTransition(
         label = "Shimmer infinite transition"
     )
-    val startOffsetX by transition.animateFloat(
-        initialValue = -1.2f * size.width.toFloat(),
-        targetValue = 1.2f * size.width.toFloat(),
+    val translateAnimation by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = (effectDuration + shadowBrushWidth).toFloat(),
         animationSpec = infiniteRepeatable(
-            animation = tween(1500)
+            animation = tween(
+                durationMillis = effectDuration,
+                easing = LinearEasing
+            ),
         ),
-        label = "Shimmer start offset X animation"
+        label = "Shimmer loading animation",
     )
 
     background(
         brush = Brush.linearGradient(
-            colors = listOf(
-                MaterialTheme.colorScheme.onSecondary,
-                MaterialTheme.colorScheme.surfaceVariant,
-                MaterialTheme.colorScheme.onSecondary,
+            colors = shimmerColors,
+            start = Offset(
+                x = translateAnimation - shadowBrushWidth,
+                y = 0f,
             ),
-            start = Offset(startOffsetX, 0f),
-            end = Offset(startOffsetX + size.width.toFloat(), size.height.toFloat())
+            end = Offset(
+                x = translateAnimation,
+                y = axisYAngle,
+            ),
         )
-    ).onGloballyPositioned { layoutCoordinates ->
-        size = layoutCoordinates.size
-    }
+    )
 }
 
 @Composable
