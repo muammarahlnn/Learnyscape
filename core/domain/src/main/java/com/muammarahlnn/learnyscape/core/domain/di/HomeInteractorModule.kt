@@ -2,7 +2,6 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.domain.home.GetEnrolledClassesUseCase
-import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,12 +21,5 @@ object HomeInteractorModule {
         homeRepository: HomeRepository
     ): GetEnrolledClassesUseCase = GetEnrolledClassesUseCase(
         homeRepository::getClasses
-    )
-
-    @Provides
-    fun providesGetLoggedInUserUseCase(
-        homeRepository: HomeRepository
-    ): GetLoggedInUserUseCase = GetLoggedInUserUseCase(
-        homeRepository::getLoggedInUser
     )
 }

@@ -47,6 +47,7 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -292,7 +293,7 @@ private fun EmptyClassesContent(
             .padding(16.dp),
     ) {
         Image(
-            painter = painterResource(id = R.drawable.no_data_illustration),
+            painter = painterResource(id = designSystemR.drawable.no_data_illustration),
             contentDescription = null,
             modifier = Modifier.size(128.dp),
         )
