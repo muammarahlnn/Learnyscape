@@ -20,6 +20,6 @@ object HomeInteractorModule {
     fun providesGetEnrolledClassesUseCase(
         homeRepository: HomeRepository
     ): GetEnrolledClassesUseCase = GetEnrolledClassesUseCase(
-        homeRepository::getClasses
+        homeRepository::getEnrolledClasses
     )
 }

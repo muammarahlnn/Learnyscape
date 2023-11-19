@@ -13,5 +13,5 @@ interface HomeRepository {
 
     fun getLoggedInUser(): Flow<UserModel>
 
-    fun getClasses(): Flow<List<EnrolledClassInfoModel>>
+    fun getEnrolledClasses(): Flow<List<EnrolledClassInfoModel>>
 }

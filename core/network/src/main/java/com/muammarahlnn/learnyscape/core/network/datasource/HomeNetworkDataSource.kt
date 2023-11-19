@@ -10,5 +10,5 @@ import kotlinx.coroutines.flow.Flow
  */
 interface HomeNetworkDataSource {
 
-    fun getClasses(): Flow<List<EnrolledClassInfoResponse>>
+    fun getEnrolledClasses(): Flow<List<EnrolledClassInfoResponse>>
 }
