@@ -8,4 +8,10 @@ import kotlinx.coroutines.flow.Flow
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file PostLoginUserUseCase, 02/10/2023 16.31 by Muammar Ahlan Abimanyu
  */
-fun interface PostLoginUserUseCase : (String, String) -> Flow<LoginModel>
+fun interface PostLoginUserUseCase {
+
+    operator fun invoke(
+        username: String,
+        password: String,
+    ): Flow<LoginModel>
+}
