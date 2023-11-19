@@ -4,9 +4,8 @@ import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
-import com.muammarahlnn.learnyscape.core.network.api.AvailableClassApi
-import com.muammarahlnn.learnyscape.core.network.api.HomeApi
-import com.muammarahlnn.learnyscape.core.network.api.LoginApi
+import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
+import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.interceptor.BearerTokenInterceptor
 import com.muammarahlnn.learnyscape.core.network.interceptor.NetworkConnectionInterceptor
 import dagger.Module
@@ -36,34 +35,13 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesHomeApi(
-        networkJson: Json,
-        @Named(BEARER_TOKEN_OK_HTTP_CLIENT_QUALIFIER) client: OkHttpClient,
-    ): HomeApi = buildRetrofit(networkJson, client).create(HomeApi::class.java)
-
-    @Provides
-    @Singleton
-    fun providesLoginApi(
-        networkJson: Json,
-        @Named(DEFAULT_OK_HTTP_CLIENT_QUALIFIER) client: OkHttpClient,
-    ): LoginApi = buildRetrofit(networkJson, client).create(LoginApi::class.java)
-
-    @Provides
-    @Singleton
-    fun providesAvailableClassApi(
-        networkJson: Json,
-        @Named(BEARER_TOKEN_OK_HTTP_CLIENT_QUALIFIER) client: OkHttpClient,
-    ): AvailableClassApi = buildRetrofit(networkJson, client).create(AvailableClassApi::class.java)
-
-    @Provides
-    @Singleton
     fun providesNetworkJson(): Json = Json {
         ignoreUnknownKeys = true
     }
 
     @Provides
     @Singleton
-    @Named(BEARER_TOKEN_OK_HTTP_CLIENT_QUALIFIER)
+    @Named(BEARER_TOKEN_AUTH)
     fun providesBearerTokenOkHttpClient(
         @ApplicationContext context: Context,
         learnyscapePreferences: LearnyscapePreferencesDataSource,
@@ -74,15 +52,38 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    @Named(DEFAULT_OK_HTTP_CLIENT_QUALIFIER)
+    @Named(NO_AUTH)
     fun providesDefaultOkHttpClient(
         @ApplicationContext context: Context
     ): OkHttpClient = buildOkHttpClient(context)
+
+    @Provides
+    @Singleton
+    @Named(NO_AUTH)
+    fun providesNoAuthUsersApi(
+        networkJson: Json,
+        @Named(NO_AUTH) client: OkHttpClient,
+    ): UsersApi = buildRetrofit(networkJson, client).create(UsersApi::class.java)
+
+    @Provides
+    @Singleton
+    @Named(BEARER_TOKEN_AUTH)
+    fun providesBearerTokenUsersApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): UsersApi = buildRetrofit(networkJson, client).create(UsersApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesClassesApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): ClassesApi = buildRetrofit(networkJson, client).create(ClassesApi::class.java)
 }
 
 private const val BASE_URL = BuildConfig.BASE_URL
-private const val DEFAULT_OK_HTTP_CLIENT_QUALIFIER = "Default"
-private const val BEARER_TOKEN_OK_HTTP_CLIENT_QUALIFIER = "BearerToken"
+internal const val NO_AUTH = "NoAuth"
+internal const val BEARER_TOKEN_AUTH = "BearerTokenAuth"
 
 private fun buildOkHttpClient(
     context: Context,

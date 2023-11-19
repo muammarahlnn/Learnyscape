@@ -1,11 +1,13 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
-import com.muammarahlnn.learnyscape.core.network.api.HomeApi
+import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.di.BEARER_TOKEN_AUTH
 import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -15,10 +17,10 @@ import javax.inject.Singleton
  */
 @Singleton
 class HomeNetworkDataSourceImpl @Inject constructor(
-    private val homeApi: HomeApi,
+    @Named(BEARER_TOKEN_AUTH) private val usersApi: UsersApi,
 ) : HomeNetworkDataSource {
 
-    override fun getClasses(): Flow<List<EnrolledClassInfoResponse>> = flow {
-        emit(homeApi.getClasses().data)
+    override fun getEnrolledClasses(): Flow<List<EnrolledClassInfoResponse>> = flow {
+        emit(usersApi.getEnrolledClasses().data)
     }
 }

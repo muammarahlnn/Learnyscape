@@ -1,6 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
-import com.muammarahlnn.learnyscape.core.network.api.AvailableClassApi
+import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
 import com.muammarahlnn.learnyscape.core.network.datasource.AvailableClassNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.model.response.AvailableClassResponse
 import kotlinx.coroutines.flow.Flow
@@ -15,10 +15,10 @@ import javax.inject.Singleton
  */
 @Singleton
 class AvailableClassNetworkDataSourceImpl @Inject constructor(
-    private val availableClassApi: AvailableClassApi
+    private val classesApi: ClassesApi
 ) : AvailableClassNetworkDataSource {
 
     override fun getAvailableClasses(): Flow<List<AvailableClassResponse>> = flow {
-        emit(availableClassApi.getAvailableClasses().data)
+        emit(classesApi.getAvailableClasses().data)
     }
 }

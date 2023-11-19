@@ -9,13 +9,13 @@ import retrofit2.http.GET
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file AvailableClassApi, 16/11/2023 19.50 by Muammar Ahlan Abimanyu
  */
-interface AvailableClassApi {
+interface ClassesApi {
 
-    @GET(GET_AVAILABLE_CLASSES_END_POINT)
+    @GET(CLASSES_END_POINT)
     suspend fun getAvailableClasses(): BaseResponse<List<AvailableClassResponse>>
 
     companion object {
 
-        private const val GET_AVAILABLE_CLASSES_END_POINT = "classes"
+        private const val CLASSES_END_POINT = "classes"
     }
 }

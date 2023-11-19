@@ -26,8 +26,8 @@ class HomeRepositoryImpl @Inject constructor(
             userEntity.toUserModel()
         }
 
-    override fun getClasses(): Flow<List<EnrolledClassInfoModel>> =
-        homeNetworkDataSource.getClasses().map { enrolledClassInfoResponses ->
+    override fun getEnrolledClasses(): Flow<List<EnrolledClassInfoModel>> =
+        homeNetworkDataSource.getEnrolledClasses().map { enrolledClassInfoResponses ->
             enrolledClassInfoResponses.toEnrolledClassInfoModels()
         }
 }
