@@ -1,5 +1,6 @@
-package com.muammarahlnn.learnyscape.feature.search
+package com.muammarahlnn.learnyscape.feature.search.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,13 +32,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,9 +51,14 @@ import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
 import com.muammarahlnn.learnyscape.core.ui.EmptyDataScreen
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
+import com.muammarahlnn.learnyscape.feature.search.R
+import com.muammarahlnn.learnyscape.feature.search.uistate.JoinRequestClassDialogUiState
+import com.muammarahlnn.learnyscape.feature.search.uistate.SearchUiState
+import com.muammarahlnn.learnyscape.feature.search.viewmodel.SearchViewModel
 import kotlinx.datetime.LocalTime
 
 
@@ -69,10 +74,6 @@ internal fun SearchRoute(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
-    var showJoinRequestDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
     val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
@@ -81,21 +82,21 @@ internal fun SearchRoute(
 
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.searchUiState.collectAsStateWithLifecycle()
+    val joinRequestDialogUiState by viewModel.joinRequestDialogUiState.collectAsStateWithLifecycle()
     SearchScreen(
         uiState = uiState,
         scrollBehavior = scrollBehavior,
         pullRefreshState = pullRefreshState,
         isRefreshing = refreshing,
+        joinRequestDialogUiState = joinRequestDialogUiState,
         searchQuery = searchQuery,
-        showJoinRequestDialog = showJoinRequestDialog,
+        showJoinRequestDialog = viewModel.showJoinRequestDialog,
         onRefresh = viewModel::fetchAvailableClasses,
         onSearchQueryChanged = viewModel::onSearchQueryChanged,
-        onClassItemClick = {
-            showJoinRequestDialog = true
-        },
-        onDismissJoinRequestDialog = {
-            showJoinRequestDialog = false
-        },
+        selectedAvailableClass = viewModel.selectedAvailableClass,
+        onClassItemClick = viewModel::onAvailableClassClick,
+        onRequestJoinRequestDialog = viewModel::requestJoinClass,
+        onDismissJoinRequestDialog = viewModel::onDismissJoinRequestDialog,
         modifier = modifier,
     )
 }
@@ -107,16 +108,23 @@ private fun SearchScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     pullRefreshState: PullRefreshState,
     isRefreshing: Boolean,
+    joinRequestDialogUiState: JoinRequestClassDialogUiState,
     showJoinRequestDialog: Boolean,
     onRefresh: () -> Unit,
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
-    onClassItemClick: () -> Unit,
+    selectedAvailableClass: AvailableClassModel?,
+    onClassItemClick: (AvailableClassModel) -> Unit,
+    onRequestJoinRequestDialog: () -> Unit,
     onDismissJoinRequestDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (showJoinRequestDialog) {
+        // double bang operator used because it's guaranteed selectedAvailableClass will never be null
         JoinRequestClassDialog(
+            uiState = joinRequestDialogUiState,
+            className = selectedAvailableClass?.name!!,
+            onRequest = onRequestJoinRequestDialog,
             onDismiss = onDismissJoinRequestDialog,
         )
     }
@@ -229,7 +237,7 @@ private fun SearchContent(
     availableClasses: List<AvailableClassModel>,
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
-    onClassItemClick: () -> Unit,
+    onClassItemClick: (AvailableClassModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -274,12 +282,12 @@ private fun SearchContent(
 @Composable
 private fun SearchedClassCard(
     availableClass: AvailableClassModel,
-    onClassClick: () -> Unit,
+    onClassClick: (AvailableClassModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
         modifier = modifier.clickable {
-            onClassClick()
+            onClassClick(availableClass)
         }
     ) {
         Column{
@@ -352,22 +360,75 @@ private fun SearchedClassCard(
 
 @Composable
 private fun JoinRequestClassDialog(
+    uiState: JoinRequestClassDialogUiState,
+    className: String,
+    onRequest: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BaseAlertDialog(
-        title = stringResource(id = R.string.join_request_dialog_title),
-        dialogText = stringResource(
-            R.string.join_request_dialog_text,
-            "Pemrograman Mobile B"
-        ),
-        onConfirm = onDismiss,
-        onDismiss = onDismiss,
-        confirmText = stringResource(
-            id = R.string.join_request_dialog_confirm_button_text
-        ),
-        modifier = modifier,
-    )
+    val context = LocalContext.current
+    when (uiState) {
+        JoinRequestClassDialogUiState.None -> {
+            BaseAlertDialog(
+                title = stringResource(id = R.string.join_request_dialog_title),
+                dialogText = stringResource(
+                    R.string.join_request_dialog_text,
+                    className
+                ),
+                onConfirm = onRequest,
+                onDismiss = onDismiss,
+                confirmText = stringResource(
+                    id = R.string.join_request_dialog_confirm_button_text
+                ),
+                modifier = modifier,
+            )
+        }
+
+        JoinRequestClassDialogUiState.Loading -> {
+            AlertDialog(
+                onDismissRequest = {
+                    // prevent user from dismissing the dialog when loading
+                },
+                confirmButton = {
+                    // there are no confirm button when loading
+                },
+                text = {
+                    // add padding top to make the loading well-centered due to empty confirmButton
+                    LoadingScreen(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(top = 16.dp)
+                    )
+                },
+                shape = RoundedCornerShape(8.dp),
+                containerColor = MaterialTheme.colorScheme.background,
+                modifier = modifier,
+            )
+        }
+
+        JoinRequestClassDialogUiState.Success -> {
+            Toast.makeText(
+                context, 
+                stringResource(
+                    id = R.string.success_request_join_class,
+                    className
+                ), 
+                Toast.LENGTH_SHORT
+            ).show()
+            onDismiss()
+        }
+
+        is JoinRequestClassDialogUiState.NoInternet -> {
+            Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
+            onDismiss()
+        }
+
+        is JoinRequestClassDialogUiState.Error -> {
+            Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
+            onDismiss()
+        }
+    }
 }
 
 private fun createClassScheduleDateText(

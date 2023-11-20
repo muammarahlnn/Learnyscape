@@ -1,12 +1,15 @@
 package com.muammarahlnn.learnyscape.core.network.api
 
+import com.muammarahlnn.learnyscape.core.network.model.request.RequestJoinClassRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.UserResponse
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 
 /**
@@ -27,6 +30,11 @@ interface UsersApi {
 
     @GET(USERS_CLASSES_END_POINT)
     suspend fun getEnrolledClasses(): BaseResponse<List<EnrolledClassInfoResponse>>
+
+    @PUT(USERS_CLASSES_END_POINT)
+    suspend fun putRequestJoinClass(
+        @Body requestJoinClassRequest: RequestJoinClassRequest
+    ): BaseResponse<String>
 
     companion object {
 

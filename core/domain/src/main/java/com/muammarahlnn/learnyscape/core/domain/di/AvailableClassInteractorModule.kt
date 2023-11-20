@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.AvailableClassRepository
 import com.muammarahlnn.learnyscape.core.domain.availableclass.GetAvailableClassesUseCase
+import com.muammarahlnn.learnyscape.core.domain.availableclass.RequestJoinClassUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,5 +22,12 @@ object AvailableClassInteractorModule {
         availableClassRepository: AvailableClassRepository
     ): GetAvailableClassesUseCase = GetAvailableClassesUseCase(
         availableClassRepository::getAvailableClasses
+    )
+
+    @Provides
+    fun providesRequestJoinClassUseCase(
+        availableClassRepository: AvailableClassRepository
+    ): RequestJoinClassUseCase = RequestJoinClassUseCase(
+        availableClassRepository::requestJoinClass
     )
 }
