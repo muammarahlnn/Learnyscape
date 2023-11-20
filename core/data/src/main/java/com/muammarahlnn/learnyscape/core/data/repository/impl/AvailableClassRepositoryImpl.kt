@@ -21,4 +21,7 @@ class AvailableClassRepositoryImpl @Inject constructor(
         availableClassNetworkDataSource.getAvailableClasses().map { availableClassResponses ->
             availableClassResponses.toAvailableClassModels()
         }
+
+    override fun requestJoinClass(classId: String): Flow<String> =
+        availableClassNetworkDataSource.requestJoinClass(classId)
 }

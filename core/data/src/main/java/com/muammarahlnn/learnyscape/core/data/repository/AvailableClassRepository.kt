@@ -11,4 +11,6 @@ import kotlinx.coroutines.flow.Flow
 interface AvailableClassRepository {
 
     fun getAvailableClasses(): Flow<List<AvailableClassModel>>
+
+    fun requestJoinClass(classId: String): Flow<String>
 }

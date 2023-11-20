@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.feature.search
+package com.muammarahlnn.learnyscape.feature.search.uistate
 
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 
