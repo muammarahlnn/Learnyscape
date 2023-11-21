@@ -106,7 +106,7 @@ fun LearnyscapeNavHost(
             onQuizIsOver = navController::popBackStack
         )
         cameraScreen(
-            onCameraClosed = navController::popBackStack
+            onCameraClosed = navController::navigateUp
         )
         pendingRequestScreen(
             onBackClick = navController::popBackStack

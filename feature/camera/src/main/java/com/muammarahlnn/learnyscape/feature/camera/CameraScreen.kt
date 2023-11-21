@@ -77,6 +77,10 @@ internal fun CameraRoute(
         onCameraClosed = onCameraClosed,
         onPhotoTaken = viewModel::onPhotoTaken,
         onRetakeClick = viewModel::resetPhoto,
+        onDoneTakePhoto = {
+            viewModel.saveTakenPhoto()
+            onCameraClosed()
+        },
         modifier = modifier,
     )
 }
@@ -89,6 +93,7 @@ private fun CameraScreen(
     onCameraClosed: () -> Unit,
     onPhotoTaken: (Bitmap) -> Unit,
     onRetakeClick: () -> Unit,
+    onDoneTakePhoto: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var isCameraPermissionGranted by rememberSaveable {
@@ -112,6 +117,7 @@ private fun CameraScreen(
             photoTaken = photoTaken,
             onPhotoTaken = onPhotoTaken,
             onCloseButtonClick = onCameraClosed,
+            onDoneTakePhoto = onDoneTakePhoto,
             onRetakeClick = onRetakeClick,
             modifier = modifier,
         )
@@ -132,6 +138,7 @@ private fun CameraContent(
     photoTaken: Bitmap?,
     onPhotoTaken: (Bitmap) -> Unit,
     onCloseButtonClick: () -> Unit,
+    onDoneTakePhoto: () -> Unit,
     onRetakeClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -149,6 +156,7 @@ private fun CameraContent(
             photoTaken = photoTaken,
             onCloseButtonClick = onCloseButtonClick,
             onRetakeClick = onRetakeClick,
+            onDoneTakePhoto = onDoneTakePhoto,
             modifier = modifier,
         )
     }
@@ -313,6 +321,7 @@ private fun takePhoto(
 @Composable
 private fun PhotoTakenPreview(
     photoTaken: Bitmap,
+    onDoneTakePhoto: () -> Unit,
     onCloseButtonClick: () -> Unit,
     onRetakeClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -364,9 +373,7 @@ private fun PhotoTakenPreview(
             }
 
             IconButton(
-                onClick = {
-                    onCloseButtonClick()
-                },
+                onClick = onDoneTakePhoto,
             ) {
                 Icon(
                     imageVector = Icons.Rounded.Check,
