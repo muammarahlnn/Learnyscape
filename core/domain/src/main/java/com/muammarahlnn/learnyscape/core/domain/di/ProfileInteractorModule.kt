@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
+import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
 import dagger.Module
@@ -29,5 +30,12 @@ object ProfileInteractorModule {
         profileRepository: ProfileRepository
     ): UploadProfilePicUseCase = UploadProfilePicUseCase(
         profileRepository::uploadProfilePic
+    )
+
+    @Provides
+    fun providesGetProfilePicUseCase(
+        profileRepository: ProfileRepository
+    ): GetProfilePicUseCase = GetProfilePicUseCase(
+        profileRepository::getProfilePic
     )
 }

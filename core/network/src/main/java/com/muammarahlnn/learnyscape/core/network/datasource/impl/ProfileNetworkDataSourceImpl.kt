@@ -1,5 +1,7 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.di.BEARER_TOKEN_AUTH
@@ -32,6 +34,16 @@ class ProfileNetworkDataSourceImpl @Inject constructor(
         )
         return flow {
             emit(usersApi.postProfilePic(profilePicMultipart).data)
+        }
+    }
+
+    override fun getProfilePic(): Flow<Bitmap?> = flow {
+        if (usersApi.getProfilePic().isSuccessful) {
+            val imageBytes = usersApi.getProfilePic().body()?.bytes() ?: byteArrayOf()
+            val imageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            emit(imageBitmap)
+        } else {
+            emit(null)
         }
     }
 }

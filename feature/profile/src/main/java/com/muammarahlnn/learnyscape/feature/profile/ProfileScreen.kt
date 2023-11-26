@@ -45,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
@@ -69,12 +70,6 @@ internal fun ProfileRoute(
 ) {
     LaunchedEffect(Unit) {
         viewModel.getCapturedPhoto()
-    }
-    val newProfilePic by viewModel.newProfilePic.collectAsStateWithLifecycle()
-    LaunchedEffect(newProfilePic) {
-        newProfilePic?.let {
-            viewModel.uploadImage(it)
-        }
     }
 
     var showChangePhotoProfileBottomSheet by rememberSaveable {
@@ -293,8 +288,16 @@ private fun PhotoProfile(
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    val isError = profilePicUiState is ProfilePicUiState.ErrorUploadProfilePic
+    LaunchedEffect(isError) {
+        if (isError) {
+            val message = (profilePicUiState as ProfilePicUiState.ErrorUploadProfilePic).message
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     Box(modifier = modifier) {
-        val context = LocalContext.current
         val photoProfileModifier = Modifier
             .size(photoProfileSize)
             .clip(CircleShape)
@@ -304,49 +307,32 @@ private fun PhotoProfile(
                 shape = CircleShape
             )
         when (profilePicUiState) {
-            ProfilePicUiState.None -> {
-                Image(
-                    painter = painterResource(id = R.drawable.ava_luffy),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = photoProfileModifier
-                )
-            }
             ProfilePicUiState.Loading -> {
                 Box(
                     modifier = photoProfileModifier.shimmerEffect()
                 )
             }
-            ProfilePicUiState.SuccessUploadProfilePic -> {
-                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
-                Image(
-                    painter = painterResource(id = R.drawable.ava_luffy),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = photoProfileModifier
-                )
+
+            is ProfilePicUiState.SuccessGetProfilePic -> {
+                if (profilePicUiState.profilePic != null) {
+                    AsyncImage(
+                        model = profilePicUiState.profilePic,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = photoProfileModifier
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.ava_luffy),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = photoProfileModifier
+                    )
+                }
             }
-            is ProfilePicUiState.ErrorUploadProfilePic -> {
-                Toast.makeText(context, profilePicUiState.message, Toast.LENGTH_SHORT).show()
-                Image(
-                    painter = painterResource(id = R.drawable.ava_luffy),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = photoProfileModifier
-                )
-            }
+
+            else -> Unit
         }
-
-//        if (newProfilePic != null) {
-//            Image(
-//                bitmap = newProfilePic.asImageBitmap(),
-//                contentDescription = null,
-//                contentScale = ContentScale.Crop,
-//                modifier = photoProfileModifier
-//            )
-//        } else {
-//        }
-
 
         FilledIconButton(
             colors = IconButtonDefaults.filledIconButtonColors(

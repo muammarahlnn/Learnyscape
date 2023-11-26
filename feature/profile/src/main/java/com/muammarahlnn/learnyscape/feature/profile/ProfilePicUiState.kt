@@ -1,5 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
+import android.graphics.Bitmap
+
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -7,11 +9,9 @@ package com.muammarahlnn.learnyscape.feature.profile
  */
 sealed interface ProfilePicUiState {
 
-    data object None : ProfilePicUiState
-
     data object Loading : ProfilePicUiState
 
-    data object SuccessUploadProfilePic : ProfilePicUiState
+    data class SuccessGetProfilePic(val profilePic: Bitmap?) : ProfilePicUiState
 
     data class ErrorUploadProfilePic(val message: String) : ProfilePicUiState
 }
