@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Environment
 import com.muammarahlnn.learnyscape.core.data.repository.FileRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -9,10 +10,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -42,17 +43,29 @@ class FileRepositoryImpl @Inject constructor(
             fileDirectory.mkdirs()
         }
 
-        val imageFile = File(fileDirectory, timeStamp)
+        val imageFile = File(fileDirectory, "${timeStamp}.jpg")
         val saveToFile = try {
-            val outputStream: OutputStream = FileOutputStream(imageFile)
-            image.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            outputStream.flush()
-            outputStream.close()
-            imageFile
+            reduceFileImage(imageFile)
         } catch (e: IOException) {
             e.printStackTrace()
             null
         }
         emit(saveToFile)
     }.flowOn(Dispatchers.IO)
+
+    private fun reduceFileImage(file: File): File {
+        val bitmap = BitmapFactory.decodeFile(file.path)
+        var compressQuality = 100
+        var streamLength: Int
+        do {
+            val bitmapStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, bitmapStream)
+
+            val bitmapPicByteArray = bitmapStream.toByteArray()
+            streamLength = bitmapPicByteArray.size
+            compressQuality -= 5
+        } while (streamLength > 1000000)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, FileOutputStream(file))
+        return file
+    }
 }
