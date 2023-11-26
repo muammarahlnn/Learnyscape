@@ -309,8 +309,14 @@ private fun PhotoProfile(
         when (profilePicUiState) {
             ProfilePicUiState.Loading -> {
                 Box(
-                    modifier = photoProfileModifier.shimmerEffect()
-                )
+                    contentAlignment = Alignment.Center,
+                    modifier = photoProfileModifier
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    Box(
+                        modifier = photoProfileModifier.shimmerEffect()
+                    )
+                }
             }
 
             is ProfilePicUiState.SuccessGetProfilePic -> {
