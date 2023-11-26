@@ -6,6 +6,8 @@ import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInf
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.UserResponse
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -44,6 +46,9 @@ interface UsersApi {
     suspend fun postProfilePic(
         @Part pic: MultipartBody.Part,
     ): BaseResponse<String>
+
+    @GET(USERS_PIC_END_POINT)
+    suspend fun getProfilePic(): Response<ResponseBody>
 
     companion object {
 

@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
+import android.graphics.Bitmap
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
@@ -13,4 +14,6 @@ interface ProfileRepository {
     suspend fun logout()
 
     fun uploadProfilePic(pic: File): Flow<String>
+
+    fun getProfilePic(): Flow<Bitmap?>
 }

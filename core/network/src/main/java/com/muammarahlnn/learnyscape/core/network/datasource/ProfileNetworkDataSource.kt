@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
+import android.graphics.Bitmap
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
@@ -11,4 +12,6 @@ import java.io.File
 interface ProfileNetworkDataSource {
 
     fun postProfilePic(pic: File): Flow<String>
+
+    fun getProfilePic(): Flow<Bitmap?>
 }
