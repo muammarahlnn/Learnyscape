@@ -3,9 +3,11 @@ package com.muammarahlnn.learnyscape.core.network.di
 import com.muammarahlnn.learnyscape.core.network.datasource.AvailableClassNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.AvailableClassNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.LoginNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.ProfileNetworkDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -35,4 +37,9 @@ interface NetworkDataSourceModule {
     fun bindsAvailableClassNetworkDataSource(
         availableClassNetworkDataSource: AvailableClassNetworkDataSourceImpl
     ): AvailableClassNetworkDataSource
+
+    @Binds
+    fun bindsProfileNetworkDataSource(
+        profileNetworkDataSource: ProfileNetworkDataSourceImpl
+    ): ProfileNetworkDataSource
 }

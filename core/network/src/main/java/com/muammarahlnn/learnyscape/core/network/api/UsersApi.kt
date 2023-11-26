@@ -5,11 +5,14 @@ import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.UserResponse
+import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Part
 
 
 /**
@@ -36,6 +39,12 @@ interface UsersApi {
         @Body requestJoinClassRequest: RequestJoinClassRequest
     ): BaseResponse<String>
 
+    @Multipart
+    @POST(USERS_PIC_END_POINT)
+    suspend fun putProfilePic(
+        @Part pic: MultipartBody.Part,
+    ): BaseResponse<String>
+
     companion object {
 
         private const val AUTHORIZATION = "Authorization"
@@ -45,5 +54,7 @@ interface UsersApi {
         private const val USERS_LOGIN_END_POINT = "users/login"
 
         private const val USERS_CLASSES_END_POINT = "users/classes"
+
+        private const val USERS_PIC_END_POINT = "users/pic"
     }
 }

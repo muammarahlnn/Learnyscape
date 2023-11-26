@@ -1,5 +1,8 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
+import kotlinx.coroutines.flow.Flow
+import java.io.File
+
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
@@ -8,4 +11,6 @@ package com.muammarahlnn.learnyscape.core.data.repository
 interface ProfileRepository {
 
     suspend fun logout()
+
+    fun uploadProfilePic(pic: File): Flow<String>
 }

@@ -2,6 +2,9 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
+import kotlinx.coroutines.flow.Flow
+import java.io.File
 import javax.inject.Inject
 
 
@@ -10,10 +13,14 @@ import javax.inject.Inject
  * @file ProfileRepositoryImpl, 09/10/2023 19.18 by Muammar Ahlan Abimanyu
  */
 class ProfileRepositoryImpl @Inject constructor(
-    private val learnyscapePreferences: LearnyscapePreferencesDataSource
+    private val learnyscapePreferences: LearnyscapePreferencesDataSource,
+    private val profileNetworkDataSource: ProfileNetworkDataSource,
 ) : ProfileRepository {
 
     override suspend fun logout() {
         learnyscapePreferences.removeUser()
     }
+
+    override fun uploadProfilePic(pic: File): Flow<String> =
+        profileNetworkDataSource.putProfilePic(pic)
 }
