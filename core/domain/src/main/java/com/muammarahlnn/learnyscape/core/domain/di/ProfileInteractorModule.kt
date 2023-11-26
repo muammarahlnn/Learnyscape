@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
+import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,9 +18,16 @@ import dagger.hilt.android.components.ViewModelComponent
 object ProfileInteractorModule {
 
     @Provides
-    fun providesLogOutUseCase(
+    fun providesLogoutUseCase(
         profileRepository: ProfileRepository
     ): LogoutUseCase = LogoutUseCase(
         profileRepository::logout
+    )
+
+    @Provides
+    fun providesUploadProfilePicUseCase(
+        profileRepository: ProfileRepository
+    ): UploadProfilePicUseCase = UploadProfilePicUseCase(
+        profileRepository::uploadProfilePic
     )
 }

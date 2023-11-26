@@ -1,6 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
-import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,9 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -49,6 +49,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -69,6 +70,12 @@ internal fun ProfileRoute(
     LaunchedEffect(Unit) {
         viewModel.getCapturedPhoto()
     }
+    val newProfilePic by viewModel.newProfilePic.collectAsStateWithLifecycle()
+    LaunchedEffect(newProfilePic) {
+        newProfilePic?.let {
+            viewModel.uploadImage(it)
+        }
+    }
 
     var showChangePhotoProfileBottomSheet by rememberSaveable {
         mutableStateOf(false)
@@ -77,10 +84,10 @@ internal fun ProfileRoute(
         mutableStateOf(false)
     }
 
-    val newProfilePic by viewModel.newProfilePic.collectAsStateWithLifecycle()
+    val profilePicUiState by viewModel.profilePicUiState.collectAsStateWithLifecycle()
     ProfileScreen(
         scrollBehavior = scrollBehavior,
-        newProfilePic = newProfilePic,
+        profilePicUiState = profilePicUiState,
         showChangePhotoProfileBottomSheet = showChangePhotoProfileBottomSheet,
         showLogoutDialog = showLogoutDialog,
         onChangePhotoProfileButtonClick = {
@@ -109,7 +116,7 @@ internal fun ProfileRoute(
 @Composable
 private fun ProfileScreen(
     scrollBehavior: TopAppBarScrollBehavior,
-    newProfilePic: Bitmap?,
+    profilePicUiState: ProfilePicUiState,
     showChangePhotoProfileBottomSheet: Boolean,
     showLogoutDialog: Boolean,
     onChangePhotoProfileButtonClick: () -> Unit,
@@ -146,7 +153,7 @@ private fun ProfileScreen(
             .padding(16.dp),
     ) {
         ProfileContent(
-            newProfilePic = newProfilePic,
+            profilePicUiState = profilePicUiState,
             onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
         )
 
@@ -166,7 +173,7 @@ private fun ProfileScreen(
 
 @Composable
 private fun ProfileContent(
-    newProfilePic: Bitmap?,
+    profilePicUiState: ProfilePicUiState,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -175,7 +182,7 @@ private fun ProfileContent(
             modifier = Modifier.padding(top = photoProfileSize / 2)
         )
         PhotoProfile(
-            newProfilePic = newProfilePic,
+            profilePicUiState = profilePicUiState,
             onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
             modifier = Modifier.align(Alignment.TopCenter)
         )
@@ -282,11 +289,12 @@ private fun BaseProfileInfoText(
 
 @Composable
 private fun PhotoProfile(
-    newProfilePic: Bitmap?,
+    profilePicUiState: ProfilePicUiState,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
+        val context = LocalContext.current
         val photoProfileModifier = Modifier
             .size(photoProfileSize)
             .clip(CircleShape)
@@ -295,22 +303,50 @@ private fun PhotoProfile(
                 color = MaterialTheme.colorScheme.onSecondary,
                 shape = CircleShape
             )
-
-        if (newProfilePic != null) {
-            Image(
-                bitmap = newProfilePic.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = photoProfileModifier
-            )
-        } else {
-            Image(
-                painter = painterResource(id = R.drawable.ava_luffy),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = photoProfileModifier
-            )
+        when (profilePicUiState) {
+            ProfilePicUiState.None -> {
+                Image(
+                    painter = painterResource(id = R.drawable.ava_luffy),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = photoProfileModifier
+                )
+            }
+            ProfilePicUiState.Loading -> {
+                Box(
+                    modifier = photoProfileModifier.shimmerEffect()
+                )
+            }
+            ProfilePicUiState.SuccessUploadProfilePic -> {
+                Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
+                Image(
+                    painter = painterResource(id = R.drawable.ava_luffy),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = photoProfileModifier
+                )
+            }
+            is ProfilePicUiState.ErrorUploadProfilePic -> {
+                Toast.makeText(context, profilePicUiState.message, Toast.LENGTH_SHORT).show()
+                Image(
+                    painter = painterResource(id = R.drawable.ava_luffy),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = photoProfileModifier
+                )
+            }
         }
+
+//        if (newProfilePic != null) {
+//            Image(
+//                bitmap = newProfilePic.asImageBitmap(),
+//                contentDescription = null,
+//                contentScale = ContentScale.Crop,
+//                modifier = photoProfileModifier
+//            )
+//        } else {
+//        }
+
 
         FilledIconButton(
             colors = IconButtonDefaults.filledIconButtonColors(
