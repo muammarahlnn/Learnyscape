@@ -23,7 +23,7 @@ class ProfileNetworkDataSourceImpl @Inject constructor(
     @Named(BEARER_TOKEN_AUTH) private val usersApi: UsersApi
 ) : ProfileNetworkDataSource {
 
-    override fun putProfilePic(pic: File): Flow<String> {
+    override fun postProfilePic(pic: File): Flow<String> {
         val requestImageFile = pic.asRequestBody("image/jpeg".toMediaTypeOrNull())
         val profilePicMultipart = MultipartBody.Part.createFormData(
             "pic",
@@ -31,7 +31,7 @@ class ProfileNetworkDataSourceImpl @Inject constructor(
             requestImageFile
         )
         return flow {
-            emit(usersApi.putProfilePic(profilePicMultipart).data)
+            emit(usersApi.postProfilePic(profilePicMultipart).data)
         }
     }
 }

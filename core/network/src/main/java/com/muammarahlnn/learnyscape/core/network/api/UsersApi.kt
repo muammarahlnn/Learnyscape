@@ -41,7 +41,7 @@ interface UsersApi {
 
     @Multipart
     @POST(USERS_PIC_END_POINT)
-    suspend fun putProfilePic(
+    suspend fun postProfilePic(
         @Part pic: MultipartBody.Part,
     ): BaseResponse<String>
 
