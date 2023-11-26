@@ -22,5 +22,5 @@ class ProfileRepositoryImpl @Inject constructor(
     }
 
     override fun uploadProfilePic(pic: File): Flow<String> =
-        profileNetworkDataSource.putProfilePic(pic)
+        profileNetworkDataSource.postProfilePic(pic)
 }

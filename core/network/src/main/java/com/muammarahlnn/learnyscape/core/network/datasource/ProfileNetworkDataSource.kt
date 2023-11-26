@@ -10,5 +10,5 @@ import java.io.File
  */
 interface ProfileNetworkDataSource {
 
-    fun putProfilePic(pic: File): Flow<String>
+    fun postProfilePic(pic: File): Flow<String>
 }
