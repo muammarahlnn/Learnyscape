@@ -79,10 +79,10 @@ internal fun ProfileRoute(
         mutableStateOf(false)
     }
 
-    val profilePicUiState by viewModel.profilePicUiState.collectAsStateWithLifecycle()
+    val profilePicState by viewModel.profilePicState.collectAsStateWithLifecycle()
     ProfileScreen(
         scrollBehavior = scrollBehavior,
-        profilePicUiState = profilePicUiState,
+        profilePicState = profilePicState,
         showChangePhotoProfileBottomSheet = showChangePhotoProfileBottomSheet,
         showLogoutDialog = showLogoutDialog,
         onChangePhotoProfileButtonClick = {
@@ -111,7 +111,7 @@ internal fun ProfileRoute(
 @Composable
 private fun ProfileScreen(
     scrollBehavior: TopAppBarScrollBehavior,
-    profilePicUiState: ProfilePicUiState,
+    profilePicState: ProfilePicState,
     showChangePhotoProfileBottomSheet: Boolean,
     showLogoutDialog: Boolean,
     onChangePhotoProfileButtonClick: () -> Unit,
@@ -148,7 +148,7 @@ private fun ProfileScreen(
             .padding(16.dp),
     ) {
         ProfileContent(
-            profilePicUiState = profilePicUiState,
+            profilePicState = profilePicState,
             onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
         )
 
@@ -168,7 +168,7 @@ private fun ProfileScreen(
 
 @Composable
 private fun ProfileContent(
-    profilePicUiState: ProfilePicUiState,
+    profilePicState: ProfilePicState,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -177,7 +177,7 @@ private fun ProfileContent(
             modifier = Modifier.padding(top = photoProfileSize / 2)
         )
         PhotoProfile(
-            profilePicUiState = profilePicUiState,
+            profilePicState = profilePicState,
             onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
             modifier = Modifier.align(Alignment.TopCenter)
         )
@@ -284,16 +284,15 @@ private fun BaseProfileInfoText(
 
 @Composable
 private fun PhotoProfile(
-    profilePicUiState: ProfilePicUiState,
+    profilePicState: ProfilePicState,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val isError = profilePicUiState is ProfilePicUiState.ErrorUploadProfilePic
-    LaunchedEffect(isError) {
-        if (isError) {
-            val message = (profilePicUiState as ProfilePicUiState.ErrorUploadProfilePic).message
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    // TODO: fix showing error toast even if it's not error
+    LaunchedEffect(profilePicState.errorMessage) {
+        if (profilePicState.errorMessage.isNotEmpty()) {
+            Toast.makeText(context, profilePicState.errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -306,38 +305,33 @@ private fun PhotoProfile(
                 color = MaterialTheme.colorScheme.onSecondary,
                 shape = CircleShape
             )
-        when (profilePicUiState) {
-            ProfilePicUiState.Loading -> {
+
+        if (profilePicState.isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = photoProfileModifier
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
                 Box(
-                    contentAlignment = Alignment.Center,
+                    modifier = photoProfileModifier.shimmerEffect()
+                )
+            }
+        } else {
+            if (profilePicState.profilePic != null) {
+                AsyncImage(
+                    model = profilePicState.profilePic,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = photoProfileModifier
-                        .background(MaterialTheme.colorScheme.background)
-                ) {
-                    Box(
-                        modifier = photoProfileModifier.shimmerEffect()
-                    )
-                }
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = R.drawable.ava_luffy),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = photoProfileModifier
+                )
             }
-
-            is ProfilePicUiState.SuccessGetProfilePic -> {
-                if (profilePicUiState.profilePic != null) {
-                    AsyncImage(
-                        model = profilePicUiState.profilePic,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = photoProfileModifier
-                    )
-                } else {
-                    Image(
-                        painter = painterResource(id = R.drawable.ava_luffy),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = photoProfileModifier
-                    )
-                }
-            }
-
-            else -> Unit
         }
 
         FilledIconButton(
