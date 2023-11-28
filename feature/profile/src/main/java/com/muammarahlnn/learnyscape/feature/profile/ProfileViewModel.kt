@@ -8,6 +8,7 @@ import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
+import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.ResetCapturedPhotoUseCase
@@ -38,8 +39,8 @@ class ProfileViewModel @Inject constructor(
     private val getProfilePicUseCase: GetProfilePicUseCase
 ) : ViewModel() {
 
-    private val _profilePicUiState = MutableStateFlow<ProfilePicUiState>(ProfilePicUiState.Loading)
-    val profilePicUiState = _profilePicUiState.asStateFlow()
+    private val _profilePicState = MutableStateFlow(ProfilePicState(isLoading = true))
+    val profilePicState = _profilePicState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -50,15 +51,15 @@ class ProfileViewModel @Inject constructor(
     private suspend fun getProfilePic() {
         getProfilePicUseCase().asResult().collect { result ->
             result.onLoading {
-                onResultLoading()
+                onProfilePicStateLoading()
             }.onSuccess { profilePic ->
-                _profilePicUiState.update {
-                    ProfilePicUiState.SuccessGetProfilePic(profilePic)
-                }
+                onProfilePicStateSuccess(profilePic)
+            }.onNoInternet { message ->
+                onProfilePicStateError(message)
             }.onError { _, message ->
-                onResultError(message)
+                onProfilePicStateError(message)
             }.onException { exception, message ->
-                onResultException(exception, message)
+                onProfilePicStateException(exception, message)
             }
         }
     }
@@ -82,17 +83,19 @@ class ProfileViewModel @Inject constructor(
             if (imageFile != null) {
                 uploadProfilePicUseCase(imageFile).asResult().collect { result ->
                     result.onLoading {
-                        onResultLoading()
+                        onProfilePicStateLoading()
                     }.onSuccess {
                         getProfilePic()
+                    }.onNoInternet { message ->
+                        onProfilePicStateError(message)
                     }.onError { _, message ->
-                        onResultError(message)
+                        onProfilePicStateError(message)
                     }.onException { exception, message ->
-                        onResultException(exception, message)
+                        onProfilePicStateException(exception, message)
                     }
                 }
             } else {
-                onResultError("Error save image to file")
+                onProfilePicStateError("Error save image to file")
             }
         }
     }
@@ -103,23 +106,45 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun onResultLoading() {
-        _profilePicUiState.update {
-            ProfilePicUiState.Loading
+    private fun onProfilePicStateLoading() {
+        _profilePicState.update {
+            it.copy(
+                isLoading = true,
+                errorMessage = "",
+            )
         }
     }
 
-    private fun onResultError(message: String) {
+    private fun onProfilePicStateSuccess(bitmap: Bitmap?) {
+        _profilePicState.update {
+            it.copy(
+                profilePic = bitmap,
+                isLoading = false,
+                errorMessage = ""
+            )
+        }
+    }
+
+    private fun onProfilePicStateError(message: String) {
         Log.e(TAG, message)
-        _profilePicUiState.update {
-            ProfilePicUiState.ErrorUploadProfilePic(message)
+        _profilePicState.update {
+            it.copy(
+                errorMessage = message,
+                isLoading = false,
+            )
         }
     }
 
-    private fun onResultException(exception: Throwable?, message: String) {
+    private fun onProfilePicStateException(
+        exception: Throwable?,
+        message: String
+    ) {
         Log.e(TAG, exception?.message.toString())
-        _profilePicUiState.update {
-            ProfilePicUiState.ErrorUploadProfilePic(message)
+        _profilePicState.update {
+            it.copy(
+                errorMessage = message,
+                isLoading = false,
+            )
         }
     }
 
