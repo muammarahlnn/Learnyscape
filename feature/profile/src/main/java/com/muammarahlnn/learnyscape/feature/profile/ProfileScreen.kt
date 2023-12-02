@@ -1,6 +1,8 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,6 +48,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.imageUriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -68,6 +71,20 @@ internal fun ProfileRoute(
     val (state, event) = use(contract = viewModel)
     val effect = viewModel.effect
     val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) {
+        if (it != null) {
+            event(
+                ProfileContract.Event.OnUploadGalleryImage(
+                    imageUriToFile(
+                        selectedImg = it,
+                        context = context,
+                    )
+                )
+            )
+        }
+    }
 
     LaunchedEffect(Unit) {
         event(ProfileContract.Event.OnGetProfilePic)
@@ -76,9 +93,18 @@ internal fun ProfileRoute(
 
     effect.collectInLaunchedEffect {
         when (it) {
+            ProfileContract.Effect.OpenCamera -> {
+                onCameraActionClick()
+            }
+
+            ProfileContract.Effect.OpenGallery -> {
+                launcher.launch("image/*")
+            }
+
             is ProfileContract.Effect.ShowToast -> {
                 Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
+
         }
     }
 
@@ -89,8 +115,10 @@ internal fun ProfileRoute(
             event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(true))
         },
         onCameraActionClick = {
-            onCameraActionClick()
-            event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(false))
+            event(ProfileContract.Event.OnCameraActionClick)
+        },
+        onGalleryActionClick = {
+            event(ProfileContract.Event.OnGalleryActionClick)
         },
         onDismissChangePhotoProfileBottomSheet = {
             event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(false))
@@ -116,6 +144,7 @@ private fun ProfileScreen(
     state: ProfileContract.State,
     onChangePhotoProfileButtonClick: () -> Unit,
     onCameraActionClick: () -> Unit,
+    onGalleryActionClick: () -> Unit,
     onDismissChangePhotoProfileBottomSheet: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     onLogoutButtonClick: () -> Unit,
@@ -126,9 +155,7 @@ private fun ProfileScreen(
     if (state.showChangePhotoProfileBottomSheet.value) {
         ChangePhotoProfileBottomSheet(
             onCameraActionClick = onCameraActionClick,
-            onGalleryActionClick = {
-                // will implement later
-            },
+            onGalleryActionClick = onGalleryActionClick,
             onDismiss = onDismissChangePhotoProfileBottomSheet,
         )
     }
