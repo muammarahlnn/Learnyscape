@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import java.io.File
 
 
 /**
@@ -30,14 +31,22 @@ interface ProfileContract :
 
         data class OnShowChangePhotoProfileBottomSheet(val show: Boolean) : Event
 
+        data object OnCameraActionClick : Event
+
+        data object OnGalleryActionClick : Event
+
+        data class OnUploadGalleryImage(val imageFile: File) : Event
+
         data class OnShowLogoutDialog(val show: Boolean) : Event
 
         data object OnLogout : Event
-
-        data class ShowToast(val message: String) : Event
     }
 
     sealed interface Effect {
+
+        data object OpenCamera : Effect
+
+        data object OpenGallery : Effect
 
         data class ShowToast(val message: String) : Effect
     }

@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 
@@ -53,10 +54,12 @@ class ProfileViewModel @Inject constructor(
         ProfileContract.Event.OnGetProfilePic -> getProfilePic()
         ProfileContract.Event.OnGetCapturedPhoto -> getCapturedPhoto()
         is ProfileContract.Event.OnShowChangePhotoProfileBottomSheet ->
-            onShowChangePhotoProfileBottomSheet(event.show)
-        is ProfileContract.Event.OnShowLogoutDialog -> onShowLogoutDialog(event.show)
+            showChangePhotoProfileBottomSheet(event.show)
+        is ProfileContract.Event.OnShowLogoutDialog -> showLogoutDialog(event.show)
         ProfileContract.Event.OnLogout -> logout()
-        is ProfileContract.Event.ShowToast -> showToast(event.message)
+        ProfileContract.Event.OnCameraActionClick -> openCamera()
+        ProfileContract.Event.OnGalleryActionClick -> openGallery()
+        is ProfileContract.Event.OnUploadGalleryImage -> uploadGalleryPhoto(event.imageFile)
     }
 
     private fun getProfilePic() {
@@ -86,7 +89,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
-                    uploadProfilePic(capturedPhoto)
+                    uploadCapturePhoto(capturedPhoto)
                 }
             }.join()
 
@@ -96,29 +99,41 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private suspend fun uploadProfilePic(profilePic: Bitmap) {
-        saveImageToFileUseCase(profilePic).collect { profilePicFile ->
-            if (profilePicFile != null) {
-                uploadProfilePicUseCase(profilePicFile).asResult().collect { result ->
-                    result.onLoading {
-                        updateStateOnLoading()
-                    }.onSuccess {
-                        getProfilePic()
-                    }.onNoInternet { message ->
-                        updateStateOnError(message)
-                    }.onError { _, message ->
-                        updateStateOnError(message)
-                    }.onException { exception, message ->
-                        updateStateOnException(exception, message)
-                    }
+    private fun uploadCapturePhoto(profilePic: Bitmap) {
+        viewModelScope.launch {
+            saveImageToFileUseCase(profilePic).collect { profilePicFile ->
+                if (profilePicFile != null) {
+                    invokeUploadProfilePicUseCase(profilePicFile)
+                } else {
+                    updateStateOnError("Error save image to file")
                 }
-            } else {
-                updateStateOnError("Error save image to file")
             }
         }
     }
 
-    private fun onShowChangePhotoProfileBottomSheet(show: Boolean) {
+    private fun uploadGalleryPhoto(imageFile: File) {
+        invokeUploadProfilePicUseCase(imageFile)
+    }
+
+    private fun invokeUploadProfilePicUseCase(profilePicFile: File) {
+        viewModelScope.launch {
+            uploadProfilePicUseCase(profilePicFile).asResult().collect { result ->
+                result.onLoading {
+                    updateStateOnLoading()
+                }.onSuccess {
+                    getProfilePic()
+                }.onNoInternet { message ->
+                    updateStateOnError(message)
+                }.onError { _, message ->
+                    updateStateOnError(message)
+                }.onException { exception, message ->
+                    updateStateOnException(exception, message)
+                }
+            }
+        }
+    }
+
+    private fun showChangePhotoProfileBottomSheet(show: Boolean) {
         _state.update {
             it.apply {
                 showChangePhotoProfileBottomSheet.value = show
@@ -126,7 +141,25 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun onShowLogoutDialog(show: Boolean) {
+    private fun openCamera() {
+        viewModelScope.launch {
+            _effect.emit(
+                ProfileContract.Effect.OpenCamera
+            )
+        }
+        showChangePhotoProfileBottomSheet(false)
+    }
+
+    private fun openGallery() {
+        viewModelScope.launch {
+            _effect.emit(
+                ProfileContract.Effect.OpenGallery
+            )
+        }
+        showChangePhotoProfileBottomSheet(false)
+    }
+
+    private fun showLogoutDialog(show: Boolean) {
         _state.update {
             it.apply {
                 showLogoutDialog.value = show
@@ -137,14 +170,6 @@ class ProfileViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             logoutUseCase()
-        }
-    }
-
-    private fun showToast(message: String) {
-        viewModelScope.launch {
-            _effect.emit(
-                ProfileContract.Effect.ShowToast(message)
-            )
         }
     }
 
