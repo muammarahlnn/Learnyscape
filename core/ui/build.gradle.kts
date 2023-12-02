@@ -23,8 +23,10 @@ dependencies {
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:model"))
+    implementation(project(":core:common"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.coil.kt.compose)
     implementation(libs.accompanist.systemuicontroller)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
 }

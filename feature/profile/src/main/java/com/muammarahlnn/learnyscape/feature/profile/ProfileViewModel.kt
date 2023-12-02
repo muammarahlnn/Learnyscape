@@ -17,7 +17,11 @@ import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -37,39 +41,53 @@ class ProfileViewModel @Inject constructor(
     private val saveImageToFileUseCase: SaveImageToFileUseCase,
     private val uploadProfilePicUseCase: UploadProfilePicUseCase,
     private val getProfilePicUseCase: GetProfilePicUseCase
-) : ViewModel() {
+) : ViewModel(), ProfileContract {
 
-    private val _profilePicState = MutableStateFlow(ProfilePicState(isLoading = true))
-    val profilePicState = _profilePicState.asStateFlow()
+    private val _state = MutableStateFlow(ProfileContract.State(loading = true))
+    override val state: StateFlow<ProfileContract.State> = _state.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            getProfilePic()
-        }
+    private val _effect = MutableSharedFlow<ProfileContract.Effect>()
+    override val effect: SharedFlow<ProfileContract.Effect> = _effect.asSharedFlow()
+
+    override fun event(event: ProfileContract.Event) = when (event) {
+        ProfileContract.Event.OnGetProfilePic -> getProfilePic()
+        ProfileContract.Event.OnGetCapturedPhoto -> getCapturedPhoto()
+        is ProfileContract.Event.OnShowChangePhotoProfileBottomSheet ->
+            onShowChangePhotoProfileBottomSheet(event.show)
+        is ProfileContract.Event.OnShowLogoutDialog -> onShowLogoutDialog(event.show)
+        ProfileContract.Event.OnLogout -> logout()
+        is ProfileContract.Event.ShowToast -> showToast(event.message)
     }
 
-    private suspend fun getProfilePic() {
-        getProfilePicUseCase().asResult().collect { result ->
-            result.onLoading {
-                onProfilePicStateLoading()
-            }.onSuccess { profilePic ->
-                onProfilePicStateSuccess(profilePic)
-            }.onNoInternet { message ->
-                onProfilePicStateError(message)
-            }.onError { _, message ->
-                onProfilePicStateError(message)
-            }.onException { exception, message ->
-                onProfilePicStateException(exception, message)
+    private fun getProfilePic() {
+        viewModelScope.launch {
+            getProfilePicUseCase().asResult().collect { result ->
+                result.onLoading {
+                    updateStateOnLoading()
+                }.onSuccess { profilePic ->
+                    _state.update {
+                        it.copy(
+                            loading = false,
+                            profilePic = profilePic
+                        )
+                    }
+                }.onNoInternet { message ->
+                    updateStateOnError(message)
+                }.onError { _, message ->
+                    updateStateOnError(message)
+                }.onException { exception, message ->
+                    updateStateOnException(exception, message)
+                }
             }
         }
     }
 
-    fun getCapturedPhoto() {
+    private fun getCapturedPhoto() {
         viewModelScope.launch {
             launch {
-                 getCapturedPhotoUseCase().first()?.let {
-                     uploadImage(it)
-                 }
+                getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
+                    uploadProfilePic(capturedPhoto)
+                }
             }.join()
 
             launch {
@@ -78,72 +96,94 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private suspend fun uploadImage(image: Bitmap) {
-        saveImageToFileUseCase(image).collect { imageFile ->
-            if (imageFile != null) {
-                uploadProfilePicUseCase(imageFile).asResult().collect { result ->
+    private suspend fun uploadProfilePic(profilePic: Bitmap) {
+        saveImageToFileUseCase(profilePic).collect { profilePicFile ->
+            if (profilePicFile != null) {
+                uploadProfilePicUseCase(profilePicFile).asResult().collect { result ->
                     result.onLoading {
-                        onProfilePicStateLoading()
+                        updateStateOnLoading()
                     }.onSuccess {
                         getProfilePic()
                     }.onNoInternet { message ->
-                        onProfilePicStateError(message)
+                        updateStateOnError(message)
                     }.onError { _, message ->
-                        onProfilePicStateError(message)
+                        updateStateOnError(message)
                     }.onException { exception, message ->
-                        onProfilePicStateException(exception, message)
+                        updateStateOnException(exception, message)
                     }
                 }
             } else {
-                onProfilePicStateError("Error save image to file")
+                updateStateOnError("Error save image to file")
             }
         }
     }
 
-    fun logout() {
+    private fun onShowChangePhotoProfileBottomSheet(show: Boolean) {
+        _state.update {
+            it.apply {
+                showChangePhotoProfileBottomSheet.value = show
+            }
+        }
+    }
+
+    private fun onShowLogoutDialog(show: Boolean) {
+        _state.update {
+            it.apply {
+                showLogoutDialog.value = show
+            }
+        }
+    }
+
+    private fun logout() {
         viewModelScope.launch {
             logoutUseCase()
         }
     }
 
-    private fun onProfilePicStateLoading() {
-        _profilePicState.update {
-            it.copy(
-                isLoading = true,
-                errorMessage = "",
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _effect.emit(
+                ProfileContract.Effect.ShowToast(message)
             )
         }
     }
 
-    private fun onProfilePicStateSuccess(bitmap: Bitmap?) {
-        _profilePicState.update {
+    private fun updateStateOnLoading() {
+        _state.update {
             it.copy(
-                profilePic = bitmap,
-                isLoading = false,
-                errorMessage = ""
+                loading = true,
             )
         }
     }
 
-    private fun onProfilePicStateError(message: String) {
+    private fun updateStateOnError(message: String) {
         Log.e(TAG, message)
-        _profilePicState.update {
+
+        _state.update {
             it.copy(
-                errorMessage = message,
-                isLoading = false,
+                loading = false,
+            )
+        }
+
+        viewModelScope.launch {
+            _effect.emit(
+                ProfileContract.Effect.ShowToast(message)
             )
         }
     }
 
-    private fun onProfilePicStateException(
-        exception: Throwable?,
-        message: String
-    ) {
+    private fun updateStateOnException(exception: Throwable?, message: String) {
         Log.e(TAG, exception?.message.toString())
-        _profilePicState.update {
+
+        _state.update {
             it.copy(
-                errorMessage = message,
-                isLoading = false,
+                loading = false,
+            )
+        }
+
+        viewModelScope.launch {
+            _effect.emit(
+                ProfileContract.Effect.ShowToast(message)
             )
         }
     }

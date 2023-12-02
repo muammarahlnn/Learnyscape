@@ -30,10 +30,6 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,13 +40,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -68,40 +65,45 @@ internal fun ProfileRoute(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
+    val (state, event) = use(contract = viewModel)
+    val effect = viewModel.effect
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
-        viewModel.getCapturedPhoto()
+        event(ProfileContract.Event.OnGetProfilePic)
+        event(ProfileContract.Event.OnGetCapturedPhoto)
     }
 
-    var showChangePhotoProfileBottomSheet by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var showLogoutDialog by rememberSaveable {
-        mutableStateOf(false)
+    effect.collectInLaunchedEffect {
+        when (it) {
+            is ProfileContract.Effect.ShowToast -> {
+                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
-    val profilePicState by viewModel.profilePicState.collectAsStateWithLifecycle()
     ProfileScreen(
         scrollBehavior = scrollBehavior,
-        profilePicState = profilePicState,
-        showChangePhotoProfileBottomSheet = showChangePhotoProfileBottomSheet,
-        showLogoutDialog = showLogoutDialog,
+        state = state,
         onChangePhotoProfileButtonClick = {
-            showChangePhotoProfileBottomSheet = true
+            event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(true))
         },
         onCameraActionClick = {
             onCameraActionClick()
-            showChangePhotoProfileBottomSheet = false
+            event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(false))
         },
         onDismissChangePhotoProfileBottomSheet = {
-          showChangePhotoProfileBottomSheet = false
+            event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(false))
         },
         onChangePasswordButtonClick = onChangePasswordButtonClick,
         onLogoutButtonClick = {
-            showLogoutDialog = true
+            event(ProfileContract.Event.OnShowLogoutDialog(true))
         },
-        onConfirmLogoutDialog = viewModel::logout,
+        onConfirmLogoutDialog = {
+            event(ProfileContract.Event.OnLogout)
+        },
         onDismissLogoutDialog = {
-            showLogoutDialog = false
+            event(ProfileContract.Event.OnShowLogoutDialog(false))
         },
         modifier = modifier,
     )
@@ -111,9 +113,7 @@ internal fun ProfileRoute(
 @Composable
 private fun ProfileScreen(
     scrollBehavior: TopAppBarScrollBehavior,
-    profilePicState: ProfilePicState,
-    showChangePhotoProfileBottomSheet: Boolean,
-    showLogoutDialog: Boolean,
+    state: ProfileContract.State,
     onChangePhotoProfileButtonClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onDismissChangePhotoProfileBottomSheet: () -> Unit,
@@ -123,7 +123,7 @@ private fun ProfileScreen(
     onDismissLogoutDialog: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (showChangePhotoProfileBottomSheet) {
+    if (state.showChangePhotoProfileBottomSheet.value) {
         ChangePhotoProfileBottomSheet(
             onCameraActionClick = onCameraActionClick,
             onGalleryActionClick = {
@@ -133,7 +133,7 @@ private fun ProfileScreen(
         )
     }
 
-    if (showLogoutDialog) {
+    if (state.showLogoutDialog.value) {
         LogoutDialog(
             onLogout = onConfirmLogoutDialog,
             onDismiss = onDismissLogoutDialog,
@@ -148,7 +148,7 @@ private fun ProfileScreen(
             .padding(16.dp),
     ) {
         ProfileContent(
-            profilePicState = profilePicState,
+            state = state,
             onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
         )
 
@@ -168,7 +168,7 @@ private fun ProfileScreen(
 
 @Composable
 private fun ProfileContent(
-    profilePicState: ProfilePicState,
+    state: ProfileContract.State,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -177,7 +177,7 @@ private fun ProfileContent(
             modifier = Modifier.padding(top = photoProfileSize / 2)
         )
         PhotoProfile(
-            profilePicState = profilePicState,
+            state = state,
             onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
             modifier = Modifier.align(Alignment.TopCenter)
         )
@@ -284,18 +284,10 @@ private fun BaseProfileInfoText(
 
 @Composable
 private fun PhotoProfile(
-    profilePicState: ProfilePicState,
+    state: ProfileContract.State,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    // TODO: fix showing error toast even if it's not error
-    LaunchedEffect(profilePicState.errorMessage) {
-        if (profilePicState.errorMessage.isNotEmpty()) {
-            Toast.makeText(context, profilePicState.errorMessage, Toast.LENGTH_SHORT).show()
-        }
-    }
-
     Box(modifier = modifier) {
         val photoProfileModifier = Modifier
             .size(photoProfileSize)
@@ -306,7 +298,7 @@ private fun PhotoProfile(
                 shape = CircleShape
             )
 
-        if (profilePicState.isLoading) {
+        if (state.loading) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = photoProfileModifier
@@ -317,9 +309,9 @@ private fun PhotoProfile(
                 )
             }
         } else {
-            if (profilePicState.profilePic != null) {
+            if (state.profilePic != null) {
                 AsyncImage(
-                    model = profilePicState.profilePic,
+                    model = state.profilePic,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = photoProfileModifier
