@@ -28,11 +28,9 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -46,9 +44,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
@@ -63,29 +62,33 @@ fun LoginRoute(
 ) {
     ChangeStatusBarColor(statusBarColor = MaterialTheme.colorScheme.background)
 
-    val loginUiState by viewModel.loginUiState.collectAsStateWithLifecycle()
-    var username by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var isLoginButtonEnabled by rememberSaveable { mutableStateOf(false) }
-    val onTextFieldsChange = {
-        isLoginButtonEnabled = username.isNotEmpty() && password.isNotEmpty()
+    val (state, event) = use(contract = viewModel)
+    val effect = viewModel.effect
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    effect.collectInLaunchedEffect {
+        when (it) {
+            is LoginContract.Effect.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(
+                    message = it.message,
+                    withDismissAction = true,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
     }
     
     LoginScreen(
-        loginUiState = loginUiState,
-        username = username,
-        password = password,
-        isLoginButtonEnabled = isLoginButtonEnabled,
-        onUsernameChange = { newUsername ->
-            username = newUsername
-            onTextFieldsChange()
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onUsernameChange = { username ->
+            event(LoginContract.Event.OnUsernameChange(username))
         },
-        onPasswordChange = { newPassword ->
-            password = newPassword
-            onTextFieldsChange()
+        onPasswordChange = { password ->
+            event(LoginContract.Event.OnPasswordChange(password))
         },
         onLoginButtonClick = {
-            viewModel.postLoginUser(username,password)
+            event(LoginContract.Event.OnLoginButtonClick)
         },
         modifier = modifier,
     )
@@ -94,29 +97,13 @@ fun LoginRoute(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LoginScreen(
-    username: String,
-    password: String,
-    isLoginButtonEnabled: Boolean,
+    state: LoginContract.State,
+    snackbarHostState: SnackbarHostState,
     onUsernameChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onLoginButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
-    loginUiState: LoginUiState = LoginUiState.None,
 ) {
-    val isError = loginUiState is LoginUiState.Error
-    val snackbarHostState = remember { SnackbarHostState() }
-    LaunchedEffect(isError) {
-        if (isError) {
-            val errorMessage = (loginUiState as LoginUiState.Error).message
-            snackbarHostState.showSnackbar(
-                message = errorMessage,
-                withDismissAction = true,
-                duration = SnackbarDuration.Short
-            )
-        }
-    }
-
-    val isLoading = loginUiState is LoginUiState.Loading
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = {
@@ -125,10 +112,10 @@ private fun LoginScreen(
         modifier = modifier.imePadding(),
     ) { padding ->
         LoginContent(
-            username = username,
-            password = password,
-            isLoginButtonEnabled = isLoginButtonEnabled,
-            isLoading = isLoading,
+            username = state.username,
+            password = state.password,
+            isLoginButtonEnabled = state.isLoginButtonEnabled,
+            isLoading = state.loading,
             onUsernameChange = onUsernameChange,
             onPasswordChange = onPasswordChange,
             onLoginButtonClick = onLoginButtonClick,
