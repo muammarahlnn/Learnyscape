@@ -27,21 +27,7 @@ internal fun LoadingScheduleScreen(
     Column(
         modifier = modifier.fillMaxSize()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(88.dp)
-                .clip(
-                    RoundedCornerShape(
-                        bottomStart = 16.dp,
-                        bottomEnd = 16.dp,
-                    )
-                )
-                .shimmerEffect()
-        )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         repeat(3) {
             Row(
                 modifier = Modifier
