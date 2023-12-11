@@ -1,7 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.schedule
 
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.model.data.ScheduleModel
 
 /**
