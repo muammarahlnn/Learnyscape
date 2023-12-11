@@ -44,7 +44,7 @@ internal fun HomeNavHost(
         )
         scheduleScreen(
             scrollBehavior = scrollBehavior,
-            onClassClick = onClassClick,
+            onScheduleClick = onClassClick,
         )
         profileScreen(
             scrollBehavior = scrollBehavior,

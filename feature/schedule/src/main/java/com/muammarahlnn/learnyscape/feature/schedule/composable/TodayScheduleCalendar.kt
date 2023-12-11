@@ -1,14 +1,35 @@
 package com.muammarahlnn.learnyscape.feature.schedule.composable
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.LayoutScopeMarker
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.ParentDataModifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.model.data.ScheduleModel
+import com.muammarahlnn.learnyscape.feature.schedule.R
+import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCalendarScope.scheduleClassCard
 import kotlinx.datetime.LocalTime
 import kotlin.math.roundToInt
 
@@ -22,20 +43,29 @@ private const val END_HOUR = 23
 private val scheduleHours = START_HOUR..END_HOUR
 
 @Composable
-fun TodayScheduleCalendar(
-    hourLabel: @Composable (Int) -> Unit,
-    scheduleClass: @Composable TodayScheduleCalendarScope.(ScheduleClass) -> Unit,
+internal fun TodayScheduleCalendar(
+    schedules: List<ScheduleModel>,
+    onScheduleClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hourLabels = @Composable {
         scheduleHours.forEach { hour ->
-            hourLabel(hour)
+            HourLabel(hour = hour)
         }
     }
 
     val scheduleClasses = @Composable {
-        generateScheduleClasses().forEach { scheduleClass ->
-            TodayScheduleCalendarScope.scheduleClass(scheduleClass)
+        schedules.forEach { schedule ->
+            ScheduleClassCard(
+                className = schedule.className,
+                startTime = schedule.startTime,
+                endTime = schedule.endTime,
+                onScheduleClick = onScheduleClick,
+                modifier = Modifier.scheduleClassCard(
+                    startTime = schedule.startTime,
+                    endTime = schedule.endTime,
+                )
+            )
         }
     }
 
@@ -99,96 +129,93 @@ fun TodayScheduleCalendar(
     }
 }
 
-private fun generateScheduleClasses(): List<ScheduleClass> =
-    listOf(
-        ScheduleClass(
-            className = "Pemrograman Mobile A",
-            startTime = LocalTime(
-                hour = 6,
-                minute = 0
-            ),
-            endTime = LocalTime(
-                hour = 8,
-                minute = 0
-            ),
-        ),
-        ScheduleClass(
-            className = "Pengantar Pemrograman A",
-            startTime = LocalTime(
-                hour = 8,
-                minute = 30
-            ),
-            endTime = LocalTime(
-                hour = 10,
-                minute = 30
-            ),
-        ),
-        ScheduleClass(
-            className = "Sistem Basis Data B",
-            startTime = LocalTime(
-                hour = 11,
-                minute = 10
-            ),
-            endTime = LocalTime(
-                hour = 12,
-                minute = 10
-            ),
-        ),
-        ScheduleClass(
-            className = "Pemrograman Web C",
-            startTime = LocalTime(
-                hour = 13,
-                minute = 30
-            ),
-            endTime = LocalTime(
-                hour = 14,
-                minute = 30
-            ),
-        ),
-        ScheduleClass(
-            className = "Pemrograman Web C",
-            startTime = LocalTime(
-                hour = 15,
-                minute = 15
-            ),
-            endTime = LocalTime(
-                hour = 16,
-                minute = 45
-            ),
-        ),
-        ScheduleClass(
-            className = "Pemrograman Web C",
-            startTime = LocalTime(
-                hour = 17,
-                minute = 45
-            ),
-            endTime = LocalTime(
-                hour = 19,
-                minute = 15
-            ),
-        ),
-        ScheduleClass(
-            className = "Machine Learning A",
-            startTime = LocalTime(
-                hour = 20,
-                minute = 0
-            ),
-            endTime = LocalTime(
-                hour = 23,
-                minute = 0
-            ),
-        ),
+@Composable
+private fun HourLabel(hour: Int) {
+    val formattedHour = String.format("%02d:00", hour)
+    Text(
+        text = formattedHour,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onBackground,
+        textAlign = TextAlign.End,
+        modifier = Modifier.height(100.dp)
     )
+}
 
-data class ScheduleClass(
-    val className: String,
-    val startTime: LocalTime,
-    val endTime: LocalTime,
-)
+@Composable
+private fun ScheduleClassCard(
+    className: String,
+    startTime: LocalTime,
+    endTime: LocalTime,
+    onScheduleClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseCard(
+        modifier = modifier
+            .fillMaxSize()
+            .clickable {
+                onScheduleClick()
+            },
+    ) {
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier.padding(
+                    vertical = 8.dp,
+                    horizontal = 16.dp,
+                ),
+            ) {
+                Text(
+                    text = className,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                val formatHour = "%02d:%02d"
+                val formattedStartTime = String.format(formatHour, startTime.hour, startTime.minute)
+                val formattedEndTime = String.format(formatHour, endTime.hour, endTime.minute)
+                Text(
+                    text = stringResource(
+                        id = R.string.class_range_time,
+                        formattedStartTime, formattedEndTime,
+                    ),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Spacer(modifier = Modifier.weight(1f))
+
+                val canvasSize = 50.dp
+                val primaryColor = MaterialTheme.colorScheme.primary
+                Canvas(
+                    modifier = Modifier.size(canvasSize),
+                    onDraw = {
+                        val size = canvasSize.toPx()
+                        val trianglePath = Path().apply {
+                            moveTo(size, 0f)
+                            lineTo(size, size)
+                            lineTo(0f, size)
+                        }
+                        drawPath(
+                            path = trianglePath,
+                            color = primaryColor,
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
 
 @LayoutScopeMarker
 @Immutable
-object TodayScheduleCalendarScope {
+private object TodayScheduleCalendarScope {
 
     @Stable
     fun Modifier.scheduleClassCard(
@@ -213,7 +240,7 @@ object TodayScheduleCalendarScope {
     }
 }
 
-class TodayScheduleCalendarParentData(
+private class TodayScheduleCalendarParentData(
     val durationInMinutes: Int,
     val startTimeOffset: Int,
 ) : ParentDataModifier {
