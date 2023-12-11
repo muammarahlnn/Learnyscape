@@ -1,12 +1,10 @@
 package com.muammarahlnn.learnyscape.feature.schedule
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +18,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
@@ -31,7 +27,8 @@ import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.schedule.composable.LoadingScheduleScreen
 import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCalendar
-import kotlinx.datetime.LocalTime
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 /**
@@ -42,7 +39,7 @@ import kotlinx.datetime.LocalTime
 @Composable
 internal fun ScheduleRoute(
     scrollBehavior: TopAppBarScrollBehavior,
-    onClassClick: () -> Unit,
+    onScheduleClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = hiltViewModel(),
 ) {
@@ -58,7 +55,7 @@ internal fun ScheduleRoute(
         onRefresh = {
             event(ScheduleContract.Event.OnGetSchedules)
         },
-        onClassClick = onClassClick,
+        onScheduleClick = onScheduleClick,
         modifier = modifier,
     )
 }
@@ -69,75 +66,61 @@ private fun ScheduleScreen(
     state: ScheduleContract.State,
     scrollBehavior: TopAppBarScrollBehavior,
     onRefresh: () -> Unit,
-    onClassClick: () -> Unit,
+    onScheduleClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    when (state) {
-        ScheduleContract.State.Loading -> {
-            LoadingScheduleScreen(
-                modifier = modifier.fillMaxSize()
-            )
-        }
+    Column(
+        modifier = modifier.fillMaxSize()
+    ) {
+        ScheduleDateHeader()
 
-        is ScheduleContract.State.Success -> {
-            Column(
-                modifier = modifier
-                    .fillMaxSize()
-            ) {
-                ScheduleDateHeader()
+        val contentModifier = Modifier.weight(1f)
+        when (state) {
+            ScheduleContract.State.Loading -> {
+                LoadingScheduleScreen(
+                    modifier = contentModifier
+                )
+            }
 
+            is ScheduleContract.State.Success -> {
                 LazyColumn(
                     contentPadding = PaddingValues(16.dp),
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = contentModifier
                         .nestedScroll(scrollBehavior.nestedScrollConnection)
                 ) {
                     item {
                         TodayScheduleCalendar(
-                            hourLabel = { hour ->
-                                HourLabel(hour = hour)
-                            },
-                            scheduleClass = { scheduleClass ->
-                                ScheduleClassCard(
-                                    className = scheduleClass.className,
-                                    startTime = scheduleClass.startTime,
-                                    endTime = scheduleClass.endTime,
-                                    onClassClick = onClassClick,
-                                    modifier = Modifier.scheduleClassCard(
-                                        startTime = scheduleClass.startTime,
-                                        endTime = scheduleClass.endTime,
-                                    )
-                                )
-                            },
+                            schedules = state.schedules,
+                            onScheduleClick = onScheduleClick,
                             modifier = modifier.wrapContentSize()
                         )
                     }
                 }
             }
-        }
 
-        ScheduleContract.State.SuccessEmpty -> {
-            EmptyScreen(
-                text = stringResource(id = R.string.empty_schedule_text),
-                modifier = modifier.fillMaxSize()
-            )
-        }
+            ScheduleContract.State.SuccessEmpty -> {
+                EmptyScreen(
+                    text = stringResource(id = R.string.empty_schedule_text),
+                    modifier = contentModifier
+                )
+            }
 
 
-        is ScheduleContract.State.NoInternet -> {
-            NoInternetScreen(
-                text = state.message,
-                onRefresh = onRefresh,
-                modifier = modifier.fillMaxSize()
-            )
-        }
+            is ScheduleContract.State.NoInternet -> {
+                NoInternetScreen(
+                    text = state.message,
+                    onRefresh = onRefresh,
+                    modifier = contentModifier
+                )
+            }
 
-        is ScheduleContract.State.Error -> {
-            ErrorScreen(
-                text = state.message,
-                onRefresh = onRefresh,
-                modifier = modifier.fillMaxSize()
-            )
+            is ScheduleContract.State.Error -> {
+                ErrorScreen(
+                    text = state.message,
+                    onRefresh = onRefresh,
+                    modifier = contentModifier
+                )
+            }
         }
     }
 }
@@ -146,6 +129,12 @@ private fun ScheduleScreen(
 private fun ScheduleDateHeader(
     modifier: Modifier = Modifier,
 ) {
+    val currentTime = LocalDateTime.now()
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+    val formattedDate = currentTime.format(dateFormatter)
+    val dayOfWeekFormatter = DateTimeFormatter.ofPattern("EEEE")
+    val formattedDayOfWeek = currentTime.format(dayOfWeekFormatter)
+
     BaseCard(
         shape = RoundedCornerShape(
             bottomStart = 16.dp,
@@ -167,68 +156,13 @@ private fun ScheduleDateHeader(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Monday",
+                text = formattedDayOfWeek,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = "18 September 2023",
+                text = formattedDate,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-        }
-    }
-}
-
-
-@Composable
-fun HourLabel(hour: Int) {
-    val formattedHour = String.format("%02d:00", hour)
-    Text(
-        text = formattedHour,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onBackground,
-        textAlign = TextAlign.End,
-        modifier = Modifier.height(100.dp)
-    )
-}
-
-@Composable
-private fun ScheduleClassCard(
-    className: String,
-    startTime: LocalTime,
-    endTime: LocalTime,
-    onClassClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BaseCard(
-        modifier = modifier
-            .clickable {
-                onClassClick()
-            },
-    ) {
-        Column(
-            modifier = Modifier.padding(
-                vertical = 8.dp,
-                horizontal = 16.dp,
-            ),
-        ) {
-            Text(
-                text = className,
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            val formatHour = "%02d:%02d"
-            val formattedStartTime = String.format(formatHour, startTime.hour, startTime.minute)
-            val formattedEndTime = String.format(formatHour, endTime.hour, endTime.minute)
-            Text(
-                text = stringResource(
-                    id = R.string.class_range_time,
-                    formattedStartTime, formattedEndTime,
-                ),
-                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         }

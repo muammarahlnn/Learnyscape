@@ -23,12 +23,12 @@ fun NavController.navigateToSchedule(navOptions: NavOptions? = null) {
 @OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.scheduleScreen(
     scrollBehavior: TopAppBarScrollBehavior,
-    onClassClick: () -> Unit,
+    onScheduleClick: () -> Unit,
 ) {
     composable(route = SCHEDULE_ROUTE) {
         ScheduleRoute(
             scrollBehavior = scrollBehavior,
-            onClassClick = onClassClick
+            onScheduleClick = onScheduleClick
         )
     }
 }
