@@ -16,12 +16,3 @@ data class AvailableClassModel(
     val lecturers: List<ClassMemberModel>,
     val students: List<ClassMemberModel>,
 )
-
-fun convertTimeInMinutesToLocalTime(time: Int): LocalTime {
-    val hour = time / 60
-    val minute = time % 60
-    return LocalTime(
-        hour = hour,
-        minute = minute,
-    )
-}

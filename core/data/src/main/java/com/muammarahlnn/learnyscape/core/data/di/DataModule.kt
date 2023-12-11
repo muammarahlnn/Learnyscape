@@ -6,12 +6,14 @@ import com.muammarahlnn.learnyscape.core.data.repository.FileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
+import com.muammarahlnn.learnyscape.core.data.repository.SchedulesRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.AvailableClassRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.CapturedPhotoRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.FileRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.HomeRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.LoginRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ProfileRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.SchedulesRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -58,4 +60,9 @@ interface DataModule {
     fun bindsFileRepository(
         fileRepository: FileRepositoryImpl
     ): FileRepository
+
+    @Binds
+    fun bindsSchedulesRepository(
+        schedulesRepository: SchedulesRepositoryImpl
+    ): SchedulesRepository
 }

@@ -22,7 +22,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  * @file EmptyDataScreen, 19/11/2023 04.05 by Muammar Ahlan Abimanyu
  */
 @Composable
-fun EmptyDataScreen(
+fun NoDataScreen(
     text: String,
     modifier: Modifier = Modifier,
 ) {

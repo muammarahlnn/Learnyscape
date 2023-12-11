@@ -16,13 +16,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.ui.EmptyScreen
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
+import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.schedule.composable.LoadingScheduleScreen
+import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCalendar
 import kotlinx.datetime.LocalTime
 
 
@@ -35,10 +43,21 @@ import kotlinx.datetime.LocalTime
 internal fun ScheduleRoute(
     scrollBehavior: TopAppBarScrollBehavior,
     onClassClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ScheduleViewModel = hiltViewModel(),
 ) {
+    val (state, event) = use(contract = viewModel)
+
+    LaunchedEffect(Unit) {
+        event(ScheduleContract.Event.OnGetSchedules)
+    }
+
     ScheduleScreen(
+        state = state,
         scrollBehavior = scrollBehavior,
+        onRefresh = {
+            event(ScheduleContract.Event.OnGetSchedules)
+        },
         onClassClick = onClassClick,
         modifier = modifier,
     )
@@ -47,42 +66,78 @@ internal fun ScheduleRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ScheduleScreen(
+    state: ScheduleContract.State,
     scrollBehavior: TopAppBarScrollBehavior,
+    onRefresh: () -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        ScheduleDateHeader()
+    when (state) {
+        ScheduleContract.State.Loading -> {
+            LoadingScheduleScreen(
+                modifier = modifier.fillMaxSize()
+            )
+        }
 
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            modifier = Modifier
-                .weight(1f)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-        ) {
-            item {
-                TodayScheduleCalendar(
-                    hourLabel = { hour ->
-                        HourLabel(hour = hour)
-                    },
-                    scheduleClass = { scheduleClass ->
-                        ScheduleClassCard(
-                            className = scheduleClass.className,
-                            startTime = scheduleClass.startTime,
-                            endTime = scheduleClass.endTime,
-                            onClassClick = onClassClick,
-                            modifier = Modifier.scheduleClassCard(
-                                startTime = scheduleClass.startTime,
-                                endTime = scheduleClass.endTime,
-                            )
+        is ScheduleContract.State.Success -> {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+            ) {
+                ScheduleDateHeader()
+
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                ) {
+                    item {
+                        TodayScheduleCalendar(
+                            hourLabel = { hour ->
+                                HourLabel(hour = hour)
+                            },
+                            scheduleClass = { scheduleClass ->
+                                ScheduleClassCard(
+                                    className = scheduleClass.className,
+                                    startTime = scheduleClass.startTime,
+                                    endTime = scheduleClass.endTime,
+                                    onClassClick = onClassClick,
+                                    modifier = Modifier.scheduleClassCard(
+                                        startTime = scheduleClass.startTime,
+                                        endTime = scheduleClass.endTime,
+                                    )
+                                )
+                            },
+                            modifier = modifier.wrapContentSize()
                         )
-                    },
-                    modifier = modifier.wrapContentSize()
-                )
+                    }
+                }
             }
+        }
+
+        ScheduleContract.State.SuccessEmpty -> {
+            EmptyScreen(
+                text = stringResource(id = R.string.empty_schedule_text),
+                modifier = modifier.fillMaxSize()
+            )
+        }
+
+
+        is ScheduleContract.State.NoInternet -> {
+            NoInternetScreen(
+                text = state.message,
+                onRefresh = onRefresh,
+                modifier = modifier.fillMaxSize()
+            )
+        }
+
+        is ScheduleContract.State.Error -> {
+            ErrorScreen(
+                text = state.message,
+                onRefresh = onRefresh,
+                modifier = modifier.fillMaxSize()
+            )
         }
     }
 }

@@ -3,9 +3,9 @@ package com.muammarahlnn.learnyscape.core.data.mapper
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.core.model.data.ClassMemberModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
-import com.muammarahlnn.learnyscape.core.model.data.convertTimeInMinutesToLocalTime
 import com.muammarahlnn.learnyscape.core.network.model.response.AvailableClassResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ClassMemberResponse
+import kotlinx.datetime.LocalTime
 
 
 /**
@@ -32,3 +32,11 @@ fun ClassMemberResponse.toClassMemberModel() = ClassMemberModel(
     username = username,
 )
 
+fun convertTimeInMinutesToLocalTime(time: Int): LocalTime {
+    val hour = time / 60
+    val minute = time % 60
+    return LocalTime(
+        hour = hour,
+        minute = minute,
+    )
+}

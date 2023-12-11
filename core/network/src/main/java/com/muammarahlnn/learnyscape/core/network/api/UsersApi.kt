@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.network.model.request.RequestJoinClassR
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.ScheduleResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.UserResponse
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -50,6 +51,9 @@ interface UsersApi {
     @GET(USERS_PIC_END_POINT)
     suspend fun getProfilePic(): Response<ResponseBody>
 
+    @GET(USERS_SCHEDULES)
+    suspend fun getSchedules(): BaseResponse<List<ScheduleResponse>>
+
     companion object {
 
         private const val AUTHORIZATION = "Authorization"
@@ -61,5 +65,7 @@ interface UsersApi {
         private const val USERS_CLASSES_END_POINT = "users/classes"
 
         private const val USERS_PIC_END_POINT = "users/pic"
+
+        private const val USERS_SCHEDULES = "users/schedules"
     }
 }
