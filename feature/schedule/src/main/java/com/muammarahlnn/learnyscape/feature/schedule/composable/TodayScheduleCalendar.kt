@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.feature.schedule
+package com.muammarahlnn.learnyscape.feature.schedule.composable
 
 import androidx.compose.foundation.layout.LayoutScopeMarker
 import androidx.compose.runtime.Composable

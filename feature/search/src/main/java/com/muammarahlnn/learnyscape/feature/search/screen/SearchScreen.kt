@@ -49,9 +49,9 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
-import com.muammarahlnn.learnyscape.core.ui.EmptyDataScreen
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
+import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
@@ -151,7 +151,7 @@ private fun SearchScreen(
             }
 
             SearchUiState.SuccessEmpty -> {
-                EmptyDataScreen(
+                NoDataScreen(
                     text = stringResource(id = R.string.empty_classes_text),
                     modifier = modifier.fillMaxSize()
                 )
