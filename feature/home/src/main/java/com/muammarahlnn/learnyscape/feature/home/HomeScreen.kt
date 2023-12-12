@@ -22,14 +22,13 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,13 +39,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -63,22 +62,25 @@ internal fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = viewModel::fetchClasses
-    )
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(HomeContract.Event.FetchEnrolledClasses)
+    }
 
-    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
+    val (refreshing, pullRefreshState) = use(refreshProvider = viewModel) {
+        event(HomeContract.Event.FetchEnrolledClasses)
+    }
     HomeScreen(
-        uiState = uiState,
+        state = state,
         scrollBehavior = scrollBehavior,
         pullRefreshState = pullRefreshState,
-        isRefreshing = refreshing,
-        searchQuery = searchQuery,
-        onRefresh = viewModel::fetchClasses,
-        onSearchQueryChanged = viewModel::onSearchQueryChanged,
+        refreshing = refreshing,
+        onRefresh = {
+            event(HomeContract.Event.FetchEnrolledClasses)
+        },
+        onSearchQueryChanged = { searchQuery ->
+            event(HomeContract.Event.OnSearchQueryChanged(searchQuery))
+        },
         onClassClick = onClassClick,
         modifier = modifier,
     )
@@ -87,11 +89,10 @@ internal fun HomeRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun HomeScreen(
-    uiState: HomeUiState,
+    state: HomeContract.State,
     scrollBehavior: TopAppBarScrollBehavior,
     pullRefreshState: PullRefreshState,
-    isRefreshing: Boolean,
-    searchQuery: String,
+    refreshing: Boolean,
     onRefresh: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClassClick: () -> Unit,
@@ -102,15 +103,15 @@ private fun HomeScreen(
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
-        when (uiState) {
-            HomeUiState.Loading -> {
+        when (state.uiState) {
+            HomeContract.UiState.Loading -> {
                 HomeContentLoading()
             }
 
-            is HomeUiState.Success -> {
+            is HomeContract.UiState.Success -> {
                 HomeContent(
-                    searchQuery = searchQuery,
-                    classes = uiState.classes,
+                    searchQuery = state.searchQuery,
+                    classes = state.uiState.classes,
                     onSearchQueryChanged = onSearchQueryChanged,
                     onClassClick = onClassClick,
                     modifier = modifier
@@ -119,23 +120,23 @@ private fun HomeScreen(
                 )
             }
 
-            HomeUiState.SuccessEmptyClasses -> {
+            HomeContract.UiState.SuccessEmptyClasses -> {
                 EmptyClassesContent(
                     modifier = modifier,
                 )
             }
 
-            is HomeUiState.Error -> {
+            is HomeContract.UiState.Error -> {
                 ErrorScreen(
-                    text = uiState.message,
+                    text = state.uiState.message,
                     onRefresh = onRefresh,
                     modifier = modifier.fillMaxSize()
                 )
             }
 
-            is HomeUiState.NoInternet -> {
+            is HomeContract.UiState.NoInternet -> {
                 NoInternetScreen(
-                    text = uiState.message,
+                    text = state.uiState.message,
                     onRefresh = onRefresh,
                     modifier = modifier.fillMaxSize()
                 )
@@ -143,7 +144,7 @@ private fun HomeScreen(
         }
 
         PullRefreshIndicator(
-            refreshing = isRefreshing,
+            refreshing = refreshing,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter)
         )
