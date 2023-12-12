@@ -14,21 +14,18 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.ui.EmptyScreen
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
@@ -57,13 +54,9 @@ internal fun ScheduleRoute(
         event(ScheduleContract.Event.OnGetSchedules)
     }
 
-    val refreshing by viewModel.refreshing.collectAsStateWithLifecycle()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = {
-            event(ScheduleContract.Event.OnGetSchedules)
-        }
-    )
+    val (refreshing, pullRefreshState) = use(refreshProvider = viewModel) {
+        event(ScheduleContract.Event.OnGetSchedules)
+    }
 
     ScheduleScreen(
         state = state,
