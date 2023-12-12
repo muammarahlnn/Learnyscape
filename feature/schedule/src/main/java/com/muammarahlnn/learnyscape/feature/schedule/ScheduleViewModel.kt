@@ -29,6 +29,9 @@ class ScheduleViewModel @Inject constructor(
     private val _state = MutableStateFlow<ScheduleContract.State>(ScheduleContract.State.Loading)
     override val state: StateFlow<ScheduleContract.State> = _state
 
+    private val _refreshing = MutableStateFlow(false)
+    override val refreshing: StateFlow<Boolean> = _refreshing
+
 
     override fun event(event: ScheduleContract.Event) = when (event) {
         ScheduleContract.Event.OnGetSchedules -> getSchedules()

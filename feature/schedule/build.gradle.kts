@@ -8,8 +8,7 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.activity.compose)
     implementation(libs.kotlinx.datetime)
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.androidx.compose.material)
 }
