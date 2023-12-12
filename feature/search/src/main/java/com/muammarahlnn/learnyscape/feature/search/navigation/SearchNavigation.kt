@@ -6,7 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import com.muammarahlnn.learnyscape.feature.search.screen.SearchRoute
+import com.muammarahlnn.learnyscape.feature.search.SearchRoute
 
 
 /**
