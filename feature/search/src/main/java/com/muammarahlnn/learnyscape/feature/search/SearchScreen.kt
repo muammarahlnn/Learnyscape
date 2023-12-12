@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.feature.search.screen
+package com.muammarahlnn.learnyscape.feature.search
 
 import android.widget.Toast
 import androidx.compose.foundation.background
@@ -23,7 +23,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
@@ -54,11 +52,9 @@ import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
-import com.muammarahlnn.learnyscape.feature.search.R
-import com.muammarahlnn.learnyscape.feature.search.uistate.JoinRequestClassDialogUiState
-import com.muammarahlnn.learnyscape.feature.search.uistate.SearchUiState
-import com.muammarahlnn.learnyscape.feature.search.viewmodel.SearchViewModel
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import kotlinx.datetime.LocalTime
 
 
@@ -74,29 +70,44 @@ internal fun SearchRoute(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
-    val refreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = refreshing,
-        onRefresh = viewModel::fetchAvailableClasses
-    )
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(SearchContract.Event.FetchAvailableClasses)
+    }
 
-    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val uiState by viewModel.searchUiState.collectAsStateWithLifecycle()
-    val joinRequestDialogUiState by viewModel.joinRequestDialogUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            is SearchContract.Effect.ShowToast -> {
+                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    val (refreshing, pullRefreshState) = use(refreshProvider = viewModel) {
+        event(SearchContract.Event.FetchAvailableClasses)
+    }
+
     SearchScreen(
-        uiState = uiState,
+        state = state,
         scrollBehavior = scrollBehavior,
         pullRefreshState = pullRefreshState,
-        isRefreshing = refreshing,
-        joinRequestDialogUiState = joinRequestDialogUiState,
-        searchQuery = searchQuery,
-        showJoinRequestDialog = viewModel.showJoinRequestDialog,
-        onRefresh = viewModel::fetchAvailableClasses,
-        onSearchQueryChanged = viewModel::onSearchQueryChanged,
-        selectedAvailableClass = viewModel.selectedAvailableClass,
-        onClassItemClick = viewModel::onAvailableClassClick,
-        onRequestJoinRequestDialog = viewModel::requestJoinClass,
-        onDismissJoinRequestDialog = viewModel::onDismissJoinRequestDialog,
+        refreshing = refreshing,
+        onRefresh = {
+            event(SearchContract.Event.FetchAvailableClasses)
+        },
+        onSearchQueryChanged = { searchQuery ->
+            event(SearchContract.Event.OnSearchQueryChanged(searchQuery))
+        },
+        onClassItemClick = { availableClass ->
+            event(SearchContract.Event.OnAvailableClassClick(availableClass))
+        },
+        onRequestJoinRequestDialog = {
+            event(SearchContract.Event.OnRequestJoinClass)
+        },
+        onDismissJoinRequestDialog = {
+            event(SearchContract.Event.OnDismissJoinClass)
+        },
         modifier = modifier,
     )
 }
@@ -104,70 +115,66 @@ internal fun SearchRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun SearchScreen(
-    uiState: SearchUiState,
+    state: SearchContract.State,
     scrollBehavior: TopAppBarScrollBehavior,
     pullRefreshState: PullRefreshState,
-    isRefreshing: Boolean,
-    joinRequestDialogUiState: JoinRequestClassDialogUiState,
-    showJoinRequestDialog: Boolean,
+    refreshing: Boolean,
     onRefresh: () -> Unit,
-    searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
-    selectedAvailableClass: AvailableClassModel?,
     onClassItemClick: (AvailableClassModel) -> Unit,
     onRequestJoinRequestDialog: () -> Unit,
     onDismissJoinRequestDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (showJoinRequestDialog) {
+    if (state.showJoinRequestDialog) {
         // double bang operator used because it's guaranteed selectedAvailableClass will never be null
         JoinRequestClassDialog(
-            uiState = joinRequestDialogUiState,
-            className = selectedAvailableClass?.name!!,
+            loading = state.joinRequestClassDialogLoading,
+            className = state.selectedAvailableClass?.name.orEmpty(),
             onRequest = onRequestJoinRequestDialog,
             onDismiss = onDismissJoinRequestDialog,
         )
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .pullRefresh(pullRefreshState)
     ) {
-        when (uiState) {
-            SearchUiState.Loading -> {
+        when (state.uiState) {
+            SearchContract.UiState.Loading -> {
                 SearchContentLoading()
             }
 
-            is SearchUiState.Success -> {
+            is SearchContract.UiState.Success -> {
                 SearchContent(
                     scrollBehavior = scrollBehavior,
-                    availableClasses = uiState.availableClasses,
-                    searchQuery = searchQuery,
+                    availableClasses = state.uiState.availableClasses,
+                    searchQuery = state.searchQuery,
                     onSearchQueryChanged = onSearchQueryChanged,
                     onClassItemClick = onClassItemClick,
                     modifier = modifier.fillMaxSize()
                 )
             }
 
-            SearchUiState.SuccessEmpty -> {
+            SearchContract.UiState.SuccessEmpty -> {
                 NoDataScreen(
                     text = stringResource(id = R.string.empty_classes_text),
                     modifier = modifier.fillMaxSize()
                 )
             }
 
-            is SearchUiState.NoInternet -> {
+            is SearchContract.UiState.NoInternet -> {
                 NoInternetScreen(
-                    text = uiState.message,
+                    text = state.uiState.message,
                     onRefresh = onRefresh,
                     modifier = modifier.fillMaxSize()
                 )
             }
 
-            is SearchUiState.Error -> {
+            is SearchContract.UiState.Error -> {
                 ErrorScreen(
-                    text = uiState.message,
+                    text = state.uiState.message,
                     onRefresh = onRefresh,
                     modifier = modifier.fillMaxSize()
                 )
@@ -175,7 +182,7 @@ private fun SearchScreen(
         }
 
         PullRefreshIndicator(
-            refreshing = isRefreshing,
+            refreshing = refreshing,
             state = pullRefreshState,
             modifier = Modifier.align(Alignment.TopCenter)
         )
@@ -360,74 +367,47 @@ private fun SearchedClassCard(
 
 @Composable
 private fun JoinRequestClassDialog(
-    uiState: JoinRequestClassDialogUiState,
+    loading: Boolean,
     className: String,
     onRequest: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    when (uiState) {
-        JoinRequestClassDialogUiState.None -> {
-            BaseAlertDialog(
-                title = stringResource(id = R.string.join_request_dialog_title),
-                dialogText = stringResource(
-                    R.string.join_request_dialog_text,
-                    className
-                ),
-                onConfirm = onRequest,
-                onDismiss = onDismiss,
-                confirmText = stringResource(
-                    id = R.string.join_request_dialog_confirm_button_text
-                ),
-                modifier = modifier,
-            )
-        }
-
-        JoinRequestClassDialogUiState.Loading -> {
-            AlertDialog(
-                onDismissRequest = {
-                    // prevent user from dismissing the dialog when loading
-                },
-                confirmButton = {
-                    // there are no confirm button when loading
-                },
-                text = {
-                    // add padding top to make the loading well-centered due to empty confirmButton
-                    LoadingScreen(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(top = 16.dp)
-                    )
-                },
-                shape = RoundedCornerShape(8.dp),
-                containerColor = MaterialTheme.colorScheme.background,
-                modifier = modifier,
-            )
-        }
-
-        JoinRequestClassDialogUiState.Success -> {
-            Toast.makeText(
-                context, 
-                stringResource(
-                    id = R.string.success_request_join_class,
-                    className
-                ), 
-                Toast.LENGTH_SHORT
-            ).show()
-            onDismiss()
-        }
-
-        is JoinRequestClassDialogUiState.NoInternet -> {
-            Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
-            onDismiss()
-        }
-
-        is JoinRequestClassDialogUiState.Error -> {
-            Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
-            onDismiss()
-        }
+    if (!loading) {
+        BaseAlertDialog(
+            title = stringResource(id = R.string.join_request_dialog_title),
+            dialogText = stringResource(
+                R.string.join_request_dialog_text,
+                className
+            ),
+            onConfirm = onRequest,
+            onDismiss = onDismiss,
+            confirmText = stringResource(
+                id = R.string.join_request_dialog_confirm_button_text
+            ),
+            modifier = modifier,
+        )
+    } else {
+        AlertDialog(
+            onDismissRequest = {
+                // prevent user from dismissing the dialog when loading
+            },
+            confirmButton = {
+                // there are no confirm button when loading
+            },
+            text = {
+                // add padding top to make the loading well-centered due to empty confirmButton
+                LoadingScreen(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .padding(top = 16.dp)
+                )
+            },
+            shape = RoundedCornerShape(8.dp),
+            containerColor = MaterialTheme.colorScheme.background,
+            modifier = modifier,
+        )
     }
 }
 
