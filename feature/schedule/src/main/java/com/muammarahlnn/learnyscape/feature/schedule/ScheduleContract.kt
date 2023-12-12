@@ -1,13 +1,16 @@
 package com.muammarahlnn.learnyscape.feature.schedule
 
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.model.data.ScheduleModel
 
 /**
  * @Author Muammar Ahlan Abimanyu
  * @File ScheduleContract, 08/12/2023 23.06
  */
-interface ScheduleContract : BaseContract<ScheduleContract.State, ScheduleContract.Event>{
+interface ScheduleContract :
+    BaseContract<ScheduleContract.State, ScheduleContract.Event>,
+    RefreshProvider {
 
     sealed interface State {
 
