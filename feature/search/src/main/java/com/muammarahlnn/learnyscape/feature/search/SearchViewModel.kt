@@ -34,6 +34,13 @@ class SearchViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(SearchContract.State())
     override val state: StateFlow<SearchContract.State> = _state
+
+    private val _effect = MutableSharedFlow<SearchContract.Effect>()
+    override val effect: SharedFlow<SearchContract.Effect> = _effect
+
+    private val _refreshing = MutableStateFlow(false)
+    override val refreshing: StateFlow<Boolean> = _refreshing
+
     override fun event(event: SearchContract.Event) {
         when (event) {
             SearchContract.Event.FetchAvailableClasses -> fetchAvailableClasses()
@@ -43,13 +50,6 @@ class SearchViewModel @Inject constructor(
             SearchContract.Event.OnRequestJoinClass -> requestJoinClass()
         }
     }
-
-    private val _effect = MutableSharedFlow<SearchContract.Effect>()
-    override val effect: SharedFlow<SearchContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
 
     private fun fetchAvailableClasses() {
         viewModelScope.launch {
