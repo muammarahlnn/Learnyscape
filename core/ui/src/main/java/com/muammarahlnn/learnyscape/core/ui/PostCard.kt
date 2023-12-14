@@ -59,9 +59,8 @@ fun PostCard(
             ) {
                 when (classResourceType) {
                     ClassResourceType.ANNOUNCEMENT -> {
-                        Image(
-                            painter = painterResource(id = R.drawable.ava_luffy),
-                            contentDescription = null,
+                        PhotoProfileImage(
+                            photoProfile = null,
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(36.dp)
