@@ -3,7 +3,6 @@ package com.muammarahlnn.learnyscape.feature.profile
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -36,16 +35,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.imageUriToFile
@@ -336,21 +334,10 @@ private fun PhotoProfile(
                 )
             }
         } else {
-            if (state.profilePic != null) {
-                AsyncImage(
-                    model = state.profilePic,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = photoProfileModifier
-                )
-            } else {
-                Image(
-                    painter = painterResource(id = R.drawable.ava_luffy),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = photoProfileModifier
-                )
-            }
+            PhotoProfileImage(
+                photoProfile = state.profilePic,
+                modifier = photoProfileModifier,
+            )
         }
 
         FilledIconButton(
