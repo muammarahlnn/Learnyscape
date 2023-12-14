@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.aclass
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,21 +16,28 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PostCard
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 
 
 /**
@@ -41,8 +49,27 @@ import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 internal fun ClassRoute(
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ClassViewModel = hiltViewModel(),
 ) {
+    val (state, event) = use(contract = viewModel)
+    val user = LocalUserModel.current
+    LaunchedEffect(Unit) {
+        if (user.role == UserRole.LECTURER) {
+            event(ClassContract.Event.FetchProfilePic)
+        }
+    }
+
+    val context = LocalContext.current
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            is ClassContract.Effect.ShowToast -> {
+                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     ClassScreen(
+        state = state,
         onPostClick = onPostClick,
         modifier = modifier,
     )
@@ -50,6 +77,7 @@ internal fun ClassRoute(
 
 @Composable
 private fun ClassScreen(
+    state: ClassContract.State,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -73,6 +101,7 @@ private fun ClassScreen(
         if (user.role == UserRole.LECTURER) {
             item {
                 CreateNewAnnouncementCard(
+                    state = state,
                     modifier = paddingModifier,
                 )
             }
@@ -205,6 +234,7 @@ private fun ClassInfoCard(
 
 @Composable
 private fun CreateNewAnnouncementCard(
+    state: ClassContract.State,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(modifier = modifier) {
@@ -214,14 +244,18 @@ private fun CreateNewAnnouncementCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.bosscha),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(36.dp)
-                    .clip(CircleShape)
-            )
+            val photoProfileModifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+
+            if (state.isProfilePicLoading) {
+                Box(modifier = photoProfileModifier.shimmerEffect())
+            } else {
+                PhotoProfileImage(
+                    photoProfile = state.profilePic,
+                    modifier = photoProfileModifier,
+                )
+            }
 
             Spacer(modifier = Modifier.width(16.dp))
 
