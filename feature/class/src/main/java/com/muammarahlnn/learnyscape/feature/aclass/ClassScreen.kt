@@ -3,25 +3,33 @@ package com.muammarahlnn.learnyscape.feature.aclass
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PostCard
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 
 
 /**
@@ -45,12 +53,29 @@ private fun ClassScreen(
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val user = LocalUserModel.current
+
     LazyColumn(
         modifier = modifier
     ) {
+        val paddingModifier = Modifier.padding(
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp,
+        )
+
         item {
-            ClassHeader()
-            Spacer(modifier = Modifier.height(16.dp))
+            ClassHeader(
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+
+        if (user.role == UserRole.LECTURER) {
+            item {
+                CreateNewAnnouncementCard(
+                    modifier = paddingModifier,
+                )
+            }
         }
 
         item {
@@ -61,9 +86,8 @@ private fun ClassScreen(
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
                 onPostClick = onPostClick,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = paddingModifier,
             )
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -74,9 +98,8 @@ private fun ClassScreen(
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
                 onPostClick = onPostClick,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = paddingModifier,
             )
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -87,9 +110,8 @@ private fun ClassScreen(
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
                 onPostClick = onPostClick,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = paddingModifier,
             )
-            Spacer(modifier = Modifier.height(16.dp))
         }
 
         item {
@@ -100,37 +122,7 @@ private fun ClassScreen(
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
                 onPostClick = onPostClick,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-    }
-}
-
-@Composable
-private fun ClassInfoCard(
-    modifier: Modifier = Modifier,
-) {
-    BaseCard(modifier = modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-        ) {
-            Text(
-                text = "Pemrograman Mobile A",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Text(
-                text = "Andi Muh. Amil Siddik, S.Si., M.Si.",
-                style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Tuesday, 13:00 - 15:40",
-                style = MaterialTheme.typography.bodySmall,
-                color =  MaterialTheme.colorScheme.onSurface,
+                modifier = paddingModifier,
             )
         }
     }
@@ -182,6 +174,67 @@ private fun ClassHeader(
     }
 }
 
+@Composable
+private fun ClassInfoCard(
+    modifier: Modifier = Modifier,
+) {
+    BaseCard(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(
+                text = "Pemrograman Mobile A",
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+            Text(
+                text = "Andi Muh. Amil Siddik, S.Si., M.Si.",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Tuesday, 13:00 - 15:40",
+                style = MaterialTheme.typography.bodySmall,
+                color =  MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+@Composable
+private fun CreateNewAnnouncementCard(
+    modifier: Modifier = Modifier,
+) {
+    BaseCard(modifier = modifier) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.bosscha),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                text = stringResource(id = R.string.create_new_announcement_card_text),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontSize = 13.sp,
+                ),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
+    }
+}
 
 // keep this function in case we need it in the future
 private fun Modifier.placeAt(
