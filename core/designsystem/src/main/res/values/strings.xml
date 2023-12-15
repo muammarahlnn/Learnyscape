@@ -5,6 +5,7 @@
     <string name="add_icon_description">Add</string>
     <string name="search_icon_description">Search</string>
     <string name="clear_icon_description">Clear</string>
+    <string name="check_icon_description">Check</string>
     <string name="alert_dialog_dismiss_button_text">Cancel</string>
     <string name="alert_dialog_confirm_button_text">Confirm</string>
     <string name="visibility_icon_desc">Show password</string>

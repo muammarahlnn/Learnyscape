@@ -19,10 +19,14 @@ fun NavController.navigateToClass(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.classScreen(
+    onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
     onPostClick: (Int) -> Unit,
 ) {
     composable(route = CLASS_ROUTE) {
         ClassRoute(
+            onBackClick = onBackClick,
+            onJoinRequestsClick = onJoinRequestsClick,
             onPostClick = onPostClick,
         )
     }
