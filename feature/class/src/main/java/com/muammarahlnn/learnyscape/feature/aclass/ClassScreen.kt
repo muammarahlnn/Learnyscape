@@ -204,7 +204,7 @@ private fun ClassHeader(
                 }
             ) {
                 Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
+                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back_bold),
                     contentDescription = stringResource(
                         id = designSystemR.string.navigation_back_icon_description
                     ),
