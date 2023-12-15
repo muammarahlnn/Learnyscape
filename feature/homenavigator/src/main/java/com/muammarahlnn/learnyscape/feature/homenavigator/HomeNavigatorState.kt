@@ -9,7 +9,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
-import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.executeForStudent
 import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_ROUTE
