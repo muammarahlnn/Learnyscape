@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
+import com.muammarahlnn.learnyscape.core.model.data.UserRole
 
 
 /**
@@ -83,3 +84,29 @@ fun ChangeStatusBarColor(statusBarColor: Color) {
         )
     }
 }
+
+@Composable
+fun LecturerOnlyComposable(content: @Composable () -> Unit) {
+    if (isLecturer(LocalUserModel.current.role)) {
+        content()
+    }
+}
+
+@Composable
+fun StudentOnlyComposable(content: @Composable () -> Unit) {
+    if (isStudent(LocalUserModel.current.role)) {
+        content()
+    }
+}
+
+fun executeForLecturer(user: UserModel, execute: () -> Unit) {
+    if (isLecturer(user.role)) execute()
+}
+
+fun executeForStudent(user: UserModel, execute: () -> Unit) {
+    if (isStudent(user.role)) execute()
+}
+
+fun isLecturer(userRole: UserRole): Boolean = userRole == UserRole.LECTURER
+
+fun isStudent(userRole: UserRole): Boolean = userRole == UserRole.STUDENT

@@ -36,8 +36,10 @@ import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PostCard
+import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.executeForLecturer
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -57,7 +59,7 @@ internal fun ClassRoute(
     val (state, event) = use(contract = viewModel)
     val user = LocalUserModel.current
     LaunchedEffect(Unit) {
-        if (user.role == UserRole.LECTURER) {
+        executeForLecturer(user) {
             event(ClassContract.Event.FetchProfilePic)
         }
     }
@@ -101,7 +103,7 @@ private fun ClassScreen(
             )
         }
 
-        if (user.role == UserRole.LECTURER) {
+        executeForLecturer(user) {
             item {
                 CreateNewAnnouncementCard(
                     state = state,
@@ -212,8 +214,7 @@ private fun ClassHeader(
                 )
             }
 
-            val user = LocalUserModel.current
-            if (user.role == UserRole.LECTURER) {
+            LecturerOnlyComposable {
                 CircleBox(
                     modifier = iconBoxModifier.constrainAs(groupAddIcon) {
                         top.linkTo(

@@ -11,6 +11,7 @@ import androidx.navigation.navOptions
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.ui.util.executeForStudent
 import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_ROUTE
 import com.muammarahlnn.learnyscape.feature.home.navigation.navigateToHome
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeDestination
@@ -58,7 +59,7 @@ internal class HomeNavigatorState(
         HomeDestination.SCHEDULE,
         HomeDestination.PROFILE,
     ).also {
-        if (user.role == UserRole.STUDENT) {
+        executeForStudent(user) {
             it.add(
                 index = HomeDestination.SEARCH.ordinal,
                 element = HomeDestination.SEARCH

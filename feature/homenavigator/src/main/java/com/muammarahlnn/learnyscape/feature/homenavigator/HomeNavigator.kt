@@ -29,6 +29,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAp
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.ui.util.StudentOnlyComposable
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeDestination
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeNavHost
 import com.muammarahlnn.learnyscape.feature.home.R as homeR
@@ -221,11 +222,10 @@ private fun SearchTopAppBar(
     onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val user = LocalUserModel.current
     LearnyscapeCenterTopAppBar(
         title = stringResource(id = searchR.string.available_class),
         actionsIcon = {
-            if (user.role == UserRole.STUDENT) {
+            StudentOnlyComposable {
                 IconButton(onClick = onPendingClassRequestClick) {
                     Icon(
                         painter = painterResource(id = searchR.drawable.ic_hourglass),
