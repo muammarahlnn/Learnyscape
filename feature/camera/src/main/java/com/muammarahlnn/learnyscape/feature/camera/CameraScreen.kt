@@ -24,9 +24,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +54,7 @@ import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import java.util.concurrent.Executor
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -212,7 +210,7 @@ private fun CameraPreview(
                     .align(Alignment.TopStart)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
+                    painter = painterResource(id = designSystemR.drawable.ic_close),
                     contentDescription = stringResource(id = R.string.close_camera),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(32.dp)
@@ -347,7 +345,7 @@ private fun PhotoTakenPreview(
                     .align(Alignment.TopStart)
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
+                    painter = painterResource(id = designSystemR.drawable.ic_close),
                     contentDescription = stringResource(id = R.string.close_camera),
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(32.dp)
@@ -365,8 +363,8 @@ private fun PhotoTakenPreview(
                 onClick = onRetakeClick,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = null,
+                    painter = painterResource(id = designSystemR.drawable.ic_close),
+                    contentDescription = stringResource(id = R.string.take_photo_again),
                     tint = MaterialTheme.colorScheme.background,
                     modifier = Modifier.size(48.dp)
                 )
@@ -376,8 +374,8 @@ private fun PhotoTakenPreview(
                 onClick = onDoneTakePhoto,
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.Check,
-                    contentDescription = null,
+                    painter = painterResource(id = designSystemR.drawable.ic_check),
+                    contentDescription = stringResource(id = R.string.take_photo_done),
                     tint = MaterialTheme.colorScheme.background,
                     modifier = Modifier.size(48.dp)
                 )
