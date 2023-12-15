@@ -2,12 +2,14 @@ package com.muammarahlnn.learnyscape.feature.assignment
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 
 
 /**
@@ -22,6 +24,7 @@ internal fun AssignmentRoute(
 ) {
     AssignmentScreen(
         onAssignmentClick = onAssignmentClick,
+        onAddAssignmentClick = {},
         modifier = modifier,
     )
 }
@@ -29,21 +32,27 @@ internal fun AssignmentRoute(
 @Composable
 private fun AssignmentScreen(
     onAssignmentClick: (Int) -> Unit,
+    onAddAssignmentClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ResourceClassScreen(
+        onAddResourceClick = onAddAssignmentClick,
         modifier = modifier,
-    ) {
-        repeat(20) {
-            item {
-                ClassResourceCard(
-                    classResourceType = ClassResourceType.ASSIGNMENT,
-                    title = "Tugas Background Thread",
-                    timeLabel = "Due 21 May 2023, 21:21",
-                    onItemClick = onAssignmentClick,
-                )
+    ) { paddingValues ->
+        LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier.padding(paddingValues),
+        ) {
+            repeat(20) {
+                item {
+                    ClassResourceCard(
+                        classResourceType = ClassResourceType.ASSIGNMENT,
+                        title = "Tugas Background Thread",
+                        timeLabel = "Due 21 May 2023, 21:21",
+                        onItemClick = onAssignmentClick,
+                    )
+                }
             }
         }
     }
