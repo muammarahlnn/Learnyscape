@@ -52,7 +52,7 @@ private fun ClassNavigator(
     Scaffold(
         topBar = {
             val classDestination = state.currentClassDestination
-            if (classDestination != null) {
+            if (classDestination != null && classDestination != ClassDestination.CLASS) {
                 ClassTopAppBar(
                     title = stringResource(id = classDestination.titleId),
                     onBackClick = onBackClick,
