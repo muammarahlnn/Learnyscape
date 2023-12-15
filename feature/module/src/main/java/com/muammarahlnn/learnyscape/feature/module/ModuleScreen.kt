@@ -4,16 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.learnyscape.core.model.data.UserRole
-import com.muammarahlnn.learnyscape.core.ui.AddCircleButton
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
-import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
-import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
+import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 
 
 /**
@@ -39,12 +35,9 @@ private fun ModuleScreen(
     onAddModuleClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        floatingActionButton = {
-            LecturerOnlyComposable {
-                AddCircleButton(onClick = onAddModuleClick)
-            }
-        }
+    ResourceClassScreen(
+        onAddResourceClick = onAddModuleClick,
+        modifier = modifier,
     ) { paddingValues ->
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
