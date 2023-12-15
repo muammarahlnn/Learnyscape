@@ -14,6 +14,8 @@ import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavig
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.homeNavigator
+import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.joinRequestScreen
+import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.navigateToJoinRequest
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
 import com.muammarahlnn.learnyscape.feature.pendingrequest.navigation.navigateToPendingRequest
@@ -82,8 +84,9 @@ fun LearnyscapeNavHost(
             onChangePasswordButtonClick = navController::navigateToChangePassword
         )
         classNavigator(
+            onBackClick = navController::popBackStack,
+            onJoinRequestsClick = navController::navigateToJoinRequest,
             onResourceClassClick = navigateToResourceDetails(navController),
-            onBackClick = navController::popBackStack
         )
         notificationsScreen(
             onNotificationClick = navigateToResourceDetails(navController),
@@ -112,6 +115,9 @@ fun LearnyscapeNavHost(
             onBackClick = navController::popBackStack
         )
         changePasswordScreen(
+            onBackClick = navController::popBackStack
+        )
+        joinRequestScreen(
             onBackClick = navController::popBackStack
         )
     }

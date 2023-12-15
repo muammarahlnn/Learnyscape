@@ -20,6 +20,8 @@ import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizScreen
 @Composable
 internal fun ClassNavHost(
     state: ClassNavigatorState,
+    onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
     onResourceClassClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = CLASS_ROUTE,
@@ -31,6 +33,8 @@ internal fun ClassNavHost(
         modifier = modifier,
     ) {
         classScreen(
+            onBackClick = onBackClick,
+            onJoinRequestsClick = onJoinRequestsClick,
             onPostClick = onResourceClassClick,
         )
         moduleScreen(

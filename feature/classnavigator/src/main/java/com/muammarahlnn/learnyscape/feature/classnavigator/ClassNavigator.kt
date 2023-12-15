@@ -29,13 +29,15 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ClassNavigatorRoute(
-    onResourceClassClick: (Int) -> Unit,
     onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
+    onResourceClassClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ClassNavigator(
-        onResourceClassClick = onResourceClassClick,
         onBackClick = onBackClick,
+        onJoinRequestsClick = onJoinRequestsClick,
+        onResourceClassClick = onResourceClassClick,
         modifier = modifier,
     )
 }
@@ -43,8 +45,9 @@ internal fun ClassNavigatorRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassNavigator(
-    onResourceClassClick: (Int) -> Unit,
     onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
+    onResourceClassClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     state: ClassNavigatorState = rememberClassNavigatorState()
 ) {
@@ -71,6 +74,8 @@ private fun ClassNavigator(
     ) { padding ->
         ClassNavHost(
             state = state,
+            onBackClick = onBackClick,
+            onJoinRequestsClick = onJoinRequestsClick,
             onResourceClassClick = onResourceClassClick,
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)

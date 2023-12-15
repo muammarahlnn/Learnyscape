@@ -18,13 +18,15 @@ fun NavController.navigateToClassNavigator() {
 }
 
 fun NavGraphBuilder.classNavigator(
-    onResourceClassClick: (Int) -> Unit,
     onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
+    onResourceClassClick: (Int) -> Unit,
 ) {
     composable(route = CLASS_NAVIGATOR_ROUTE) {
         ClassNavigatorRoute(
-            onResourceClassClick = onResourceClassClick,
             onBackClick = onBackClick,
+            onJoinRequestsClick = onJoinRequestsClick,
+            onResourceClassClick = onResourceClassClick,
         )
     }
 }

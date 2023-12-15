@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.aclass
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -51,6 +52,8 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ClassRoute(
+    onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassViewModel = hiltViewModel(),
@@ -74,6 +77,8 @@ internal fun ClassRoute(
 
     ClassScreen(
         state = state,
+        onBackClick = onBackClick,
+        onJoinRequestsClick = onJoinRequestsClick,
         onPostClick = onPostClick,
         modifier = modifier,
     )
@@ -82,6 +87,8 @@ internal fun ClassRoute(
 @Composable
 private fun ClassScreen(
     state: ClassContract.State,
+    onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -98,6 +105,8 @@ private fun ClassScreen(
 
         item {
             ClassHeader(
+                onBackClick = onBackClick,
+                onJoinRequestsClick = onJoinRequestsClick,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
@@ -163,6 +172,8 @@ private fun ClassScreen(
 
 @Composable
 private fun ClassHeader(
+    onBackClick: () -> Unit,
+    onJoinRequestsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -192,16 +203,20 @@ private fun ClassHeader(
 
             val iconBoxModifier = Modifier.size(38.dp)
             CircleBox(
-                modifier = iconBoxModifier.constrainAs(arrowBackIcon) {
-                    top.linkTo(
-                        anchor = parent.top,
-                        margin = 16.dp,
-                    )
-                    start.linkTo(
-                        anchor = parent.start,
-                        margin = 16.dp,
-                    )
-                }
+                modifier = iconBoxModifier
+                    .clickable {
+                        onBackClick()
+                    }
+                    .constrainAs(arrowBackIcon) {
+                        top.linkTo(
+                            anchor = parent.top,
+                            margin = 16.dp,
+                        )
+                        start.linkTo(
+                            anchor = parent.start,
+                            margin = 16.dp,
+                        )
+                    }
             ) {
                 Icon(
                     painter = painterResource(id = designSystemR.drawable.ic_arrow_back_bold),
@@ -215,16 +230,20 @@ private fun ClassHeader(
 
             LecturerOnlyComposable {
                 CircleBox(
-                    modifier = iconBoxModifier.constrainAs(groupAddIcon) {
-                        top.linkTo(
-                            anchor = parent.top,
-                            margin = 16.dp,
-                        )
-                        end.linkTo(
-                            anchor = parent.end,
-                            margin = 16.dp,
-                        )
-                    }
+                    modifier = iconBoxModifier
+                        .clickable {
+                            onJoinRequestsClick()
+                        }
+                        .constrainAs(groupAddIcon) {
+                            top.linkTo(
+                                anchor = parent.top,
+                                margin = 16.dp,
+                            )
+                            end.linkTo(
+                                anchor = parent.end,
+                                margin = 16.dp,
+                            )
+                        }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_group_add_bold),
