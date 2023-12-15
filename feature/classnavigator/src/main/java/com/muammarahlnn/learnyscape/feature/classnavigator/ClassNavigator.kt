@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.classnavigator
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -13,9 +14,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassDestination
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHost
@@ -92,15 +93,18 @@ fun ClassTopAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    LearnyscapeTopAppBar(
+    LearnyscapeCenterTopAppBar(
         title = title,
-        navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
-        navigationIconContentDescription = stringResource(
-            id = designSystemR.string.navigation_back_icon_description,
-        ),
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
+                    contentDescription = stringResource(id = designSystemR.string.navigation_back_icon_description),
+                )
+            }
+        },
         colors = LearnyscapeTopAppbarDefaults.classTopAppBarColors(),
         scrollBehavior = scrollBehavior,
-        onNavigationClick = onBackClick,
         modifier = modifier,
     )
 }

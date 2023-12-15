@@ -28,54 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearnyscapeTopAppBar(
-    @StringRes title: Int,
-    modifier: Modifier = Modifier,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    TopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = title),
-                color = MaterialTheme.colorScheme.onPrimary,
-            )
-        },
-        colors = colors,
-        scrollBehavior = scrollBehavior,
-        modifier = modifier
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LearnyscapeTopAppBar(
-    title: @Composable () -> Unit,
-    @DrawableRes actionIconRes: Int,
-    actionIconContentDescription: String?,
-    modifier: Modifier = Modifier,
-    colors: TopAppBarColors = TopAppBarDefaults.topAppBarColors(),
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    onActionClick: () -> Unit = {},
-) {
-    TopAppBar(
-        title = title,
-        actions = {
-            IconButton(onClick = onActionClick) {
-                Icon(
-                    painterResource(id = actionIconRes),
-                    contentDescription = actionIconContentDescription,
-                )
-            }
-        },
-        colors = colors,
-        scrollBehavior = scrollBehavior,
-        modifier = modifier,
-    )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LearnyscapeTopAppBar(
     @StringRes titleRes: Int,
     @DrawableRes navigationIconRes: Int,
     navigationIconContentDescription: String?,
@@ -142,6 +94,7 @@ fun LearnyscapeTopAppBar(
 fun LearnyscapeCenterTopAppBar(
     title: String,
     modifier: Modifier = Modifier,
+    colors: TopAppBarColors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
     navigationIcon: @Composable () -> Unit = {},
     actionsIcon: @Composable RowScope.() -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior? = null,
@@ -155,7 +108,7 @@ fun LearnyscapeCenterTopAppBar(
                 ),
             )
         },
-        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
+        colors = colors,
         navigationIcon = navigationIcon,
         actions = actionsIcon,
         scrollBehavior = scrollBehavior,
