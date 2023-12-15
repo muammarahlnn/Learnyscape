@@ -227,12 +227,12 @@ private fun ClassHeader(
                     }
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_group_add),
+                        painter = painterResource(id = R.drawable.ic_group_add_bold),
                         contentDescription = stringResource(
                             id = R.string.group_add_desc
                         ),
                         tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(4.dp),
+                        modifier = Modifier.padding(6.dp),
                     )
                 }
             }
