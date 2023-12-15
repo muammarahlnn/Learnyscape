@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.feature.aclass
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +40,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -170,7 +173,7 @@ private fun ClassHeader(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(175.dp)
+                .height(215.dp)
         )
 
         // can replace it with more simple layout like Column,
@@ -178,7 +181,58 @@ private fun ClassHeader(
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val (classIcon, classInfoCard) = createRefs()
+            val (
+                arrowBackIcon,
+                groupAddIcon,
+                classIcon,
+                classInfoCard
+            ) = createRefs()
+
+
+            val iconBoxModifier = Modifier.size(38.dp)
+            CircleBox(
+                modifier = iconBoxModifier.constrainAs(arrowBackIcon) {
+                    top.linkTo(
+                        anchor = parent.top,
+                        margin = 16.dp,
+                    )
+                    start.linkTo(
+                        anchor = parent.start,
+                        margin = 16.dp,
+                    )
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
+                    contentDescription = stringResource(
+                        id = designSystemR.string.navigation_back_icon_description
+                    ),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(4.dp),
+                )
+            }
+
+            CircleBox(
+                modifier = iconBoxModifier.constrainAs(groupAddIcon) {
+                    top.linkTo(
+                        anchor = parent.top,
+                        margin = 16.dp,
+                    )
+                    end.linkTo(
+                        anchor = parent.end,
+                        margin = 16.dp,
+                    )
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_group_add),
+                    contentDescription = stringResource(
+                        id = R.string.group_add_desc
+                    ),
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(4.dp),
+                )
+            }
 
             Image(
                 painter = painterResource(id = R.drawable.ic_groups),
@@ -186,7 +240,10 @@ private fun ClassHeader(
                 modifier = Modifier
                     .size(125.dp)
                     .constrainAs(classIcon) {
-                        top.linkTo(parent.top)
+                        top.linkTo(
+                            anchor = parent.top,
+                            margin = 32.dp,
+                        )
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
@@ -200,6 +257,21 @@ private fun ClassHeader(
                     }
             )
         }
+    }
+}
+
+@Composable
+private fun CircleBox(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.background),
+    ) {
+        content()
     }
 }
 

@@ -4,4 +4,5 @@
     <string name="announcement">Announcement</string>
     <string name="groups">Groups</string>
     <string name="create_new_announcement_card_text">Share with your class…</string>
+    <string name="group_add_desc">Join class requests</string>
 </resources>
