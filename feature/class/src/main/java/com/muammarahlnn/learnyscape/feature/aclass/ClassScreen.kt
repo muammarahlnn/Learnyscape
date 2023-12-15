@@ -212,26 +212,29 @@ private fun ClassHeader(
                 )
             }
 
-            CircleBox(
-                modifier = iconBoxModifier.constrainAs(groupAddIcon) {
-                    top.linkTo(
-                        anchor = parent.top,
-                        margin = 16.dp,
-                    )
-                    end.linkTo(
-                        anchor = parent.end,
-                        margin = 16.dp,
+            val user = LocalUserModel.current
+            if (user.role == UserRole.LECTURER) {
+                CircleBox(
+                    modifier = iconBoxModifier.constrainAs(groupAddIcon) {
+                        top.linkTo(
+                            anchor = parent.top,
+                            margin = 16.dp,
+                        )
+                        end.linkTo(
+                            anchor = parent.end,
+                            margin = 16.dp,
+                        )
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_group_add),
+                        contentDescription = stringResource(
+                            id = R.string.group_add_desc
+                        ),
+                        tint = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(4.dp),
                     )
                 }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_group_add),
-                    contentDescription = stringResource(
-                        id = R.string.group_add_desc
-                    ),
-                    tint = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(4.dp),
-                )
             }
 
             Image(
