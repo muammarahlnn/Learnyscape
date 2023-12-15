@@ -8,4 +8,6 @@
     <string name="flash_off_icon_desc">Flash off</string>
     <string name="close_camera">Close camera</string>
     <string name="switch_camera">Switch camera</string>
+    <string name="take_photo_again">Take photo again</string>
+    <string name="take_photo_done">Take photo done</string>
 </resources>
