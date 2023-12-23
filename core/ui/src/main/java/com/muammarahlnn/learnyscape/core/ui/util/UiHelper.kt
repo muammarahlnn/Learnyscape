@@ -7,10 +7,13 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -82,6 +85,17 @@ fun ChangeStatusBarColor(statusBarColor: Color) {
         systemUiController.setStatusBarColor(
             color = animatedStatusBarColor
         )
+    }
+}
+
+fun Modifier.noRippleClickable(action: () -> Unit) = composed {
+    this.clickable(
+        interactionSource = remember {
+            MutableInteractionSource()
+        },
+        indication = null,
+    ) {
+        action()
     }
 }
 

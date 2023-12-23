@@ -46,6 +46,7 @@ dependencies {
     implementation(project(":feature:pendingrequest"))
     implementation(project(":feature:changepassword"))
     implementation(project(":feature:joinrequest"))
+    implementation(project(":feature:resourcecreate"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))

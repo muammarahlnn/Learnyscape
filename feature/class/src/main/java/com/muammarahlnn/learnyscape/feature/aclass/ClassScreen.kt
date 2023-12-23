@@ -54,6 +54,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun ClassRoute(
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
+    onCreateNewAnnouncementClick: () -> Unit,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassViewModel = hiltViewModel(),
@@ -79,6 +80,7 @@ internal fun ClassRoute(
         state = state,
         onBackClick = onBackClick,
         onJoinRequestsClick = onJoinRequestsClick,
+        onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
         onPostClick = onPostClick,
         modifier = modifier,
     )
@@ -89,6 +91,7 @@ private fun ClassScreen(
     state: ClassContract.State,
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
+    onCreateNewAnnouncementClick: () -> Unit,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -114,6 +117,7 @@ private fun ClassScreen(
         executeForLecturer(user) {
             item {
                 CreateNewAnnouncementCard(
+                    onClick = onCreateNewAnnouncementClick,
                     state = state,
                     modifier = paddingModifier,
                 )
@@ -329,9 +333,14 @@ private fun ClassInfoCard(
 @Composable
 private fun CreateNewAnnouncementCard(
     state: ClassContract.State,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    BaseCard(modifier = modifier) {
+    BaseCard(
+        modifier = modifier.clickable {
+            onClick()
+        }
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier

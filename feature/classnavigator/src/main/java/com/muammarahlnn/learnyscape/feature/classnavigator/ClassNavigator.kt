@@ -32,12 +32,14 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun ClassNavigatorRoute(
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
+    onCreateNewAnnouncementClick: () -> Unit,
     onResourceClassClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ClassNavigator(
         onBackClick = onBackClick,
         onJoinRequestsClick = onJoinRequestsClick,
+        onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
         onResourceClassClick = onResourceClassClick,
         modifier = modifier,
     )
@@ -48,6 +50,7 @@ internal fun ClassNavigatorRoute(
 private fun ClassNavigator(
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
+    onCreateNewAnnouncementClick: () -> Unit,
     onResourceClassClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     state: ClassNavigatorState = rememberClassNavigatorState()
@@ -77,6 +80,7 @@ private fun ClassNavigator(
             state = state,
             onBackClick = onBackClick,
             onJoinRequestsClick = onJoinRequestsClick,
+            onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
             onResourceClassClick = onResourceClassClick,
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)

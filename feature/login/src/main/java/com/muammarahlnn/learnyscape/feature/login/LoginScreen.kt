@@ -359,6 +359,7 @@ private fun LoginButton(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // TODO : fix loading state after logged out
     Button(
         onClick = onButtonClick,
         shape = RoundedCornerShape(8.dp),

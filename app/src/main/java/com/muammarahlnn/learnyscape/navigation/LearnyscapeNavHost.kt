@@ -22,6 +22,8 @@ import com.muammarahlnn.learnyscape.feature.pendingrequest.navigation.navigateTo
 import com.muammarahlnn.learnyscape.feature.pendingrequest.navigation.pendingRequestScreen
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.navigateToQuizSession
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.quizSessionScreen
+import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.navigateToResourceCreate
+import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.resourceCreateScreen
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.navigateToResourceDetails
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.resourceDetailsScreen
 import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
@@ -86,6 +88,7 @@ fun LearnyscapeNavHost(
         classNavigator(
             onBackClick = navController::popBackStack,
             onJoinRequestsClick = navController::navigateToJoinRequest,
+            onCreateNewAnnouncementClick = navController::navigateToResourceCreate,
             onResourceClassClick = navigateToResourceDetails(navController),
         )
         notificationsScreen(
@@ -119,6 +122,10 @@ fun LearnyscapeNavHost(
         )
         joinRequestScreen(
             onBackClick = navController::popBackStack
+        )
+        resourceCreateScreen(
+            onCloseClick = navController::popBackStack,
+            onCameraClick = navController::navigateToCamera
         )
     }
 }
