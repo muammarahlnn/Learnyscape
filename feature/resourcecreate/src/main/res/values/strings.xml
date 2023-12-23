@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="post">Post</string>
+    <string name="description">Description</string>
+    <string name="attachment">Attachment</string>
+    <string name="description_input_placeholder">Share with your class</string>
+    <string name="attachment_input_placeholder">Add attachment</string>
+    <string name="upload_file">Upload file</string>
+    <string name="take_a_photo">Take a photo</string>
+    <string name="delete_file">Delete file</string>
+</resources>

@@ -460,7 +460,7 @@ private fun ChangePhotoProfileBottomSheet(
                     },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_photo_camera_border),
+                    painter = painterResource(id = designSystemR.drawable.ic_photo_camera_border),
                     contentDescription = stringResource(id = R.string.camera_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)

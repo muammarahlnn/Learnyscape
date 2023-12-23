@@ -309,7 +309,7 @@ private fun AttachmentItem(
                     .height(80.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_document),
+                    painter = painterResource(id = designSystemR.drawable.ic_document),
                     contentDescription = stringResource(id = R.string.document_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
@@ -540,7 +540,7 @@ private fun AddWorkBottomSheet(
                     },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_camera),
+                    painter = painterResource(id = designSystemR.drawable.ic_photo_camera_border),
                     contentDescription = stringResource(id = R.string.camera),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)
@@ -557,7 +557,7 @@ private fun AddWorkBottomSheet(
                 modifier = Modifier.weight(0.5f),
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_upload),
+                    painter = painterResource(id = designSystemR.drawable.ic_upload),
                     contentDescription = stringResource(id = R.string.upload_file),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)
