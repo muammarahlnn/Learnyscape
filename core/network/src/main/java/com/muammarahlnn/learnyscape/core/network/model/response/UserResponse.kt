@@ -20,7 +20,7 @@ data class UserResponse(
     val fullName: String,
 
     @SerialName("email")
-    val email: String,
+    val email: String? = null,
 
     @SerialName("role")
     val role: String,
