@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseBottomSheet
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.ui.TransparentTextField
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
@@ -60,7 +61,7 @@ internal fun ResourceCreateRoute(
     ) {
         if (it != null) {
             event(
-                ResourceCreateContract.Event.OnUploadFile(
+                ResourceCreateContract.Event.OnFileSelected(
                     uriToFile(
                         context = context,
                         selectedFileUri = it,
@@ -70,26 +71,17 @@ internal fun ResourceCreateRoute(
         }
     }
 
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            ResourceCreateContract.Effect.CloseScreen -> onCloseClick()
+            ResourceCreateContract.Effect.OpenCamera -> onCameraClick()
+            ResourceCreateContract.Effect.OpenFiles -> launcher.launch("*/*")
+        }
+    }
+
     ResourceCreateScreen(
         state = state,
-        onCloseClick = onCloseClick,
-        onDescriptionChange = { description ->
-            event(ResourceCreateContract.Event.OnDescriptionChange(description))
-        },
-        onAddAttachmentClick = {
-            event(ResourceCreateContract.Event.OnShowUploadAttachmentBottomSheet(true))
-        },
-        onUploadFileClick = {
-            launcher.launch("*/*")
-            event(ResourceCreateContract.Event.OnShowUploadAttachmentBottomSheet(false))
-        },
-        onCameraClick = {
-            onCameraClick()
-            event(ResourceCreateContract.Event.OnShowUploadAttachmentBottomSheet(false))
-        },
-        onDismissUploadAttachmentBottomSheet = {
-            event(ResourceCreateContract.Event.OnShowUploadAttachmentBottomSheet(false))
-        },
+        event = { event(it) },
         modifier = modifier
     )
 }
@@ -97,21 +89,23 @@ internal fun ResourceCreateRoute(
 @Composable
 private fun ResourceCreateScreen(
     state: ResourceCreateContract.State,
-    onCloseClick: () -> Unit,
-    onDescriptionChange: (String) -> Unit,
-    onAddAttachmentClick: () -> Unit,
-    onUploadFileClick: () -> Unit,
-    onCameraClick: () -> Unit,
-    onDismissUploadAttachmentBottomSheet: () -> Unit,
+    event: (ResourceCreateContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state.showUploadAttachmentBottomSheet) {
         AddAttachmentBottomSheet(
-            onUploadFileClick = onUploadFileClick,
-            onCameraClick = onCameraClick,
-            onDismiss = onDismissUploadAttachmentBottomSheet,
+            onUploadFileClick = {
+                event(ResourceCreateContract.Event.OnUploadFileClick)
+            },
+            onCameraClick = {
+                event(ResourceCreateContract.Event.OnCameraClick)
+            },
+            onDismiss = {
+                event(ResourceCreateContract.Event.OnDismissUploadAttachmentBottomSheet)
+            },
         )
     }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -136,7 +130,7 @@ private fun ResourceCreateScreen(
                 modifier = Modifier
                     .size(32.dp)
                     .clickable {
-                        onCloseClick()
+                        event(ResourceCreateContract.Event.OnCloseClick)
                     }
             )
 
@@ -162,7 +156,9 @@ private fun ResourceCreateScreen(
 
         DescriptionInputCard(
             description = state.description,
-            onDescriptionChange = onDescriptionChange,
+            onDescriptionChange = {
+                event(ResourceCreateContract.Event.OnDescriptionChange(it))
+            },
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
@@ -170,7 +166,9 @@ private fun ResourceCreateScreen(
 
         AttachmentsInputCard(
             attachments = state.attachments,
-            onAddAttachmentClick = onAddAttachmentClick,
+            onAddAttachmentClick = {
+                event(ResourceCreateContract.Event.OnAddAttachmentClick)
+            },
             modifier = Modifier.padding(horizontal = 16.dp)
         )
     }
