@@ -15,7 +15,13 @@ interface ResourceCreateContract :
     data class State(
         val description: String = "",
         val attachments: List<File> = listOf(),
-        val showUploadAttachmentBottomSheet: Boolean = false,
+        val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
+        val selectedAttachmentIndex: Int = -1,
+    )
+
+    data class OverlayComposableVisibility(
+        val addAttachmentBottomSheet: Boolean = false,
+        val removeAttachmentBottomSheet: Boolean = false,
     )
 
     sealed interface Event {
@@ -33,6 +39,12 @@ interface ResourceCreateContract :
         data object OnDismissUploadAttachmentBottomSheet : Event
 
         data class OnFileSelected(val selectedFile: File) : Event
+
+        data class OnMoreVertAttachmentClick(val attachmentIndex: Int) : Event
+
+        data object OnDismissRemoveAttachmentBottomSheet : Event
+
+        data object OnRemoveAttachment : Event
     }
 
     sealed interface Effect {
