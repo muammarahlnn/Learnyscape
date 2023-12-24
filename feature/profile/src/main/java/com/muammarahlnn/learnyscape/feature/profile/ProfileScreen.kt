@@ -91,18 +91,9 @@ internal fun ProfileRoute(
 
     effect.collectInLaunchedEffect {
         when (it) {
-            ProfileContract.Effect.OpenCamera -> {
-                onCameraActionClick()
-            }
-
-            ProfileContract.Effect.OpenGallery -> {
-                launcher.launch("image/*")
-            }
-
             is ProfileContract.Effect.ShowToast -> {
                 Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
             }
-
         }
     }
 
@@ -112,11 +103,9 @@ internal fun ProfileRoute(
         onChangePhotoProfileButtonClick = {
             event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(true))
         },
-        onCameraActionClick = {
-            event(ProfileContract.Event.OnCameraActionClick)
-        },
+        onCameraActionClick = onCameraActionClick,
         onGalleryActionClick = {
-            event(ProfileContract.Event.OnGalleryActionClick)
+            launcher.launch("image/*")
         },
         onDismissChangePhotoProfileBottomSheet = {
             event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(false))

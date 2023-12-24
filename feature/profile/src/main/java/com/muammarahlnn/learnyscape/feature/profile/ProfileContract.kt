@@ -31,10 +31,6 @@ interface ProfileContract :
 
         data class OnShowChangePhotoProfileBottomSheet(val show: Boolean) : Event
 
-        data object OnCameraActionClick : Event
-
-        data object OnGalleryActionClick : Event
-
         data class OnUploadGalleryImage(val imageFile: File) : Event
 
         data class OnShowLogoutDialog(val show: Boolean) : Event
@@ -43,10 +39,6 @@ interface ProfileContract :
     }
 
     sealed interface Effect {
-
-        data object OpenCamera : Effect
-
-        data object OpenGallery : Effect
 
         data class ShowToast(val message: String) : Effect
     }
