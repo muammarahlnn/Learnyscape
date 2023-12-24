@@ -8,4 +8,5 @@
     <string name="upload_file">Upload file</string>
     <string name="take_a_photo">Take a photo</string>
     <string name="delete_file">Delete file</string>
+    <string name="remove_attachment">Remove attachment</string>
 </resources>

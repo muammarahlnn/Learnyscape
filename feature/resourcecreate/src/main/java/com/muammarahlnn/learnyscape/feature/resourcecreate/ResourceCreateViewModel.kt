@@ -33,7 +33,7 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
                 onDescriptionChange(event.description)
 
             ResourceCreateContract.Event.OnAddAttachmentClick ->
-                showUploadAttachmentBottomSheet(true)
+                showAddAttachmentBottomSheet(true)
 
             ResourceCreateContract.Event.OnCameraClick ->
                 openCamera()
@@ -42,10 +42,19 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
                 openFiles()
 
             ResourceCreateContract.Event.OnDismissUploadAttachmentBottomSheet ->
-                showUploadAttachmentBottomSheet(false)
+                showAddAttachmentBottomSheet(false)
 
             is ResourceCreateContract.Event.OnFileSelected ->
                 addAttachmentToCurrentAttachments(event.selectedFile)
+
+            is ResourceCreateContract.Event.OnMoreVertAttachmentClick ->
+                onMoreVertAttachmentClick(event.attachmentIndex)
+
+            ResourceCreateContract.Event.OnDismissRemoveAttachmentBottomSheet ->
+                dismissRemoveAttachmentBottomSheet()
+
+            is ResourceCreateContract.Event.OnRemoveAttachment ->
+                removeAttachmentFromCurrentAttachments()
         }
     }
 
@@ -61,9 +70,13 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
         }
     }
 
-    private fun showUploadAttachmentBottomSheet(show: Boolean) {
+    private fun showAddAttachmentBottomSheet(show: Boolean) {
         _state.update {
-            it.copy(showUploadAttachmentBottomSheet = show)
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    addAttachmentBottomSheet = show
+                )
+            )
         }
     }
 
@@ -71,14 +84,14 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
         viewModelScope.launch {
             _effect.emit(ResourceCreateContract.Effect.OpenCamera)
         }
-        showUploadAttachmentBottomSheet(false)
+        showAddAttachmentBottomSheet(false)
     }
 
     private fun openFiles() {
         viewModelScope.launch {
             _effect.emit(ResourceCreateContract.Effect.OpenFiles)
         }
-        showUploadAttachmentBottomSheet(false)
+        showAddAttachmentBottomSheet(false)
     }
 
     private fun addAttachmentToCurrentAttachments(file: File) {
@@ -90,5 +103,38 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
                 attachments = addedAttachments
             )
         }
+    }
+
+    private fun onMoreVertAttachmentClick(attachmentIndex: Int) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    removeAttachmentBottomSheet = true
+                ),
+                selectedAttachmentIndex = attachmentIndex,
+            )
+        }
+    }
+
+    private fun dismissRemoveAttachmentBottomSheet() {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    removeAttachmentBottomSheet = false
+                ),
+                selectedAttachmentIndex = -1,
+            )
+        }
+    }
+
+    private fun removeAttachmentFromCurrentAttachments() {
+        _state.update {
+            it.copy(
+                attachments = it.attachments.toMutableList().apply {
+                    removeAt(it.selectedAttachmentIndex)
+                }.toList()
+            )
+        }
+        dismissRemoveAttachmentBottomSheet()
     }
 }
