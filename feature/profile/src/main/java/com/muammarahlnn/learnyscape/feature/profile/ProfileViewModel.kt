@@ -51,15 +51,23 @@ class ProfileViewModel @Inject constructor(
     override val effect: SharedFlow<ProfileContract.Effect> = _effect.asSharedFlow()
 
     override fun event(event: ProfileContract.Event) = when (event) {
-        ProfileContract.Event.OnGetProfilePic -> getProfilePic()
-        ProfileContract.Event.OnGetCapturedPhoto -> getCapturedPhoto()
+        ProfileContract.Event.OnGetProfilePic ->
+            getProfilePic()
+
+        ProfileContract.Event.OnGetCapturedPhoto ->
+            getCapturedPhoto()
+
         is ProfileContract.Event.OnShowChangePhotoProfileBottomSheet ->
             showChangePhotoProfileBottomSheet(event.show)
-        is ProfileContract.Event.OnShowLogoutDialog -> showLogoutDialog(event.show)
-        ProfileContract.Event.OnLogout -> logout()
-        ProfileContract.Event.OnCameraActionClick -> openCamera()
-        ProfileContract.Event.OnGalleryActionClick -> openGallery()
-        is ProfileContract.Event.OnUploadGalleryImage -> uploadGalleryPhoto(event.imageFile)
+
+        is ProfileContract.Event.OnShowLogoutDialog ->
+            showLogoutDialog(event.show)
+
+        ProfileContract.Event.OnLogout ->
+            logout()
+
+        is ProfileContract.Event.OnUploadGalleryImage ->
+            uploadGalleryPhoto(event.imageFile)
     }
 
     private fun getProfilePic() {
@@ -139,24 +147,6 @@ class ProfileViewModel @Inject constructor(
                 showChangePhotoProfileBottomSheet.value = show
             }
         }
-    }
-
-    private fun openCamera() {
-        viewModelScope.launch {
-            _effect.emit(
-                ProfileContract.Effect.OpenCamera
-            )
-        }
-        showChangePhotoProfileBottomSheet(false)
-    }
-
-    private fun openGallery() {
-        viewModelScope.launch {
-            _effect.emit(
-                ProfileContract.Effect.OpenGallery
-            )
-        }
-        showChangePhotoProfileBottomSheet(false)
     }
 
     private fun showLogoutDialog(show: Boolean) {
