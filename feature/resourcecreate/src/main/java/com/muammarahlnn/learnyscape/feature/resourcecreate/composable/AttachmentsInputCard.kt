@@ -1,5 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate.composable
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,40 +44,47 @@ internal fun AttachmentsInputCard(
     InputCard(
         iconRes = R.drawable.ic_attachment,
         iconDescriptionRes = R.string.attachment,
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
     ) {
-        if (attachments.isEmpty()) {
-            Text(
-                text = stringResource(id = R.string.attachment_input_placeholder),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .noRippleClickable {
-                       onAddAttachmentClick()
-                    }
-                ,
-            )
-        } else {
-            Column {
-                attachments.forEachIndexed { index, file ->
-                    AttachmentItem(
-                        file = file,
-                        onMoreVertClick = {
-                            onMoreVertAttachmentClick(index)
-                        },
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-                }
-
+        AnimatedContent(
+            targetState = attachments.isEmpty(),
+            label = "Attachments AnimatedContent"
+        ) { targetState ->
+            if (targetState) {
                 Text(
                     text = stringResource(id = R.string.attachment_input_placeholder),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.noRippleClickable {
-                        onAddAttachmentClick()
-                    }
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .noRippleClickable {
+                            onAddAttachmentClick()
+                        }
+                    ,
                 )
+            } else {
+                Column(
+                    modifier = Modifier.animateContentSize()
+                ) {
+                    attachments.forEachIndexed { index, file ->
+                        AttachmentItem(
+                            file = file,
+                            onMoreVertClick = {
+                                onMoreVertAttachmentClick(index)
+                            },
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+
+                    Text(
+                        text = stringResource(id = R.string.attachment_input_placeholder),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.noRippleClickable {
+                            onAddAttachmentClick()
+                        }
+                    )
+                }
             }
         }
     }
