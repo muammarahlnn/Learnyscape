@@ -20,14 +20,14 @@ fun NavController.navigateToClassNavigator() {
 fun NavGraphBuilder.classNavigator(
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: () -> Unit,
+    onCreateNewResourceClick: (Int) -> Unit,
     onResourceClassClick: (Int) -> Unit,
 ) {
     composable(route = CLASS_NAVIGATOR_ROUTE) {
         ClassNavigatorRoute(
             onBackClick = onBackClick,
             onJoinRequestsClick = onJoinRequestsClick,
-            onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
+            onCreateNewResourceClick = onCreateNewResourceClick,
             onResourceClassClick = onResourceClassClick,
         )
     }

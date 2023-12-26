@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.feature.resourcecreate
 
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import java.io.File
 
 /**
@@ -13,6 +14,8 @@ interface ResourceCreateContract :
     EffectProvider<ResourceCreateContract.Effect> {
 
     data class State(
+        val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
+        val title: String = "",
         val description: String = "",
         val attachments: List<File> = listOf(),
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
@@ -27,6 +30,8 @@ interface ResourceCreateContract :
     sealed interface Event {
 
         data object OnCloseClick : Event
+
+        data class OnTitleChange(val title: String) : Event
 
         data class OnDescriptionChange(val description: String) : Event
 

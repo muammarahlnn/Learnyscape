@@ -36,7 +36,7 @@ private fun AssignmentScreen(
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
-        onAddResourceClick = onAddAssignmentClick,
+        onCreateNewResourceClick = onAddAssignmentClick,
         modifier = modifier,
     ) { paddingValues ->
         LazyColumn(

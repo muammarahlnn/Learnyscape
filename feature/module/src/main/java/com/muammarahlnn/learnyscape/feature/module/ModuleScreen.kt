@@ -20,11 +20,12 @@ import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 @Composable
 internal fun ModuleRoute(
     onModuleClick: (Int) -> Unit,
+    onCreateNewModuleClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ModuleScreen(
         onModuleClick = onModuleClick,
-        onAddModuleClick = {},
+        onCreateNewModuleClick = onCreateNewModuleClick,
         modifier = modifier,
     )
 }
@@ -32,11 +33,13 @@ internal fun ModuleRoute(
 @Composable
 private fun ModuleScreen(
     onModuleClick: (Int) -> Unit,
-    onAddModuleClick: () -> Unit,
+    onCreateNewModuleClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
-        onAddResourceClick = onAddModuleClick,
+        onCreateNewResourceClick = {
+            onCreateNewModuleClick(ClassResourceType.MODULE.ordinal)
+        },
         modifier = modifier,
     ) { paddingValues ->
         LazyColumn(

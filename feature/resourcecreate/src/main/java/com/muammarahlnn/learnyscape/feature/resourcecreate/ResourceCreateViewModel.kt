@@ -1,7 +1,10 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.ResourceCreateArgs
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,9 +19,17 @@ import java.io.File
  * @Author Muammar Ahlan Abimanyu
  * @File ResourceCreateViewModel, 18/12/2023 05.54
  */
-class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
+class ResourceCreateViewModel(
+    savedStateHandle: SavedStateHandle,
+) : ViewModel(), ResourceCreateContract {
 
-    private val _state = MutableStateFlow(ResourceCreateContract.State())
+    private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
+
+    private val _state = MutableStateFlow(
+        ResourceCreateContract.State(
+            resourceType = ClassResourceType.getClassResourceType(resourceCreateArgs.resourceTypeOrdinal)
+        )
+    )
     override val state: StateFlow<ResourceCreateContract.State> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<ResourceCreateContract.Effect>()
@@ -28,6 +39,9 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
         when (event) {
             ResourceCreateContract.Event.OnCloseClick ->
                 closeScreen()
+
+            is ResourceCreateContract.Event.OnTitleChange ->
+                onTitleChange(event.title)
 
             is ResourceCreateContract.Event.OnDescriptionChange ->
                 onDescriptionChange(event.description)
@@ -61,6 +75,12 @@ class ResourceCreateViewModel : ViewModel(), ResourceCreateContract {
     private fun closeScreen() {
         viewModelScope.launch {
             _effect.emit(ResourceCreateContract.Effect.CloseScreen)
+        }
+    }
+
+    private fun onTitleChange(title: String) {
+        _state.update {
+            it.copy(title = title)
         }
     }
 

@@ -54,7 +54,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun ClassRoute(
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: () -> Unit,
+    onCreateNewAnnouncementClick: (Int) -> Unit,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassViewModel = hiltViewModel(),
@@ -91,7 +91,7 @@ private fun ClassScreen(
     state: ClassContract.State,
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: () -> Unit,
+    onCreateNewAnnouncementClick: (Int) -> Unit,
     onPostClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -333,12 +333,12 @@ private fun ClassInfoCard(
 @Composable
 private fun CreateNewAnnouncementCard(
     state: ClassContract.State,
-    onClick: () -> Unit,
+    onClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
         modifier = modifier.clickable {
-            onClick()
+            onClick(ClassResourceType.ANNOUNCEMENT.ordinal)
         }
     ) {
         Row(

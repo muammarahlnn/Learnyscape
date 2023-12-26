@@ -88,7 +88,7 @@ fun LearnyscapeNavHost(
         classNavigator(
             onBackClick = navController::popBackStack,
             onJoinRequestsClick = navController::navigateToJoinRequest,
-            onCreateNewAnnouncementClick = navController::navigateToResourceCreate,
+            onCreateNewResourceClick = navController::navigateToResourceCreate,
             onResourceClassClick = navigateToResourceDetails(navController),
         )
         notificationsScreen(
