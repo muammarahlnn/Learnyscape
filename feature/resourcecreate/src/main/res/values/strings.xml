@@ -9,4 +9,6 @@
     <string name="take_a_photo">Take a photo</string>
     <string name="delete_file">Delete file</string>
     <string name="remove_attachment">Remove attachment</string>
+    <string name="resource_title">Title</string>
+    <string name="resource_title_placeholder">%1$s title</string>
 </resources>

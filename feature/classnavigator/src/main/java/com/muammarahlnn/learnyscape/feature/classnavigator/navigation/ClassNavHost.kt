@@ -22,7 +22,7 @@ internal fun ClassNavHost(
     state: ClassNavigatorState,
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: () -> Unit,
+    onCreateNewResourceClick: (Int) -> Unit,
     onResourceClassClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = CLASS_ROUTE,
@@ -36,11 +36,12 @@ internal fun ClassNavHost(
         classScreen(
             onBackClick = onBackClick,
             onJoinRequestsClick = onJoinRequestsClick,
-            onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
+            onCreateNewAnnouncementClick = onCreateNewResourceClick,
             onPostClick = onResourceClassClick,
         )
         moduleScreen(
             onModuleClick = onResourceClassClick,
+            onCreateNewModuleClick = onCreateNewResourceClick,
         )
         assignmentScreen(
             onAssignmentClick = onResourceClassClick,

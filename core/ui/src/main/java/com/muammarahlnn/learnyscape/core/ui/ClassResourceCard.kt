@@ -51,7 +51,19 @@ enum class ClassResourceType(
     QUIZ(
         nameRes = R.string.quiz,
         iconRes = R.drawable.ic_quiz_border
-    ),
+    );
+
+    companion object {
+
+        fun getClassResourceType(classResourceTypeOrdinal: Int) =
+            when (classResourceTypeOrdinal) {
+                ANNOUNCEMENT.ordinal -> ANNOUNCEMENT
+                MODULE.ordinal -> MODULE
+                ASSIGNMENT.ordinal -> ASSIGNMENT
+                QUIZ.ordinal -> QUIZ
+               else -> throw IllegalArgumentException("The given ordinal not matched any ClassResourceType's ordinal")
+            }
+    }
 }
 
 @Composable

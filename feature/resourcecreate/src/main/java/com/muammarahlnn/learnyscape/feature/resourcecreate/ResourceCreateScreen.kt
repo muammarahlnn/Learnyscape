@@ -29,12 +29,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AddAttachmentBottomSheet
-import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AttachmentsInputCard
-import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DescriptionInputCard
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AnnouncementResourceContent
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.ModuleResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.RemoveAttachmentBottomSheet
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -160,25 +161,38 @@ private fun ResourceCreateScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        DescriptionInputCard(
-            description = state.description,
-            onDescriptionChange = {
-                event(ResourceCreateContract.Event.OnDescriptionChange(it))
-            },
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
+        when (state.resourceType) {
+            ClassResourceType.ANNOUNCEMENT -> AnnouncementResourceContent(
+                state = state,
+                onDescriptionChange = {
+                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                },
+                onAddAttachmentCLick = {
+                    event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                },
+                onMoreVertAttachmentClick = {
+                    event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                },
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            ClassResourceType.MODULE -> ModuleResourceContent(
+                state = state,
+                onTitleChange = {
+                    event(ResourceCreateContract.Event.OnTitleChange(it))
+                },
+                onDescriptionChange = {
+                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                },
+                onAddAttachmentCLick = {
+                    event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                },
+                onMoreVertAttachmentClick = {
+                    event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                },
+            )
 
-        AttachmentsInputCard(
-            attachments = state.attachments,
-            onAddAttachmentClick = {
-                event(ResourceCreateContract.Event.OnAddAttachmentClick)
-            },
-            onMoreVertAttachmentClick = { attachmentIndex ->
-                event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(attachmentIndex))
-            },
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
+            ClassResourceType.ASSIGNMENT -> {}
+            ClassResourceType.QUIZ -> {}
+        }
     }
 }

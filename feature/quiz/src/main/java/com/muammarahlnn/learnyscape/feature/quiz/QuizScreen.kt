@@ -36,7 +36,7 @@ private fun QuizScreen(
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
-        onAddResourceClick = onAddQuizClick,
+        onCreateNewResourceClick = onAddQuizClick,
         modifier = modifier,
     ) { paddingValues ->
         LazyColumn(

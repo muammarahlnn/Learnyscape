@@ -123,9 +123,25 @@ private fun HomeScreen(
             }
 
             HomeContract.UiState.SuccessEmptyClasses -> {
-                EmptyClassesContent(
-                    modifier = modifier,
+                val tempClasses = listOf(
+                    EnrolledClassInfoModel(
+                        id = "123",
+                        className = "Pemrograman Mobile A",
+                        lecturerNames =  listOf("Lorem Ipsum Dolor Sit Amet")
+                    )
                 )
+                HomeContent(
+                    searchQuery = state.searchQuery,
+                    classes = tempClasses,
+                    onSearchQueryChanged = onSearchQueryChanged,
+                    onClassClick = onClassClick,
+                    modifier = modifier
+                        .fillMaxSize()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                )
+//                EmptyClassesContent(
+//                    modifier = modifier,
+//                )
             }
 
             is HomeContract.UiState.Error -> {

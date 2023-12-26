@@ -22,14 +22,14 @@ import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
  */
 @Composable
 fun ResourceClassScreen(
-    onAddResourceClick: () -> Unit,
+    onCreateNewResourceClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
             LecturerOnlyComposable {
-                AddCircleButton(onClick = onAddResourceClick)
+                AddCircleButton(onClick = onCreateNewResourceClick)
             }
         },
         modifier = modifier.fillMaxSize(),
