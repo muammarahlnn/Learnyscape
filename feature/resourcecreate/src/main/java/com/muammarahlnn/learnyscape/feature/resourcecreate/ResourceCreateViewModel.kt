@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -69,6 +71,33 @@ class ResourceCreateViewModel(
 
             is ResourceCreateContract.Event.OnRemoveAttachment ->
                 removeAttachmentFromCurrentAttachments()
+
+            ResourceCreateContract.Event.OnDueDateClick ->
+                showSetDueDateDialog(true)
+
+            is ResourceCreateContract.Event.OnConfirmSetDueDate ->
+                onConfirmSetDueDateDialog()
+
+            ResourceCreateContract.Event.OnDismissSetDueDateDialog ->
+                dismissSetDueDateDialog()
+
+            ResourceCreateContract.Event.OnSetDateClick ->
+                showDueDatePickerDialog(true)
+
+            is ResourceCreateContract.Event.OnConfirmPickDate ->
+                onConfirmPickDate(event.date)
+
+            ResourceCreateContract.Event.OnDismissDueDatePickerDialog ->
+                showDueDatePickerDialog(false)
+
+            ResourceCreateContract.Event.OnSetTimeClick ->
+                showDueTimePickerDialog(true)
+
+            is ResourceCreateContract.Event.OnConfirmPickTime ->
+                onConfirmPickTime(event.time)
+
+            ResourceCreateContract.Event.OnDismissDueTimePickerDialog ->
+                showDueTimePickerDialog(false)
         }
     }
 
@@ -156,5 +185,69 @@ class ResourceCreateViewModel(
             )
         }
         dismissRemoveAttachmentBottomSheet()
+    }
+
+    private fun showSetDueDateDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    setDueDateDialog = show
+                )
+            )
+        }
+    }
+
+    private fun onConfirmSetDueDateDialog() {
+        _state.update {
+            it.copy(
+                dueDate = it.dueDate ?: LocalDate.now(),
+                dueTime = it.dueTime ?: LocalTime.now(),
+            )
+        }
+        showSetDueDateDialog(false)
+    }
+
+    private fun dismissSetDueDateDialog() {
+        _state.update {
+            it.copy(
+                dueDate = null,
+                dueTime = null,
+            )
+        }
+        showSetDueDateDialog(false)
+    }
+
+    private fun showDueDatePickerDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    dueDatePickerDialog = show
+                )
+            )
+        }
+    }
+
+    private fun onConfirmPickDate(date: LocalDate) {
+        _state.update {
+            it.copy(dueDate = date)
+        }
+        showDueDatePickerDialog(false)
+    }
+
+    private fun showDueTimePickerDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    dueTimePickerDialog = show
+                )
+            )
+        }
+    }
+
+    private fun onConfirmPickTime(time: LocalTime) {
+        _state.update {
+            it.copy(dueTime = time)
+        }
+        showDueTimePickerDialog(false)
     }
 }

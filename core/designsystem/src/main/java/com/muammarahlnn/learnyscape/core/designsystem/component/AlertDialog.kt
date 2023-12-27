@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -33,8 +34,8 @@ fun BaseAlertDialog(
     ),
     onDismissRequest: (() -> Unit)? = null,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest ?: onDismiss,
+    BaseAlertDialog(
+        onDismissRequest = onDismissRequest,
         title = {
             Text(
                 text = title,
@@ -44,13 +45,75 @@ fun BaseAlertDialog(
                 color = MaterialTheme.colorScheme.onBackground,
             )
         },
-        text = {
+        content = {
             Text(
                 text = dialogText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
         },
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        confirmText = confirmText,
+        dismissText = dismissText,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun BaseAlertDialog(
+    title: String,
+    content: @Composable () -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    confirmText: String = stringResource(
+        id = R.string.alert_dialog_confirm_button_text,
+    ),
+    dismissText: String = stringResource(
+        id = R.string.alert_dialog_dismiss_button_text,
+    ),
+    onDismissRequest: (() -> Unit)? = null,
+) {
+    BaseAlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.SemiBold
+                ),
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        },
+        content = content,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        confirmText = confirmText,
+        dismissText = dismissText,
+        modifier = modifier,
+    )
+}
+
+@Composable
+fun BaseAlertDialog(
+    title: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    confirmText: String = stringResource(
+        id = R.string.alert_dialog_confirm_button_text,
+    ),
+    dismissText: String = stringResource(
+        id = R.string.alert_dialog_dismiss_button_text,
+    ),
+    onDismissRequest: (() -> Unit)? = null,
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest ?: onDismiss,
+        title = title,
+        text = content,
         confirmButton = {
             TextButton(
                 onClick = onConfirm
@@ -75,6 +138,9 @@ fun BaseAlertDialog(
         },
         shape = RoundedCornerShape(8.dp),
         containerColor = MaterialTheme.colorScheme.onPrimary,
-        modifier = modifier,
+        modifier = modifier.shadow(
+            elevation = 2.dp,
+            shape = RoundedCornerShape(8.dp),
+        ),
     )
 }

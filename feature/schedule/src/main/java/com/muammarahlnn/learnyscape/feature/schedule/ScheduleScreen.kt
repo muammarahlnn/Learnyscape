@@ -30,11 +30,11 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.ui.EmptyScreen
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
+import com.muammarahlnn.learnyscape.core.ui.util.getCurrentDate
+import com.muammarahlnn.learnyscape.core.ui.util.getCurrentDay
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.schedule.composable.LoadingScheduleScreen
 import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCalendar
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 /**
@@ -155,12 +155,6 @@ private fun ScheduleScreen(
 private fun ScheduleDateHeader(
     modifier: Modifier = Modifier,
 ) {
-    val currentTime = LocalDateTime.now()
-    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-    val formattedDate = currentTime.format(dateFormatter)
-    val dayOfWeekFormatter = DateTimeFormatter.ofPattern("EEEE")
-    val formattedDayOfWeek = currentTime.format(dayOfWeekFormatter)
-
     BaseCard(
         shape = RoundedCornerShape(
             bottomStart = 16.dp,
@@ -182,12 +176,12 @@ private fun ScheduleDateHeader(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = formattedDayOfWeek,
+                text = getCurrentDay(),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             Text(
-                text = formattedDate,
+                text = getCurrentDate(),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )

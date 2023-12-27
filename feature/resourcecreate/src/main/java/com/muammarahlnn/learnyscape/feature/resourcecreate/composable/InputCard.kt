@@ -38,7 +38,7 @@ internal fun InputCard(
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = stringResource(id = iconDescriptionRes),
-                tint = MaterialTheme.colorScheme.onBackground,
+                tint = MaterialTheme.colorScheme.onSurface,
             )
 
             Spacer(modifier = Modifier.width(16.dp))

@@ -11,4 +11,10 @@
     <string name="remove_attachment">Remove attachment</string>
     <string name="resource_title">Title</string>
     <string name="resource_title_placeholder">%1$s title</string>
+    <string name="due_date">Due date</string>
+    <string name="set_due_date_dialog_confirm_text">Set</string>
+    <string name="set_due_date_dialog_dismiss_text">Cancel</string>
+    <string name="due_date_picker_dialog_confirm_text">OK</string>
+    <string name="due_date_picker_dialog_cancel_text">Cancel</string>
+    <string name="due_time_picker_dialog_title">Input time</string>
 </resources>

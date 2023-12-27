@@ -45,6 +45,7 @@ internal fun ClassNavHost(
         )
         assignmentScreen(
             onAssignmentClick = onResourceClassClick,
+            onCreateNewAssignmentClick = onCreateNewResourceClick,
         )
         quizScreen(
             onQuizClick = onResourceClassClick,

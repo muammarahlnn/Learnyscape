@@ -20,11 +20,12 @@ import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 @Composable
 internal fun AssignmentRoute(
     onAssignmentClick: (Int) -> Unit,
+    onCreateNewAssignmentClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AssignmentScreen(
         onAssignmentClick = onAssignmentClick,
-        onAddAssignmentClick = {},
+        onCreateNewAssignmentClick = onCreateNewAssignmentClick,
         modifier = modifier,
     )
 }
@@ -32,11 +33,13 @@ internal fun AssignmentRoute(
 @Composable
 private fun AssignmentScreen(
     onAssignmentClick: (Int) -> Unit,
-    onAddAssignmentClick: () -> Unit,
+    onCreateNewAssignmentClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
-        onCreateNewResourceClick = onAddAssignmentClick,
+        onCreateNewResourceClick = {
+            onCreateNewAssignmentClick(ClassResourceType.ASSIGNMENT.ordinal)
+        },
         modifier = modifier,
     ) { paddingValues ->
         LazyColumn(

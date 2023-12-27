@@ -4,6 +4,8 @@ import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -20,11 +22,16 @@ interface ResourceCreateContract :
         val attachments: List<File> = listOf(),
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
         val selectedAttachmentIndex: Int = -1,
+        val dueDate: LocalDate? = null,
+        val dueTime: LocalTime? = null,
     )
 
     data class OverlayComposableVisibility(
         val addAttachmentBottomSheet: Boolean = false,
         val removeAttachmentBottomSheet: Boolean = false,
+        val setDueDateDialog: Boolean = false,
+        val dueDatePickerDialog: Boolean = false,
+        val dueTimePickerDialog: Boolean = false,
     )
 
     sealed interface Event {
@@ -50,6 +57,24 @@ interface ResourceCreateContract :
         data object OnDismissRemoveAttachmentBottomSheet : Event
 
         data object OnRemoveAttachment : Event
+
+        data object OnDueDateClick : Event
+
+        data object OnConfirmSetDueDate : Event
+
+        data object OnDismissSetDueDateDialog : Event
+
+        data object OnSetDateClick: Event
+
+        data class OnConfirmPickDate(val date: LocalDate) : Event
+
+        data object OnDismissDueDatePickerDialog : Event
+
+        data object OnSetTimeClick : Event
+
+        data class OnConfirmPickTime(val time: LocalTime) : Event
+
+        data object OnDismissDueTimePickerDialog : Event
     }
 
     sealed interface Effect {
