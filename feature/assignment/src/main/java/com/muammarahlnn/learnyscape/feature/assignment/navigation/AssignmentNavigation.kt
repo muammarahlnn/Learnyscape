@@ -19,10 +19,12 @@ fun NavController.navigateToAssignment(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.assignmentScreen(
     onAssignmentClick: (Int) -> Unit,
+    onCreateNewAssignmentClick: (Int) -> Unit,
 ) {
     composable(route = ASSIGNMENT_ROUTE) {
         AssignmentRoute(
             onAssignmentClick = onAssignmentClick,
+            onCreateNewAssignmentClick = onCreateNewAssignmentClick,
         )
     }
 }
