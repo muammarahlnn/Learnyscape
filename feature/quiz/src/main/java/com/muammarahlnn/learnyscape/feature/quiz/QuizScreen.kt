@@ -20,11 +20,12 @@ import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 @Composable
 internal fun QuizRoute(
     onQuizClick: (Int) -> Unit,
+    onCreateNewQuizClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     QuizScreen(
         onQuizClick = onQuizClick,
-        onAddQuizClick = {},
+        onCreateNewQuizClick = onCreateNewQuizClick,
         modifier = modifier,
     )
 }
@@ -32,11 +33,13 @@ internal fun QuizRoute(
 @Composable
 private fun QuizScreen(
     onQuizClick: (Int) -> Unit,
-    onAddQuizClick: () -> Unit,
+    onCreateNewQuizClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
-        onCreateNewResourceClick = onAddQuizClick,
+        onCreateNewResourceClick = {
+            onCreateNewQuizClick(ClassResourceType.QUIZ.ordinal)
+        },
         modifier = modifier,
     ) { paddingValues ->
         LazyColumn(

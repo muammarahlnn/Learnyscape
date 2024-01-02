@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate.composable
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -29,7 +30,8 @@ internal fun TitleInputCard(
                 id = R.string.resource_title_placeholder,
                 stringResource(id = resourceType.nameRes)
             ),
-            onValueChange = onTitleChange
+            onValueChange = onTitleChange,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

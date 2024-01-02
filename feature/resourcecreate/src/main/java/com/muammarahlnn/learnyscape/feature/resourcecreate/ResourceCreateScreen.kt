@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -37,10 +38,14 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AddAttachm
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AnnouncementResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AssignmentResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDatePickerDialog
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueTimePickerDialog
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.ModuleResourceContent
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizResourceContent
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizTypeBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.RemoveAttachmentBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.SetDueDateDialog
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.SetDurationDialog
 import java.time.LocalDate
 import java.time.LocalTime
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -78,6 +83,8 @@ internal fun ResourceCreateRoute(
             ResourceCreateContract.Effect.CloseScreen -> onCloseClick()
             ResourceCreateContract.Effect.OpenCamera -> onCameraClick()
             ResourceCreateContract.Effect.OpenFiles -> launcher.launch("*/*")
+            is ResourceCreateContract.Effect.ShowToast ->
+                Toast.makeText(context,it.message,Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -139,7 +146,7 @@ private fun ResourceCreateScreen(
 
     if (state.overlayComposableVisibility.dueDatePickerDialog) {
         DueDatePickerDialog(
-            date = state.dueDate ?: LocalDate.now(),
+            date = state.dueDate.date ?: LocalDate.now(),
             onConfirm = {
                 event(ResourceCreateContract.Event.OnConfirmPickDate(it))
             },
@@ -151,12 +158,38 @@ private fun ResourceCreateScreen(
 
     if (state.overlayComposableVisibility.dueTimePickerDialog) {
         DueTimePickerDialog(
-            time = state.dueTime ?: LocalTime.now(),
+            time = state.dueDate.time ?: LocalTime.now(),
             onConfirm = {
                 event(ResourceCreateContract.Event.OnConfirmPickTime(it))
             },
             onDismiss = {
                 event(ResourceCreateContract.Event.OnDismissDueTimePickerDialog)
+            }
+        )
+    }
+
+    if (state.overlayComposableVisibility.quizTypeBottomSheet) {
+        QuizTypeBottomSheet(
+            onMultipleChoiceQuestionClick = {
+                event(ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption(QuizType.MCQ))
+            },
+            onPhotoAnswerClick = {
+                event(ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption(QuizType.PHOTO_ANSWER))
+            },
+            onDismiss = {
+                event(ResourceCreateContract.Event.OnDismissQuizTypeBottomSheet)
+            },
+        )
+    }
+
+    if (state.overlayComposableVisibility.durationDialog) {
+        SetDurationDialog(
+            duration = state.duration,
+            onConfirm = {
+                event(ResourceCreateContract.Event.OnConfirmSetDurationDialog(it))
+            },
+            onDismiss = {
+                event(ResourceCreateContract.Event.OnDismissDurationDialog)
             }
         )
     }
@@ -254,11 +287,31 @@ private fun ResourceCreateScreen(
                     event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
                 },
                 onDueDateClick = {
-                    event(ResourceCreateContract.Event.OnDueDateClick)
+                    event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.DUE_DATE))
                 }
             )
 
-            ClassResourceType.QUIZ -> {}
+            ClassResourceType.QUIZ -> QuizResourceContent(
+                state = state,
+                onTitleChange = {
+                    event(ResourceCreateContract.Event.OnTitleChange(it))
+                },
+                onDescriptionChange = {
+                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                },
+                onQuizTypeClick = {
+                    event(ResourceCreateContract.Event.OnQuizTypeClick)
+                },
+                onStartDateClick = {
+                    event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.START_DATE))
+                },
+                onEndDateClick = {
+                    event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.END_DATE))
+                },
+                onDurationClick = {
+                    event(ResourceCreateContract.Event.OnDurationClick)
+                }
+            )
         }
     }
 }

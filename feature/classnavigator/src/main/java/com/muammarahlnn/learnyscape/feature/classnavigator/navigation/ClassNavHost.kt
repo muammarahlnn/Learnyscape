@@ -49,6 +49,7 @@ internal fun ClassNavHost(
         )
         quizScreen(
             onQuizClick = onResourceClassClick,
+            onCreateNewQuizClick = onCreateNewResourceClick,
         )
         memberScreen()
     }

@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate.composable
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,6 +26,7 @@ internal fun DescriptionInputCard(
             value = description,
             placeholderText = stringResource(id = R.string.description_input_placeholder),
             onValueChange = onDescriptionChange,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }

@@ -20,6 +20,8 @@ import com.muammarahlnn.learnyscape.core.ui.util.getCurrentDate
 import com.muammarahlnn.learnyscape.core.ui.util.getCurrentTime
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
 import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -34,22 +36,38 @@ internal fun SetDueDateDialog(
     onSetDateClick: () -> Unit,
     onSetTimeClick: () -> Unit,
 ) {
-    val dueDate = if (state.dueDate != null) {
-        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-        formatter.format(state.dueDate)
-    } else {
-        getCurrentDate()
+    val dueDate: String
+    val dueTime: String
+    when (state.dueDateType) {
+        DueDateType.DUE_DATE -> {
+            val (date, time) = formatDateAndTime(
+                state.dueDate.date,
+                state.dueDate.time
+            )
+            dueDate = date
+            dueTime = time
+        }
+        DueDateType.START_DATE -> {
+            val (date, time) = formatDateAndTime(
+                state.startDate.date,
+                state.startDate.time
+            )
+            dueDate = date
+            dueTime = time
+        }
+        DueDateType.END_DATE -> {
+            val (date, time) = formatDateAndTime(
+                state.endDate.date,
+                state.endDate.time
+            )
+            dueDate = date
+            dueTime = time
+        }
     }
 
-    val dueTime = if (state.dueTime != null) {
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
-        formatter.format(state.dueTime)
-    } else {
-        getCurrentTime()
-    }
 
     BaseAlertDialog(
-        title = stringResource(id = R.string.due_date),
+        title = stringResource(id = state.dueDateType.titleRes),
         content = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -92,4 +110,19 @@ internal fun SetDueDateDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
     )
+}
+
+enum class DueDateType(val titleRes: Int) {
+    DUE_DATE(R.string.due_date),
+    START_DATE(R.string.start_date),
+    END_DATE(R.string.end_date),
+}
+
+
+val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
+val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+fun formatDateAndTime(date: LocalDate?, time: LocalTime?): Pair<String, String> {
+    val formattedDate = date?.let { dateFormatter.format(it) } ?: getCurrentDate()
+    val formattedTime = time?.let { timeFormatter.format(it) } ?: getCurrentTime()
+    return formattedDate to formattedTime
 }

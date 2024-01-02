@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.ResourceCreateArgs
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -72,8 +73,10 @@ class ResourceCreateViewModel(
             is ResourceCreateContract.Event.OnRemoveAttachment ->
                 removeAttachmentFromCurrentAttachments()
 
-            ResourceCreateContract.Event.OnDueDateClick ->
+            is ResourceCreateContract.Event.OnDueDateClick -> {
                 showSetDueDateDialog(true)
+                updateDueDateType(event.dueDateType)
+            }
 
             is ResourceCreateContract.Event.OnConfirmSetDueDate ->
                 onConfirmSetDueDateDialog()
@@ -98,6 +101,24 @@ class ResourceCreateViewModel(
 
             ResourceCreateContract.Event.OnDismissDueTimePickerDialog ->
                 showDueTimePickerDialog(false)
+
+            ResourceCreateContract.Event.OnQuizTypeClick ->
+                showQuizTypeBottomSheet(true)
+
+            ResourceCreateContract.Event.OnDismissQuizTypeBottomSheet ->
+                showQuizTypeBottomSheet(false)
+
+            is ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption ->
+                onSelectQuizTypeBottomSheetOption(event.quizType)
+
+            ResourceCreateContract.Event.OnDurationClick ->
+                showDurationDialog(true)
+
+            ResourceCreateContract.Event.OnDismissDurationDialog ->
+                showDurationDialog(false)
+
+            is ResourceCreateContract.Event.OnConfirmSetDurationDialog ->
+                onConfirmSetDuration(event.duration)
         }
     }
 
@@ -197,22 +218,55 @@ class ResourceCreateViewModel(
         }
     }
 
-    private fun onConfirmSetDueDateDialog() {
+    private fun updateDueDateType(dueDateType: DueDateType) {
         _state.update {
             it.copy(
-                dueDate = it.dueDate ?: LocalDate.now(),
-                dueTime = it.dueTime ?: LocalTime.now(),
+                dueDateType = dueDateType,
             )
+        }
+    }
+
+    private fun onConfirmSetDueDateDialog() {
+        val currentDate = LocalDate.now()
+        val currentTime = LocalTime.now()
+        _state.update {
+            when (it.dueDateType) {
+                DueDateType.DUE_DATE -> it.copy(
+                    dueDate = it.dueDate.copy(
+                        date = it.dueDate.date ?: currentDate,
+                        time = it.dueDate.time ?: currentTime,
+                    ),
+                )
+                DueDateType.START_DATE -> it.copy(
+                    startDate = it.startDate.copy(
+                        date = it.startDate.date ?: currentDate,
+                        time = it.startDate.time ?: currentTime,
+                    ),
+                )
+                DueDateType.END_DATE -> it.copy(
+                    endDate = it.endDate.copy(
+                        date = it.endDate.date ?: currentDate,
+                        time = it.endDate.time ?: currentTime,
+                    ),
+                )
+            }
         }
         showSetDueDateDialog(false)
     }
 
     private fun dismissSetDueDateDialog() {
         _state.update {
-            it.copy(
-                dueDate = null,
-                dueTime = null,
-            )
+            when (it.dueDateType) {
+                DueDateType.DUE_DATE -> it.copy(
+                    dueDate = DueDate(),
+                )
+                DueDateType.START_DATE -> it.copy(
+                    startDate = DueDate(),
+                )
+                DueDateType.END_DATE -> it.copy(
+                    endDate = DueDate(),
+                )
+            }
         }
         showSetDueDateDialog(false)
     }
@@ -229,8 +283,25 @@ class ResourceCreateViewModel(
 
     private fun onConfirmPickDate(date: LocalDate) {
         _state.update {
-            it.copy(dueDate = date)
+            when (it.dueDateType) {
+                DueDateType.DUE_DATE -> it.copy(
+                    dueDate = it.dueDate.copy(
+                        date = date,
+                    )
+                )
+                DueDateType.START_DATE -> it.copy(
+                    startDate = it.startDate.copy(
+                        date = date,
+                    )
+                )
+                DueDateType.END_DATE -> it.copy(
+                    endDate = it.endDate.copy(
+                        date = date,
+                    )
+                )
+            }
         }
+
         showDueDatePickerDialog(false)
     }
 
@@ -246,8 +317,62 @@ class ResourceCreateViewModel(
 
     private fun onConfirmPickTime(time: LocalTime) {
         _state.update {
-            it.copy(dueTime = time)
+            when (it.dueDateType) {
+                DueDateType.DUE_DATE -> it.copy(
+                    dueDate = it.dueDate.copy(
+                        time = time,
+                    )
+                )
+                DueDateType.START_DATE -> it.copy(
+                    startDate = it.startDate.copy(
+                        time = time,
+                    )
+                )
+                DueDateType.END_DATE -> it.copy(
+                    endDate = it.endDate.copy(
+                        time = time,
+                    )
+                )
+            }
         }
         showDueTimePickerDialog(false)
+    }
+
+    private fun showQuizTypeBottomSheet(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    quizTypeBottomSheet = show
+                )
+            )
+        }
+    }
+
+    private fun onSelectQuizTypeBottomSheetOption(quizType: QuizType) {
+        _state.update {
+            it.copy(
+                quizType = quizType
+            )
+        }
+        showQuizTypeBottomSheet(false)
+    }
+
+    private fun showDurationDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    durationDialog = show
+                )
+            )
+        }
+    }
+
+    private fun onConfirmSetDuration(duration: Int) {
+        _state.update {
+            it.copy(
+                duration = duration
+            )
+        }
+        showDurationDialog(false)
     }
 }
