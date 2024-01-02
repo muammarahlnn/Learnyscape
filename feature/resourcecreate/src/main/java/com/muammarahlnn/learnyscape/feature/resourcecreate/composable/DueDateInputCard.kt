@@ -33,8 +33,7 @@ internal fun DueDateInputCard(
             stringResource(id = R.string.due_date)
         } else {
             val dateTime = LocalDateTime.of(date, time)
-            val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm")
-            formatter.format(dateTime)
+            formatDateTime(dateTime)
         }
 
         Text(
@@ -48,4 +47,9 @@ internal fun DueDateInputCard(
                 },
         )
     }
+}
+
+fun formatDateTime(dateTime: LocalDateTime): String {
+    val formatter = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm")
+    return formatter.format(dateTime)
 }

@@ -12,16 +12,17 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContrac
 
 /**
  * @Author Muammar Ahlan Abimanyu
- * @File AssignmentResourceContent, 27/12/2023 00.22
+ * @File QuizResourceContent, 28/12/2023 01.46
  */
 @Composable
-internal fun AssignmentResourceContent(
+internal fun QuizResourceContent(
     state: ResourceCreateContract.State,
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
-    onAddAttachmentCLick: () -> Unit,
-    onMoreVertAttachmentClick: (Int) -> Unit,
-    onDueDateClick: () -> Unit,
+    onQuizTypeClick: () -> Unit,
+    onStartDateClick: () -> Unit,
+    onEndDateClick: () -> Unit,
+    onDurationClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -44,18 +45,25 @@ internal fun AssignmentResourceContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        AttachmentsInputCard(
-            attachments = state.attachments,
-            onAddAttachmentClick = onAddAttachmentCLick,
-            onMoreVertAttachmentClick = onMoreVertAttachmentClick,
+        QuizTypeInputCard(
+            quizType = state.quizType,
+            onQuizTypeClick = onQuizTypeClick,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        DueDateInputCard(
-            date = state.dueDate.date,
-            time = state.dueDate.time,
-            onDueDateClick = onDueDateClick
+        StartEndDateInputCard(
+            startDate = state.startDate,
+            endDate = state.endDate,
+            onStartDateClick = onStartDateClick,
+            onEndDateClick = onEndDateClick,
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        DurationInputCard(
+            duration = state.duration,
+            onDurationClick = onDurationClick,
         )
     }
 }

@@ -377,7 +377,7 @@ private fun QuizDetailsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_timer),
+                    painter = painterResource(id = designSystemR.drawable.ic_timer),
                     contentDescription = stringResource(id = R.string.timer_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
@@ -396,7 +396,7 @@ private fun QuizDetailsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_quiz_type),
+                    painter = painterResource(id = designSystemR.drawable.ic_quiz_type),
                     contentDescription = stringResource(id = R.string.quiz_type_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),

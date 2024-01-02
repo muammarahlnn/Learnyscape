@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.resourcecreate
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
@@ -22,16 +23,12 @@ interface ResourceCreateContract :
         val attachments: List<File> = listOf(),
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
         val selectedAttachmentIndex: Int = -1,
-        val dueDate: LocalDate? = null,
-        val dueTime: LocalTime? = null,
-    )
-
-    data class OverlayComposableVisibility(
-        val addAttachmentBottomSheet: Boolean = false,
-        val removeAttachmentBottomSheet: Boolean = false,
-        val setDueDateDialog: Boolean = false,
-        val dueDatePickerDialog: Boolean = false,
-        val dueTimePickerDialog: Boolean = false,
+        val dueDateType: DueDateType = DueDateType.DUE_DATE,
+        val dueDate: DueDate = DueDate(),
+        val startDate: DueDate = DueDate(),
+        val endDate: DueDate = DueDate(),
+        val quizType: QuizType = QuizType.NONE,
+        val duration: Int = 0,
     )
 
     sealed interface Event {
@@ -58,7 +55,7 @@ interface ResourceCreateContract :
 
         data object OnRemoveAttachment : Event
 
-        data object OnDueDateClick : Event
+        data class OnDueDateClick(val dueDateType: DueDateType) : Event
 
         data object OnConfirmSetDueDate : Event
 
@@ -75,6 +72,18 @@ interface ResourceCreateContract :
         data class OnConfirmPickTime(val time: LocalTime) : Event
 
         data object OnDismissDueTimePickerDialog : Event
+
+        data object OnQuizTypeClick : Event
+
+        data object OnDismissQuizTypeBottomSheet : Event
+
+        data class OnSelectQuizTypeBottomSheetOption(val quizType: QuizType) : Event
+
+        data object OnDurationClick : Event
+
+        data object OnDismissDurationDialog: Event
+
+        data class OnConfirmSetDurationDialog(val duration: Int) : Event
     }
 
     sealed interface Effect {
@@ -84,5 +93,28 @@ interface ResourceCreateContract :
         data object OpenFiles : Effect
 
         data object OpenCamera : Effect
+
+        data class ShowToast(val message: String) : Effect
     }
+}
+
+data class OverlayComposableVisibility(
+    val addAttachmentBottomSheet: Boolean = false,
+    val removeAttachmentBottomSheet: Boolean = false,
+    val setDueDateDialog: Boolean = false,
+    val dueDatePickerDialog: Boolean = false,
+    val dueTimePickerDialog: Boolean = false,
+    val quizTypeBottomSheet: Boolean = false,
+    val durationDialog: Boolean = false,
+)
+
+data class DueDate(
+    val date: LocalDate? = null,
+    val time: LocalTime? = null,
+)
+
+enum class QuizType {
+    NONE,
+    MCQ, // stands for multiple choice question
+    PHOTO_ANSWER
 }
