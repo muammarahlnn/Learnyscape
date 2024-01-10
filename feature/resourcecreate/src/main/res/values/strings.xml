@@ -26,6 +26,7 @@
     <string name="multiple_choice_question">Multiple choice question</string>
     <string name="photo_answer">Photo answer</string>
     <string name="minutes">Minutes</string>
+    <string name="n_minutes">%1$d minutes</string>
     <string name="save">Save</string>
     <string name="question_ellipsis">Question…</string>
     <string name="option_a_ellipsis">Option A…</string>
