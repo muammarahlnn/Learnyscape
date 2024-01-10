@@ -26,4 +26,14 @@
     <string name="multiple_choice_question">Multiple choice question</string>
     <string name="photo_answer">Photo answer</string>
     <string name="minutes">Minutes</string>
+    <string name="save">Save</string>
+    <string name="question_ellipsis">Question…</string>
+    <string name="option_a_ellipsis">Option A…</string>
+    <string name="option_b_ellipsis">Option B…</string>
+    <string name="option_c_ellipsis">Option C…</string>
+    <string name="option_d_ellipsis">Option D…</string>
+    <string name="option_e_ellipsis">Option E…</string>
+    <string name="delete_question">Delete question</string>
+    <string name="add_question">Add question</string>
+    <string name="unfilled_questions_message">Please fill these fields</string>
 </resources>

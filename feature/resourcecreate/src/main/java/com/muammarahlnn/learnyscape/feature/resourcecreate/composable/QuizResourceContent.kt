@@ -20,6 +20,7 @@ internal fun QuizResourceContent(
     onTitleChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     onQuizTypeClick: () -> Unit,
+    onQuestionsClick: () -> Unit,
     onStartDateClick: () -> Unit,
     onEndDateClick: () -> Unit,
     onDurationClick: () -> Unit,
@@ -48,6 +49,7 @@ internal fun QuizResourceContent(
         QuizTypeInputCard(
             quizType = state.quizType,
             onQuizTypeClick = onQuizTypeClick,
+            onQuestionsClick = onQuestionsClick,
         )
 
         Spacer(modifier = Modifier.height(16.dp))

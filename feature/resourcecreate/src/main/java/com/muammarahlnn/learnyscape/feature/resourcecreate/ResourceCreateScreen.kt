@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.resourcecreate
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,6 +42,7 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDatePic
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueTimePickerDialog
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.ModuleResourceContent
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizQuestions
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizTypeBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.RemoveAttachmentBottomSheet
@@ -84,7 +86,7 @@ internal fun ResourceCreateRoute(
             ResourceCreateContract.Effect.OpenCamera -> onCameraClick()
             ResourceCreateContract.Effect.OpenFiles -> launcher.launch("*/*")
             is ResourceCreateContract.Effect.ShowToast ->
-                Toast.makeText(context,it.message,Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, it.message,Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -194,123 +196,154 @@ private fun ResourceCreateScreen(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                )
-        ) {
-            Icon(
-                painter = painterResource(id = designSystemR.drawable.ic_close),
-                contentDescription = stringResource(
-                    id = designSystemR.string.navigation_close_icon_description
-                ),
-                modifier = Modifier
-                    .size(32.dp)
-                    .clickable {
-                        event(ResourceCreateContract.Event.OnCloseClick)
-                    }
-            )
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(MaterialTheme.colorScheme.primary)
+    AnimatedContent(
+        targetState = state.showQuestionsScreen,
+        label = "ResourceCreateScreen AnimatedContent",
+    ) { targetState ->
+        if (!targetState) {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                Text(
-                    text = stringResource(id = R.string.post),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.background,
-                    modifier = Modifier.padding(
-                        vertical = 8.dp,
-                        horizontal = 32.dp,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = 16.dp,
+                            start = 16.dp,
+                            end = 16.dp,
+                        )
+                ) {
+                    Icon(
+                        painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
+                        contentDescription = stringResource(
+                            id = designSystemR.string.navigation_back_icon_description
+                        ),
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clickable {
+                                event(ResourceCreateContract.Event.OnCloseClick)
+                            }
                     )
-                )
+
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.post),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.background,
+                            modifier = Modifier.padding(
+                                vertical = 8.dp,
+                                horizontal = 32.dp,
+                            )
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                when (state.resourceType) {
+                    ClassResourceType.ANNOUNCEMENT -> AnnouncementResourceContent(
+                        state = state,
+                        onDescriptionChange = {
+                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                        },
+                        onAddAttachmentCLick = {
+                            event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                        },
+                        onMoreVertAttachmentClick = {
+                            event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                        },
+                    )
+
+                    ClassResourceType.MODULE -> ModuleResourceContent(
+                        state = state,
+                        onTitleChange = {
+                            event(ResourceCreateContract.Event.OnTitleChange(it))
+                        },
+                        onDescriptionChange = {
+                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                        },
+                        onAddAttachmentCLick = {
+                            event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                        },
+                        onMoreVertAttachmentClick = {
+                            event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                        },
+                    )
+
+                    ClassResourceType.ASSIGNMENT -> AssignmentResourceContent(
+                        state = state,
+                        onTitleChange = {
+                            event(ResourceCreateContract.Event.OnTitleChange(it))
+                        },
+                        onDescriptionChange = {
+                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                        },
+                        onAddAttachmentCLick = {
+                            event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                        },
+                        onMoreVertAttachmentClick = {
+                            event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                        },
+                        onDueDateClick = {
+                            event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.DUE_DATE))
+                        }
+                    )
+
+                    ClassResourceType.QUIZ -> QuizResourceContent(
+                        state = state,
+                        onTitleChange = {
+                            event(ResourceCreateContract.Event.OnTitleChange(it))
+                        },
+                        onDescriptionChange = {
+                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                        },
+                        onQuizTypeClick = {
+                            event(ResourceCreateContract.Event.OnQuizTypeClick)
+                        },
+                        onQuestionsClick = {
+                            event(ResourceCreateContract.Event.OnShowQuestionsScreen)
+                        },
+                        onStartDateClick = {
+                            event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.START_DATE))
+                        },
+                        onEndDateClick = {
+                            event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.END_DATE))
+                        },
+                        onDurationClick = {
+                            event(ResourceCreateContract.Event.OnDurationClick)
+                        }
+                    )
+                }
             }
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        when (state.resourceType) {
-            ClassResourceType.ANNOUNCEMENT -> AnnouncementResourceContent(
-                state = state,
-                onDescriptionChange = {
-                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
+        } else {
+            val unfilledQuestionsMessage = stringResource(id = R.string.unfilled_questions_message)
+            QuizQuestions(
+                quizType = state.quizType,
+                multipleChoiceQuestions = state.multipleChoiceQuestions,
+                photoAnswerQuestions = state.photoAnswerQuestions,
+                onCloseClick = {
+                    event(ResourceCreateContract.Event.OnCloseQuestionsScreen)
                 },
-                onAddAttachmentCLick = {
-                    event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                onUnfilledQuestionsExists = {
+                    event(ResourceCreateContract.Event.OnUnfilledQuestions(unfilledQuestionsMessage))
                 },
-                onMoreVertAttachmentClick = {
-                    event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                onSaveQuestions = { multipleChoiceQuestions, photoAnswerQuestions ->
+                    event(
+                        ResourceCreateContract.Event.OnSaveQuestions(
+                            multipleChoiceQuestions,
+                            photoAnswerQuestions
+                        )
+                    )
                 },
-            )
-
-            ClassResourceType.MODULE -> ModuleResourceContent(
-                state = state,
-                onTitleChange = {
-                    event(ResourceCreateContract.Event.OnTitleChange(it))
-                },
-                onDescriptionChange = {
-                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                },
-                onAddAttachmentCLick = {
-                    event(ResourceCreateContract.Event.OnAddAttachmentClick)
-                },
-                onMoreVertAttachmentClick = {
-                    event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
-                },
-            )
-
-            ClassResourceType.ASSIGNMENT -> AssignmentResourceContent(
-                state = state,
-                onTitleChange = {
-                    event(ResourceCreateContract.Event.OnTitleChange(it))
-                },
-                onDescriptionChange = {
-                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                },
-                onAddAttachmentCLick = {
-                    event(ResourceCreateContract.Event.OnAddAttachmentClick)
-                },
-                onMoreVertAttachmentClick = {
-                    event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
-                },
-                onDueDateClick = {
-                    event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.DUE_DATE))
-                }
-            )
-
-            ClassResourceType.QUIZ -> QuizResourceContent(
-                state = state,
-                onTitleChange = {
-                    event(ResourceCreateContract.Event.OnTitleChange(it))
-                },
-                onDescriptionChange = {
-                    event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                },
-                onQuizTypeClick = {
-                    event(ResourceCreateContract.Event.OnQuizTypeClick)
-                },
-                onStartDateClick = {
-                    event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.START_DATE))
-                },
-                onEndDateClick = {
-                    event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.END_DATE))
-                },
-                onDurationClick = {
-                    event(ResourceCreateContract.Event.OnDurationClick)
-                }
             )
         }
     }

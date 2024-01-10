@@ -4,6 +4,8 @@ import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.PhotoAnswerQuestion
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
@@ -29,6 +31,9 @@ interface ResourceCreateContract :
         val endDate: DueDate = DueDate(),
         val quizType: QuizType = QuizType.NONE,
         val duration: Int = 0,
+        val showQuestionsScreen: Boolean = false,
+        val multipleChoiceQuestions: List<MultipleChoiceQuestion> = listOf(),
+        val photoAnswerQuestions: List<PhotoAnswerQuestion> = listOf(),
     )
 
     sealed interface Event {
@@ -84,6 +89,17 @@ interface ResourceCreateContract :
         data object OnDismissDurationDialog: Event
 
         data class OnConfirmSetDurationDialog(val duration: Int) : Event
+
+        data object OnShowQuestionsScreen : Event
+
+        data object OnCloseQuestionsScreen : Event
+
+        data class OnSaveQuestions(
+            val multipleChoiceQuestions: List<MultipleChoiceQuestion>,
+            val photoAnswerQuestions: List<PhotoAnswerQuestion>,
+        ) : Event
+
+        data class OnUnfilledQuestions(val message: String) : Event
     }
 
     sealed interface Effect {

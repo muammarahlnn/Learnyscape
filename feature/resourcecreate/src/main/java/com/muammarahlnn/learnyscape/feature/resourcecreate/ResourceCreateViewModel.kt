@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.PhotoAnswerQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.ResourceCreateArgs
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -119,6 +121,24 @@ class ResourceCreateViewModel(
 
             is ResourceCreateContract.Event.OnConfirmSetDurationDialog ->
                 onConfirmSetDuration(event.duration)
+
+            ResourceCreateContract.Event.OnShowQuestionsScreen ->
+                showQuestionsScreen()
+
+            ResourceCreateContract.Event.OnCloseQuestionsScreen ->
+                closeQuestionsScreen()
+
+            is ResourceCreateContract.Event.OnSaveQuestions ->
+                onSaveQuestions(event.multipleChoiceQuestions, event.photoAnswerQuestions)
+
+            is ResourceCreateContract.Event.OnUnfilledQuestions ->
+                showToast(event.message)
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _effect.emit(ResourceCreateContract.Effect.ShowToast(message))
         }
     }
 
@@ -374,5 +394,38 @@ class ResourceCreateViewModel(
             )
         }
         showDurationDialog(false)
+    }
+
+    private fun showQuestionsScreen() {
+        if (_state.value.quizType == QuizType.NONE) {
+            showToast("Please select quiz type first")
+        } else {
+            _state.update {
+                it.copy(
+                    showQuestionsScreen = true
+                )
+            }
+        }
+    }
+
+    private fun closeQuestionsScreen() {
+        _state.update {
+            it.copy(
+                showQuestionsScreen = false
+            )
+        }
+    }
+
+    private fun onSaveQuestions(
+        multipleChoiceQuestions: List<MultipleChoiceQuestion>,
+        photoAnswerQuestions: List<PhotoAnswerQuestion>,
+    ) {
+        _state.update {
+            it.copy(
+                multipleChoiceQuestions = multipleChoiceQuestions,
+                photoAnswerQuestions = photoAnswerQuestions,
+            )
+        }
+        closeQuestionsScreen()
     }
 }
