@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.resourcecreate.composable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
@@ -26,9 +27,14 @@ internal fun DurationInputCard(
         }
     ) {
         Text(
-            text = if (duration == 0) stringResource(id = R.string.duration) else duration.toString(),
+            text = if (duration == 0) {
+                stringResource(id = R.string.duration)
+            } else {
+                stringResource(id = R.string.n_minutes, duration)  
+            },
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
     }
 }
