@@ -32,6 +32,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun QuizTypeInputCard(
     quizType: QuizType,
     onQuizTypeClick: () -> Unit,
+    onQuestionsClick: () -> Unit,
 ) {
     InputCard(
         iconRes = designSystemR.drawable.ic_quiz_type,
@@ -44,11 +45,11 @@ internal fun QuizTypeInputCard(
             }
         ) {
             Text(
-                text = when (quizType) {
-                    QuizType.NONE -> stringResource(id = R.string.quiz_type)
-                    QuizType.MCQ -> stringResource(id = R.string.multiple_choice_question)
-                    QuizType.PHOTO_ANSWER -> stringResource(id = R.string.photo_answer)
-                },
+                text = stringResource(id = when (quizType) {
+                    QuizType.NONE -> R.string.quiz_type
+                    QuizType.MCQ -> R.string.multiple_choice_question
+                    QuizType.PHOTO_ANSWER -> R.string.photo_answer
+                }),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -61,7 +62,6 @@ internal fun QuizTypeInputCard(
                 tint = MaterialTheme.colorScheme.onSurface,
             )
         }
-
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -76,10 +76,14 @@ internal fun QuizTypeInputCard(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(
-                    horizontal = 10.dp,
-                    vertical = 5.dp,
-                )
+                modifier = Modifier
+                    .padding(
+                        horizontal = 10.dp,
+                        vertical = 5.dp,
+                    )
+                    .noRippleClickable {
+                        onQuestionsClick()
+                    }
             ) {
                 Text(
                     text = stringResource(id = R.string.questions),

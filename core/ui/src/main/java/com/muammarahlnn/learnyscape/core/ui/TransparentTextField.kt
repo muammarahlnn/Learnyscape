@@ -26,6 +26,8 @@ fun TransparentTextField(
     placeholderText: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    textColor: Color = MaterialTheme.colorScheme.onBackground,
+    placeholderTextColor: Color = MaterialTheme.colorScheme.onSurface,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     BasicTextField(
@@ -45,15 +47,15 @@ fun TransparentTextField(
                 Text(
                     text = placeholderText,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = placeholderTextColor,
                 )
             },
             contentPadding = PaddingValues(0.dp),
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = Color.Transparent,
                 unfocusedContainerColor = Color.Transparent,
-                focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                focusedTextColor = textColor,
+                unfocusedTextColor = textColor,
                 focusedTrailingIconColor = MaterialTheme.colorScheme.onBackground,
                 unfocusedTrailingIconColor = MaterialTheme.colorScheme.onBackground,
                 focusedIndicatorColor = Color.Transparent,
