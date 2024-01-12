@@ -1,7 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.homenavigator.navigation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -18,12 +16,12 @@ import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
  * @file HomeNavHost, 15/09/2023 19.25 by Muammar Ahlan Abimanyu
  */
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun HomeNavHost(
     state: HomeNavigatorState,
-    scrollBehavior: TopAppBarScrollBehavior,
+    onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -36,18 +34,16 @@ internal fun HomeNavHost(
         modifier = modifier,
     ) {
         homeScreen(
-            scrollBehavior = scrollBehavior,
+            onNotificationsClick = onNotificationsClick,
             onClassClick = onClassClick,
         )
         searchScreen(
-            scrollBehavior = scrollBehavior,
+            onPendingClassRequestClick = onPendingClassRequestClick
         )
         scheduleScreen(
-            scrollBehavior = scrollBehavior,
             onScheduleClick = onClassClick,
         )
         profileScreen(
-            scrollBehavior = scrollBehavior,
             onCameraActionClick = onCameraActionClick,
             onChangePasswordButtonClick = onChangePasswordButtonClick,
         )

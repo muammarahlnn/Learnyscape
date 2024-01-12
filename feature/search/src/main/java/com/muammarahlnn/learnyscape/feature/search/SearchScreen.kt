@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -27,7 +28,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
@@ -52,6 +56,7 @@ import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
+import com.muammarahlnn.learnyscape.core.ui.util.StudentOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
@@ -63,10 +68,10 @@ import kotlinx.datetime.LocalTime
  * @file SearchScreen, 20/07/2023 22.06 by Muammar Ahlan Abimanyu
  */
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun SearchRoute(
-    scrollBehavior: TopAppBarScrollBehavior,
+    onPendingClassRequestClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
@@ -90,12 +95,12 @@ internal fun SearchRoute(
 
     SearchScreen(
         state = state,
-        scrollBehavior = scrollBehavior,
         pullRefreshState = pullRefreshState,
         refreshing = refreshing,
         onRefresh = {
             event(SearchContract.Event.FetchAvailableClasses)
         },
+        onPendingClassRequestClick = onPendingClassRequestClick,
         onSearchQueryChanged = { searchQuery ->
             event(SearchContract.Event.OnSearchQueryChanged(searchQuery))
         },
@@ -116,10 +121,10 @@ internal fun SearchRoute(
 @Composable
 private fun SearchScreen(
     state: SearchContract.State,
-    scrollBehavior: TopAppBarScrollBehavior,
     pullRefreshState: PullRefreshState,
     refreshing: Boolean,
     onRefresh: () -> Unit,
+    onPendingClassRequestClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClassItemClick: (AvailableClassModel) -> Unit,
     onRequestJoinRequestDialog: () -> Unit,
@@ -136,56 +141,67 @@ private fun SearchScreen(
         )
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState)
-    ) {
-        when (state.uiState) {
-            SearchContract.UiState.Loading -> {
-                SearchContentLoading()
-            }
-
-            is SearchContract.UiState.Success -> {
-                SearchContent(
-                    scrollBehavior = scrollBehavior,
-                    availableClasses = state.uiState.availableClasses,
-                    searchQuery = state.searchQuery,
-                    onSearchQueryChanged = onSearchQueryChanged,
-                    onClassItemClick = onClassItemClick,
-                    modifier = modifier.fillMaxSize()
-                )
-            }
-
-            SearchContract.UiState.SuccessEmpty -> {
-                NoDataScreen(
-                    text = stringResource(id = R.string.empty_classes_text),
-                    modifier = modifier.fillMaxSize()
-                )
-            }
-
-            is SearchContract.UiState.NoInternet -> {
-                NoInternetScreen(
-                    text = state.uiState.message,
-                    onRefresh = onRefresh,
-                    modifier = modifier.fillMaxSize()
-                )
-            }
-
-            is SearchContract.UiState.Error -> {
-                ErrorScreen(
-                    text = state.uiState.message,
-                    onRefresh = onRefresh,
-                    modifier = modifier.fillMaxSize()
-                )
-            }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold(
+        topBar = {
+            SearchTopAppBar(
+                scrollBehavior = scrollBehavior,
+                onPendingClassRequestClick = onPendingClassRequestClick
+            )
         }
+    ) { paddingValues ->
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .pullRefresh(pullRefreshState)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) {
+            when (state.uiState) {
+                SearchContract.UiState.Loading -> {
+                    SearchContentLoading()
+                }
 
-        PullRefreshIndicator(
-            refreshing = refreshing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
+                is SearchContract.UiState.Success -> {
+                    SearchContent(
+                        availableClasses = state.uiState.availableClasses,
+                        searchQuery = state.searchQuery,
+                        onSearchQueryChanged = onSearchQueryChanged,
+                        onClassItemClick = onClassItemClick,
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
+
+                SearchContract.UiState.SuccessEmpty -> {
+                    NoDataScreen(
+                        text = stringResource(id = R.string.empty_classes_text),
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
+
+                is SearchContract.UiState.NoInternet -> {
+                    NoInternetScreen(
+                        text = state.uiState.message,
+                        onRefresh = onRefresh,
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
+
+                is SearchContract.UiState.Error -> {
+                    ErrorScreen(
+                        text = state.uiState.message,
+                        onRefresh = onRefresh,
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            PullRefreshIndicator(
+                refreshing = refreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
     }
 }
 
@@ -237,10 +253,8 @@ private fun SearchContentLoading(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchContent(
-    scrollBehavior: TopAppBarScrollBehavior,
     availableClasses: List<AvailableClassModel>,
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
@@ -269,9 +283,7 @@ private fun SearchContent(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier
-                .weight(1f)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+            modifier = Modifier.weight(1f)
         ) {
             items(
                 items = availableClasses,
@@ -421,5 +433,29 @@ private fun createClassScheduleDateText(
         day.displayedText,
         startTime.hour, startTime.minute,
         endTime.hour, endTime.minute,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun SearchTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onPendingClassRequestClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LearnyscapeCenterTopAppBar(
+        title = stringResource(id = R.string.available_class),
+        actionsIcon = {
+            StudentOnlyComposable {
+                IconButton(onClick = onPendingClassRequestClick) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_hourglass),
+                        contentDescription = stringResource(id = R.string.pending_request_icon_description)
+                    )
+                }
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        modifier = modifier,
     )
 }

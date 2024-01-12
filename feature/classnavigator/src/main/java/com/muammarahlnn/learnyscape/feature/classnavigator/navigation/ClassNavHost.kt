@@ -40,14 +40,17 @@ internal fun ClassNavHost(
             onPostClick = onResourceClassClick,
         )
         moduleScreen(
+            onBackClick = onBackClick,
             onModuleClick = onResourceClassClick,
             onCreateNewModuleClick = onCreateNewResourceClick,
         )
         assignmentScreen(
+            onBackClick = onBackClick,
             onAssignmentClick = onResourceClassClick,
             onCreateNewAssignmentClick = onCreateNewResourceClick,
         )
         quizScreen(
+            onBackClick = onBackClick,
             onQuizClick = onResourceClassClick,
             onCreateNewQuizClick = onCreateNewResourceClick,
         )

@@ -1,26 +1,17 @@
 package com.muammarahlnn.learnyscape.feature.classnavigator
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBarItem
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassDestination
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHost
-import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -45,7 +36,6 @@ internal fun ClassNavigatorRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ClassNavigator(
     onBackClick: () -> Unit,
@@ -55,18 +45,7 @@ private fun ClassNavigator(
     modifier: Modifier = Modifier,
     state: ClassNavigatorState = rememberClassNavigatorState()
 ) {
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
-        topBar = {
-            val classDestination = state.currentClassDestination
-            if (classDestination != null && classDestination != ClassDestination.CLASS) {
-                ClassTopAppBar(
-                    title = stringResource(id = classDestination.titleId),
-                    onBackClick = onBackClick,
-                    scrollBehavior = scrollBehavior,
-                )
-            }
-        },
         bottomBar = {
             ClassBottomBar(
                 destinations = state.classDestinations,
@@ -82,35 +61,9 @@ private fun ClassNavigator(
             onJoinRequestsClick = onJoinRequestsClick,
             onCreateNewResourceClick = onCreateNewResourceClick,
             onResourceClassClick = onResourceClassClick,
-            modifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(padding)
+            modifier = Modifier.padding(padding)
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ClassTopAppBar(
-    title: String,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
-    LearnyscapeCenterTopAppBar(
-        title = title,
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
-                    contentDescription = stringResource(id = designSystemR.string.navigation_back_icon_description),
-                )
-            }
-        },
-        colors = LearnyscapeTopAppbarDefaults.classTopAppBarColors(),
-        scrollBehavior = scrollBehavior,
-        modifier = modifier,
-    )
 }
 
 @Composable
@@ -140,6 +93,7 @@ private fun ClassBottomBar(
         }
     }
 }
+
 @Composable
 private fun NavDestination?.isDestinationInHierarchy(destination: ClassDestination) =
     this?.hierarchy?.any {

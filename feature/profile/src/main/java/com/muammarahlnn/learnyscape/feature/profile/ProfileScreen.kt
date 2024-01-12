@@ -26,15 +26,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
@@ -57,10 +57,8 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  * @file ProfileScreen, 20/07/2023 21.48 by Muammar Ahlan Abimanyu
  */
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProfileRoute(
-    scrollBehavior: TopAppBarScrollBehavior,
     onCameraActionClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -98,7 +96,6 @@ internal fun ProfileRoute(
     }
 
     ProfileScreen(
-        scrollBehavior = scrollBehavior,
         state = state,
         onChangePhotoProfileButtonClick = {
             event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(true))
@@ -124,10 +121,8 @@ internal fun ProfileRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreen(
-    scrollBehavior: TopAppBarScrollBehavior,
     state: ProfileContract.State,
     onChangePhotoProfileButtonClick: () -> Unit,
     onCameraActionClick: () -> Unit,
@@ -154,29 +149,35 @@ private fun ProfileScreen(
         )
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .padding(16.dp),
-    ) {
-        ProfileContent(
-            state = state,
-            onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
-        )
+    Scaffold(
+        topBar = {
+            ProfileTopAppBar()
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            ProfileContent(
+                state = state,
+                onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        ChangePasswordCard(
-            onClick = onChangePasswordButtonClick
-        )
+            ChangePasswordCard(
+                onClick = onChangePasswordButtonClick
+            )
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        LogoutCard(
-            onClick = onLogoutButtonClick,
-        )
+            LogoutCard(
+                onClick = onLogoutButtonClick,
+            )
+        }
     }
 }
 
@@ -503,3 +504,14 @@ private fun LogoutDialog(
 }
 
 private val photoProfileSize = 100.dp
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ProfileTopAppBar(
+    modifier: Modifier = Modifier,
+) {
+    LearnyscapeCenterTopAppBar(
+        title = stringResource(id = R.string.profile),
+        modifier = modifier,
+    )
+}
