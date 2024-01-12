@@ -1,7 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.search.navigation
 
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -20,13 +18,12 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
     this.navigate(SEARCH_ROUTE, navOptions)
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.searchScreen(
-    scrollBehavior: TopAppBarScrollBehavior,
+    onPendingClassRequestClick: () -> Unit,
 ) {
     composable(route = SEARCH_ROUTE) {
         SearchRoute(
-            scrollBehavior = scrollBehavior,
+            onPendingClassRequestClick = onPendingClassRequestClick,
         )
     }
 }

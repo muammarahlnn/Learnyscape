@@ -24,16 +24,22 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,10 +48,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
+import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -56,10 +66,10 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  * @file HomeScreen, 20/07/2023 19.56 by Muammar Ahlan Abimanyu
  */
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun HomeRoute(
-    scrollBehavior: TopAppBarScrollBehavior,
+    onNotificationsClick: () -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
@@ -74,12 +84,12 @@ internal fun HomeRoute(
     }
     HomeScreen(
         state = state,
-        scrollBehavior = scrollBehavior,
         pullRefreshState = pullRefreshState,
         refreshing = refreshing,
         onRefresh = {
             event(HomeContract.Event.FetchEnrolledClasses)
         },
+        onNotificationsClick = onNotificationsClick,
         onSearchQueryChanged = { searchQuery ->
             event(HomeContract.Event.OnSearchQueryChanged(searchQuery))
         },
@@ -92,80 +102,76 @@ internal fun HomeRoute(
 @Composable
 private fun HomeScreen(
     state: HomeContract.State,
-    scrollBehavior: TopAppBarScrollBehavior,
     pullRefreshState: PullRefreshState,
     refreshing: Boolean,
     onRefresh: () -> Unit,
+    onNotificationsClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
     onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .pullRefresh(pullRefreshState)
-    ) {
-        when (state.uiState) {
-            HomeContract.UiState.Loading -> {
-                HomeContentLoading()
-            }
-
-            is HomeContract.UiState.Success -> {
-                HomeContent(
-                    searchQuery = state.searchQuery,
-                    classes = state.uiState.classes,
-                    onSearchQueryChanged = onSearchQueryChanged,
-                    onClassClick = onClassClick,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
-                )
-            }
-
-            HomeContract.UiState.SuccessEmptyClasses -> {
-                val tempClasses = listOf(
-                    EnrolledClassInfoModel(
-                        id = "123",
-                        className = "Pemrograman Mobile A",
-                        lecturerNames =  listOf("Lorem Ipsum Dolor Sit Amet")
-                    )
-                )
-                HomeContent(
-                    searchQuery = state.searchQuery,
-                    classes = tempClasses,
-                    onSearchQueryChanged = onSearchQueryChanged,
-                    onClassClick = onClassClick,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
-                )
-//                EmptyClassesContent(
-//                    modifier = modifier,
-//                )
-            }
-
-            is HomeContract.UiState.Error -> {
-                ErrorScreen(
-                    text = state.uiState.message,
-                    onRefresh = onRefresh,
-                    modifier = modifier.fillMaxSize()
-                )
-            }
-
-            is HomeContract.UiState.NoInternet -> {
-                NoInternetScreen(
-                    text = state.uiState.message,
-                    onRefresh = onRefresh,
-                    modifier = modifier.fillMaxSize()
-                )
-            }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    Scaffold(
+        topBar = {
+            HomeTopAppBar(
+                scrollBehavior = scrollBehavior,
+                onNotificationsClick = onNotificationsClick,
+            )
         }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .pullRefresh(pullRefreshState)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) {
+            when (state.uiState) {
+                HomeContract.UiState.Loading -> {
+                    HomeContentLoading()
+                }
 
-        PullRefreshIndicator(
-            refreshing = refreshing,
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter)
-        )
+                is HomeContract.UiState.Success -> {
+                    HomeContent(
+                        searchQuery = state.searchQuery,
+                        classes = state.uiState.classes,
+                        onSearchQueryChanged = onSearchQueryChanged,
+                        onClassClick = onClassClick,
+                        modifier = modifier
+                            .fillMaxSize()
+                            .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    )
+                }
+
+                HomeContract.UiState.SuccessEmptyClasses -> {
+                    EmptyClassesContent(
+                        modifier = modifier,
+                    )
+                }
+
+                is HomeContract.UiState.Error -> {
+                    ErrorScreen(
+                        text = state.uiState.message,
+                        onRefresh = onRefresh,
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
+
+                is HomeContract.UiState.NoInternet -> {
+                    NoInternetScreen(
+                        text = state.uiState.message,
+                        onRefresh = onRefresh,
+                        modifier = modifier.fillMaxSize()
+                    )
+                }
+            }
+
+            PullRefreshIndicator(
+                refreshing = refreshing,
+                state = pullRefreshState,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
     }
 }
 
@@ -325,5 +331,56 @@ private fun EmptyClassesContent(
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun HomeTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onNotificationsClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val user = LocalUserModel.current
+    val homeTopAppBarModifier = modifier.shadow(
+        elevation = 2.dp,
+        shape = RoundedCornerShape(
+            bottomStart = 16.dp,
+            bottomEnd = 16.dp,
+        )
+    )
+
+    when (user.role) {
+        UserRole.STUDENT -> {
+            TopAppBar(
+                title = {
+                    LearnyscapeLogoText()
+                },
+                actions = {
+                    IconButton(onClick = onNotificationsClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_notification),
+                            contentDescription = stringResource(id = R.string.notifications)
+                        )
+                    }
+                },
+                colors = LearnyscapeTopAppbarDefaults.homeTopAppBarColors(),
+                scrollBehavior = scrollBehavior,
+                modifier = homeTopAppBarModifier,
+            )
+        }
+
+        UserRole.LECTURER -> {
+            CenterAlignedTopAppBar(
+                title = {
+                    LearnyscapeLogoText()
+                },
+                colors = LearnyscapeTopAppbarDefaults.homeTopAppBarColors(),
+                scrollBehavior = scrollBehavior,
+                modifier = homeTopAppBarModifier,
+            )
+        }
+
+        UserRole.NOT_LOGGED_IN -> Unit
     }
 }
