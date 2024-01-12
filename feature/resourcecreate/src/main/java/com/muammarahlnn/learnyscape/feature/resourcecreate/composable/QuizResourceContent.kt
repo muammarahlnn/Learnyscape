@@ -40,6 +40,7 @@ internal fun QuizResourceContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         DescriptionInputCard(
+            resourceType = state.resourceType,
             description = state.description,
             onDescriptionChange = onDescriptionChange,
         )
