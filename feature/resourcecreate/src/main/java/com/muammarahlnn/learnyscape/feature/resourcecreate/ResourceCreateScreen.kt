@@ -203,7 +203,14 @@ private fun ResourceCreateScreen(
                             .background(MaterialTheme.colorScheme.primary)
                     ) {
                         Text(
-                            text = stringResource(id = R.string.post),
+                            text = stringResource(
+                                id = when (state.resourceType) {
+                                    ClassResourceType.ANNOUNCEMENT,
+                                    ClassResourceType.MODULE -> R.string.post
+                                    ClassResourceType.ASSIGNMENT -> R.string.assign
+                                    ClassResourceType.QUIZ -> R.string.create
+                                }
+                            ),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.background,
                             modifier = Modifier.padding(
