@@ -38,9 +38,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AddAttachmentBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AnnouncementResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AssignmentResourceContent
-import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDatePickerDialog
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
-import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueTimePickerDialog
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.ModuleResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizQuestions
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizResourceContent
@@ -48,8 +46,6 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizTypeBo
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.RemoveAttachmentBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.SetDueDateDialog
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.SetDurationDialog
-import java.time.LocalDate
-import java.time.LocalTime
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
@@ -134,41 +130,12 @@ private fun ResourceCreateScreen(
             onDismiss = {
                 event(ResourceCreateContract.Event.OnDismissSetDueDateDialog)
             },
-            onConfirm = {
-                event(ResourceCreateContract.Event.OnConfirmSetDueDate)
-            },
-            onSetDateClick = {
-                event(ResourceCreateContract.Event.OnSetDateClick)
-            },
-            onSetTimeClick = {
-                event(ResourceCreateContract.Event.OnSetTimeClick)
-            }
-        )
-    }
-
-    if (state.overlayComposableVisibility.dueDatePickerDialog) {
-        DueDatePickerDialog(
-            date = state.dueDate.date ?: LocalDate.now(),
-            onConfirm = {
-                event(ResourceCreateContract.Event.OnConfirmPickDate(it))
-            },
-            onDismiss = {
-                event(ResourceCreateContract.Event.OnDismissDueDatePickerDialog)
+            onConfirm = { dueDate, dueTime ->
+                event(ResourceCreateContract.Event.OnConfirmSetDueDate(dueDate, dueTime))
             },
         )
     }
 
-    if (state.overlayComposableVisibility.dueTimePickerDialog) {
-        DueTimePickerDialog(
-            time = state.dueDate.time ?: LocalTime.now(),
-            onConfirm = {
-                event(ResourceCreateContract.Event.OnConfirmPickTime(it))
-            },
-            onDismiss = {
-                event(ResourceCreateContract.Event.OnDismissDueTimePickerDialog)
-            }
-        )
-    }
 
     if (state.overlayComposableVisibility.quizTypeBottomSheet) {
         QuizTypeBottomSheet(

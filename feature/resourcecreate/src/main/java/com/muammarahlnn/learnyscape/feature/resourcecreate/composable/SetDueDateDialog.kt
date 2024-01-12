@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate.composable
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -10,14 +11,17 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
-import com.muammarahlnn.learnyscape.core.ui.util.getCurrentDate
-import com.muammarahlnn.learnyscape.core.ui.util.getCurrentTime
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
 import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract
 import java.time.LocalDate
@@ -31,56 +35,79 @@ import java.time.format.DateTimeFormatter
 @Composable
 internal fun SetDueDateDialog(
     state: ResourceCreateContract.State,
+    onConfirm: (LocalDate?, LocalTime?) -> Unit,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    onSetDateClick: () -> Unit,
-    onSetTimeClick: () -> Unit,
 ) {
-    val dueDate: String
-    val dueTime: String
-    when (state.dueDateType) {
-        DueDateType.DUE_DATE -> {
-            val (date, time) = formatDateAndTime(
-                state.dueDate.date,
-                state.dueDate.time
-            )
-            dueDate = date
-            dueTime = time
-        }
-        DueDateType.START_DATE -> {
-            val (date, time) = formatDateAndTime(
-                state.startDate.date,
-                state.startDate.time
-            )
-            dueDate = date
-            dueTime = time
-        }
-        DueDateType.END_DATE -> {
-            val (date, time) = formatDateAndTime(
-                state.endDate.date,
-                state.endDate.time
-            )
-            dueDate = date
-            dueTime = time
-        }
+    val (dueDate, dueTime) = when (state.dueDateType) {
+        DueDateType.DUE_DATE -> state.dueDate
+        DueDateType.START_DATE -> state.startDate
+        DueDateType.END_DATE -> state.endDate
+    }.run {
+        date to time
     }
 
+    SetDueDateDialog(
+        title = stringResource(id = state.dueDateType.titleRes),
+        dueDate = dueDate,
+        dueTime = dueTime,
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+    )
+}
+
+@Composable
+private fun SetDueDateDialog(
+    title: String,
+    dueDate: LocalDate?,
+    dueTime: LocalTime?,
+    onConfirm: (LocalDate?, LocalTime?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val context = LocalContext.current
+
+    var currentDueDate: LocalDate? by rememberSaveable { mutableStateOf(dueDate) }
+    var currentDueTime: LocalTime? by rememberSaveable { mutableStateOf(dueTime) }
+
+    var showDatePickerDialog by rememberSaveable { mutableStateOf(false) }
+    if (showDatePickerDialog) {
+        DueDatePickerDialog(
+            date = currentDueDate ?: LocalDate.now(),
+            onConfirm = { selectedDate ->
+                currentDueDate = selectedDate
+                showDatePickerDialog = false
+            },
+            onDismiss = { showDatePickerDialog = false }
+        )
+    }
+
+    var showTimePickerDialog by rememberSaveable { mutableStateOf(false) }
+    if (showTimePickerDialog) {
+        DueTimePickerDialog(
+            time = currentDueTime ?: LocalTime.now(),
+            onConfirm = { selectedTime ->
+                currentDueTime = selectedTime
+                showTimePickerDialog = false
+            },
+            onDismiss = { showTimePickerDialog = false }
+        )
+    }
 
     BaseAlertDialog(
-        title = stringResource(id = state.dueDateType.titleRes),
+        title = title,
         content = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
+                val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
                 Text(
-                    text = dueDate,
+                    text = currentDueDate?.format(dateFormatter) ?: "Set date",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .background(MaterialTheme.colorScheme.outline)
                         .clickable {
-                            onSetDateClick()
+                            showDatePickerDialog = true
                         }
                         .padding(
                             horizontal = 12.dp,
@@ -90,15 +117,16 @@ internal fun SetDueDateDialog(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
+                val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
                 Text(
-                    text = dueTime,
+                    text = currentDueTime?.format(timeFormatter) ?: "Set time",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .clip(RoundedCornerShape(5.dp))
                         .background(MaterialTheme.colorScheme.outline)
                         .clickable {
-                            onSetTimeClick()
+                            showTimePickerDialog = true
                         }
                         .padding(
                             horizontal = 16.dp,
@@ -107,7 +135,17 @@ internal fun SetDueDateDialog(
                 )
             }
         },
-        onConfirm = onConfirm,
+        onConfirm = {
+            if (currentDueDate != null && currentDueTime != null) {
+                onConfirm(currentDueDate, currentDueTime)
+            } else {
+                Toast.makeText(
+                    context,
+                    "You must set the due date and time",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        },
         onDismiss = onDismiss,
     )
 }
@@ -116,13 +154,4 @@ enum class DueDateType(val titleRes: Int) {
     DUE_DATE(R.string.due_date),
     START_DATE(R.string.start_date),
     END_DATE(R.string.end_date),
-}
-
-
-val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
-val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-fun formatDateAndTime(date: LocalDate?, time: LocalTime?): Pair<String, String> {
-    val formattedDate = date?.let { dateFormatter.format(it) } ?: getCurrentDate()
-    val formattedTime = time?.let { timeFormatter.format(it) } ?: getCurrentTime()
-    return formattedDate to formattedTime
 }
