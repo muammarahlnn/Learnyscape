@@ -81,28 +81,10 @@ class ResourceCreateViewModel(
             }
 
             is ResourceCreateContract.Event.OnConfirmSetDueDate ->
-                onConfirmSetDueDateDialog()
+                onConfirmSetDueDateDialog(event.dueDate, event.dueTime)
 
             ResourceCreateContract.Event.OnDismissSetDueDateDialog ->
-                dismissSetDueDateDialog()
-
-            ResourceCreateContract.Event.OnSetDateClick ->
-                showDueDatePickerDialog(true)
-
-            is ResourceCreateContract.Event.OnConfirmPickDate ->
-                onConfirmPickDate(event.date)
-
-            ResourceCreateContract.Event.OnDismissDueDatePickerDialog ->
-                showDueDatePickerDialog(false)
-
-            ResourceCreateContract.Event.OnSetTimeClick ->
-                showDueTimePickerDialog(true)
-
-            is ResourceCreateContract.Event.OnConfirmPickTime ->
-                onConfirmPickTime(event.time)
-
-            ResourceCreateContract.Event.OnDismissDueTimePickerDialog ->
-                showDueTimePickerDialog(false)
+                showSetDueDateDialog(false)
 
             ResourceCreateContract.Event.OnQuizTypeClick ->
                 showQuizTypeBottomSheet(true)
@@ -246,116 +228,23 @@ class ResourceCreateViewModel(
         }
     }
 
-    private fun onConfirmSetDueDateDialog() {
-        val currentDate = LocalDate.now()
-        val currentTime = LocalTime.now()
+    private fun onConfirmSetDueDateDialog(
+        dueDate: LocalDate?,
+        dueTime: LocalTime?,
+    ) {
+        val currentDueDate = DueDate(
+            date = dueDate,
+            time = dueTime,
+        )
         _state.update {
             when (it.dueDateType) {
-                DueDateType.DUE_DATE -> it.copy(
-                    dueDate = it.dueDate.copy(
-                        date = it.dueDate.date ?: currentDate,
-                        time = it.dueDate.time ?: currentTime,
-                    ),
-                )
-                DueDateType.START_DATE -> it.copy(
-                    startDate = it.startDate.copy(
-                        date = it.startDate.date ?: currentDate,
-                        time = it.startDate.time ?: currentTime,
-                    ),
-                )
-                DueDateType.END_DATE -> it.copy(
-                    endDate = it.endDate.copy(
-                        date = it.endDate.date ?: currentDate,
-                        time = it.endDate.time ?: currentTime,
-                    ),
-                )
+                DueDateType.DUE_DATE -> it.copy(dueDate = currentDueDate)
+                DueDateType.START_DATE -> it.copy(startDate = currentDueDate)
+                DueDateType.END_DATE -> it.copy(endDate = currentDueDate)
             }
         }
+
         showSetDueDateDialog(false)
-    }
-
-    private fun dismissSetDueDateDialog() {
-        _state.update {
-            when (it.dueDateType) {
-                DueDateType.DUE_DATE -> it.copy(
-                    dueDate = DueDate(),
-                )
-                DueDateType.START_DATE -> it.copy(
-                    startDate = DueDate(),
-                )
-                DueDateType.END_DATE -> it.copy(
-                    endDate = DueDate(),
-                )
-            }
-        }
-        showSetDueDateDialog(false)
-    }
-
-    private fun showDueDatePickerDialog(show: Boolean) {
-        _state.update {
-            it.copy(
-                overlayComposableVisibility = it.overlayComposableVisibility.copy(
-                    dueDatePickerDialog = show
-                )
-            )
-        }
-    }
-
-    private fun onConfirmPickDate(date: LocalDate) {
-        _state.update {
-            when (it.dueDateType) {
-                DueDateType.DUE_DATE -> it.copy(
-                    dueDate = it.dueDate.copy(
-                        date = date,
-                    )
-                )
-                DueDateType.START_DATE -> it.copy(
-                    startDate = it.startDate.copy(
-                        date = date,
-                    )
-                )
-                DueDateType.END_DATE -> it.copy(
-                    endDate = it.endDate.copy(
-                        date = date,
-                    )
-                )
-            }
-        }
-
-        showDueDatePickerDialog(false)
-    }
-
-    private fun showDueTimePickerDialog(show: Boolean) {
-        _state.update {
-            it.copy(
-                overlayComposableVisibility = it.overlayComposableVisibility.copy(
-                    dueTimePickerDialog = show
-                )
-            )
-        }
-    }
-
-    private fun onConfirmPickTime(time: LocalTime) {
-        _state.update {
-            when (it.dueDateType) {
-                DueDateType.DUE_DATE -> it.copy(
-                    dueDate = it.dueDate.copy(
-                        time = time,
-                    )
-                )
-                DueDateType.START_DATE -> it.copy(
-                    startDate = it.startDate.copy(
-                        time = time,
-                    )
-                )
-                DueDateType.END_DATE -> it.copy(
-                    endDate = it.endDate.copy(
-                        time = time,
-                    )
-                )
-            }
-        }
-        showDueTimePickerDialog(false)
     }
 
     private fun showQuizTypeBottomSheet(show: Boolean) {

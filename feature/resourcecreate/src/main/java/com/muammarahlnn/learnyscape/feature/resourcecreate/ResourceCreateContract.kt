@@ -62,21 +62,12 @@ interface ResourceCreateContract :
 
         data class OnDueDateClick(val dueDateType: DueDateType) : Event
 
-        data object OnConfirmSetDueDate : Event
+        data class OnConfirmSetDueDate(
+            val dueDate: LocalDate?,
+            val dueTime: LocalTime?,
+        ) : Event
 
         data object OnDismissSetDueDateDialog : Event
-
-        data object OnSetDateClick: Event
-
-        data class OnConfirmPickDate(val date: LocalDate) : Event
-
-        data object OnDismissDueDatePickerDialog : Event
-
-        data object OnSetTimeClick : Event
-
-        data class OnConfirmPickTime(val time: LocalTime) : Event
-
-        data object OnDismissDueTimePickerDialog : Event
 
         data object OnQuizTypeClick : Event
 
