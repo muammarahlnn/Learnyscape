@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.TransparentTextField
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
 
@@ -13,6 +14,7 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.R
  */
 @Composable
 internal fun DescriptionInputCard(
+    resourceType: ClassResourceType,
     description: String,
     onDescriptionChange: (String) -> Unit,
     modifier: Modifier = Modifier,
@@ -24,7 +26,12 @@ internal fun DescriptionInputCard(
     ) {
         TransparentTextField(
             value = description,
-            placeholderText = stringResource(id = R.string.description_input_placeholder),
+            placeholderText = stringResource(
+                id = when (resourceType) {
+                    ClassResourceType.ANNOUNCEMENT -> R.string.share_with_your_class
+                    else -> R.string.description
+                }
+            ),
             onValueChange = onDescriptionChange,
             modifier = Modifier.fillMaxWidth()
         )

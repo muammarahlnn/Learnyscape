@@ -28,6 +28,7 @@ internal fun AnnouncementResourceContent(
             .padding(horizontal = 16.dp)
     ) {
         DescriptionInputCard(
+            resourceType = state.resourceType,
             description = state.description,
             onDescriptionChange = onDescriptionChange,
         )

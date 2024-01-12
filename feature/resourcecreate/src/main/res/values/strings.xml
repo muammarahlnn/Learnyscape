@@ -3,7 +3,7 @@
     <string name="post">Post</string>
     <string name="description">Description</string>
     <string name="attachment">Attachment</string>
-    <string name="description_input_placeholder">Share with your class</string>
+    <string name="share_with_your_class">Share with your class</string>
     <string name="attachment_input_placeholder">Add attachment</string>
     <string name="upload_file">Upload file</string>
     <string name="take_a_photo">Take a photo</string>
