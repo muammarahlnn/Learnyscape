@@ -26,7 +26,7 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeNavHost
 @Composable
 internal fun HomeNavigatorRoute(
     onNotificationsClick: () -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
@@ -45,7 +45,7 @@ internal fun HomeNavigatorRoute(
 @Composable
 private fun HomeNavigator(
     onNotificationsClick: () -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,

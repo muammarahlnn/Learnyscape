@@ -52,16 +52,18 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ClassRoute(
-    onBackClick: () -> Unit,
-    onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: (Int) -> Unit,
-    onPostClick: (Int) -> Unit,
+    classId: String,
+    navigateBack: () -> Unit,
+    navigateToJoinRequests: () -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassViewModel = hiltViewModel(),
 ) {
     val (state, event) = use(contract = viewModel)
     val user = LocalUserModel.current
     LaunchedEffect(Unit) {
+        event(ClassContract.Event.SetClassId(classId))
         executeForLecturer(user) {
             event(ClassContract.Event.FetchProfilePic)
         }
@@ -70,18 +72,26 @@ internal fun ClassRoute(
     val context = LocalContext.current
     viewModel.effect.collectInLaunchedEffect {
         when (it) {
-            is ClassContract.Effect.ShowToast -> {
+            is ClassContract.Effect.ShowToast ->
                 Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-            }
+
+            ClassContract.Effect.NavigateBack ->
+                navigateBack()
+
+            ClassContract.Effect.NavigateToJoinRequests ->
+                navigateToJoinRequests()
+
+            is ClassContract.Effect.NavigateToResourceCreate ->
+                navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
+
+            is ClassContract.Effect.NavigateToResourceDetails ->
+                navigateToResourceDetails(it.resourceTypeOrdinal)
         }
     }
 
     ClassScreen(
         state = state,
-        onBackClick = onBackClick,
-        onJoinRequestsClick = onJoinRequestsClick,
-        onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
-        onPostClick = onPostClick,
+        event = { event(it) },
         modifier = modifier,
     )
 }
@@ -89,10 +99,7 @@ internal fun ClassRoute(
 @Composable
 private fun ClassScreen(
     state: ClassContract.State,
-    onBackClick: () -> Unit,
-    onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: (Int) -> Unit,
-    onPostClick: (Int) -> Unit,
+    event: (ClassContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val user = LocalUserModel.current
@@ -108,8 +115,8 @@ private fun ClassScreen(
 
         item {
             ClassHeader(
-                onBackClick = onBackClick,
-                onJoinRequestsClick = onJoinRequestsClick,
+                onBackClick = { event(ClassContract.Event.OnNavigateBack) },
+                onJoinRequestsClick = { event(ClassContract.Event.OnNavigateToJoinRequests) },
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
@@ -117,7 +124,9 @@ private fun ClassScreen(
         executeForLecturer(user) {
             item {
                 CreateNewAnnouncementCard(
-                    onClick = onCreateNewAnnouncementClick,
+                    onClick = {
+                        event(ClassContract.Event.OnNavigateToResourceCreate)
+                    },
                     state = state,
                     modifier = paddingModifier,
                 )
@@ -131,7 +140,9 @@ private fun ClassScreen(
                 timePosted = "21 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
-                onPostClick = onPostClick,
+                onPostClick =  { resourceTypeOrdinal ->
+                    event(ClassContract.Event.OnNavigateToResourceDetails(resourceTypeOrdinal))
+                },
                 modifier = paddingModifier,
             )
         }
@@ -143,7 +154,9 @@ private fun ClassScreen(
                 timePosted = "11 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
-                onPostClick = onPostClick,
+                onPostClick = { resourceTypeOrdinal ->
+                    event(ClassContract.Event.OnNavigateToResourceDetails(resourceTypeOrdinal))
+                },
                 modifier = paddingModifier,
             )
         }
@@ -155,7 +168,9 @@ private fun ClassScreen(
                 timePosted = "10 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
-                onPostClick = onPostClick,
+                onPostClick = { resourceTypeOrdinal ->
+                    event(ClassContract.Event.OnNavigateToResourceDetails(resourceTypeOrdinal))
+                },
                 modifier = paddingModifier,
             )
         }
@@ -167,7 +182,9 @@ private fun ClassScreen(
                 timePosted = "2 May 2023",
                 caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
                 isCaptionOverflowed = true,
-                onPostClick = onPostClick,
+                onPostClick = { resourceTypeOrdinal ->
+                    event(ClassContract.Event.OnNavigateToResourceDetails(resourceTypeOrdinal))
+                },
                 modifier = paddingModifier,
             )
         }
@@ -333,12 +350,12 @@ private fun ClassInfoCard(
 @Composable
 private fun CreateNewAnnouncementCard(
     state: ClassContract.State,
-    onClick: (Int) -> Unit,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
         modifier = modifier.clickable {
-            onClick(ClassResourceType.ANNOUNCEMENT.ordinal)
+            onClick()
         }
     ) {
         Row(

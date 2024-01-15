@@ -62,7 +62,10 @@ inline fun <reified T> Result<T>.onError(
     ) -> Unit,
 ) = apply {
     if (this is Result.Error) {
-        callback(code, message)
+        callback(
+            code,
+            message.lowercase().replaceFirstChar { it.uppercase() }
+        )
     }
 }
 

@@ -20,10 +20,10 @@ import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizScreen
 @Composable
 internal fun ClassNavHost(
     state: ClassNavigatorState,
-    onBackClick: () -> Unit,
-    onJoinRequestsClick: () -> Unit,
-    onCreateNewResourceClick: (Int) -> Unit,
-    onResourceClassClick: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToJoinRequests: () -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = CLASS_ROUTE,
 ) {
@@ -34,25 +34,29 @@ internal fun ClassNavHost(
         modifier = modifier,
     ) {
         classScreen(
-            onBackClick = onBackClick,
-            onJoinRequestsClick = onJoinRequestsClick,
-            onCreateNewAnnouncementClick = onCreateNewResourceClick,
-            onPostClick = onResourceClassClick,
+            classId = state.classId,
+            navigateBack = navigateBack,
+            navigateToJoinRequests = navigateToJoinRequests,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
         )
         moduleScreen(
-            onBackClick = onBackClick,
-            onModuleClick = onResourceClassClick,
-            onCreateNewModuleClick = onCreateNewResourceClick,
+            classId = state.classId,
+            navigateBack = navigateBack,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
         )
         assignmentScreen(
-            onBackClick = onBackClick,
-            onAssignmentClick = onResourceClassClick,
-            onCreateNewAssignmentClick = onCreateNewResourceClick,
+            classId = state.classId,
+            navigateBack = navigateBack,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
         )
         quizScreen(
-            onBackClick = onBackClick,
-            onQuizClick = onResourceClassClick,
-            onCreateNewQuizClick = onCreateNewResourceClick,
+            classId = state.classId,
+            navigateBack = navigateBack,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
         )
         memberScreen()
     }

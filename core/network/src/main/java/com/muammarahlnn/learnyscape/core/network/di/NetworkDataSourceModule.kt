@@ -4,11 +4,13 @@ import com.muammarahlnn.learnyscape.core.network.datasource.AvailableClassNetwor
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.SchedulesNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.AvailableClassNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.LoginNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ProfileNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceCreateNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.SchedulesNetworkDataSourceImpl
 import dagger.Binds
 import dagger.Module
@@ -49,4 +51,9 @@ interface NetworkDataSourceModule {
     fun bindsScheduleNetworkDataSource(
         schedulesNetworkDataSource: SchedulesNetworkDataSourceImpl
     ): SchedulesNetworkDataSource
+
+    @Binds
+    fun bindsResourceCreateNetworkDataSource(
+        resourceCreateNetworkDataSource: ResourceCreateNetworkDataSourceImpl
+    ): ResourceCreateNetworkDataSource
 }

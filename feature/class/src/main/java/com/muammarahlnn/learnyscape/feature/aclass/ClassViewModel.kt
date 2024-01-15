@@ -10,12 +10,12 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,9 +35,33 @@ class ClassViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<ClassContract.Effect>()
     override val effect: SharedFlow<ClassContract.Effect> = _effect
 
+    private val announcementOrdinal = ClassResourceType.ANNOUNCEMENT.ordinal
+
     override fun event(event: ClassContract.Event) {
         when (event) {
-            ClassContract.Event.FetchProfilePic -> fetchProfilePic()
+            is ClassContract.Event.SetClassId ->
+                setClassId(event.classId)
+
+            ClassContract.Event.FetchProfilePic ->
+                fetchProfilePic()
+
+            ClassContract.Event.OnNavigateBack ->
+                navigateBack()
+
+            ClassContract.Event.OnNavigateToJoinRequests ->
+                navigateToJoinRequests()
+
+            ClassContract.Event.OnNavigateToResourceCreate ->
+                navigateToResourceCreate()
+
+            is ClassContract.Event.OnNavigateToResourceDetails ->
+                navigateToResourceDetails()
+        }
+    }
+
+    private fun setClassId(classId: String) {
+        _state.update {
+            it.copy(classId = classId)
         }
     }
 
@@ -74,6 +98,39 @@ class ClassViewModel @Inject constructor(
     private fun updateIsProfilePicLoadingStateToFalse() {
         _state.update {
             it.copy(isProfilePicLoading = false)
+        }
+    }
+
+    private fun navigateBack() {
+        viewModelScope.launch {
+            _effect.emit(ClassContract.Effect.NavigateBack)
+        }
+    }
+
+    private fun navigateToJoinRequests() {
+        viewModelScope.launch {
+            _effect.emit(ClassContract.Effect.NavigateToJoinRequests)
+        }
+    }
+
+    private fun navigateToResourceCreate() {
+        viewModelScope.launch {
+            _effect.emit(
+                ClassContract.Effect.NavigateToResourceCreate(
+                    classId = _state.value.classId,
+                    resourceTypeOrdinal = announcementOrdinal,
+                )
+            )
+        }
+    }
+
+    private fun navigateToResourceDetails() {
+        viewModelScope.launch {
+            _effect.emit(
+                ClassContract.Effect.NavigateToResourceDetails(
+                    resourceTypeOrdinal = announcementOrdinal
+                )
+            )
         }
     }
 

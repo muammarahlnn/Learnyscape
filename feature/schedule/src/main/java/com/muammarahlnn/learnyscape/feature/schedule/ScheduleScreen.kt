@@ -47,7 +47,7 @@ import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCal
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun ScheduleRoute(
-    onScheduleClick: () -> Unit,
+    onScheduleClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = hiltViewModel(),
 ) {
@@ -79,7 +79,7 @@ private fun ScheduleScreen(
     pullRefreshState: PullRefreshState,
     refreshing: Boolean,
     onRefresh: () -> Unit,
-    onScheduleClick: () -> Unit,
+    onScheduleClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()

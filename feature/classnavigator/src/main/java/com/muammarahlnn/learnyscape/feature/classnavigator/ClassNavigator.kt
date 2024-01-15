@@ -6,6 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeNavigationBar
@@ -21,29 +22,32 @@ import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHo
 
 @Composable
 internal fun ClassNavigatorRoute(
-    onBackClick: () -> Unit,
-    onJoinRequestsClick: () -> Unit,
-    onCreateNewResourceClick: (Int) -> Unit,
-    onResourceClassClick: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    navigateToJoinRequests: () -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: ClassNavigationViewModel = hiltViewModel(),
 ) {
     ClassNavigator(
-        onBackClick = onBackClick,
-        onJoinRequestsClick = onJoinRequestsClick,
-        onCreateNewResourceClick = onCreateNewResourceClick,
-        onResourceClassClick = onResourceClassClick,
+        classId = viewModel.classId,
+        navigateBack = navigateBack,
+        navigateToJoinRequests = navigateToJoinRequests,
+        navigateToResourceDetails = navigateToResourceDetails,
+        navigateToResourceCreate = navigateToResourceCreate,
         modifier = modifier,
     )
 }
 
 @Composable
 private fun ClassNavigator(
-    onBackClick: () -> Unit,
-    onJoinRequestsClick: () -> Unit,
-    onCreateNewResourceClick: (Int) -> Unit,
-    onResourceClassClick: (Int) -> Unit,
+    classId: String,
+    navigateBack: () -> Unit,
+    navigateToJoinRequests: () -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
-    state: ClassNavigatorState = rememberClassNavigatorState()
+    state: ClassNavigatorState = rememberClassNavigatorState(classId)
 ) {
     Scaffold(
         bottomBar = {
@@ -57,10 +61,10 @@ private fun ClassNavigator(
     ) { padding ->
         ClassNavHost(
             state = state,
-            onBackClick = onBackClick,
-            onJoinRequestsClick = onJoinRequestsClick,
-            onCreateNewResourceClick = onCreateNewResourceClick,
-            onResourceClassClick = onResourceClassClick,
+            navigateBack = navigateBack,
+            navigateToJoinRequests = navigateToJoinRequests,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
             modifier = Modifier.padding(padding)
         )
     }

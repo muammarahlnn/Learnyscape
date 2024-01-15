@@ -14,7 +14,7 @@ const val HOME_NAVIGATOR_ROUTE = "home_navigator_route"
 
 fun NavGraphBuilder.homeNavigator(
     onNotificationsClick: () -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,

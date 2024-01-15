@@ -1,13 +1,22 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.result.asResult
+import com.muammarahlnn.learnyscape.core.common.result.onError
+import com.muammarahlnn.learnyscape.core.common.result.onException
+import com.muammarahlnn.learnyscape.core.common.result.onLoading
+import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
+import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.PhotoAnswerQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.ResourceCreateArgs
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,19 +28,23 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
+import javax.inject.Inject
 
 /**
  * @Author Muammar Ahlan Abimanyu
  * @File ResourceCreateViewModel, 18/12/2023 05.54
  */
-class ResourceCreateViewModel(
+@HiltViewModel
+class ResourceCreateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val createAnnouncementUseCase: CreateAnnouncementUseCase,
 ) : ViewModel(), ResourceCreateContract {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
 
     private val _state = MutableStateFlow(
         ResourceCreateContract.State(
+            classId = resourceCreateArgs.classId,
             resourceType = ClassResourceType.getClassResourceType(resourceCreateArgs.resourceTypeOrdinal)
         )
     )
@@ -43,7 +56,10 @@ class ResourceCreateViewModel(
     override fun event(event: ResourceCreateContract.Event) {
         when (event) {
             ResourceCreateContract.Event.OnCloseClick ->
-                closeScreen()
+                navigateBack()
+
+            ResourceCreateContract.Event.OnCreateResourceClick ->
+                createResource()
 
             is ResourceCreateContract.Event.OnTitleChange ->
                 onTitleChange(event.title)
@@ -55,7 +71,7 @@ class ResourceCreateViewModel(
                 showAddAttachmentBottomSheet(true)
 
             ResourceCreateContract.Event.OnCameraClick ->
-                openCamera()
+                navigateToCamera()
 
             ResourceCreateContract.Event.OnUploadFileClick ->
                 openFiles()
@@ -115,6 +131,77 @@ class ResourceCreateViewModel(
 
             is ResourceCreateContract.Event.OnUnfilledQuestions ->
                 showToast(event.message)
+
+            ResourceCreateContract.Event.OnDismissCreatingResourceDialog ->
+                showCreatingResourceDialog(false)
+
+            ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog ->
+                navigateBack()
+        }
+    }
+
+    private fun createResource() {
+        showCreatingResourceDialog(true)
+
+        when (_state.value.resourceType) {
+            ClassResourceType.ANNOUNCEMENT -> createAnnouncement()
+            ClassResourceType.MODULE -> TODO()
+            ClassResourceType.ASSIGNMENT -> TODO()
+            ClassResourceType.QUIZ -> TODO()
+        }
+    }
+
+    private fun createAnnouncement() {
+        if (_state.value.description.isEmpty()) {
+            onErrorCreatingResource("Announcement caption can't be empty")
+            return
+        }
+
+        viewModelScope.launch {
+            createAnnouncementUseCase(
+                classId = _state.value.classId,
+                description = _state.value.description,
+                attachments = _state.value.attachments,
+            ).asResult().collect { result ->
+                result.onLoading {
+                    onLoadingCreatingResource()
+                }.onSuccess { message ->
+                    onSuccessCreatingResource(message)
+                }.onNoInternet { message ->
+                    onErrorCreatingResource(message)
+                }.onError { _, message ->
+                    onErrorCreatingResource(message)
+                }.onException { exception, message ->
+                    Log.e(TAG, exception?.message.toString())
+                    onErrorCreatingResource(message)
+                }
+            }
+        }
+    }
+
+    private fun onLoadingCreatingResource() {
+        _state.update {
+            it.copy(
+                creatingResourceDialogState = CreatingResourceDialogState.Loading
+            )
+        }
+    }
+
+    private fun onSuccessCreatingResource(message: String) {
+        _state.update {
+            it.copy(
+                creatingResourceDialogState = CreatingResourceDialogState.Success(
+                    message.lowercase().replaceFirstChar { char -> char.uppercase() }
+                )
+            )
+        }
+    }
+
+    private fun onErrorCreatingResource(message: String) {
+        _state.update {
+            it.copy(
+                creatingResourceDialogState = CreatingResourceDialogState.Error(message)
+            )
         }
     }
 
@@ -124,9 +211,9 @@ class ResourceCreateViewModel(
         }
     }
 
-    private fun closeScreen() {
+    private fun navigateBack() {
         viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.CloseScreen)
+            _effect.emit(ResourceCreateContract.Effect.NavigateBack)
         }
     }
 
@@ -152,9 +239,9 @@ class ResourceCreateViewModel(
         }
     }
 
-    private fun openCamera() {
+    private fun navigateToCamera() {
         viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.OpenCamera)
+            _effect.emit(ResourceCreateContract.Effect.NavigateToCamera)
         }
         showAddAttachmentBottomSheet(false)
     }
@@ -316,5 +403,20 @@ class ResourceCreateViewModel(
             )
         }
         closeQuestionsScreen()
+    }
+
+    private fun showCreatingResourceDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    creatingResourceDialog = show
+                )
+            )
+        }
+    }
+
+    companion object {
+
+        private const val TAG = "ResourceCreateViewModel"
     }
 }
