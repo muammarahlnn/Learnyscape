@@ -70,7 +70,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 @Composable
 internal fun HomeRoute(
     onNotificationsClick: () -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -107,7 +107,7 @@ private fun HomeScreen(
     onRefresh: () -> Unit,
     onNotificationsClick: () -> Unit,
     onSearchQueryChanged: (String) -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -180,7 +180,7 @@ private fun HomeContent(
     searchQuery: String,
     classes: List<EnrolledClassInfoModel>,
     onSearchQueryChanged: (String) -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -208,9 +208,10 @@ private fun HomeContent(
                 }
             ) { classInfo ->
                 ClassCard(
+                    classId = classInfo.id,
                     className = classInfo.className,
                     lecturerName = classInfo.lecturerNames.first(),
-                    onItemClick = onClassClick,
+                    onClassClick = onClassClick,
                 )
             }
         }
@@ -219,16 +220,17 @@ private fun HomeContent(
 
 @Composable
 private fun ClassCard(
-    className: String ,
+    classId: String,
+    className: String,
     lecturerName: String,
-    onItemClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable {
-                onItemClick()
+                onClassClick(classId)
             }
     ) {
         Row(

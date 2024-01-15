@@ -19,17 +19,19 @@ fun NavController.navigateToClass(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.classScreen(
-    onBackClick: () -> Unit,
-    onJoinRequestsClick: () -> Unit,
-    onCreateNewAnnouncementClick: (Int) -> Unit,
-    onPostClick: (Int) -> Unit,
+    classId: String,
+    navigateBack: () -> Unit,
+    navigateToJoinRequests: () -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
 ) {
     composable(route = CLASS_ROUTE) {
         ClassRoute(
-            onBackClick = onBackClick,
-            onJoinRequestsClick = onJoinRequestsClick,
-            onCreateNewAnnouncementClick = onCreateNewAnnouncementClick,
-            onPostClick = onPostClick,
+            classId = classId,
+            navigateBack = navigateBack,
+            navigateToJoinRequests = navigateToJoinRequests,
+            navigateToResourceCreate = navigateToResourceCreate,
+            navigateToResourceDetails = navigateToResourceDetails,
         )
     }
 }

@@ -18,15 +18,17 @@ fun NavController.navigateToAssignment(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.assignmentScreen(
-    onBackClick: () -> Unit,
-    onAssignmentClick: (Int) -> Unit,
-    onCreateNewAssignmentClick: (Int) -> Unit,
+    classId: String,
+    navigateBack: () -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
 ) {
     composable(route = ASSIGNMENT_ROUTE) {
         AssignmentRoute(
-            onBackClick = onBackClick,
-            onAssignmentClick = onAssignmentClick,
-            onCreateNewAssignmentClick = onCreateNewAssignmentClick,
+            classId = classId,
+            navigateBack = navigateBack,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
         )
     }
 }

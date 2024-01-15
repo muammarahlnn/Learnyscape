@@ -18,15 +18,17 @@ fun NavController.navigateToModule(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.moduleScreen(
-    onBackClick: () -> Unit,
-    onModuleClick: (Int) -> Unit,
-    onCreateNewModuleClick: (Int) -> Unit,
+    classId: String,
+    navigateBack: () -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
 ) {
     composable(route = MODULE_ROUTE) {
         ModuleRoute(
-            onBackClick = onBackClick,
-            onModuleClick = onModuleClick,
-            onCreateNewModuleClick = onCreateNewModuleClick,
+            classId = classId,
+            navigateBack = navigateBack,
+            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceCreate = navigateToResourceCreate,
         )
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
+import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.interceptor.BearerTokenInterceptor
@@ -79,6 +80,13 @@ object NetworkModule {
         networkJson: Json,
         @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
     ): ClassesApi = buildRetrofit(networkJson, client).create(ClassesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesAnnouncementsApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): AnnouncementsApi = buildRetrofit(networkJson, client).create(AnnouncementsApi::class.java)
 }
 
 private const val BASE_URL = BuildConfig.BASE_URL

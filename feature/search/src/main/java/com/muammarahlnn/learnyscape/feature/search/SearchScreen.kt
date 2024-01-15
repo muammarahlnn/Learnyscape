@@ -24,7 +24,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.PullRefreshState
 import androidx.compose.material.pullrefresh.pullRefresh
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +51,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCente
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
-import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingDialog
 import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
@@ -400,26 +399,7 @@ private fun JoinRequestClassDialog(
             modifier = modifier,
         )
     } else {
-        AlertDialog(
-            onDismissRequest = {
-                // prevent user from dismissing the dialog when loading
-            },
-            confirmButton = {
-                // there are no confirm button when loading
-            },
-            text = {
-                // add padding top to make the loading well-centered due to empty confirmButton
-                LoadingScreen(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .padding(top = 16.dp)
-                )
-            },
-            shape = RoundedCornerShape(8.dp),
-            containerColor = MaterialTheme.colorScheme.background,
-            modifier = modifier,
-        )
+        LoadingDialog()
     }
 }
 

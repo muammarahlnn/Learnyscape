@@ -13,7 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
 import com.muammarahlnn.learnyscape.core.model.data.UserModel
 import com.muammarahlnn.learnyscape.feature.camera.navigation.CAMERA_ROUTE
-import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.CLASS_NAVIGATOR_ROUTE
+import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.CLASS_NAVIGATOR_ROUTE_WITH_ARGS
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -68,7 +68,7 @@ class LearnyscapeAppState(
     val currentStatusBarColor: Color
         @Composable
         get() = when (currentRoute) {
-            CLASS_NAVIGATOR_ROUTE -> MaterialTheme.colorScheme.background
+            CLASS_NAVIGATOR_ROUTE_WITH_ARGS -> MaterialTheme.colorScheme.background
             CAMERA_ROUTE -> Color.Black
             else -> MaterialTheme.colorScheme.primary
         }

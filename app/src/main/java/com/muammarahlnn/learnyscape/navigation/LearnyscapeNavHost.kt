@@ -74,9 +74,7 @@ fun LearnyscapeNavHost(
             onNotificationsClick = {
                 navController.navigateToNotifications()
             },
-            onClassClick = {
-                navController.navigateToClassNavigator()
-            },
+            onClassClick = navController::navigateToClassNavigator,
             onCameraActionClick = {
                 navController.navigateToCamera()
             },
@@ -86,10 +84,10 @@ fun LearnyscapeNavHost(
             onChangePasswordButtonClick = navController::navigateToChangePassword
         )
         classNavigator(
-            onBackClick = navController::popBackStack,
-            onJoinRequestsClick = navController::navigateToJoinRequest,
-            onCreateNewResourceClick = navController::navigateToResourceCreate,
-            onResourceClassClick = navigateToResourceDetails(navController),
+            navigateBack = navController::popBackStack,
+            navigateToJoinRequests = navController::navigateToJoinRequest,
+            navigateToResourceCreate = navController::navigateToResourceCreate,
+            navigateToResourceDetails = navigateToResourceDetails(navController),
         )
         notificationsScreen(
             onNotificationClick = navigateToResourceDetails(navController),
@@ -124,8 +122,8 @@ fun LearnyscapeNavHost(
             onBackClick = navController::popBackStack
         )
         resourceCreateScreen(
-            onCloseClick = navController::popBackStack,
-            onCameraClick = navController::navigateToCamera
+            navigateBack = navController::popBackStack,
+            navigateToCamera = navController::navigateToCamera
         )
     }
 }

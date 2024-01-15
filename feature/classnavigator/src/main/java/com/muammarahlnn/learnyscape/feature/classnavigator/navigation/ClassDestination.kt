@@ -45,9 +45,4 @@ internal enum class ClassDestination(
         titleId = memberR.string.member,
         iconId = memberR.drawable.ic_group,
     );
-
-    override fun toString(): String =
-        name.lowercase().replaceFirstChar { firstChar ->
-            firstChar.uppercase()
-        }
 }

@@ -20,7 +20,7 @@ import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
 internal fun HomeNavHost(
     state: HomeNavigatorState,
     onNotificationsClick: () -> Unit,
-    onClassClick: () -> Unit,
+    onClassClick: (String) -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,

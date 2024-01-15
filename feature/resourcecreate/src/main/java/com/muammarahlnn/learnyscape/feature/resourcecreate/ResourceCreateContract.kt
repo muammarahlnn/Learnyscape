@@ -19,6 +19,7 @@ interface ResourceCreateContract :
     EffectProvider<ResourceCreateContract.Effect> {
 
     data class State(
+        val classId: String = "",
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
         val title: String = "",
         val description: String = "",
@@ -34,11 +35,14 @@ interface ResourceCreateContract :
         val showQuestionsScreen: Boolean = false,
         val multipleChoiceQuestions: List<MultipleChoiceQuestion> = listOf(),
         val photoAnswerQuestions: List<PhotoAnswerQuestion> = listOf(),
+        val creatingResourceDialogState: CreatingResourceDialogState = CreatingResourceDialogState.Loading,
     )
 
     sealed interface Event {
 
         data object OnCloseClick : Event
+
+        data object OnCreateResourceClick : Event
 
         data class OnTitleChange(val title: String) : Event
 
@@ -91,15 +95,19 @@ interface ResourceCreateContract :
         ) : Event
 
         data class OnUnfilledQuestions(val message: String) : Event
+
+        data object OnDismissCreatingResourceDialog : Event
+
+        data object OnConfirmSuccessCreatingResourceDialog : Event
     }
 
     sealed interface Effect {
 
-        data object CloseScreen : Effect
+        data object NavigateBack : Effect
 
         data object OpenFiles : Effect
 
-        data object OpenCamera : Effect
+        data object NavigateToCamera : Effect
 
         data class ShowToast(val message: String) : Effect
     }
@@ -109,10 +117,9 @@ data class OverlayComposableVisibility(
     val addAttachmentBottomSheet: Boolean = false,
     val removeAttachmentBottomSheet: Boolean = false,
     val setDueDateDialog: Boolean = false,
-    val dueDatePickerDialog: Boolean = false,
-    val dueTimePickerDialog: Boolean = false,
     val quizTypeBottomSheet: Boolean = false,
     val durationDialog: Boolean = false,
+    val creatingResourceDialog: Boolean = false,
 )
 
 data class DueDate(
@@ -124,4 +131,13 @@ enum class QuizType {
     NONE,
     MCQ, // stands for multiple choice question
     PHOTO_ANSWER
+}
+
+sealed interface CreatingResourceDialogState {
+
+    data object Loading : CreatingResourceDialogState
+
+    data class Success(val message: String) : CreatingResourceDialogState
+
+    data class Error(val message: String) : CreatingResourceDialogState
 }

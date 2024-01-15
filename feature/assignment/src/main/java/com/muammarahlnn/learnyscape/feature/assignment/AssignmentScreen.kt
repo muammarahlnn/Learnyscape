@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 
 
 /**
@@ -22,15 +26,33 @@ import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 
 @Composable
 internal fun AssignmentRoute(
-    onBackClick: () -> Unit,
-    onAssignmentClick: (Int) -> Unit,
-    onCreateNewAssignmentClick: (Int) -> Unit,
+    classId: String,
+    navigateBack: () -> Unit,
+    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: AssignmentViewModel = hiltViewModel(),
 ) {
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(AssignmentContract.Event.SetClassId(classId))
+    }
+
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            AssignmentContract.Effect.NavigateBack ->
+                navigateBack()
+
+            is AssignmentContract.Effect.NavigateToResourceDetails ->
+                navigateToResourceDetails(it.resourceTypeOrdinal)
+
+            is AssignmentContract.Effect.NavigateToResourceCreate ->
+                navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
+        }
+    }
+
     AssignmentScreen(
-        onBackClick = onBackClick,
-        onAssignmentClick = onAssignmentClick,
-        onCreateNewAssignmentClick = onCreateNewAssignmentClick,
+        event = { event(it) },
         modifier = modifier,
     )
 }
@@ -38,17 +60,13 @@ internal fun AssignmentRoute(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AssignmentScreen(
-    onBackClick: () -> Unit,
-    onAssignmentClick: (Int) -> Unit,
-    onCreateNewAssignmentClick: (Int) -> Unit,
+    event: (AssignmentContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
         resourceTitle = stringResource(id = R.string.assignment),
-        onBackClick = onBackClick,
-        onCreateNewResourceClick = {
-            onCreateNewAssignmentClick(ClassResourceType.ASSIGNMENT.ordinal)
-        },
+        onBackClick = { event(AssignmentContract.Event.OnNavigateBack) },
+        onCreateNewResourceClick = { event(AssignmentContract.Event.OnNavigateToResourceCreate) },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
         LazyColumn(
@@ -64,7 +82,7 @@ private fun AssignmentScreen(
                         classResourceType = ClassResourceType.ASSIGNMENT,
                         title = "Tugas Background Thread",
                         timeLabel = "Due 21 May 2023, 21:21",
-                        onItemClick = onAssignmentClick,
+                        onItemClick = { event(AssignmentContract.Event.OnNavigateToResourceDetails) },
                     )
                 }
             }

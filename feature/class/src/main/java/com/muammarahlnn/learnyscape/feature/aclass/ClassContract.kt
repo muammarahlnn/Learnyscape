@@ -13,17 +13,39 @@ interface ClassContract :
     EffectProvider<ClassContract.Effect> {
 
     data class State(
+        val classId: String = "",
         val profilePic: Bitmap? = null,
         val isProfilePicLoading: Boolean = false,
     )
 
     sealed interface Event {
 
+        data class SetClassId(val classId: String) : Event
+
         data object FetchProfilePic : Event
+
+        data object OnNavigateBack : Event
+
+        data object OnNavigateToJoinRequests : Event
+
+        data object OnNavigateToResourceCreate : Event
+
+        data class OnNavigateToResourceDetails(val resourceTypeOrdinal: Int) : Event
     }
 
     sealed interface Effect {
 
         data class ShowToast(val message: String) : Effect
+
+        data object NavigateBack : Effect
+
+        data object NavigateToJoinRequests : Effect
+
+        data class NavigateToResourceCreate(
+            val classId: String,
+            val resourceTypeOrdinal: Int,
+        ) : Effect
+
+        data class NavigateToResourceDetails(val resourceTypeOrdinal: Int) : Effect
     }
 }

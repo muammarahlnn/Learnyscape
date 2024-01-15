@@ -38,6 +38,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AddAttachmentBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AnnouncementResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.AssignmentResourceContent
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.CreatingResourceDialog
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.ModuleResourceContent
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.QuizQuestions
@@ -54,8 +55,8 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 @Composable
 internal fun ResourceCreateRoute(
-    onCloseClick: () -> Unit,
-    onCameraClick: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateToCamera: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceCreateViewModel = hiltViewModel(),
 ) {
@@ -78,8 +79,8 @@ internal fun ResourceCreateRoute(
 
     viewModel.effect.collectInLaunchedEffect {
         when (it) {
-            ResourceCreateContract.Effect.CloseScreen -> onCloseClick()
-            ResourceCreateContract.Effect.OpenCamera -> onCameraClick()
+            ResourceCreateContract.Effect.NavigateBack -> navigateBack()
+            ResourceCreateContract.Effect.NavigateToCamera -> navigateToCamera()
             ResourceCreateContract.Effect.OpenFiles -> launcher.launch("*/*")
             is ResourceCreateContract.Effect.ShowToast ->
                 Toast.makeText(context, it.message,Toast.LENGTH_SHORT).show()
@@ -163,6 +164,14 @@ private fun ResourceCreateScreen(
         )
     }
 
+    if (state.overlayComposableVisibility.creatingResourceDialog) {
+        CreatingResourceDialog(
+            state = state.creatingResourceDialogState,
+            onConfirmSuccess = { event(ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog) },
+            onDismiss = { event(ResourceCreateContract.Event.OnDismissCreatingResourceDialog) }
+        )
+    }
+
     AnimatedContent(
         targetState = state.showQuestionsScreen,
         label = "ResourceCreateScreen AnimatedContent",
@@ -213,10 +222,14 @@ private fun ResourceCreateScreen(
                             ),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.background,
-                            modifier = Modifier.padding(
-                                vertical = 8.dp,
-                                horizontal = 32.dp,
-                            )
+                            modifier = Modifier
+                                .padding(
+                                    vertical = 8.dp,
+                                    horizontal = 32.dp,
+                                )
+                                .clickable {
+                                    event(ResourceCreateContract.Event.OnCreateResourceClick)
+                                }
                         )
                     }
                 }

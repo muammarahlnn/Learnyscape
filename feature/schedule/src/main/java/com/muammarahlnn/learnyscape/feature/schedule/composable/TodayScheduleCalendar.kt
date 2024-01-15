@@ -45,7 +45,7 @@ private val scheduleHours = START_HOUR..END_HOUR
 @Composable
 internal fun TodayScheduleCalendar(
     schedules: List<ScheduleModel>,
-    onScheduleClick: () -> Unit,
+    onScheduleClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hourLabels = @Composable {
@@ -57,6 +57,7 @@ internal fun TodayScheduleCalendar(
     val scheduleClasses = @Composable {
         schedules.forEach { schedule ->
             ScheduleClassCard(
+                classId = schedule.id,
                 className = schedule.className,
                 startTime = schedule.startTime,
                 endTime = schedule.endTime,
@@ -143,17 +144,18 @@ private fun HourLabel(hour: Int) {
 
 @Composable
 private fun ScheduleClassCard(
+    classId: String,
     className: String,
     startTime: LocalTime,
     endTime: LocalTime,
-    onScheduleClick: () -> Unit,
+    onScheduleClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
         modifier = modifier
             .fillMaxSize()
             .clickable {
-                onScheduleClick()
+                onScheduleClick(classId)
             },
     ) {
         Column(

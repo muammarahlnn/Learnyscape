@@ -39,4 +39,6 @@
     <string name="delete_question">Delete question</string>
     <string name="add_question">Add question</string>
     <string name="unfilled_questions_message">Please fill these fields</string>
+    <string name="success_creating_resource">Success creating resource</string>
+    <string name="ok">OK</string>
 </resources>

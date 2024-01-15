@@ -6,6 +6,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.FileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
+import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepository
 import com.muammarahlnn.learnyscape.core.data.repository.SchedulesRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.AvailableClassRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.CapturedPhotoRepositoryImpl
@@ -13,6 +14,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.impl.FileRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.HomeRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.LoginRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ProfileRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceCreateRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.SchedulesRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -65,4 +67,9 @@ interface DataModule {
     fun bindsSchedulesRepository(
         schedulesRepository: SchedulesRepositoryImpl
     ): SchedulesRepository
+
+    @Binds
+    fun bindsResourceCreateRepository(
+        resourceCreateRepository: ResourceCreateRepositoryImpl
+    ): ResourceCreateRepository
 }

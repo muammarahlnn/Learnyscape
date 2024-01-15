@@ -19,7 +19,7 @@ fun NavController.navigateToSchedule(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.scheduleScreen(
-    onScheduleClick: () -> Unit,
+    onScheduleClick: (String) -> Unit,
 ) {
     composable(route = SCHEDULE_ROUTE) {
         ScheduleRoute(
