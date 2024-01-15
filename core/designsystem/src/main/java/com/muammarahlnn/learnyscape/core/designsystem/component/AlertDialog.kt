@@ -105,7 +105,7 @@ fun BaseAlertDialog(
     confirmText: String = stringResource(
         id = R.string.alert_dialog_confirm_button_text,
     ),
-    dismissText: String = stringResource(
+    dismissText: String? = stringResource(
         id = R.string.alert_dialog_dismiss_button_text,
     ),
     onDismissRequest: (() -> Unit)? = null,
@@ -126,14 +126,16 @@ fun BaseAlertDialog(
             }
         },
         dismissButton = {
-            TextButton(
-                onClick = onDismiss
-            ) {
-                Text(
-                    text = dismissText,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.tertiary,
-                )
+            dismissText?.let { dismissText ->
+                TextButton(
+                    onClick = onDismiss
+                ) {
+                    Text(
+                        text = dismissText,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.tertiary,
+                    )
+                }
             }
         },
         shape = RoundedCornerShape(8.dp),

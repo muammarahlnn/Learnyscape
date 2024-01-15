@@ -10,20 +10,21 @@ import retrofit2.http.Part
 
 /**
  * @Author Muammar Ahlan Abimanyu
- * @File AnnouncementApi, 13/01/2024 03.19
+ * @File ReferencesApi, 15/01/2024 17.53
  */
-interface AnnouncementsApi {
+interface ReferencesApi {
 
     @Multipart
-    @POST(ANNOUNCEMENTS_END_POINT)
-    suspend fun postAnnouncement(
+    @POST(REFERENCES_END_POINT)
+    suspend fun postReference(
         @Part files: List<MultipartBody.Part>,
         @Part(ResourceClassPartKey.CLASS_ID_PART) classId: RequestBody,
-        @Part(ResourceClassPartKey.DESCRIPTION_PART) description: RequestBody,
+        @Part(ResourceClassPartKey.NAME_PART) title: RequestBody,
+        @Part(ResourceClassPartKey.DESCRIPTION_PART) description: RequestBody?,
     ): BaseResponse<String>
 
     companion object {
 
-        private const val ANNOUNCEMENTS_END_POINT = "announcements"
+        private const val REFERENCES_END_POINT = "references"
     }
 }

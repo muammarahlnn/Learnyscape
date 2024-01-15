@@ -125,6 +125,7 @@ private fun ErrorCreatingResourceDialog(
             )
         },
         confirmText = stringResource(id = R.string.ok),
+        dismissText = null,
         onConfirm = onDismiss,
         onDismiss = onDismiss,
         modifier = modifier,

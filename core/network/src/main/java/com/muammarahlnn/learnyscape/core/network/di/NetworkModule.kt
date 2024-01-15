@@ -6,6 +6,7 @@ import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSou
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
+import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.interceptor.BearerTokenInterceptor
 import com.muammarahlnn.learnyscape.core.network.interceptor.NetworkConnectionInterceptor
@@ -87,6 +88,13 @@ object NetworkModule {
         networkJson: Json,
         @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
     ): AnnouncementsApi = buildRetrofit(networkJson, client).create(AnnouncementsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesReferencesApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): ReferencesApi = buildRetrofit(networkJson, client).create(ReferencesApi::class.java)
 }
 
 private const val BASE_URL = BuildConfig.BASE_URL

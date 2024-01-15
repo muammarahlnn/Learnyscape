@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
@@ -38,6 +39,7 @@ import javax.inject.Inject
 class ResourceCreateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createAnnouncementUseCase: CreateAnnouncementUseCase,
+    private val createModuleUseCase: CreateModuleUseCase,
 ) : ViewModel(), ResourceCreateContract {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
@@ -135,8 +137,10 @@ class ResourceCreateViewModel @Inject constructor(
             ResourceCreateContract.Event.OnDismissCreatingResourceDialog ->
                 showCreatingResourceDialog(false)
 
-            ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog ->
+            ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog -> {
+                showCreatingResourceDialog(false)
                 navigateBack()
+            }
         }
     }
 
@@ -145,7 +149,7 @@ class ResourceCreateViewModel @Inject constructor(
 
         when (_state.value.resourceType) {
             ClassResourceType.ANNOUNCEMENT -> createAnnouncement()
-            ClassResourceType.MODULE -> TODO()
+            ClassResourceType.MODULE -> createModule()
             ClassResourceType.ASSIGNMENT -> TODO()
             ClassResourceType.QUIZ -> TODO()
         }
@@ -160,6 +164,35 @@ class ResourceCreateViewModel @Inject constructor(
         viewModelScope.launch {
             createAnnouncementUseCase(
                 classId = _state.value.classId,
+                description = _state.value.description,
+                attachments = _state.value.attachments,
+            ).asResult().collect { result ->
+                result.onLoading {
+                    onLoadingCreatingResource()
+                }.onSuccess { message ->
+                    onSuccessCreatingResource(message)
+                }.onNoInternet { message ->
+                    onErrorCreatingResource(message)
+                }.onError { _, message ->
+                    onErrorCreatingResource(message)
+                }.onException { exception, message ->
+                    Log.e(TAG, exception?.message.toString())
+                    onErrorCreatingResource(message)
+                }
+            }
+        }
+    }
+
+    private fun createModule() {
+        if (_state.value.title.isEmpty()) {
+            onErrorCreatingResource("Module title can't be empty")
+            return
+        }
+
+        viewModelScope.launch {
+            createModuleUseCase(
+                classId = _state.value.classId,
+                title = _state.value.title,
                 description = _state.value.description,
                 attachments = _state.value.attachments,
             ).asResult().collect { result ->
