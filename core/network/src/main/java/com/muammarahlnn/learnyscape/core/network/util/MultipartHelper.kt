@@ -25,6 +25,20 @@ fun File.getMimeType(): String =
         MimeTypeMap.getSingleton().getMimeTypeFromExtension(this.lowercase())
     } ?: "application/octet-stream"
 
+fun List<File>.toFileParts(partName: String): List<MultipartBody.Part> {
+    val filesParts = mutableListOf<MultipartBody.Part>()
+    this.forEach { file ->
+        filesParts.add(
+            createFormData(
+                partName = partName,
+                fileName = file.name,
+                requestBody = file.asRequestBody(file.getMimeType().toMediaTypeOrNull())
+            )
+        )
+    }
+    return filesParts
+}
+
 fun createFormData(
     partName: String,
     fileName: String?,

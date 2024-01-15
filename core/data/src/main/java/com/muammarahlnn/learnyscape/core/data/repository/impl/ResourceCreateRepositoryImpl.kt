@@ -23,4 +23,16 @@ class ResourceCreateRepositoryImpl @Inject constructor(
         description = description,
         attachments = attachments,
     )
+
+    override fun createModule(
+        classId: String,
+        title: String,
+        description: String,
+        attachments: List<File>
+    ): Flow<String> = resourceCreateNetworkDataSource.postReference(
+        classId = classId,
+        title = title,
+        description = description,
+        attachments = attachments,
+    )
 }

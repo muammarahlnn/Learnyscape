@@ -1,15 +1,13 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
+import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
+import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.util.convertToTextRequestBody
-import com.muammarahlnn.learnyscape.core.network.util.createFormData
-import com.muammarahlnn.learnyscape.core.network.util.getMimeType
+import com.muammarahlnn.learnyscape.core.network.util.toFileParts
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -21,36 +19,38 @@ import javax.inject.Singleton
 @Singleton
 class ResourceCreateNetworkDataSourceImpl @Inject constructor(
     private val announcementsApi: AnnouncementsApi,
+    private val referencesApi: ReferencesApi,
 ) : ResourceCreateNetworkDataSource {
 
     override fun postAnnouncement(
         classId: String,
         description: String,
         attachments: List<File>
-    ): Flow<String> {
-        val classIdBody = classId.convertToTextRequestBody()
-        val descriptionBody = description.convertToTextRequestBody()
+    ): Flow<String> = flow {
+        emit(
+            announcementsApi.postAnnouncement(
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+                classId = classId.convertToTextRequestBody(),
+                description = description.convertToTextRequestBody()
+            ).data
+        )
+    }
 
-        val filesParts = mutableListOf<MultipartBody.Part>()
-        attachments.forEach { attachment ->
-            val fileBody = attachment.asRequestBody(attachment.getMimeType().toMediaTypeOrNull())
-            filesParts.add(
-                createFormData(
-                    partName = "files",
-                    fileName = attachment.name,
-                    requestBody = fileBody
-                )
-            )
-        }
-
-        return flow {
-            emit(
-                announcementsApi.postAnnouncement(
-                    files = filesParts,
-                    classId = classIdBody,
-                    description = descriptionBody,
-                ).data
-            )
-        }
+    override fun postReference(
+        classId: String,
+        title: String,
+        description: String,
+        attachments: List<File>
+    ): Flow<String> = flow {
+        emit(
+            referencesApi.postReference(
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+                classId = classId.convertToTextRequestBody(),
+                title = title.convertToTextRequestBody(),
+                description = if (description.isNotEmpty()) {
+                    description.convertToTextRequestBody()
+                } else null,
+            ).data
+        )
     }
 }

@@ -14,4 +14,11 @@ interface ResourceCreateNetworkDataSource {
         description: String,
         attachments: List<File>,
     ): Flow<String>
+
+    fun postReference(
+        classId: String,
+        title: String,
+        description: String,
+        attachments: List<File>,
+    ): Flow<String>
 }
