@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepositor
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import java.io.File
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 /**
@@ -33,6 +34,20 @@ class ResourceCreateRepositoryImpl @Inject constructor(
         classId = classId,
         title = title,
         description = description,
+        attachments = attachments,
+    )
+
+    override fun createAssignment(
+        classId: String,
+        title: String,
+        description: String,
+        dueDate: LocalDateTime,
+        attachments: List<File>
+    ): Flow<String> = resourceCreateNetworkDataSource.postTask(
+        classId = classId,
+        title = title,
+        description = description,
+        dueDate = dueDate,
         attachments = attachments,
     )
 }

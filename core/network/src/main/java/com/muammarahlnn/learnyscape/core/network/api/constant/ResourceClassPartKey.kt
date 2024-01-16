@@ -13,4 +13,6 @@ object ResourceClassPartKey {
     const val NAME_PART = "name"
 
     const val DESCRIPTION_PART = "description"
+
+    const val DUE_DATE_PART = "dueDate"
 }

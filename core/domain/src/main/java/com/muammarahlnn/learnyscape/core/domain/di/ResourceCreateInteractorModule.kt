@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepository
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
 import dagger.Module
 import dagger.Provides
@@ -31,5 +32,13 @@ object ResourceCreateInteractorModule {
         resourceCreateRepository: ResourceCreateRepository
     ): CreateModuleUseCase = CreateModuleUseCase(
         resourceCreateRepository::createModule
+    )
+
+    @ViewModelScoped
+    @Provides
+    fun providesCreateAssignmentUseCase(
+        resourceCreateRepository: ResourceCreateRepository
+    ): CreateAssignmentUseCase = CreateAssignmentUseCase(
+        resourceCreateRepository::createAssignment
     )
 }
