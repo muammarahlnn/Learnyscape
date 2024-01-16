@@ -4,8 +4,9 @@ import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
-import com.muammarahlnn.learnyscape.core.network.util.convertToTextRequestBody
 import com.muammarahlnn.learnyscape.core.network.util.toFileParts
+import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBody
+import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBodyOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -30,8 +31,8 @@ class ResourceCreateNetworkDataSourceImpl @Inject constructor(
         emit(
             announcementsApi.postAnnouncement(
                 files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
-                classId = classId.convertToTextRequestBody(),
-                description = description.convertToTextRequestBody()
+                classId = classId.toTextRequestBody(),
+                description = description.toTextRequestBody()
             ).data
         )
     }
@@ -45,11 +46,9 @@ class ResourceCreateNetworkDataSourceImpl @Inject constructor(
         emit(
             referencesApi.postReference(
                 files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
-                classId = classId.convertToTextRequestBody(),
-                title = title.convertToTextRequestBody(),
-                description = if (description.isNotEmpty()) {
-                    description.convertToTextRequestBody()
-                } else null,
+                classId = classId.toTextRequestBody(),
+                title = title.toTextRequestBody(),
+                description = description.toTextRequestBodyOrNull(),
             ).data
         )
     }

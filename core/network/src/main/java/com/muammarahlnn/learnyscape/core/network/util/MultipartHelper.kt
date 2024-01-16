@@ -14,10 +14,14 @@ import java.io.File
  * @File MultipartHelper, 13/01/2024 04.51
  */
 
-fun String.convertToTextRequestBody(): RequestBody =
+fun String.toTextRequestBody(): RequestBody =
     this.toRequestBody("text/plain".toMediaType())
 
-fun File.convertToImageRequestBody(): RequestBody =
+fun String.toTextRequestBodyOrNull(): RequestBody? = this.takeIf {
+    it.isNotEmpty()
+}?.toTextRequestBody()
+
+fun File.toImageRequestBody(): RequestBody =
     this.asRequestBody("image/*".toMediaTypeOrNull())
 
 fun File.getMimeType(): String =
