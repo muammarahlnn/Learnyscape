@@ -12,7 +12,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
-import com.muammarahlnn.learnyscape.feature.resourcecreate.DueDate
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
 import java.time.LocalDateTime
 
@@ -22,8 +21,8 @@ import java.time.LocalDateTime
  */
 @Composable
 internal fun StartEndDateInputCard(
-    startDate: DueDate,
-    endDate: DueDate,
+    startDate: LocalDateTime?,
+    endDate: LocalDateTime?,
     onStartDateClick: () -> Unit,
     onEndDateClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -33,13 +32,10 @@ internal fun StartEndDateInputCard(
         iconDescriptionRes = R.string.due_date,
         modifier = modifier,
     ) {
-        val startDateText = if (startDate.date == null || startDate.time == null) {
-            stringResource(id = R.string.start_date)
-        } else {
-            formatDateTime(LocalDateTime.of(startDate.date, startDate.time))
-        }
         Text(
-            text = startDateText,
+            text = startDate?.let {
+                formatDateTime(it)
+            } ?: stringResource(id = R.string.start_date),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier
@@ -60,13 +56,10 @@ internal fun StartEndDateInputCard(
 
         Spacer(modifier = Modifier.width(4.dp))
 
-        val endDateText = if (endDate.date == null || endDate.time == null) {
-            stringResource(id = R.string.end_date)
-        } else {
-            formatDateTime(LocalDateTime.of(endDate.date, endDate.time))
-        }
         Text(
-            text = endDateText,
+            text = endDate?.let {
+                formatDateTime(it)
+            } ?: stringResource(id = R.string.end_date),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier

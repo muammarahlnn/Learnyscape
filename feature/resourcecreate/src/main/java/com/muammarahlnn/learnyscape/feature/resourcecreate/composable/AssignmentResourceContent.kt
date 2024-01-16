@@ -54,8 +54,8 @@ internal fun AssignmentResourceContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         DueDateInputCard(
-            date = state.dueDate.date,
-            time = state.dueDate.time,
+            date = state.dueDate?.toLocalDate(),
+            time = state.dueDate?.toLocalTime(),
             onDueDateClick = onDueDateClick
         )
     }

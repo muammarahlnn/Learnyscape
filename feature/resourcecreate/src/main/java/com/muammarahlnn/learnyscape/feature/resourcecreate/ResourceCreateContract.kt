@@ -8,6 +8,7 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleCh
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.PhotoAnswerQuestion
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 /**
@@ -27,9 +28,9 @@ interface ResourceCreateContract :
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
         val selectedAttachmentIndex: Int = -1,
         val dueDateType: DueDateType = DueDateType.DUE_DATE,
-        val dueDate: DueDate = DueDate(),
-        val startDate: DueDate = DueDate(),
-        val endDate: DueDate = DueDate(),
+        val dueDate: LocalDateTime? = null,
+        val startDate: LocalDateTime? = null,
+        val endDate: LocalDateTime? = null,
         val quizType: QuizType = QuizType.NONE,
         val duration: Int = 0,
         val showQuestionsScreen: Boolean = false,
@@ -120,11 +121,6 @@ data class OverlayComposableVisibility(
     val quizTypeBottomSheet: Boolean = false,
     val durationDialog: Boolean = false,
     val creatingResourceDialog: Boolean = false,
-)
-
-data class DueDate(
-    val date: LocalDate? = null,
-    val time: LocalTime? = null,
 )
 
 enum class QuizType {
