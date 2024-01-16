@@ -43,7 +43,7 @@ internal fun SetDueDateDialog(
         DueDateType.START_DATE -> state.startDate
         DueDateType.END_DATE -> state.endDate
     }.run {
-        date to time
+        this?.toLocalDate() to this?.toLocalTime()
     }
 
     SetDueDateDialog(

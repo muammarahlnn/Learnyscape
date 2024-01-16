@@ -22,7 +22,7 @@ class QuizViewModel : ViewModel(), QuizContract {
     private val _effect = MutableSharedFlow<QuizContract.Effect>()
     override val effect: SharedFlow<QuizContract.Effect> = _effect
 
-    private val moduleOrdinal = ClassResourceType.MODULE.ordinal
+    private val moduleOrdinal = ClassResourceType.QUIZ.ordinal
 
     override fun event(event: QuizContract.Event) {
         when (event) {

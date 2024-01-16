@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 
@@ -352,10 +353,7 @@ class ResourceCreateViewModel @Inject constructor(
         dueDate: LocalDate?,
         dueTime: LocalTime?,
     ) {
-        val currentDueDate = DueDate(
-            date = dueDate,
-            time = dueTime,
-        )
+        val currentDueDate = LocalDateTime.of(dueDate, dueTime)
         _state.update {
             when (it.dueDateType) {
                 DueDateType.DUE_DATE -> it.copy(dueDate = currentDueDate)
