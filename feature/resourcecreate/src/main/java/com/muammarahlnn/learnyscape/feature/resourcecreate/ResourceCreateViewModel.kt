@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
@@ -41,6 +42,7 @@ class ResourceCreateViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val createAnnouncementUseCase: CreateAnnouncementUseCase,
     private val createModuleUseCase: CreateModuleUseCase,
+    private val createAssignmentUseCase: CreateAssignmentUseCase,
 ) : ViewModel(), ResourceCreateContract {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
@@ -151,7 +153,7 @@ class ResourceCreateViewModel @Inject constructor(
         when (_state.value.resourceType) {
             ClassResourceType.ANNOUNCEMENT -> createAnnouncement()
             ClassResourceType.MODULE -> createModule()
-            ClassResourceType.ASSIGNMENT -> TODO()
+            ClassResourceType.ASSIGNMENT -> createAssignment()
             ClassResourceType.QUIZ -> TODO()
         }
     }
@@ -195,6 +197,41 @@ class ResourceCreateViewModel @Inject constructor(
                 classId = _state.value.classId,
                 title = _state.value.title,
                 description = _state.value.description,
+                attachments = _state.value.attachments,
+            ).asResult().collect { result ->
+                result.onLoading {
+                    onLoadingCreatingResource()
+                }.onSuccess { message ->
+                    onSuccessCreatingResource(message)
+                }.onNoInternet { message ->
+                    onErrorCreatingResource(message)
+                }.onError { _, message ->
+                    onErrorCreatingResource(message)
+                }.onException { exception, message ->
+                    Log.e(TAG, exception?.message.toString())
+                    onErrorCreatingResource(message)
+                }
+            }
+        }
+    }
+
+    private fun createAssignment() {
+        if (_state.value.title.isEmpty()) {
+            onErrorCreatingResource("Assignment title can't be empty")
+            return
+        }
+
+        if (_state.value.dueDate == null) {
+            onErrorCreatingResource("Due date can't be empty")
+            return
+        }
+
+        viewModelScope.launch {
+            createAssignmentUseCase(
+                classId = _state.value.classId,
+                title = _state.value.title,
+                description = _state.value.description,
+                dueDate = _state.value.dueDate!!,
                 attachments = _state.value.attachments,
             ).asResult().collect { result ->
                 result.onLoading {
