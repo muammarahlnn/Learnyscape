@@ -51,5 +51,7 @@ sealed interface ModuleUiState {
 
     data class Success(val modules: List<ModuleOverviewModel>) : ModuleUiState
 
+    data object SuccessEmpty : ModuleUiState
+
     data class Error(val message: String) : ModuleUiState
 }
