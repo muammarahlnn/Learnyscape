@@ -119,7 +119,7 @@ fun LearnyscapeNavHost(
             onBackClick = navController::popBackStack
         )
         joinRequestScreen(
-            onBackClick = navController::popBackStack
+            navigateBack = navController::popBackStack,
         )
         resourceCreateScreen(
             navigateBack = navController::popBackStack,

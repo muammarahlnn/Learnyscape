@@ -3,4 +3,5 @@
     <string name="join_requests">Join Requests</string>
     <string name="reject_request">Reject request</string>
     <string name="accept_request">Accept request</string>
+    <string name="empty_waiting_list">There are not students requested to join yet</string>
 </resources>

@@ -21,7 +21,7 @@ import com.muammarahlnn.learnyscape.feature.quiz.navigation.quizScreen
 internal fun ClassNavHost(
     state: ClassNavigatorState,
     navigateBack: () -> Unit,
-    navigateToJoinRequests: () -> Unit,
+    navigateToJoinRequests: (String) -> Unit,
     navigateToResourceDetails: (Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,

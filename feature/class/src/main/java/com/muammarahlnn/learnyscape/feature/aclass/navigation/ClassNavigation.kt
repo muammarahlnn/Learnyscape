@@ -21,7 +21,7 @@ fun NavController.navigateToClass(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.classScreen(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToJoinRequests: () -> Unit,
+    navigateToJoinRequests: (String) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     navigateToResourceDetails: (Int) -> Unit,
 ) {

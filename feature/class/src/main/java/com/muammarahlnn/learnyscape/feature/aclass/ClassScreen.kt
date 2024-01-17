@@ -54,7 +54,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun ClassRoute(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToJoinRequests: () -> Unit,
+    navigateToJoinRequests: (String) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     navigateToResourceDetails: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -78,8 +78,8 @@ internal fun ClassRoute(
             ClassContract.Effect.NavigateBack ->
                 navigateBack()
 
-            ClassContract.Effect.NavigateToJoinRequests ->
-                navigateToJoinRequests()
+            is ClassContract.Effect.NavigateToJoinRequests ->
+                navigateToJoinRequests(it.classId)
 
             is ClassContract.Effect.NavigateToResourceCreate ->
                 navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
