@@ -1,8 +1,12 @@
 package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.mapper.toAnnouncementOverviewModels
+import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentOverviewModel
+import com.muammarahlnn.learnyscape.core.data.mapper.toModuleOverviewModels
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewRepository
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementOverviewModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentOverviewModel
+import com.muammarahlnn.learnyscape.core.model.data.ModuleOverviewModel
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceOverviewNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -19,5 +23,15 @@ class ResourceOverviewRepositoryImpl @Inject constructor(
     override fun getAnnouncements(classId: String): Flow<List<AnnouncementOverviewModel>> =
         resourceOverviewNetworkDataSource.getAnnouncements(classId).map { announcementResponses ->
             announcementResponses.toAnnouncementOverviewModels()
+        }
+
+    override fun getModules(classId: String): Flow<List<ModuleOverviewModel>> =
+        resourceOverviewNetworkDataSource.getReferences(classId).map { referenceResponses ->
+            referenceResponses.toModuleOverviewModels()
+        }
+
+    override fun getAssignments(classId: String): Flow<List<AssignmentOverviewModel>> =
+        resourceOverviewNetworkDataSource.getTasks(classId).map { taskResponses ->
+            taskResponses.toAssignmentOverviewModel()
         }
 }

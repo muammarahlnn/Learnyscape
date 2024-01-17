@@ -2,6 +2,8 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewRepository
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetAnnouncementsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetAssignmentsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetModulesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +24,21 @@ object ResourceOverviewInteractorModule {
         resourceOverviewRepository: ResourceOverviewRepository
     ): GetAnnouncementsUseCase = GetAnnouncementsUseCase(
         resourceOverviewRepository::getAnnouncements
+    )
+
+    @ViewModelScoped
+    @Provides
+    fun providesGetModulesUseCase(
+        resourceOverviewRepository: ResourceOverviewRepository
+    ): GetModulesUseCase = GetModulesUseCase(
+        resourceOverviewRepository::getModules
+    )
+
+    @ViewModelScoped
+    @Provides
+    fun providesGetAssignmentsUseCase(
+        resourceOverviewRepository: ResourceOverviewRepository
+    ): GetAssignmentsUseCase = GetAssignmentsUseCase(
+        resourceOverviewRepository::getAssignments
     )
 }

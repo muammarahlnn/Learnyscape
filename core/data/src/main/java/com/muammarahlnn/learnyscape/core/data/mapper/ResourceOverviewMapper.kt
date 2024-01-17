@@ -1,7 +1,11 @@
 package com.muammarahlnn.learnyscape.core.data.mapper
 
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementOverviewModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentOverviewModel
+import com.muammarahlnn.learnyscape.core.model.data.ModuleOverviewModel
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementOverviewResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceOverviewResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.TaskOverviewResponse
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -16,4 +20,25 @@ fun AnnouncementOverviewResponse.toAnnouncementOverviewModel() = AnnouncementOve
     id = id,
     updatedAt = updatedAt,
     authorName = authorName,
+)
+
+fun List<ReferenceOverviewResponse>.toModuleOverviewModels() = map {
+    it.toModuleOverviewModel()
+}
+
+fun ReferenceOverviewResponse.toModuleOverviewModel() = ModuleOverviewModel(
+    id = id,
+    name = name,
+    updatedAt = updatedAt,
+)
+
+fun List<TaskOverviewResponse>.toAssignmentOverviewModel() = map {
+    it.toAssignmentOverviewModel()
+}
+
+fun TaskOverviewResponse.toAssignmentOverviewModel() = AssignmentOverviewModel(
+    id = id,
+    name = name,
+    updatedAt = updatedAt,
+    dueDate = dueDate,
 )
