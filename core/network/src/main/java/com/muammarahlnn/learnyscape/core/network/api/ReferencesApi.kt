@@ -37,6 +37,6 @@ interface ReferencesApi {
 
         private const val CLASS_ID_PATH = "classId"
 
-        private const val GET_REFERENCES_END_POINT = "$REFERENCES_END_POINT/{$CLASS_ID_PATH}"
+        private const val GET_REFERENCES_END_POINT = "$REFERENCES_END_POINT/classes/{$CLASS_ID_PATH}"
     }
 }

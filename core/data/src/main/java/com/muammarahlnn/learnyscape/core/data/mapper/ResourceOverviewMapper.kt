@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.mapper
 
+import com.muammarahlnn.learnyscape.core.data.util.formatIsoDate
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementOverviewModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentOverviewModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleOverviewModel
@@ -29,7 +30,7 @@ fun List<ReferenceOverviewResponse>.toModuleOverviewModels() = map {
 fun ReferenceOverviewResponse.toModuleOverviewModel() = ModuleOverviewModel(
     id = id,
     name = name,
-    updatedAt = updatedAt,
+    updatedAt = formatIsoDate(updatedAt),
 )
 
 fun List<TaskOverviewResponse>.toAssignmentOverviewModel() = map {
@@ -39,6 +40,6 @@ fun List<TaskOverviewResponse>.toAssignmentOverviewModel() = map {
 fun TaskOverviewResponse.toAssignmentOverviewModel() = AssignmentOverviewModel(
     id = id,
     name = name,
-    updatedAt = updatedAt,
+    updatedAt = formatIsoDate(updatedAt),
     dueDate = dueDate,
 )

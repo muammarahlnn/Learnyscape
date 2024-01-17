@@ -2,8 +2,11 @@ package com.muammarahlnn.learnyscape.feature.module
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,9 +17,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
+import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import kotlinx.coroutines.launch
 
 
 /**
@@ -35,7 +43,17 @@ internal fun ModuleRoute(
 ) {
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
-        event(ModuleContract.Event.SetClassId(classId))
+        launch {
+            event(ModuleContract.Event.SetClassId(classId))
+        }.join()
+
+        launch {
+            event(ModuleContract.Event.FetchModules)
+        }
+    }
+
+    val refreshState = use(refreshProvider = viewModel) {
+        event(ModuleContract.Event.FetchModules)
     }
 
     viewModel.effect.collectInLaunchedEffect {
@@ -52,14 +70,18 @@ internal fun ModuleRoute(
     }
 
     ModuleScreen(
+        state = state,
+        refreshState = refreshState,
         event = { event(it) },
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun ModuleScreen(
+    state: ModuleContract.State,
+    refreshState: RefreshState,
     event: (ModuleContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,23 +91,57 @@ private fun ModuleScreen(
         onCreateNewResourceClick = { event(ModuleContract.Event.OnNavigateToResourceCreate) },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(paddingValues),
+        PullRefreshScreen(
+            pullRefreshState = refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = Modifier.padding(paddingValues)
         ) {
-            repeat(20) {
-                item {
-                    ClassResourceCard(
-                        classResourceType = ClassResourceType.MODULE,
-                        title = "Materi Networking dan Background Thread",
-                        timeLabel = "Posted 21 May 2023, 21:21",
-                        onItemClick = { event(ModuleContract.Event.OnNavigateToResourceDetails) },
-                    )
+            when (state.uiState) {
+                ModuleUiState.Loading -> ResourceScreenLoading()
+
+                is ModuleUiState.Success -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                    ) {
+                        items(
+                            items = state.uiState.modules,
+                            key = { it.id }
+                        ) { module ->
+                            ClassResourceCard(
+                                classResourceType = ClassResourceType.MODULE,
+                                title = module.name,
+                                timeLabel = module.updatedAt
+                            )
+                        }
+                    }
                 }
+
+                is ModuleUiState.Error -> ErrorScreen(
+                    text = state.uiState.message,
+                    onRefresh = { event(ModuleContract.Event.FetchModules) },
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
+//        LazyColumn(
+//            contentPadding = PaddingValues(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(8.dp),
+//            modifier = modifier
+//                .nestedScroll(scrollBehavior.nestedScrollConnection)
+//                .padding(paddingValues),
+//        ) {
+//            repeat(20) {
+//                item {
+//                    ClassResourceCard(
+//                        classResourceType = ClassResourceType.MODULE,
+//                        title = "Materi Networking dan Background Thread",
+//                        timeLabel = "Posted 21 May 2023, 21:21",
+//                        onItemClick = { event(ModuleContract.Event.OnNavigateToResourceDetails) },
+//                    )
+//                }
+//            }
+//        }
     }
 }
