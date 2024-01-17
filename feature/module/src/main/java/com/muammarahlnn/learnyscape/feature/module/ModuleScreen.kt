@@ -104,7 +104,9 @@ private fun ModuleScreen(
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+                        modifier = modifier
+                            .fillMaxSize()
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
                     ) {
                         items(
                             items = state.uiState.modules,
