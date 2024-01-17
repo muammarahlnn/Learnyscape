@@ -1,6 +1,8 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementOverviewModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentOverviewModel
+import com.muammarahlnn.learnyscape.core.model.data.ModuleOverviewModel
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -10,4 +12,8 @@ import kotlinx.coroutines.flow.Flow
 interface ResourceOverviewRepository {
 
     fun getAnnouncements(classId: String): Flow<List<AnnouncementOverviewModel>>
+
+    fun getModules(classId: String): Flow<List<ModuleOverviewModel>>
+
+    fun getAssignments(classId: String): Flow<List<AssignmentOverviewModel>>
 }
