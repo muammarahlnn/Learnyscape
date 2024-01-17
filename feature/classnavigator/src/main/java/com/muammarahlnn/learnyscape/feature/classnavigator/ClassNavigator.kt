@@ -23,7 +23,7 @@ import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHo
 @Composable
 internal fun ClassNavigatorRoute(
     navigateBack: () -> Unit,
-    navigateToJoinRequests: () -> Unit,
+    navigateToJoinRequests: (String) -> Unit,
     navigateToResourceDetails: (Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -43,7 +43,7 @@ internal fun ClassNavigatorRoute(
 private fun ClassNavigator(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToJoinRequests: () -> Unit,
+    navigateToJoinRequests: (String) -> Unit,
     navigateToResourceDetails: (Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,

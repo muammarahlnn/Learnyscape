@@ -39,7 +39,7 @@ interface ClassContract :
 
         data object NavigateBack : Effect
 
-        data object NavigateToJoinRequests : Effect
+        data class NavigateToJoinRequests(val classId: String) : Effect
 
         data class NavigateToResourceCreate(
             val classId: String,

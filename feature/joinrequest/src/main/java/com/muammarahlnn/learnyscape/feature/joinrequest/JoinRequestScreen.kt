@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.joinrequest
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,19 +10,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,9 +38,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
@@ -42,43 +57,121 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 @Composable
 internal fun JoinRequestRoute(
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
+    viewModel: JoinRequestViewModel = hiltViewModel(),
 ) {
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(JoinRequestContract.Event.FetchWaitingList)
+    }
+
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            JoinRequestContract.Effect.NavigateBack ->
+                navigateBack()
+        }
+    }
+
+    val refreshState = use(refreshProvider = viewModel) {
+        event(JoinRequestContract.Event.FetchWaitingList)
+    }
+
     JoinRequestScreen(
-        onBackClick = onBackClick,
+        state = state,
+        refreshState = refreshState,
+        event = { event(it) },
         modifier = modifier
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun JoinRequestScreen(
-    onBackClick: () -> Unit,
+    state: JoinRequestContract.State,
+    refreshState: RefreshState,
+    event: (JoinRequestContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Column(modifier = modifier.fillMaxSize()) {
-        JoinRequestTopAppBar(
-            onBackClick = onBackClick,
-            scrollBehavior = scrollBehavior
-        )
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+    Scaffold(
+        topBar = {
+            JoinRequestTopAppBar(
+                onBackClick = { event(JoinRequestContract.Event.OnCloseClick) },
+                scrollBehavior = scrollBehavior
+            )
+        }
+    ) { paddingValues ->
+        PullRefreshScreen(
+            pullRefreshState = refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            repeat(10) {
-                item {
-                    JoinRequestCard()
+            val contentModifier = Modifier.fillMaxSize()
+            when (state.uiState) {
+                JoinRequestUiState.Loading -> JoinRequestContentLoading(modifier = contentModifier)
+
+                is JoinRequestUiState.Success -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = contentModifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                    ) {
+                        items(
+                            items = state.uiState.waitingList,
+                            key = { it.id },
+                        ) { waitingList ->
+                            JoinRequestCard(
+                                studentName = waitingList.fullName,
+                                onRejectClick = {},
+                                onAcceptClick = {},
+                            )
+                        }
+                    }
                 }
+                
+                JoinRequestUiState.SuccessEmpty -> NoDataScreen(
+                    text = stringResource(id = R.string.empty_waiting_list),
+                    modifier = contentModifier,
+                )
+                
+                is JoinRequestUiState.Error -> ErrorScreen(
+                    text = state.uiState.message,
+                    onRefresh = { event(JoinRequestContract.Event.FetchWaitingList) }
+                )
             }
         }
     }
 }
 
 @Composable
+private fun JoinRequestContentLoading(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        repeat(10) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(64.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .shimmerEffect()
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
 private fun JoinRequestCard(
+    studentName: String,
+    onRejectClick: () -> Unit,
+    onAcceptClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
@@ -98,7 +191,7 @@ private fun JoinRequestCard(
             Spacer(modifier = Modifier.width(16.dp))
 
             Text(
-                text = "Muammar Ahlan Abimanyu",
+                text = studentName,
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.bodySmall,
                 overflow = TextOverflow.Ellipsis,
@@ -108,21 +201,27 @@ private fun JoinRequestCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            RejectButton()
+            RejectButton(
+                onClick = onRejectClick,
+            )
 
             Spacer(modifier = Modifier.width(8.dp))
 
-            AcceptButton()
+            AcceptButton(
+                onClick = onAcceptClick,
+            )
         }
     }
 }
 
 @Composable
 private fun AcceptButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CircleButton(
         backgroundColor = MaterialTheme.colorScheme.tertiary,
+        onClick = onClick,
         modifier = modifier,
     ) {
         Icon(
@@ -136,10 +235,12 @@ private fun AcceptButton(
 
 @Composable
 private fun RejectButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CircleButton(
         backgroundColor = MaterialTheme.colorScheme.primary,
+        onClick = onClick,
         modifier = modifier,
     ) {
         Icon(
@@ -154,6 +255,7 @@ private fun RejectButton(
 @Composable
 private fun CircleButton(
     backgroundColor: Color,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
@@ -162,7 +264,8 @@ private fun CircleButton(
         modifier = modifier
             .clip(CircleShape)
             .size(32.dp)
-            .background(backgroundColor),
+            .background(backgroundColor)
+            .clickable { onClick() },
     ) {
         content()
     }

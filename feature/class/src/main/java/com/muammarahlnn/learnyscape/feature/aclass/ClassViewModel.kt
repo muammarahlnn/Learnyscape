@@ -109,7 +109,7 @@ class ClassViewModel @Inject constructor(
 
     private fun navigateToJoinRequests() {
         viewModelScope.launch {
-            _effect.emit(ClassContract.Effect.NavigateToJoinRequests)
+            _effect.emit(ClassContract.Effect.NavigateToJoinRequests(_state.value.classId))
         }
     }
 
