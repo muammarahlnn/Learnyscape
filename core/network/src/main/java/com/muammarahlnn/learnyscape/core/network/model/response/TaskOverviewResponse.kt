@@ -11,5 +11,5 @@ data class TaskOverviewResponse(
     val id: String,
     val name: String,
     val updatedAt: String,
-    val dueDate: String,
+    val dueDate: Long,
 )

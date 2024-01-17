@@ -2,8 +2,11 @@ package com.muammarahlnn.learnyscape.feature.assignment
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,9 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
+import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import kotlinx.coroutines.launch
 
 
 /**
@@ -35,7 +44,17 @@ internal fun AssignmentRoute(
 ) {
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
-        event(AssignmentContract.Event.SetClassId(classId))
+        launch {
+            event(AssignmentContract.Event.SetClassId(classId))
+        }.join()
+
+        launch {
+            event(AssignmentContract.Event.FetchAssignments)
+        }
+    }
+
+    val refreshState = use(refreshProvider = viewModel) {
+        event(AssignmentContract.Event.FetchAssignments)
     }
 
     viewModel.effect.collectInLaunchedEffect {
@@ -52,14 +71,18 @@ internal fun AssignmentRoute(
     }
 
     AssignmentScreen(
+        state = state,
+        refreshState = refreshState,
         event = { event(it) },
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun AssignmentScreen(
+    state: AssignmentContract.State,
+    refreshState: RefreshState,
     event: (AssignmentContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,22 +92,45 @@ private fun AssignmentScreen(
         onCreateNewResourceClick = { event(AssignmentContract.Event.OnNavigateToResourceCreate) },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(paddingValues),
+        PullRefreshScreen(
+            pullRefreshState = refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = Modifier.padding(paddingValues)
         ) {
-            repeat(20) {
-                item {
-                    ClassResourceCard(
-                        classResourceType = ClassResourceType.ASSIGNMENT,
-                        title = "Tugas Background Thread",
-                        timeLabel = "Due 21 May 2023, 21:21",
-                        onItemClick = { event(AssignmentContract.Event.OnNavigateToResourceDetails) },
-                    )
+            when (state.uiState) {
+                AssignmentUiState.Loading -> ResourceScreenLoading()
+
+                is AssignmentUiState.Success -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = modifier
+                            .fillMaxSize()
+                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    ) {
+                        items(
+                            items = state.uiState.assignments,
+                            key = { it.id }
+                        ) { assignment ->
+                            ClassResourceCard(
+                                classResourceType = ClassResourceType.ASSIGNMENT,
+                                title = assignment.name,
+                                timeLabel = assignment.dueDate
+                            )
+                        }
+                    }
                 }
+
+                AssignmentUiState.SuccessEmpty -> NoDataScreen(
+                    text = stringResource(id = R.string.assignment),
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                is AssignmentUiState.Error -> ErrorScreen(
+                    text = state.uiState.message,
+                    onRefresh = { event(AssignmentContract.Event.FetchAssignments) },
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }

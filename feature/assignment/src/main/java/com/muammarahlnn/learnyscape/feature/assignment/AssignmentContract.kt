@@ -2,6 +2,8 @@ package com.muammarahlnn.learnyscape.feature.assignment
 
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentOverviewModel
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -9,15 +11,19 @@ import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
  */
 interface AssignmentContract :
     BaseContract<AssignmentContract.State, AssignmentContract.Event>,
-    EffectProvider<AssignmentContract.Effect> {
+    EffectProvider<AssignmentContract.Effect>,
+    RefreshProvider {
 
     data class State(
-        val classId: String = ""
+        val classId: String = "",
+        val uiState: AssignmentUiState = AssignmentUiState.Loading
     )
 
     sealed interface Event {
 
         data class SetClassId(val classId: String) : Event
+
+        data object FetchAssignments : Event
 
         data object OnNavigateBack : Event
 
@@ -37,4 +43,15 @@ interface AssignmentContract :
             val resourceTypeOrdinal: Int,
         ) : Effect
     }
+}
+
+sealed interface AssignmentUiState {
+
+    data object Loading : AssignmentUiState
+
+    data class Success(val assignments: List<AssignmentOverviewModel>) : AssignmentUiState
+
+    data object SuccessEmpty : AssignmentUiState
+
+    data class Error(val message: String) : AssignmentUiState
 }

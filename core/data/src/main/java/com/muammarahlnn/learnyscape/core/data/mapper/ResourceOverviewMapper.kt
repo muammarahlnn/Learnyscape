@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.mapper
 
+import com.muammarahlnn.learnyscape.core.data.util.formatEpochSeconds
 import com.muammarahlnn.learnyscape.core.data.util.formatIsoDate
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementOverviewModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentOverviewModel
@@ -41,5 +42,5 @@ fun TaskOverviewResponse.toAssignmentOverviewModel() = AssignmentOverviewModel(
     id = id,
     name = name,
     updatedAt = formatIsoDate(updatedAt),
-    dueDate = dueDate,
+    dueDate = formatEpochSeconds(dueDate),
 )
