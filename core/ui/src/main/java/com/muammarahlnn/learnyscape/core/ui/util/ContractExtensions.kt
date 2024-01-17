@@ -24,7 +24,7 @@ data class StateDispatch<STATE, EVENT>(
 )
 
 @OptIn(ExperimentalMaterialApi::class)
-data class PullRefreshStateDispatch(
+data class RefreshState(
     val refreshing: Boolean,
     val pullRefreshState: PullRefreshState,
 )
@@ -48,13 +48,13 @@ inline fun <STATE, reified EVENT> use(
 fun use(
     refreshProvider: RefreshProvider,
     onRefresh: () -> Unit,
-): PullRefreshStateDispatch {
+): RefreshState {
     val refreshing by refreshProvider.refreshing.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullRefreshState(
         refreshing = refreshing,
         onRefresh = onRefresh,
     )
-    return PullRefreshStateDispatch(
+    return RefreshState(
         refreshing = refreshing,
         pullRefreshState = pullRefreshState,
     )
