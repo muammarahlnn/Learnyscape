@@ -18,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
@@ -118,6 +119,11 @@ private fun ModuleScreen(
                     }
                 }
 
+                ModuleUiState.SuccessEmpty -> NoDataScreen(
+                    text = stringResource(id = R.string.empty_modules),
+                    modifier = Modifier.fillMaxSize()
+                )
+
                 is ModuleUiState.Error -> ErrorScreen(
                     text = state.uiState.message,
                     onRefresh = { event(ModuleContract.Event.FetchModules) },
@@ -125,23 +131,5 @@ private fun ModuleScreen(
                 )
             }
         }
-//        LazyColumn(
-//            contentPadding = PaddingValues(16.dp),
-//            verticalArrangement = Arrangement.spacedBy(8.dp),
-//            modifier = modifier
-//                .nestedScroll(scrollBehavior.nestedScrollConnection)
-//                .padding(paddingValues),
-//        ) {
-//            repeat(20) {
-//                item {
-//                    ClassResourceCard(
-//                        classResourceType = ClassResourceType.MODULE,
-//                        title = "Materi Networking dan Background Thread",
-//                        timeLabel = "Posted 21 May 2023, 21:21",
-//                        onItemClick = { event(ModuleContract.Event.OnNavigateToResourceDetails) },
-//                    )
-//                }
-//            }
-//        }
     }
 }

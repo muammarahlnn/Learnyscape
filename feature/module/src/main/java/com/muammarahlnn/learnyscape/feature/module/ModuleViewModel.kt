@@ -77,7 +77,11 @@ class ModuleViewModel @Inject constructor(
                 }.onSuccess { modules ->
                     _state.update {
                         it.copy(
-                            uiState = ModuleUiState.Success(modules)
+                            uiState = if (modules.isNotEmpty()) {
+                                ModuleUiState.Success(modules)
+                            } else {
+                                ModuleUiState.SuccessEmpty
+                            }
                         )
                     }
                 }.onNoInternet { message ->
