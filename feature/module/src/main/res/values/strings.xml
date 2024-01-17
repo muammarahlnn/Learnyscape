@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="module">Module</string>
-    <string name="empty_modules">There are no modules yet</string>
+    <string name="empty_modules">There are no modules for now</string>
 </resources>
