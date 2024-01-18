@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.JoinRequestRepository
 import com.muammarahlnn.learnyscape.core.domain.joinrequest.GetWaitingClassUseCase
+import com.muammarahlnn.learnyscape.core.domain.joinrequest.PutStudentAcceptanceUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +23,13 @@ object JoinRequestInteractorModule {
         joinRequestRepository: JoinRequestRepository
     ): GetWaitingClassUseCase = GetWaitingClassUseCase(
         joinRequestRepository::getWaitingListClass
+    )
+
+    @ViewModelScoped
+    @Provides
+    fun providesPutStudentAcceptanceUseCase(
+        joinRequestRepository: JoinRequestRepository
+    ): PutStudentAcceptanceUseCase = PutStudentAcceptanceUseCase(
+        joinRequestRepository::putStudentAcceptance
     )
 }

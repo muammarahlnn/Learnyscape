@@ -10,4 +10,9 @@ import kotlinx.coroutines.flow.Flow
 interface JoinRequestRepository {
 
     fun getWaitingListClass(classId: String): Flow<List<WaitingListModel>>
+
+    fun putStudentAcceptance(
+        studentId: String,
+        accepted: Boolean,
+    ): Flow<String>
 }
