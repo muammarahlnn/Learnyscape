@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.data.mapper.toWaitingListModels
 import com.muammarahlnn.learnyscape.core.data.repository.JoinRequestRepository
 import com.muammarahlnn.learnyscape.core.model.data.WaitingListModel
 import com.muammarahlnn.learnyscape.core.network.datasource.JoinRequestNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.model.request.StudentAcceptanceRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -20,4 +21,10 @@ class JoinRequestRepositoryImpl @Inject constructor(
         joinRequestNetworkDataSource.getWaitingListClass(classId).map { waitingClassResponses ->
             waitingClassResponses.toWaitingListModels()
         }
+
+    override fun putStudentAcceptance(studentId: String, accepted: Boolean): Flow<String> =
+        joinRequestNetworkDataSource.putStudentAcceptance(
+            studentId = studentId,
+            studentAcceptanceRequest = StudentAcceptanceRequest(status = accepted),
+        )
 }

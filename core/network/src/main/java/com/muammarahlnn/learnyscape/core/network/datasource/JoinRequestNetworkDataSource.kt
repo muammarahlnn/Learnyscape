@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
+import com.muammarahlnn.learnyscape.core.network.model.request.StudentAcceptanceRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.WaitingListResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -10,4 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface JoinRequestNetworkDataSource {
 
     fun getWaitingListClass(classId: String): Flow<List<WaitingListResponse>>
+
+    fun putStudentAcceptance(
+        studentId: String,
+        studentAcceptanceRequest: StudentAcceptanceRequest,
+    ): Flow<String>
 }

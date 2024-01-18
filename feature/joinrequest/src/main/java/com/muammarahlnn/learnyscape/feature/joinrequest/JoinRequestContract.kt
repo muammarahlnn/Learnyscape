@@ -24,11 +24,17 @@ interface JoinRequestContract :
         data object FetchWaitingList : Event
 
         data object OnCloseClick : Event
+
+        data class OnAcceptStudent(val studentId: String) : Event
+
+        data class OnRejectStudent(val studentId: String) : Event
     }
 
     sealed interface Effect {
 
         data object NavigateBack : Effect
+
+        data class ShowToast(val message: String) : Effect
     }
 }
 

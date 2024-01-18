@@ -9,6 +9,7 @@ import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
+import com.muammarahlnn.learnyscape.core.network.api.WaitingListApi
 import com.muammarahlnn.learnyscape.core.network.interceptor.BearerTokenInterceptor
 import com.muammarahlnn.learnyscape.core.network.interceptor.NetworkConnectionInterceptor
 import dagger.Module
@@ -103,6 +104,13 @@ object NetworkModule {
         networkJson: Json,
         @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
     ): TasksApi = buildRetrofit(networkJson, client).create(TasksApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesWaitingListApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): WaitingListApi = buildRetrofit(networkJson, client).create(WaitingListApi::class.java)
 }
 
 private const val BASE_URL = BuildConfig.BASE_URL

@@ -11,12 +11,16 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.joinrequest.GetWaitingClassUseCase
+import com.muammarahlnn.learnyscape.core.domain.joinrequest.PutStudentAcceptanceUseCase
 import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.JoinRequestArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +33,7 @@ import javax.inject.Inject
 class JoinRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getWaitingClassUseCase: GetWaitingClassUseCase,
+    private val putStudentAcceptanceUseCase: PutStudentAcceptanceUseCase,
 ) : ViewModel(), JoinRequestContract {
 
     private val joinRequestArgs = JoinRequestArgs(savedStateHandle)
@@ -51,6 +56,12 @@ class JoinRequestViewModel @Inject constructor(
 
             JoinRequestContract.Event.OnCloseClick ->
                 navigateBack()
+
+            is JoinRequestContract.Event.OnAcceptStudent ->
+                updateStudentAcceptance(event.studentId, true)
+
+            is JoinRequestContract.Event.OnRejectStudent ->
+                updateStudentAcceptance(event.studentId, false)
         }
     }
 
@@ -66,11 +77,7 @@ class JoinRequestViewModel @Inject constructor(
         viewModelScope.launch {
             getWaitingClassUseCase(classId = _state.value.classId).asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
-                        it.copy(
-                            uiState = JoinRequestUiState.Loading
-                        )
-                    }
+                    onUiStateLoading()
                 }.onSuccess { waitingList ->
                     _state.update {
                         it.copy(
@@ -90,6 +97,46 @@ class JoinRequestViewModel @Inject constructor(
                     onErrorFetchWaitingList(message)
                 }
             }
+        }
+    }
+
+    private fun updateStudentAcceptance(
+        studentId: String,
+        accepted: Boolean,
+    ) {
+        putStudentAcceptanceUseCase(
+            studentId = studentId,
+            accepted = accepted,
+        ).asResult().onEach { result ->
+            result.onLoading {
+                onUiStateLoading()
+            }.onSuccess {
+                val message = "Successfully ${if (accepted) "accepted" else "rejected"} student join request"
+                showToast(message)
+            }.onNoInternet { message ->
+                showToast(message)
+            }.onError { _, message ->
+                showToast(message)
+            }.onException { exception, message ->
+                Log.e("JoinRequestViewModel", exception?.message.toString())
+                showToast(message)
+            }
+        }.onCompletion {
+            fetchWaitingList()
+        }.launchIn(viewModelScope)
+    }
+
+    private fun onUiStateLoading() {
+        _state.update {
+            it.copy(
+                uiState = JoinRequestUiState.Loading
+            )
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _effect.emit(JoinRequestContract.Effect.ShowToast(message))
         }
     }
 
