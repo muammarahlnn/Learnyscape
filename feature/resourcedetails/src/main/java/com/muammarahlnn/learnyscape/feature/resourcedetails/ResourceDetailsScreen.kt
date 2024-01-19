@@ -27,6 +27,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -51,7 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
@@ -456,14 +457,26 @@ private fun ResourceDetailsTopAppBar(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LearnyscapeTopAppBar(
+    LearnyscapeCenterTopAppBar(
         title = stringResource(id = titleRes),
-        navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
-        navigationIconContentDescription = stringResource(
-            id = designSystemR.string.navigation_back_icon_description,
-        ),
         colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
-        onNavigationClick = onBackClick,
+        navigationIcon = {
+            IconButton(
+                onClick = onBackClick,
+            ) {
+                Icon(
+                    painter = painterResource(
+                        id = designSystemR.drawable.ic_arrow_back
+                    ),
+                    contentDescription = stringResource(
+                        id = designSystemR.string.navigation_back_icon_description,
+                    ),
+                )
+            }
+        },
+        actionsIcon = {
+
+        },
         modifier = modifier,
     )
 }
