@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 internal fun ModuleRoute(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ModuleViewModel = hiltViewModel(),
@@ -63,7 +63,10 @@ internal fun ModuleRoute(
                 navigateBack()
 
             is ModuleContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(it.resourceTypeOrdinal)
+                navigateToResourceDetails(
+                    it.resourceId,
+                    it.resourceTypeOrdinal,
+                )
 
             is ModuleContract.Effect.NavigateToResourceCreate ->
                 navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
@@ -115,7 +118,10 @@ private fun ModuleScreen(
                             ClassResourceCard(
                                 classResourceType = ClassResourceType.MODULE,
                                 title = module.name,
-                                timeLabel = module.updatedAt
+                                timeLabel = module.updatedAt,
+                                onItemClick = {
+                                    event(ModuleContract.Event.OnNavigateToResourceDetails(module.id))
+                                }
                             )
                         }
                     }

@@ -2,14 +2,18 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceOverviewResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Streaming
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -31,12 +35,31 @@ interface ReferencesApi {
         @Path(CLASS_ID_PATH) classId: String,
     ): BaseResponse<List<ReferenceOverviewResponse>>
 
-    companion object {
+    @GET(GET_REFERENCE_DETAILS_END_PONT)
+    suspend fun getReferenceDetails(
+        @Path(REFERENCE_ID_PATH) referenceId: String,
+    ): BaseResponse<ReferenceDetailsResponse>
 
-        private const val REFERENCES_END_POINT = "references"
+    @Streaming
+    @GET(GET_ATTACHMENT_END_POINT)
+    suspend fun getAttachment(
+        @Path(ATTACHMENT_URL) attachmentUrl: String,
+    ): Response<ResponseBody>
+
+    companion object {
 
         private const val CLASS_ID_PATH = "classId"
 
+        private const val REFERENCE_ID_PATH = "referenceId"
+
+        private const val ATTACHMENT_URL = "attachmentId"
+
+        private const val REFERENCES_END_POINT = "references"
+
         private const val GET_REFERENCES_END_POINT = "$REFERENCES_END_POINT/classes/{$CLASS_ID_PATH}"
+
+        private const val GET_REFERENCE_DETAILS_END_PONT = "$REFERENCES_END_POINT/{$REFERENCE_ID_PATH}"
+
+        private const val GET_ATTACHMENT_END_POINT = "{$ATTACHMENT_URL}"
     }
 }

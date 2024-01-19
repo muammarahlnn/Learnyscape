@@ -27,7 +27,7 @@ interface ModuleContract :
 
         data object OnNavigateBack : Event
 
-        data object OnNavigateToResourceDetails : Event
+        data class OnNavigateToResourceDetails(val moduleId: String) : Event
 
         data object OnNavigateToResourceCreate : Event
     }
@@ -36,7 +36,10 @@ interface ModuleContract :
 
         data object NavigateBack : Effect
 
-        data class NavigateToResourceDetails(val resourceTypeOrdinal: Int) : Effect
+        data class NavigateToResourceDetails(
+            val resourceId: String,
+            val resourceTypeOrdinal: Int,
+        ) : Effect
 
         data class NavigateToResourceCreate(
             val classId: String,

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,11 +42,13 @@ fun PostCard(
     onPostClick: (Int) -> Unit = {},
 ) {
     BaseCard(
-        modifier = modifier.clickable(
-            enabled = isCaptionOverflowed
-        ) {
-            onPostClick(classResourceType.ordinal)
-        },
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(
+                enabled = isCaptionOverflowed
+            ) {
+                onPostClick(classResourceType.ordinal)
+            },
     ) {
         Column {
             Row(
@@ -108,21 +111,23 @@ fun PostCard(
                 }
             }
 
-            Divider(
-                thickness = 2.dp,
-                color = MaterialTheme.colorScheme.onSecondary,
-            )
-
-            Box(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = caption,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodySmall,
-                    overflow =
-                        if (isCaptionOverflowed) TextOverflow.Ellipsis
-                        else TextOverflow.Clip,
-                    maxLines = if (isCaptionOverflowed) 2 else Int.MAX_VALUE,
+            if (caption.isNotEmpty()) {
+                Divider(
+                    thickness = 2.dp,
+                    color = MaterialTheme.colorScheme.onSecondary,
                 )
+
+                Box(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = caption,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodySmall,
+                        overflow =
+                            if (isCaptionOverflowed) TextOverflow.Ellipsis
+                            else TextOverflow.Clip,
+                        maxLines = if (isCaptionOverflowed) 2 else Int.MAX_VALUE,
+                    )
+                }
             }
         }
     }
