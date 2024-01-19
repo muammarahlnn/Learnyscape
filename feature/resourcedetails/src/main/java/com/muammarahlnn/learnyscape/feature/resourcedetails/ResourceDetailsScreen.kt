@@ -60,6 +60,7 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.PostCard
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
@@ -475,7 +476,22 @@ private fun ResourceDetailsTopAppBar(
             }
         },
         actionsIcon = {
-
+            LecturerOnlyComposable {
+                Row {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            painter = painterResource(id = designSystemR.drawable.ic_edit),
+                            contentDescription = stringResource(id = R.string.edit_resource)
+                        )
+                    }
+                    IconButton(onClick = {}) {
+                        Icon(
+                            painter = painterResource(id = designSystemR.drawable.ic_delete),
+                            contentDescription = stringResource(id = R.string.delete_resource)
+                        )
+                    }
+                }
+            }
         },
         modifier = modifier,
     )

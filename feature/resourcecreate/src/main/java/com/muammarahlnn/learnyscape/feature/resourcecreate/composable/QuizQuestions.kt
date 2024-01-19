@@ -331,7 +331,7 @@ private fun BaseQuizQuestionItem(
 
             if (number > 1) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_delete),
+                    painter = painterResource(id = designSystemR.drawable.ic_delete),
                     contentDescription = stringResource(id = R.string.delete_question),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
