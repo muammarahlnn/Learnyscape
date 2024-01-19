@@ -8,6 +8,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.JoinRequestRepository
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepository
+import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewRepository
 import com.muammarahlnn.learnyscape.core.data.repository.SchedulesRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.AvailableClassRepositoryImpl
@@ -18,6 +19,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.impl.JoinRequestReposit
 import com.muammarahlnn.learnyscape.core.data.repository.impl.LoginRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ProfileRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceCreateRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceDetailsRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceOverviewRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.SchedulesRepositoryImpl
 import dagger.Binds
@@ -86,4 +88,9 @@ interface DataModule {
     fun bindsJoinRequestRepository(
         joinRequestRepository: JoinRequestRepositoryImpl
     ): JoinRequestRepository
+
+    @Binds
+    fun bindsResourceDetailsRepository(
+        resourceDetailsRepository: ResourceDetailsRepositoryImpl
+    ): ResourceDetailsRepository
 }

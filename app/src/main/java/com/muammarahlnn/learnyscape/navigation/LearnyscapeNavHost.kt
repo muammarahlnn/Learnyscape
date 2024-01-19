@@ -90,21 +90,13 @@ fun LearnyscapeNavHost(
             navigateToResourceDetails = navigateToResourceDetails(navController),
         )
         notificationsScreen(
-            onNotificationClick = navigateToResourceDetails(navController),
+            onNotificationClick = {}, // TODO: implement it later
             onBackClick = navController::popBackStack
         )
         resourceDetailsScreen(
-            onConfirmStartQuizDialog = { quizTypeOrdinal, quizName, quizDuration ->
-                navController.navigateToQuizSession(
-                    quizTypeOrdinal,
-                    quizName,
-                    quizDuration
-                )
-            },
-            onCameraActionClick = {
-                navController.navigateToCamera()
-            },
-            onBackClick = navController::popBackStack
+            navigateBack = navController::popBackStack,
+            navigateToCamera = navController::navigateToCamera,
+            navigateToQuizSession = navController::navigateToQuizSession,
         )
         quizSessionScreen(
             onQuizIsOver = navController::popBackStack
@@ -130,6 +122,9 @@ fun LearnyscapeNavHost(
 
 private fun navigateToResourceDetails(
     navController: NavHostController
-): (Int) -> Unit = { resourceTypeOrdinal ->
-    navController.navigateToResourceDetails(resourceTypeOrdinal)
+): (String, Int) -> Unit = { resourceId, resourceTypeOrdinal ->
+    navController.navigateToResourceDetails(
+        resourceId = resourceId,
+        resourceTypeOrdinal = resourceTypeOrdinal,
+    )
 }

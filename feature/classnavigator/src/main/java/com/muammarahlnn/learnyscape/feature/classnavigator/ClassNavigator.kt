@@ -24,7 +24,7 @@ import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.ClassNavHo
 internal fun ClassNavigatorRoute(
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassNavigationViewModel = hiltViewModel(),
@@ -44,7 +44,7 @@ private fun ClassNavigator(
     classId: String,
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     state: ClassNavigatorState = rememberClassNavigatorState(classId)

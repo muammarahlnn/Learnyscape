@@ -22,7 +22,7 @@ internal fun ClassNavHost(
     state: ClassNavigatorState,
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = CLASS_ROUTE,
@@ -37,7 +37,7 @@ internal fun ClassNavHost(
             classId = state.classId,
             navigateBack = navigateBack,
             navigateToJoinRequests = navigateToJoinRequests,
-            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceDetails = {},
             navigateToResourceCreate = navigateToResourceCreate,
         )
         moduleScreen(
@@ -49,13 +49,13 @@ internal fun ClassNavHost(
         assignmentScreen(
             classId = state.classId,
             navigateBack = navigateBack,
-            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceDetails = {},
             navigateToResourceCreate = navigateToResourceCreate,
         )
         quizScreen(
             classId = state.classId,
             navigateBack = navigateBack,
-            navigateToResourceDetails = navigateToResourceDetails,
+            navigateToResourceDetails = {},
             navigateToResourceCreate = navigateToResourceCreate,
         )
         memberScreen()

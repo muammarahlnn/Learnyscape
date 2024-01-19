@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,13 +29,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +55,13 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAp
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.PostCard
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -64,99 +72,120 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ResourceDetailsRoute(
-    onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
-    onCameraActionClick: () -> Unit,
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateToCamera: () -> Unit,
+    navigateToQuizSession: (Int, String, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
 ) {
-    var showAddWorkBottomSheet by rememberSaveable {
-        mutableStateOf(false)
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(ResourceDetailsContract.Event.FetchResourceDetails)
     }
-    var showStartQuizDialog by rememberSaveable {
-        mutableStateOf(false)
+
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            ResourceDetailsContract.Effect.NavigateBack ->
+                navigateBack()
+
+            ResourceDetailsContract.Effect.NavigateToCamera ->
+                navigateToCamera()
+
+            is ResourceDetailsContract.Effect.NavigateToQuizSession ->
+                navigateToQuizSession(it.quizDuration, it.quizName, it.quizDuration)
+
+            ResourceDetailsContract.Effect.OpenFiles -> TODO()
+        }
+    }
+
+    val refreshState = use(refreshProvider = viewModel) {
+        event(ResourceDetailsContract.Event.FetchResourceDetails)
     }
 
     ResourceDetailsScreen(
-        resourceType = viewModel.classResourceType,
-        showAddWorkBottomSheet = showAddWorkBottomSheet,
-        showStartQuizDialog = showStartQuizDialog,
-        onAddWorkButtonClick = {
-            showAddWorkBottomSheet = true
-        },
-        onStartQuizButtonClick = {
-            showStartQuizDialog = true
-        },
-        onCameraActionClick = {
-            onCameraActionClick()
-            showAddWorkBottomSheet = false
-        },
-        onDismissAddWorkBottomSheet = {
-            showAddWorkBottomSheet = false
-        },
-        onConfirmStartQuizDialog = { quizTypeOrdinal, quizName, quizDuration ->
-            onConfirmStartQuizDialog(quizTypeOrdinal, quizName, quizDuration)
-            showStartQuizDialog = false
-        },
-        onDismissStartQuizDialog = {
-            showStartQuizDialog = false
-        },
-        onBackClick = onBackClick,
+        state = state,
+        refreshState = refreshState,
+        event = { event(it) },
         modifier = modifier,
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ResourceDetailsScreen(
-    resourceType: ClassResourceType,
-    showAddWorkBottomSheet: Boolean,
-    showStartQuizDialog: Boolean,
-    onAddWorkButtonClick: () -> Unit,
-    onStartQuizButtonClick: () -> Unit,
-    onCameraActionClick: () -> Unit,
-    onDismissAddWorkBottomSheet: () -> Unit,
-    onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
-    onDismissStartQuizDialog: () -> Unit,
-    onBackClick: () -> Unit,
+    state: ResourceDetailsContract.State,
+    refreshState: RefreshState,
+    event: (ResourceDetailsContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (showAddWorkBottomSheet) {
+    if (state.overlayComposableVisibility.showAddWorkBottomSheet) {
         AddWorkBottomSheet(
-            onCameraActionClick = onCameraActionClick,
-            onDismiss = onDismissAddWorkBottomSheet
+            onCameraActionClick = { event(ResourceDetailsContract.Event.OnCameraActionClick) },
+            onDismiss = { event(ResourceDetailsContract.Event.OnDismissAddWorkBottomSheet) },
         )
     }
 
-    if (showStartQuizDialog) {
+    if (state.overlayComposableVisibility.showStartQuizDialog) {
         StartQuizDialog(
-            onConfirm = onConfirmStartQuizDialog,
-            onDismiss = onDismissStartQuizDialog,
+            onConfirm = { quizTypeOrdinal, quizName, quizDuration ->
+                event(
+                    ResourceDetailsContract.Event.OnConfirmStartQuizDialog(
+                        quizTypeOrdinal = quizTypeOrdinal,
+                        quizName = quizName,
+                        quizDuration = quizDuration,
+                    )
+                )
+            },
+            onDismiss = { event(ResourceDetailsContract.Event.OnDismissStartQuizDialog) },
         )
     }
 
-    Column(modifier = modifier.fillMaxSize()) {
-        ResourceDetailsTopAppBar(
-            titleRes = resourceType.nameRes,
-            onBackClick = onBackClick,
-        )
+    Scaffold(
+        topBar = {
+            ResourceDetailsTopAppBar(
+                titleRes = state.resourceType.nameRes,
+                onBackClick = { event(ResourceDetailsContract.Event.OnBackClick) },
+            )
+        },
+        modifier = modifier,
+    ) { paddingValues ->
+        PullRefreshScreen(
+            pullRefreshState = refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = Modifier.padding(paddingValues)
+        ) {
+            val contentModifier = Modifier.fillMaxSize()
+            when (state.uiState) {
+                ResourceDetailsContract.UiState.Loading -> LoadingScreen(
+                    modifier = contentModifier,
+                )
 
-        ResourceDetailsContent(
-            resourceType = resourceType,
-            onAddWorkButtonClick = onAddWorkButtonClick,
-            onStartQuizButtonClick = onStartQuizButtonClick,
-        )
+                ResourceDetailsContract.UiState.Success -> {
+                    ResourceDetailsContent(
+                        state = state,
+                        onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
+                        onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
+                    )
+                }
+
+                is ResourceDetailsContract.UiState.Error -> ErrorScreen(
+                    text = state.uiState.message,
+                    onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) }
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun ResourceDetailsContent(
-    resourceType: ClassResourceType,
+    state: ResourceDetailsContract.State,
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isAssignment = resourceType == ClassResourceType.ASSIGNMENT
-    val isQuiz = resourceType == ClassResourceType.QUIZ
+    val isAssignment = state.resourceType == ClassResourceType.ASSIGNMENT
+    val isQuiz = state.resourceType == ClassResourceType.QUIZ
 
     val localDensity = LocalDensity.current
     Box(modifier = modifier.fillMaxSize()) {
@@ -174,7 +203,12 @@ private fun ResourceDetailsContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                DetailPostCard(resourceType = resourceType)
+                DetailPostCard(
+                    resourceType = state.resourceType,
+                    name = state.name,
+                    date = state.date,
+                    description = state.description,
+                )
             }
 
             item {
@@ -225,18 +259,16 @@ private fun ResourceDetailsContent(
 @Composable
 private fun DetailPostCard(
     resourceType: ClassResourceType,
+    name: String,
+    date: String,
+    description: String,
     modifier: Modifier = Modifier,
 ) {
-    val title = if (resourceType == ClassResourceType.ANNOUNCEMENT) {
-        "Andi Muh. Amil Siddik, S.Si., M.Si"
-    } else {
-        "Lorem Ipsum Dolor Sit Amet"
-    }
     PostCard(
         classResourceType = resourceType,
-        title = title,
-        timePosted = "2 May 2023",
-        caption = "Lorem ipsum dolor sit amet. In quis dolore qui enim vitae hic ullam sint et magni dicta et autem commodi ea quibusdam dicta. Vel inventore",
+        title = name,
+        timePosted = date,
+        caption = description,
         isCaptionOverflowed = false,
         modifier = modifier,
     )

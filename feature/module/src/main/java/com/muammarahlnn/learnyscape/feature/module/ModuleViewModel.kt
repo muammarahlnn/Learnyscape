@@ -51,8 +51,8 @@ class ModuleViewModel @Inject constructor(
             ModuleContract.Event.OnNavigateBack ->
                 navigateBack()
 
-            ModuleContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails()
+            is ModuleContract.Event.OnNavigateToResourceDetails ->
+                navigateToResourceDetails(event.moduleId)
 
             ModuleContract.Event.OnNavigateToResourceCreate ->
                 navigateToResourceCreate()
@@ -110,11 +110,12 @@ class ModuleViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToResourceDetails() {
+    private fun navigateToResourceDetails(moduleId: String) {
         viewModelScope.launch {
             _effect.emit(
                 ModuleContract.Effect.NavigateToResourceDetails(
-                    resourceTypeOrdinal = moduleOrdinal
+                    resourceId = moduleId,
+                    resourceTypeOrdinal = moduleOrdinal,
                 )
             )
         }

@@ -15,46 +15,53 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
  */
 
 private const val RESOURCE_DETAILS_ROUTE = "resource_details_route"
+private const val RESOURCE_ID_ARG = "resource_id"
 private const val RESOURCE_TYPE_ORDINAL_ARG = "resource_type_ordinal"
-const val RESOURCE_DETAILS_ROUTE_WITH_ARGS =
-    "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_TYPE_ORDINAL_ARG}"
+private const val RESOURCE_DETAILS_ROUTE_WITH_ARGS =
+    "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_ID_ARG}/{$RESOURCE_TYPE_ORDINAL_ARG}"
 
 internal class ResourceDetailsArgs(
+    val resourceId: String,
     val resourceTypeOrdinal: Int,
 ) {
 
     constructor(
         savedStateHandle: SavedStateHandle
     ) : this(
-        resourceTypeOrdinal = checkNotNull(savedStateHandle[RESOURCE_TYPE_ORDINAL_ARG])
+        resourceId = checkNotNull(savedStateHandle[RESOURCE_ID_ARG]),
+        resourceTypeOrdinal = checkNotNull(savedStateHandle[RESOURCE_TYPE_ORDINAL_ARG]),
     )
 }
 
 fun NavController.navigateToResourceDetails(
+    resourceId: String,
     resourceTypeOrdinal: Int,
 ) {
-    this.navigate("$RESOURCE_DETAILS_ROUTE/$resourceTypeOrdinal") {
+    this.navigate("$RESOURCE_DETAILS_ROUTE/$resourceId/$resourceTypeOrdinal") {
         launchSingleTop = true
     }
 }
 
 fun NavGraphBuilder.resourceDetailsScreen(
-    onConfirmStartQuizDialog: (Int, String, Int) -> Unit,
-    onCameraActionClick: () -> Unit,
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
+    navigateToCamera: () -> Unit,
+    navigateToQuizSession: (Int, String, Int) -> Unit,
 ) {
     composable(
         route = RESOURCE_DETAILS_ROUTE_WITH_ARGS,
         arguments = listOf(
+            navArgument(RESOURCE_ID_ARG) {
+                type = NavType.StringType
+            },
             navArgument(RESOURCE_TYPE_ORDINAL_ARG) {
                 type = NavType.IntType
             },
         ),
     ) {
         ResourceDetailsRoute(
-            onConfirmStartQuizDialog = onConfirmStartQuizDialog,
-            onCameraActionClick = onCameraActionClick,
-            onBackClick = onBackClick,
+            navigateBack = navigateBack,
+            navigateToCamera = navigateToCamera,
+            navigateToQuizSession = navigateToQuizSession,
         )
     }
 }

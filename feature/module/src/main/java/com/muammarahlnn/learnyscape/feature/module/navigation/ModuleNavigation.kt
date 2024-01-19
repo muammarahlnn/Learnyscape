@@ -20,7 +20,7 @@ fun NavController.navigateToModule(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.moduleScreen(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
 ) {
     composable(route = MODULE_ROUTE) {
