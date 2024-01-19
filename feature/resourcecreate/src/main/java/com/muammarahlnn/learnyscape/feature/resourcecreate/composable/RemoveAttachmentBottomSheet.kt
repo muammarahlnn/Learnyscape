@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseBottomSheet
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -44,7 +45,7 @@ internal fun RemoveAttachmentBottomSheet(
                 }
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_delete),
+                painter = painterResource(id = designSystemR.drawable.ic_delete),
                 contentDescription = stringResource(id = R.string.remove_attachment),
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(36.dp)
