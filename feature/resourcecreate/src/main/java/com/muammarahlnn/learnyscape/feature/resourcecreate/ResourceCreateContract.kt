@@ -59,6 +59,8 @@ interface ResourceCreateContract :
 
         data class OnFileSelected(val selectedFile: File) : Event
 
+        data class OnAttachmentClick(val attachment: File) : Event
+
         data class OnMoreVertAttachmentClick(val attachmentIndex: Int) : Event
 
         data object OnDismissRemoveAttachmentBottomSheet : Event
@@ -107,6 +109,8 @@ interface ResourceCreateContract :
         data object NavigateBack : Effect
 
         data object OpenFiles : Effect
+
+        data class OpenAttachment(val attachment: File) : Effect
 
         data object NavigateToCamera : Effect
 

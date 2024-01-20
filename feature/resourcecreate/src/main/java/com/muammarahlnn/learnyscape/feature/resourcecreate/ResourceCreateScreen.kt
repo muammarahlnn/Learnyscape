@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,6 +31,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
@@ -84,6 +86,21 @@ internal fun ResourceCreateRoute(
             ResourceCreateContract.Effect.OpenFiles -> launcher.launch("*/*")
             is ResourceCreateContract.Effect.ShowToast ->
                 Toast.makeText(context, it.message,Toast.LENGTH_SHORT).show()
+
+            is ResourceCreateContract.Effect.OpenAttachment -> {
+                val attachment = it.attachment
+                val attachmentUri = FileProvider.getUriForFile(
+                    context,
+                    context.applicationContext.packageName + ".provider",
+                    attachment
+                )
+
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(attachmentUri, context.contentResolver.getType(attachmentUri))
+                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                }
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -242,8 +259,11 @@ private fun ResourceCreateScreen(
                         onDescriptionChange = {
                             event(ResourceCreateContract.Event.OnDescriptionChange(it))
                         },
-                        onAddAttachmentCLick = {
+                        onAddAttachmentClick = {
                             event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                        },
+                        onAttachmentClick = { attachment ->
+                            event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
                         },
                         onMoreVertAttachmentClick = {
                             event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
@@ -258,8 +278,11 @@ private fun ResourceCreateScreen(
                         onDescriptionChange = {
                             event(ResourceCreateContract.Event.OnDescriptionChange(it))
                         },
-                        onAddAttachmentCLick = {
+                        onAddAttachmentClick = {
                             event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                        },
+                        onAttachmentClick = { attachment ->
+                            event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
                         },
                         onMoreVertAttachmentClick = {
                             event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
@@ -274,8 +297,11 @@ private fun ResourceCreateScreen(
                         onDescriptionChange = {
                             event(ResourceCreateContract.Event.OnDescriptionChange(it))
                         },
-                        onAddAttachmentCLick = {
+                        onAddAttachmentClick = {
                             event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                        },
+                        onAttachmentClick = { attachment ->
+                            event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
                         },
                         onMoreVertAttachmentClick = {
                             event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))

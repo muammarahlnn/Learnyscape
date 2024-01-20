@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract
+import java.io.File
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -18,7 +19,8 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContrac
 internal fun AnnouncementResourceContent(
     state: ResourceCreateContract.State,
     onDescriptionChange: (String) -> Unit,
-    onAddAttachmentCLick: () -> Unit,
+    onAddAttachmentClick: () -> Unit,
+    onAttachmentClick: (File) -> Unit,
     onMoreVertAttachmentClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -37,7 +39,8 @@ internal fun AnnouncementResourceContent(
 
         AttachmentsInputCard(
             attachments = state.attachments,
-            onAddAttachmentClick = onAddAttachmentCLick,
+            onAddAttachmentClick = onAddAttachmentClick,
+            onAttachmentClick = onAttachmentClick,
             onMoreVertAttachmentClick = onMoreVertAttachmentClick,
         )
     }
