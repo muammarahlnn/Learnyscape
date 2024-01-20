@@ -38,6 +38,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 internal fun AttachmentsInputCard(
     attachments: List<File>,
     onAddAttachmentClick: () -> Unit,
+    onAttachmentClick: (File) -> Unit,
     onMoreVertAttachmentClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -69,6 +70,9 @@ internal fun AttachmentsInputCard(
                     attachments.forEachIndexed { index, file ->
                         AttachmentItem(
                             file = file,
+                            onAttachmentClick = { attachment ->
+                                onAttachmentClick(attachment)
+                            },
                             onMoreVertClick = {
                                 onMoreVertAttachmentClick(index)
                             },
@@ -93,11 +97,14 @@ internal fun AttachmentsInputCard(
 @Composable
 private fun AttachmentItem(
     file: File,
+    onAttachmentClick: (File) -> Unit,
     onMoreVertClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .noRippleClickable { onAttachmentClick(file) }
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

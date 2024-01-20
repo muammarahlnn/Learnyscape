@@ -87,6 +87,9 @@ class ResourceCreateViewModel @Inject constructor(
             is ResourceCreateContract.Event.OnFileSelected ->
                 addAttachmentToCurrentAttachments(event.selectedFile)
 
+            is ResourceCreateContract.Event.OnAttachmentClick ->
+                openAttachment(event.attachment)
+
             is ResourceCreateContract.Event.OnMoreVertAttachmentClick ->
                 onMoreVertAttachmentClick(event.attachmentIndex)
 
@@ -332,6 +335,12 @@ class ResourceCreateViewModel @Inject constructor(
             it.copy(
                 attachments = addedAttachments
             )
+        }
+    }
+
+    private fun openAttachment(attachment: File) {
+        viewModelScope.launch {
+            _effect.emit(ResourceCreateContract.Effect.OpenAttachment(attachment))
         }
     }
 

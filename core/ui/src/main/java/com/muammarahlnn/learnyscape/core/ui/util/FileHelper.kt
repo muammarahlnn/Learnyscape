@@ -43,7 +43,7 @@ fun imageUriToFile(selectedImg: Uri, context: Context): File {
 }
 
 fun uriToFile(context: Context, selectedFileUri: Uri): File {
-    val file = createCustomTempFile(context, selectedFileUri)
+    val file = createFile(context, selectedFileUri)
     val contentResolver = context.contentResolver
 
     val inputStream = contentResolver.openInputStream(selectedFileUri) as InputStream
@@ -65,14 +65,10 @@ fun createCustomTempImageFile(context: Context): File {
     return File.createTempFile(timeStamp, ".jpg", storageDir)
 }
 
-fun createCustomTempFile(context: Context, uri: Uri): File {
+fun createFile(context: Context, uri: Uri): File {
     val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-    val fileName = getFileName(context, uri)
-    return if (fileName != null) {
-        File.createTempFile(fileName, null, storageDir)
-    } else {
-        File.createTempFile("$timeStamp-", getFileExtension(context, uri), storageDir)
-    }
+    val fileName = getFileName(context, uri) + getFileExtension(context, uri)
+    return File(storageDir, fileName)
 }
 
 fun getFileExtension(context: Context, uri: Uri): String? {
@@ -88,6 +84,17 @@ fun getFileExtension(context: Context, uri: Uri): String? {
     }
     return formattedExtension
 }
+
+fun File.getMimeType(): String =
+    MimeTypeMap.getFileExtensionFromUrl(this.toString())?.run {
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension((this.lowercase()))
+    } ?: "application/octet-stream"
+
+//fun getMimeType(file: File): String? {
+//    val extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString())
+//    return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.lowercase())
+//}
+
 
 fun getFileName(context: Context, uri: Uri): String? {
     var result: String? = null
