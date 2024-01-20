@@ -8,6 +8,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 
 /**
@@ -30,12 +31,15 @@ fun LoadingDialog(
             LoadingScreen(
                 modifier = modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .height(124.dp)
                     .padding(top = 16.dp)
             )
         },
         shape = RoundedCornerShape(8.dp),
         containerColor = MaterialTheme.colorScheme.background,
-        modifier = modifier,
+        modifier = modifier.shadow(
+            elevation = 2.dp,
+            shape = RoundedCornerShape(8.dp),
+        ),
     )
 }
