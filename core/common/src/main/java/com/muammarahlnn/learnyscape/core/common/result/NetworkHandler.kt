@@ -20,7 +20,7 @@ data class ErrorResponse(
 @Serializable
 data class Error(
     @SerialName("code")
-    val code: String,
+    val code: String? = null,
 
     @SerialName("message")
     val message: String,
