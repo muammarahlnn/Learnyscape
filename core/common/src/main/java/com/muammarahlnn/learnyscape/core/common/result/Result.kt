@@ -101,7 +101,7 @@ fun <T> Flow<T>.asResult(): Flow<Result<T>> {
                 errorResponse?.error?.let { error ->
                     emit(
                         Result.Error(
-                            code = error.code,
+                            code = error.code.orEmpty(),
                             message = error.message,
                         )
                     )
