@@ -2,10 +2,12 @@ package com.muammarahlnn.learnyscape.core.ui.util
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Environment
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -85,17 +87,6 @@ fun getFileExtension(context: Context, uri: Uri): String? {
     return formattedExtension
 }
 
-fun File.getMimeType(): String =
-    MimeTypeMap.getFileExtensionFromUrl(this.toString())?.run {
-        MimeTypeMap.getSingleton().getMimeTypeFromExtension((this.lowercase()))
-    } ?: "application/octet-stream"
-
-//fun getMimeType(file: File): String? {
-//    val extension = MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString())
-//    return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.lowercase())
-//}
-
-
 fun getFileName(context: Context, uri: Uri): String? {
     var result: String? = null
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
@@ -117,4 +108,18 @@ fun getFileName(context: Context, uri: Uri): String? {
     }
 
     return result
+}
+
+fun openFile(context: Context, file: File) {
+    val fileUri = FileProvider.getUriForFile(
+        context,
+        context.applicationContext.packageName + ".provider",
+        file
+    )
+
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(fileUri, context.contentResolver.getType(fileUri))
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+    }
+    context.startActivity(intent)
 }
