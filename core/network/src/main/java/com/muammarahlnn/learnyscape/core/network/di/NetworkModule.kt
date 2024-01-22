@@ -113,7 +113,7 @@ object NetworkModule {
     ): WaitingListApi = buildRetrofit(networkJson, client).create(WaitingListApi::class.java)
 }
 
-private const val BASE_URL = BuildConfig.BASE_URL
+internal const val BASE_URL = BuildConfig.BASE_URL
 internal const val NO_AUTH = "NoAuth"
 internal const val BEARER_TOKEN_AUTH = "BearerTokenAuth"
 

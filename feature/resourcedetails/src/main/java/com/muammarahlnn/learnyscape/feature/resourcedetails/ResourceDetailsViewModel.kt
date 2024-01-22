@@ -97,6 +97,7 @@ class ResourceDetailsViewModel @Inject constructor(
                             name = moduleDetails.name,
                             description = moduleDetails.description,
                             date = moduleDetails.updatedAt,
+                            attachments = moduleDetails.attachments,
                             uiState = ResourceDetailsContract.UiState.Success,
                         )
                     }

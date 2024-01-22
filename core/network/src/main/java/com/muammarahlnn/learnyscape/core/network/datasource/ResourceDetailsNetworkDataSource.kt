@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.datasource
 
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import kotlinx.coroutines.flow.Flow
+import java.io.File
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -10,4 +11,6 @@ import kotlinx.coroutines.flow.Flow
 interface ResourceDetailsNetworkDataSource {
 
     fun getReferenceDetails(referenceId: String): Flow<ReferenceDetailsResponse>
+
+    fun getReferenceAttachment(attachmentUrl: String): Flow<File?>
 }

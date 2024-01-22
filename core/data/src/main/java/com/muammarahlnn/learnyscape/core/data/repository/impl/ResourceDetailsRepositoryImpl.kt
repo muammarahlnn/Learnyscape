@@ -6,6 +6,7 @@ import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -17,7 +18,16 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
 ) : ResourceDetailsRepository {
 
     override fun getModuleDetails(moduleId: String): Flow<ModuleDetailsModel> =
-        resourceDetailsNetworkDataSource.getReferenceDetails(referenceId = moduleId).map {
-            it.toModuleDetailsModel()
+        resourceDetailsNetworkDataSource.getReferenceDetails(moduleId).map { referenceDetailsResponse ->
+            val attachments = mutableListOf<File>()
+            referenceDetailsResponse.attachmentUrls.forEach { attachmentUrl ->
+                resourceDetailsNetworkDataSource.getReferenceAttachment(attachmentUrl).collect { attachment ->
+                    attachment?.let {
+                        attachments.add(it)
+                    }
+                }
+            }
+
+            referenceDetailsResponse.toModuleDetailsModel(attachments.toList())
         }
 }

@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import java.io.File
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -22,6 +23,7 @@ interface ResourceDetailsContract :
         val name: String = "",
         val date: String = "",
         val description: String = "",
+        val attachments: List<File> = listOf(),
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility()
     )
 
