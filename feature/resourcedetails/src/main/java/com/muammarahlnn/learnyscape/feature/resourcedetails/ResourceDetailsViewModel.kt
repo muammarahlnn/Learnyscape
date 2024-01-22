@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 
@@ -61,8 +62,8 @@ class ResourceDetailsViewModel @Inject constructor(
             ResourceDetailsContract.Event.OnCameraActionClick ->
                 navigateToCamera()
 
-            ResourceDetailsContract.Event.OnUploadFilesClick ->
-                openFiles()
+            is ResourceDetailsContract.Event.OnAttachmentClick ->
+                openAttachment(event.attachment)
 
             ResourceDetailsContract.Event.OnDismissAddWorkBottomSheet ->
                 showAddWorkBottomSheet(false)
@@ -137,9 +138,9 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun openFiles() {
+    private fun openAttachment(attachment: File) {
         viewModelScope.launch {
-            _effect.emit(ResourceDetailsContract.Effect.OpenFiles)
+            _effect.emit(ResourceDetailsContract.Effect.OpenAttachment(attachment))
         }
     }
 
