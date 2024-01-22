@@ -51,7 +51,7 @@ interface ResourceDetailsContract :
 
         data object OnCameraActionClick : Event
 
-        data object OnUploadFilesClick : Event
+        data class OnAttachmentClick(val attachment: File) : Event
 
         data object OnDismissAddWorkBottomSheet : Event
 
@@ -72,7 +72,7 @@ interface ResourceDetailsContract :
 
         data object NavigateToCamera : Effect
 
-        data object OpenFiles : Effect
+        data class OpenAttachment(val attachment: File) : Effect
 
         data class NavigateToQuizSession(
             val quizTypeOrdinal: Int,

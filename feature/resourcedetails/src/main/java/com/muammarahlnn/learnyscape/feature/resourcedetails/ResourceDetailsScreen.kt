@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -61,6 +62,8 @@ import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
+import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import java.io.File
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -84,6 +87,7 @@ internal fun ResourceDetailsRoute(
         event(ResourceDetailsContract.Event.FetchResourceDetails)
     }
 
+    val context = LocalContext.current
     viewModel.effect.collectInLaunchedEffect {
         when (it) {
             ResourceDetailsContract.Effect.NavigateBack ->
@@ -95,7 +99,8 @@ internal fun ResourceDetailsRoute(
             is ResourceDetailsContract.Effect.NavigateToQuizSession ->
                 navigateToQuizSession(it.quizDuration, it.quizName, it.quizDuration)
 
-            ResourceDetailsContract.Effect.OpenFiles -> TODO()
+            is ResourceDetailsContract.Effect.OpenAttachment ->
+                openFile(context, it.attachment)
         }
     }
 
@@ -166,6 +171,7 @@ private fun ResourceDetailsScreen(
                         state = state,
                         onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
                         onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
+                        onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) }
                     )
                 }
 
@@ -183,6 +189,7 @@ private fun ResourceDetailsContent(
     state: ResourceDetailsContract.State,
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
+    onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isAssignment = state.resourceType == ClassResourceType.ASSIGNMENT
@@ -222,6 +229,7 @@ private fun ResourceDetailsContent(
                 } else {
                     AttachmentsCard(
                         attachments = state.attachments,
+                        onAttachmentClick = onAttachmentClick,
                     )
                 }
             }
@@ -280,6 +288,7 @@ private fun DetailPostCard(
 @Composable
 private fun AttachmentsCard(
     attachments: List<File>,
+    onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
@@ -301,6 +310,7 @@ private fun AttachmentsCard(
             attachments.forEach { attachment ->
                 AttachmentItem(
                     attachment = attachment,
+                    onAttachmentClick = onAttachmentClick,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -312,10 +322,13 @@ private fun AttachmentsCard(
 @Composable
 private fun AttachmentItem(
     attachment: File,
+    onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.noRippleClickable {
+            onAttachmentClick(attachment)
+        }
     ) {
         Card(
             shape = RoundedCornerShape(8.dp),
