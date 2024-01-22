@@ -13,7 +13,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Streaming
+import retrofit2.http.Url
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -40,10 +40,9 @@ interface ReferencesApi {
         @Path(REFERENCE_ID_PATH) referenceId: String,
     ): BaseResponse<ReferenceDetailsResponse>
 
-    @Streaming
-    @GET(GET_ATTACHMENT_END_POINT)
-    suspend fun getAttachment(
-        @Path(ATTACHMENT_URL) attachmentUrl: String,
+    @GET
+    suspend fun getReferenceAttachment(
+        @Url attachmentUrl: String,
     ): Response<ResponseBody>
 
     companion object {
@@ -52,14 +51,10 @@ interface ReferencesApi {
 
         private const val REFERENCE_ID_PATH = "referenceId"
 
-        private const val ATTACHMENT_URL = "attachmentId"
-
         private const val REFERENCES_END_POINT = "references"
 
         private const val GET_REFERENCES_END_POINT = "$REFERENCES_END_POINT/classes/{$CLASS_ID_PATH}"
 
         private const val GET_REFERENCE_DETAILS_END_PONT = "$REFERENCES_END_POINT/{$REFERENCE_ID_PATH}"
-
-        private const val GET_ATTACHMENT_END_POINT = "{$ATTACHMENT_URL}"
     }
 }

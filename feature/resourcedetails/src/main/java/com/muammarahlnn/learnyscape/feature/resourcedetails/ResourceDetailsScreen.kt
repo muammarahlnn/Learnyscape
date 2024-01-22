@@ -5,8 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
@@ -64,6 +62,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import java.io.File
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -221,7 +220,9 @@ private fun ResourceDetailsContent(
                         quizType = quizType
                     )
                 } else {
-                    AttachmentCard()
+                    AttachmentsCard(
+                        attachments = state.attachments,
+                    )
                 }
             }
 
@@ -276,9 +277,9 @@ private fun DetailPostCard(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun AttachmentCard(
+private fun AttachmentsCard(
+    attachments: List<File>,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
@@ -297,23 +298,12 @@ private fun AttachmentCard(
             
             Spacer(modifier = Modifier.height(8.dp))
 
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                maxItemsInEachRow = 2,
-            ) {
-                repeat(3) {
-                    val itemModifier = Modifier
-                        .padding(bottom = 8.dp)
-                        .weight(0.5f)
-                    AttachmentItem(
-                        name = "Networking.pdf",
-                        modifier = itemModifier,
-                    )
-                    AttachmentItem(
-                        name = "Background Thread.pdf",
-                        modifier = itemModifier,
-                    )
-                }
+            attachments.forEach { attachment ->
+                AttachmentItem(
+                    attachment = attachment,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -321,7 +311,7 @@ private fun AttachmentCard(
 
 @Composable
 private fun AttachmentItem(
-    name: String,
+    attachment: File,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -340,23 +330,24 @@ private fun AttachmentItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(80.dp)
+                    .height(120.dp)
             ) {
                 Icon(
                     painter = painterResource(id = designSystemR.drawable.ic_document),
                     contentDescription = stringResource(id = R.string.document_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
-                        .size(32.dp)
+                        .size(48.dp)
                         .align(Alignment.Center),
                 )
             }
         }
         
-        Spacer(modifier = Modifier.height(2.dp))
-        
+        Spacer(modifier = Modifier.height(4.dp))
+
+
         Text(
-            text = name,
+            text = attachment.name,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface,
             overflow = TextOverflow.Ellipsis,
