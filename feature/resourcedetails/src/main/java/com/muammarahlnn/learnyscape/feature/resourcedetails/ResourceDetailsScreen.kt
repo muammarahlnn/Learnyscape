@@ -360,7 +360,7 @@ private fun AttachmentItem(
 
 
         Text(
-            text = attachment.name,
+            text = attachment.nameWithoutExtension,
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurface,
             overflow = TextOverflow.Ellipsis,

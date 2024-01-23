@@ -2,7 +2,6 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import android.content.Context
 import android.os.Environment
-import android.webkit.MimeTypeMap
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
@@ -35,10 +34,9 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
         val response = referencesApi.getReferenceAttachment(fullUrl)
         if (response.isSuccessful) {
             val attachmentInputStream = response.body()?.byteStream()
-            val attachmentContentType = response.headers().get("Content-Type")
-            if (attachmentInputStream != null && attachmentContentType != null) {
-                val attachmentFile = createFile(attachmentInputStream, attachmentContentType)
-                emit(attachmentFile)
+            val attachmentName = response.headers().get("Content-Title")
+            if (attachmentInputStream != null && attachmentName != null) {
+                emit(createFile(attachmentInputStream, attachmentName))
             } else {
                 emit(null)
             }
@@ -47,10 +45,12 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
         }
     }
 
-    private fun createFile(inputStream: InputStream, mimeType: String): File {
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
-        val dir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        val file =  File.createTempFile("Attachment", ".$extension", dir)
+    private fun createFile(
+        inputStream: InputStream,
+        fileName: String,
+    ): File {
+        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+        val file =  File(storageDir, fileName)
 
         val outputStream = FileOutputStream(file)
         val buf = ByteArray(1024)
