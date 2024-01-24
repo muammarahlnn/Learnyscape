@@ -1,10 +1,12 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
+import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceOverviewNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementOverviewResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizOverviewResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceOverviewResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskOverviewResponse
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +23,7 @@ class ResourceOverviewNetworkDataSourceImpl @Inject constructor(
     private val announcementsApi: AnnouncementsApi,
     private val referencesApi: ReferencesApi,
     private val tasksApi: TasksApi,
+    private val quizzesApi: QuizzesApi,
 ) : ResourceOverviewNetworkDataSource {
 
     override fun getAnnouncements(classId: String): Flow<List<AnnouncementOverviewResponse>> = flow {
@@ -33,5 +36,9 @@ class ResourceOverviewNetworkDataSourceImpl @Inject constructor(
 
     override fun getTasks(classId: String): Flow<List<TaskOverviewResponse>> = flow {
         emit(tasksApi.getTasks(classId).data)
+    }
+
+    override fun getQuizzes(classId: String): Flow<List<QuizOverviewResponse>> = flow {
+        emit(quizzesApi.getQuizzes(classId).data)
     }
 }

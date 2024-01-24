@@ -2,8 +2,11 @@ package com.muammarahlnn.learnyscape.feature.quiz
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,9 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceCard
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
+import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import kotlinx.coroutines.launch
 
 
 /**
@@ -35,8 +44,15 @@ internal fun QuizRoute(
 ) {
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
-        event(QuizContract.Event.SetClassId(classId))
+        launch {
+            event(QuizContract.Event.SetClassId(classId))
+        }.join()
+
+        launch {
+            event(QuizContract.Event.FetchQuizzes)
+        }
     }
+
     viewModel.effect.collectInLaunchedEffect {
         when (it) {
             QuizContract.Effect.NavigateBack ->
@@ -49,15 +65,24 @@ internal fun QuizRoute(
                 navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
         }
     }
+
+    val refreshState = use(refreshProvider = viewModel) {
+        event(QuizContract.Event.FetchQuizzes)
+    }
+
     QuizScreen(
+        state = state,
+        refreshState = refreshState,
         event = { event(it) },
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun QuizScreen(
+    state: QuizContract.State,
+    refreshState: RefreshState,
     event: (QuizContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -67,22 +92,42 @@ private fun QuizScreen(
         onCreateNewResourceClick = { event(QuizContract.Event.OnNavigateToResourceCreate) },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .padding(paddingValues),
+        PullRefreshScreen(
+            pullRefreshState =refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = Modifier.padding(paddingValues)
         ) {
-            repeat(20) {
-                item {
-                    ClassResourceCard(
-                        classResourceType = ClassResourceType.QUIZ,
-                        title = "Quiz Local Data Persistent dan Database",
-                        timeLabel = "Start at 21 May 2023, 21:21",
-                        onItemClick = { event(QuizContract.Event.OnNavigateToResourceDetails) },
-                    )
+            when (state.uiState) {
+                QuizContract.UiState.Loading -> ResourceScreenLoading()
+
+                is QuizContract.UiState.Success -> LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = modifier
+                        .fillMaxSize()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
+                ) {
+                    items(
+                        items = state.uiState.quizzes,
+                        key = { it.id }
+                    ) { quiz ->
+                        ClassResourceCard(
+                            classResourceType = ClassResourceType.QUIZ,
+                            title = quiz.name,
+                            timeLabel = quiz.startDate,
+                        )
+                    }
                 }
+                
+                QuizContract.UiState.SuccessEmpty -> NoDataScreen(
+                    text = stringResource(id = R.string.empty_quizzes) 
+                )
+                
+                is QuizContract.UiState.Error -> ErrorScreen(
+                    text = state.uiState.message,
+                    onRefresh = { event(QuizContract.Event.FetchQuizzes) },
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }

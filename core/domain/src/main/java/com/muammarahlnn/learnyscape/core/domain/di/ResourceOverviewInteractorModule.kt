@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewReposit
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetAnnouncementsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetAssignmentsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetModulesUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetQuizzesUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,5 +41,13 @@ object ResourceOverviewInteractorModule {
         resourceOverviewRepository: ResourceOverviewRepository
     ): GetAssignmentsUseCase = GetAssignmentsUseCase(
         resourceOverviewRepository::getAssignments
+    )
+
+    @ViewModelScoped
+    @Provides
+    fun providesGetQuizzesUseCase(
+        resourceOverviewRepository: ResourceOverviewRepository
+    ): GetQuizzesUseCase = GetQuizzesUseCase(
+        resourceOverviewRepository::getQuizzes
     )
 }
