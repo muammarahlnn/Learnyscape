@@ -19,8 +19,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
-import com.muammarahlnn.learnyscape.feature.resourcecreate.QuizType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -47,7 +47,7 @@ internal fun QuizTypeInputCard(
             Text(
                 text = stringResource(id = when (quizType) {
                     QuizType.NONE -> R.string.quiz_type
-                    QuizType.MCQ -> R.string.multiple_choice_question
+                    QuizType.MULTIPLE_CHOICE -> R.string.multiple_choice_question
                     QuizType.PHOTO_ANSWER -> R.string.photo_answer
                 }),
                 style = MaterialTheme.typography.bodySmall,
