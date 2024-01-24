@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepository
+import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import java.io.File
@@ -49,5 +50,31 @@ class ResourceCreateRepositoryImpl @Inject constructor(
         description = description,
         dueDate = dueDate,
         attachments = attachments,
+    )
+
+    override fun createQuiz(
+        classId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        duration: Int,
+    ): Flow<String> = resourceCreateNetworkDataSource.postQuiz(
+        classId = classId,
+        title = title,
+        description = description,
+        quizType = quizType,
+        startDate = startDate,
+        endDate = endDate,
+        duration = duration,
+    )
+
+    override fun addQuizQuestions(
+        quizId: String,
+        questions: List<MultipleChoiceQuestionModel>
+    ): Flow<String> = resourceCreateNetworkDataSource.postQuizProblems(
+        quizId = quizId,
+        multipleChoiceQuestions = questions,
     )
 }

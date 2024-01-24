@@ -6,6 +6,7 @@ import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSou
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
+import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
@@ -104,6 +105,13 @@ object NetworkModule {
         networkJson: Json,
         @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
     ): TasksApi = buildRetrofit(networkJson, client).create(TasksApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesQuizzesApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): QuizzesApi = buildRetrofit(networkJson, client).create(QuizzesApi::class.java)
 
     @Provides
     @Singleton

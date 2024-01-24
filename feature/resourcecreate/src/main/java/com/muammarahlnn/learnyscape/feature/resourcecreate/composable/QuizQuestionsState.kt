@@ -5,7 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.muammarahlnn.learnyscape.feature.resourcecreate.QuizType
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -50,7 +50,7 @@ internal class QuizQuestionsState(
 
     fun initializeQuestions() {
         when (quizType) {
-            QuizType.MCQ -> if (multipleChoiceQuestions.isEmpty()) onAddQuestion()
+            QuizType.MULTIPLE_CHOICE -> if (multipleChoiceQuestions.isEmpty()) onAddQuestion()
             QuizType.PHOTO_ANSWER -> if (photoAnswerQuestions.isEmpty()) onAddQuestion()
             QuizType.NONE -> Unit
         }
@@ -58,7 +58,7 @@ internal class QuizQuestionsState(
 
     fun onQuestionChange(index: Int, question: String) {
         when (quizType) {
-            QuizType.MCQ -> multipleChoiceQuestions[index].question.value = question
+            QuizType.MULTIPLE_CHOICE -> multipleChoiceQuestions[index].question.value = question
             QuizType.PHOTO_ANSWER -> photoAnswerQuestions[index].question.value = question
             QuizType.NONE -> Unit
         }
@@ -74,7 +74,7 @@ internal class QuizQuestionsState(
 
     fun onAddQuestion() {
         when (quizType) {
-            QuizType.MCQ -> multipleChoiceQuestions.add(MultipleChoiceQuestion())
+            QuizType.MULTIPLE_CHOICE -> multipleChoiceQuestions.add(MultipleChoiceQuestion())
             QuizType.PHOTO_ANSWER -> photoAnswerQuestions.add(PhotoAnswerQuestion())
             QuizType.NONE -> Unit
         }
@@ -82,7 +82,7 @@ internal class QuizQuestionsState(
 
     fun onDeleteQuestion(index: Int) {
         when (quizType) {
-            QuizType.MCQ -> multipleChoiceQuestions.removeAt(index)
+            QuizType.MULTIPLE_CHOICE -> multipleChoiceQuestions.removeAt(index)
             QuizType.PHOTO_ANSWER -> photoAnswerQuestions.removeAt(index)
             QuizType.NONE -> Unit
         }
@@ -90,9 +90,12 @@ internal class QuizQuestionsState(
 
     fun isUnfilledFieldExists(): Boolean {
         when (quizType) {
-            QuizType.MCQ -> {
+            QuizType.MULTIPLE_CHOICE -> {
                 multipleChoiceQuestions.forEach {
                     if (it.question.value.isEmpty()) return true
+                    it.options.forEach { (_, value) ->
+                        if (value.value.isEmpty()) return true
+                    }
                 }
                 return false
             }

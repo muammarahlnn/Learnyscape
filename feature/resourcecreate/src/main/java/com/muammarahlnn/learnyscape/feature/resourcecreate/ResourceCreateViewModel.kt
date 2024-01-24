@@ -13,8 +13,12 @@ import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateQuizUseCase
+import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceOption
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.PhotoAnswerQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.ResourceCreateArgs
@@ -43,6 +47,7 @@ class ResourceCreateViewModel @Inject constructor(
     private val createAnnouncementUseCase: CreateAnnouncementUseCase,
     private val createModuleUseCase: CreateModuleUseCase,
     private val createAssignmentUseCase: CreateAssignmentUseCase,
+    private val createQuizUseCase: CreateQuizUseCase,
 ) : ViewModel(), ResourceCreateContract {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
@@ -157,7 +162,7 @@ class ResourceCreateViewModel @Inject constructor(
             ClassResourceType.ANNOUNCEMENT -> createAnnouncement()
             ClassResourceType.MODULE -> createModule()
             ClassResourceType.ASSIGNMENT -> createAssignment()
-            ClassResourceType.QUIZ -> TODO()
+            ClassResourceType.QUIZ -> createQuiz()
         }
     }
 
@@ -182,8 +187,7 @@ class ResourceCreateViewModel @Inject constructor(
                 }.onError { _, message ->
                     onErrorCreatingResource(message)
                 }.onException { exception, message ->
-                    Log.e(TAG, exception?.message.toString())
-                    onErrorCreatingResource(message)
+                    onErrorCreatingResource(message, exception)
                 }
             }
         }
@@ -211,8 +215,7 @@ class ResourceCreateViewModel @Inject constructor(
                 }.onError { _, message ->
                     onErrorCreatingResource(message)
                 }.onException { exception, message ->
-                    Log.e(TAG, exception?.message.toString())
-                    onErrorCreatingResource(message)
+                    onErrorCreatingResource(message, exception)
                 }
             }
         }
@@ -246,10 +249,111 @@ class ResourceCreateViewModel @Inject constructor(
                 }.onError { _, message ->
                     onErrorCreatingResource(message)
                 }.onException { exception, message ->
-                    Log.e(TAG, exception?.message.toString())
-                    onErrorCreatingResource(message)
+                    onErrorCreatingResource(message, exception)
                 }
             }
+        }
+    }
+
+    private fun createQuiz() {
+        if (state.value.title.isEmpty()) {
+            onErrorCreatingResource("Quiz title can't be empty")
+            return
+        }
+
+        when (state.value.quizType) {
+            QuizType.NONE -> {
+                onErrorCreatingResource("Please select quiz type first")
+                return
+            }
+
+            QuizType.MULTIPLE_CHOICE -> {
+                if (state.value.multipleChoiceQuestions.isEmpty()) {
+                    onErrorCreatingResource("Multiple choice questions can't be empty")
+                    return
+                }
+            }
+
+            QuizType.PHOTO_ANSWER -> {
+                if (state.value.photoAnswerQuestions.isEmpty()) {
+                    onErrorCreatingResource("Photo answer questions can't be empty")
+                    return
+                }
+            }
+        }
+
+        val startDate = state.value.startDate
+        val endDate = state.value.endDate
+        if (startDate == null) {
+            onErrorCreatingResource("Start date can't be empty")
+            return
+        }
+        if (endDate == null) {
+            onErrorCreatingResource("End date can't be empty")
+            return
+        }
+        if (endDate.isBefore(startDate)) {
+            onErrorCreatingResource("End date can't be before start date")
+            return
+        }
+
+        if (state.value.duration == 0) {
+            onErrorCreatingResource("Duration can't be empty")
+            return
+        }
+
+        val questions = when (state.value.quizType) {
+            QuizType.MULTIPLE_CHOICE -> {
+                state.value.multipleChoiceQuestions.map {
+                    MultipleChoiceQuestionModel(
+                        question = it.question.value,
+                        options = MultipleChoiceQuestionModel.Options(
+                            optionA = it.options[MultipleChoiceOption.A]?.value,
+                            optionB = it.options[MultipleChoiceOption.B]?.value,
+                            optionC = it.options[MultipleChoiceOption.C]?.value,
+                            optionD = it.options[MultipleChoiceOption.D]?.value,
+                            optionE = it.options[MultipleChoiceOption.E]?.value,
+                        )
+                    )
+                }
+            }
+
+            QuizType.PHOTO_ANSWER -> {
+                state.value.photoAnswerQuestions.map {
+                    MultipleChoiceQuestionModel(
+                        question = it.question.value,
+                    )
+                }
+            }
+
+            QuizType.NONE -> return
+        }
+
+        viewModelScope.launch {
+            createQuizUseCase(
+                classId = state.value.classId,
+                title = state.value.title,
+                description = state.value.description,
+                quizType = state.value.quizType.name,
+                questions = questions,
+                startDate = startDate,
+                endDate = endDate,
+                duration = state.value.duration,
+            )
+                .asResult()
+                .collect { result ->
+                    result.onLoading {
+                        onLoadingCreatingResource()
+                    }.onSuccess {
+                        onSuccessCreatingResource("Quiz successfully created")
+                    }.onNoInternet { message ->
+                        onErrorCreatingResource(message)
+                    }.onError { _, message ->
+                        onErrorCreatingResource(message)
+                    }.onException { exception, message ->
+                        onErrorCreatingResource(message, exception)
+                    }
+                }
         }
     }
 
@@ -271,7 +375,11 @@ class ResourceCreateViewModel @Inject constructor(
         }
     }
 
-    private fun onErrorCreatingResource(message: String) {
+    private fun onErrorCreatingResource(message: String, exception: Throwable? = null) {
+        exception?.let {
+            Log.e(TAG, it.message.toString())
+        }
+
         _state.update {
             it.copy(
                 creatingResourceDialogState = CreatingResourceDialogState.Error(message)

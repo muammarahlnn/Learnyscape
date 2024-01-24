@@ -1,10 +1,14 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
+import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
+import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.model.request.AddQuizQuestionsRequest
+import com.muammarahlnn.learnyscape.core.network.model.request.CreateQuizRequest
 import com.muammarahlnn.learnyscape.core.network.util.toFileParts
 import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBody
 import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBodyOrNull
@@ -25,6 +29,7 @@ class ResourceCreateNetworkDataSourceImpl @Inject constructor(
     private val announcementsApi: AnnouncementsApi,
     private val referencesApi: ReferencesApi,
     private val tasksApi: TasksApi,
+    private val quizzesApi: QuizzesApi,
 ) : ResourceCreateNetworkDataSource {
 
     override fun postAnnouncement(
@@ -71,6 +76,50 @@ class ResourceCreateNetworkDataSourceImpl @Inject constructor(
                 title = title.toTextRequestBody(),
                 description = description.toTextRequestBodyOrNull(),
                 dueDate = dueDate.toEpochSecond().toString().toTextRequestBody(),
+            ).data
+        )
+    }
+
+    override fun postQuiz(
+        classId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        duration: Int,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Flow<String> = flow {
+        val createQuizRequest = CreateQuizRequest(
+            classId = classId,
+            name = title,
+            description = description.ifEmpty { null },
+            quizType = quizType,
+            duration= duration,
+            startDate = startDate.toEpochSecond(),
+            endDate = endDate.toEpochSecond()
+        )
+        emit(quizzesApi.postQuiz(createQuizRequest).data.id)
+    }
+
+    override fun postQuizProblems(
+        quizId: String,
+        multipleChoiceQuestions: List<MultipleChoiceQuestionModel>
+    ): Flow<String> = flow {
+        emit(
+            quizzesApi.postQuizProblems(
+                quizId = quizId,
+                addProblemsQuizRequest = AddQuizQuestionsRequest(
+                    problems = multipleChoiceQuestions.map {
+                        AddQuizQuestionsRequest.Problem(
+                            description = it.question,
+                            optionA = it.options.optionA,
+                            optionB = it.options.optionB,
+                            optionC = it.options.optionC,
+                            optionD = it.options.optionD,
+                            optionE = it.options.optionE,
+                        )
+                    }
+                )
             ).data
         )
     }

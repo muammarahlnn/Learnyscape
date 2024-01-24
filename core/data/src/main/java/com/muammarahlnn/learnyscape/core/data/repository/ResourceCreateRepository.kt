@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
+import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 import java.time.LocalDateTime
@@ -29,5 +30,20 @@ interface ResourceCreateRepository {
         description: String,
         dueDate: LocalDateTime,
         attachments: List<File>,
+    ): Flow<String>
+
+    fun createQuiz(
+        classId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        duration: Int,
+    ): Flow<String>
+
+    fun addQuizQuestions(
+        quizId: String,
+        questions: List<MultipleChoiceQuestionModel>,
     ): Flow<String>
 }

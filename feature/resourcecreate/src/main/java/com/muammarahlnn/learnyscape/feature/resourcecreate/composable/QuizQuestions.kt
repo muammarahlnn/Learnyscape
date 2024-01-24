@@ -41,9 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.TransparentTextField
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
-import com.muammarahlnn.learnyscape.feature.resourcecreate.QuizType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.R
 import kotlinx.coroutines.launch
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -97,7 +97,7 @@ internal fun QuizQuestions(
                 Text(
                     text = stringResource(id = when (quizType) {
                         QuizType.NONE -> R.string.quiz_type
-                        QuizType.MCQ -> R.string.multiple_choice_question
+                        QuizType.MULTIPLE_CHOICE -> R.string.multiple_choice_question
                         QuizType.PHOTO_ANSWER -> R.string.photo_answer
                     }),
                     style = MaterialTheme.typography.titleSmall,
@@ -137,7 +137,7 @@ internal fun QuizQuestions(
         }
 
         when (state.quizType) {
-            QuizType.MCQ -> {
+            QuizType.MULTIPLE_CHOICE -> {
                 itemsIndexed(
                     items = state.multipleChoiceQuestions,
                     key = { _, question -> question.id },

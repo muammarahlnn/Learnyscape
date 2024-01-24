@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
@@ -151,7 +152,7 @@ private fun ResourceCreateScreen(
     if (state.overlayComposableVisibility.quizTypeBottomSheet) {
         QuizTypeBottomSheet(
             onMultipleChoiceQuestionClick = {
-                event(ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption(QuizType.MCQ))
+                event(ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption(QuizType.MULTIPLE_CHOICE))
             },
             onPhotoAnswerClick = {
                 event(ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption(QuizType.PHOTO_ANSWER))

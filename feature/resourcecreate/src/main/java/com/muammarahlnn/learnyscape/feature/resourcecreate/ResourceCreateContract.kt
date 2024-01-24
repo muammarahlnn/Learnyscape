@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.feature.resourcecreate
 
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
@@ -126,12 +127,6 @@ data class OverlayComposableVisibility(
     val durationDialog: Boolean = false,
     val creatingResourceDialog: Boolean = false,
 )
-
-enum class QuizType {
-    NONE,
-    MCQ, // stands for multiple choice question
-    PHOTO_ANSWER
-}
 
 sealed interface CreatingResourceDialogState {
 
