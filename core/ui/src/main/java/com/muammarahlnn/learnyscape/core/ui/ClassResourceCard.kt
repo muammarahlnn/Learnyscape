@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -101,7 +102,6 @@ fun ClassResourceCard(
             }
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                // this is a hardcoded text just for dummy purpose
                 Text(
                     text = title,
                     color = MaterialTheme.colorScheme.onBackground,
@@ -109,8 +109,17 @@ fun ClassResourceCard(
                         fontWeight = FontWeight.SemiBold
                     )
                 )
+
                 Text(
-                    text = timeLabel,
+                    text = stringResource(
+                        id = when (classResourceType) {
+                            ClassResourceType.ANNOUNCEMENT,
+                            ClassResourceType.MODULE -> R.string.module_time_label
+                            ClassResourceType.ASSIGNMENT -> R.string.assignment_time_label
+                            ClassResourceType.QUIZ -> R.string.quiz_time_label
+                        },
+                        timeLabel
+                    ),
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.bodySmall,
                     overflow = TextOverflow.Ellipsis,
