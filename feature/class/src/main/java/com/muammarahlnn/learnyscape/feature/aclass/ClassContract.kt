@@ -1,8 +1,8 @@
 package com.muammarahlnn.learnyscape.feature.aclass
 
-import android.graphics.Bitmap
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -14,8 +14,7 @@ interface ClassContract :
 
     data class State(
         val classId: String = "",
-        val profilePic: Bitmap? = null,
-        val isProfilePicLoading: Boolean = false,
+        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
     )
 
     sealed interface Event {

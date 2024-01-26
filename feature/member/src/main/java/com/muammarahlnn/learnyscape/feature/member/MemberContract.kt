@@ -1,9 +1,9 @@
 package com.muammarahlnn.learnyscape.feature.member
 
-import android.graphics.Bitmap
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -32,17 +32,10 @@ interface MemberContract :
 
 
     data class ClassMemberState(
-        val profilePicUiState: ProfilePicUiState = ProfilePicUiState.Loading,
+        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val name: String = "",
         val profilePicUrl: String = "",
     )
-
-    sealed interface ProfilePicUiState {
-
-        data object Loading : ProfilePicUiState
-
-        data class Success(val profilePic: Bitmap?) : ProfilePicUiState
-    }
 
     sealed interface Event {
 

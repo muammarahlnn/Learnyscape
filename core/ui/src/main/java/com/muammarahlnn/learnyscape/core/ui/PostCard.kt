@@ -63,7 +63,7 @@ fun PostCard(
                 when (classResourceType) {
                     ClassResourceType.ANNOUNCEMENT -> {
                         PhotoProfileImage(
-                            photoProfile = null,
+                            uiState = PhotoProfileImageUiState.Success(null),
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(36.dp)

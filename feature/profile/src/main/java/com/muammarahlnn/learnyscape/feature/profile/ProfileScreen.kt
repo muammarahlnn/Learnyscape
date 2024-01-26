@@ -47,7 +47,6 @@ import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.imageUriToFile
-import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -313,20 +312,14 @@ private fun PhotoProfile(
                 shape = CircleShape
             )
 
-        if (state.loading) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = photoProfileModifier
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                Box(
-                    modifier = photoProfileModifier.shimmerEffect()
-                )
-            }
-        } else {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = photoProfileModifier
+                .background(MaterialTheme.colorScheme.background)
+        ) {
             PhotoProfileImage(
-                photoProfile = state.profilePic,
-                modifier = photoProfileModifier,
+                uiState = state.profilePicUiState,
+                modifier = photoProfileModifier
             )
         }
 
