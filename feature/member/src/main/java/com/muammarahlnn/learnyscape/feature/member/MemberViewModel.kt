@@ -14,6 +14,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.classmembers.GetClassMembersUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByUrlUeCase
 import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassMembersModel
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -132,7 +133,7 @@ class MemberViewModel @Inject constructor(
                 it.copy(
                     lecturers = it.lecturers.toMutableList().apply {
                         this[index] = this[index].copy(
-                            profilePicUiState = MemberContract.ProfilePicUiState.Loading,
+                            profilePicUiState = PhotoProfileImageUiState.Loading,
                         )
                     }.toList()
                 )
@@ -142,7 +143,7 @@ class MemberViewModel @Inject constructor(
                 it.copy(
                     lecturers = it.lecturers.toMutableList().apply {
                         this[index] = this[index].copy(
-                            profilePicUiState = MemberContract.ProfilePicUiState.Success(profilePic),
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic),
                         )
                     }.toList()
                 )
@@ -168,7 +169,7 @@ class MemberViewModel @Inject constructor(
             it.copy(
                 lecturers = it.lecturers.toMutableList().apply {
                     this[index] = this[index].copy(
-                        profilePicUiState = MemberContract.ProfilePicUiState.Success(null)
+                        profilePicUiState = PhotoProfileImageUiState.Success(null)
                     )
                 }.toList()
             )
@@ -184,7 +185,7 @@ class MemberViewModel @Inject constructor(
                 it.copy(
                     students = it.students.toMutableList().apply {
                         this[index] = this[index].copy(
-                            profilePicUiState = MemberContract.ProfilePicUiState.Loading,
+                            profilePicUiState = PhotoProfileImageUiState.Loading,
                         )
                     }.toList()
                 )
@@ -194,7 +195,7 @@ class MemberViewModel @Inject constructor(
                 it.copy(
                     students = it.students.toMutableList().apply {
                         this[index] = this[index].copy(
-                            profilePicUiState = MemberContract.ProfilePicUiState.Success(profilePic),
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic),
                         )
                     }.toList()
                 )
@@ -220,7 +221,7 @@ class MemberViewModel @Inject constructor(
             it.copy(
                 students = it.students.toMutableList().apply {
                     this[index] = this[index].copy(
-                        profilePicUiState = MemberContract.ProfilePicUiState.Success(null)
+                        profilePicUiState = PhotoProfileImageUiState.Success(null)
                     )
                 }.toList()
             )

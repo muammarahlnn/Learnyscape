@@ -41,6 +41,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCente
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
@@ -199,7 +200,7 @@ private fun TeachersCard(
     ) {
         teachers.forEach { teacher ->
             MemberRow(
-                profilePicUiState = teacher.profilePicUiState,
+                photoProfileImageUiState = teacher.profilePicUiState,
                 name = teacher.name
             )
         }
@@ -217,7 +218,7 @@ private fun StudentsCard(
     ) {
         students.forEach { student ->
             MemberRow(
-                profilePicUiState = student.profilePicUiState,
+                photoProfileImageUiState = student.profilePicUiState,
                 name = student.name
             )
         }
@@ -260,27 +261,19 @@ private fun BaseMemberCard(
 
 @Composable
 private fun MemberRow(
-    profilePicUiState: MemberContract.ProfilePicUiState,
+    photoProfileImageUiState: PhotoProfileImageUiState,
     name: String,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(bottom = 12.dp)
     ) {
-        val profilePicModifier = Modifier
-            .size(36.dp)
-            .clip(CircleShape)
-
-        when (profilePicUiState) {
-            MemberContract.ProfilePicUiState.Loading -> Box(
-                modifier = profilePicModifier.shimmerEffect()
-            )
-
-            is MemberContract.ProfilePicUiState.Success -> PhotoProfileImage(
-                photoProfile = profilePicUiState.profilePic,
-                modifier = profilePicModifier
-            )
-        }
+        PhotoProfileImage(
+            uiState = photoProfileImageUiState,
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+        )
 
         Spacer(modifier = Modifier.width(12.dp))
         

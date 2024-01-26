@@ -46,6 +46,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCente
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
@@ -192,7 +193,7 @@ private fun JoinRequestCard(
             modifier = Modifier.padding(16.dp),
         ) {
             PhotoProfileImage(
-                photoProfile = null,
+                uiState = PhotoProfileImageUiState.Success(null),
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)

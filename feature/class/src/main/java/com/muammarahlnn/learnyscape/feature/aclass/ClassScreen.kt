@@ -40,7 +40,6 @@ import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.executeForLecturer
-import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -364,18 +363,12 @@ private fun CreateNewAnnouncementCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            val photoProfileModifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-
-            if (state.isProfilePicLoading) {
-                Box(modifier = photoProfileModifier.shimmerEffect())
-            } else {
-                PhotoProfileImage(
-                    photoProfile = state.profilePic,
-                    modifier = photoProfileModifier,
-                )
-            }
+            PhotoProfileImage(
+                uiState = state.profilePicUiState,
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape),
+            )
 
             Spacer(modifier = Modifier.width(16.dp))
 

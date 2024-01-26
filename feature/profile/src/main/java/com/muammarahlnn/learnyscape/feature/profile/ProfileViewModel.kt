@@ -16,6 +16,7 @@ import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +45,7 @@ class ProfileViewModel @Inject constructor(
     private val getProfilePicUseCase: GetProfilePicUseCase
 ) : ViewModel(), ProfileContract {
 
-    private val _state = MutableStateFlow(ProfileContract.State(loading = true))
+    private val _state = MutableStateFlow(ProfileContract.State())
     override val state: StateFlow<ProfileContract.State> = _state.asStateFlow()
 
     private val _effect = MutableSharedFlow<ProfileContract.Effect>()
@@ -78,8 +79,7 @@ class ProfileViewModel @Inject constructor(
                 }.onSuccess { profilePic ->
                     _state.update {
                         it.copy(
-                            loading = false,
-                            profilePic = profilePic
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic),
                         )
                     }
                 }.onNoInternet { message ->
@@ -166,7 +166,7 @@ class ProfileViewModel @Inject constructor(
     private fun updateStateOnLoading() {
         _state.update {
             it.copy(
-                loading = true,
+                profilePicUiState = PhotoProfileImageUiState.Loading,
             )
         }
     }
@@ -176,7 +176,7 @@ class ProfileViewModel @Inject constructor(
 
         _state.update {
             it.copy(
-                loading = false,
+                profilePicUiState = PhotoProfileImageUiState.Success(null),
             )
         }
 
@@ -192,7 +192,7 @@ class ProfileViewModel @Inject constructor(
 
         _state.update {
             it.copy(
-                loading = false,
+                profilePicUiState = PhotoProfileImageUiState.Success(null),
             )
         }
 

@@ -1,10 +1,10 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
-import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import java.io.File
 
 
@@ -17,8 +17,7 @@ interface ProfileContract :
     EffectProvider<ProfileContract.Effect> {
 
     data class State(
-        val profilePic: Bitmap? = null,
-        val loading: Boolean = false,
+        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val showChangePhotoProfileBottomSheet: MutableState<Boolean> = mutableStateOf(false),
         val showLogoutDialog: MutableState<Boolean> = mutableStateOf(false),
     )

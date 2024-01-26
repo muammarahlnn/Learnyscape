@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -70,13 +71,14 @@ class ClassViewModel @Inject constructor(
             getProfilePicUseCase().asResult().collect { result ->
                 result.onLoading {
                     _state.update {
-                        it.copy(isProfilePicLoading = true)
+                        it.copy(
+                            profilePicUiState = PhotoProfileImageUiState.Loading
+                        )
                     }
                 }.onSuccess { profilePic ->
                     _state.update {
                         it.copy(
-                            isProfilePicLoading = false,
-                            profilePic = profilePic,
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic)
                         )
                     }
                 }.onNoInternet { message ->
@@ -97,7 +99,9 @@ class ClassViewModel @Inject constructor(
 
     private fun updateIsProfilePicLoadingStateToFalse() {
         _state.update {
-            it.copy(isProfilePicLoading = false)
+            it.copy(
+                profilePicUiState = PhotoProfileImageUiState.Success(null)
+            )
         }
     }
 
