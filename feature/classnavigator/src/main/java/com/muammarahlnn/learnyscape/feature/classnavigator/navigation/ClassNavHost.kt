@@ -58,6 +58,9 @@ internal fun ClassNavHost(
             navigateToResourceDetails = {},
             navigateToResourceCreate = navigateToResourceCreate,
         )
-        memberScreen()
+        memberScreen(
+            classId = state.classId,
+            navigateBack = navigateBack,
+        )
     }
 }

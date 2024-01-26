@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.network.di
 
 import com.muammarahlnn.learnyscape.core.network.datasource.AvailableClassNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.ClassMembersNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.JoinRequestNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
@@ -10,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetwo
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceOverviewNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.SchedulesNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.AvailableClassNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.ClassMembersNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.JoinRequestNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.LoginNetworkDataSourceImpl
@@ -77,4 +79,9 @@ interface NetworkDataSourceModule {
     fun bindsResourceDetailsNetworkDataSource(
         resourceDetailsNetworkDataSource: ResourceDetailsNetworkDataSourceImpl
     ): ResourceDetailsNetworkDataSource
+
+    @Binds
+    fun bindsClassMembersNetworkDataSource(
+        classMembersNetworkDataSource: ClassMembersNetworkDataSourceImpl
+    ): ClassMembersNetworkDataSource
 }
