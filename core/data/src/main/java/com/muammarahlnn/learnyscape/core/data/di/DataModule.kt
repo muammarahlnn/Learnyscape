@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.data.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.AvailableClassRepository
 import com.muammarahlnn.learnyscape.core.data.repository.CapturedPhotoRepository
+import com.muammarahlnn.learnyscape.core.data.repository.ClassMembersRepository
 import com.muammarahlnn.learnyscape.core.data.repository.FileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.data.repository.JoinRequestRepository
@@ -13,6 +14,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewReposit
 import com.muammarahlnn.learnyscape.core.data.repository.SchedulesRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.AvailableClassRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.CapturedPhotoRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.ClassMembersRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.FileRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.HomeRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.JoinRequestRepositoryImpl
@@ -93,4 +95,9 @@ interface DataModule {
     fun bindsResourceDetailsRepository(
         resourceDetailsRepository: ResourceDetailsRepositoryImpl
     ): ResourceDetailsRepository
+
+    @Binds
+    fun bindsClassMembersRepository(
+        classMembersRepository: ClassMembersRepositoryImpl
+    ): ClassMembersRepository
 }
