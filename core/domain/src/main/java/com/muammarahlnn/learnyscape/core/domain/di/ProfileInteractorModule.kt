@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
+import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByUrlUeCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
@@ -8,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
 
 
 /**
@@ -37,5 +39,13 @@ object ProfileInteractorModule {
         profileRepository: ProfileRepository
     ): GetProfilePicUseCase = GetProfilePicUseCase(
         profileRepository::getProfilePic
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesGetProfilePicByUrlUseCase(
+        profileRepository: ProfileRepository
+    ): GetProfilePicByUrlUeCase = GetProfilePicByUrlUeCase(
+        profileRepository::getProfilePicByUrl
     )
 }

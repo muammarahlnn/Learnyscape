@@ -4,12 +4,15 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
 import com.muammarahlnn.learnyscape.core.network.di.BEARER_TOKEN_AUTH
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.ResponseBody
+import retrofit2.Response
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
@@ -38,12 +41,20 @@ class ProfileNetworkDataSourceImpl @Inject constructor(
     }
 
     override fun getProfilePic(): Flow<Bitmap?> = flow {
-        if (usersApi.getProfilePic().isSuccessful) {
-            val imageBytes = usersApi.getProfilePic().body()?.bytes() ?: byteArrayOf()
-            val imageBitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-            emit(imageBitmap)
-        } else {
-            emit(null)
-        }
+        emit(usersApi.getProfilePic().toBitmap())
     }
+
+    override fun getProfilePicByUrl(profilePicUrl: String): Flow<Bitmap?> = flow {
+        val fullUrl = BASE_URL + profilePicUrl
+        emit(usersApi.getProfilePicByUrl(fullUrl).toBitmap())
+    }
+
+    private fun Response<ResponseBody>.toBitmap(): Bitmap? =
+        if (this.isSuccessful) {
+            val imageBytes = this.body()?.bytes() ?: byteArrayOf()
+            imageBytes.toBitmap()
+        } else null
+
+    private fun ByteArray.toBitmap(): Bitmap =
+        BitmapFactory.decodeByteArray(this, 0, this.size)
 }
