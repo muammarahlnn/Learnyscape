@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.member
 
-import android.graphics.Bitmap
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,7 +39,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
-import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassMembersModel
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
@@ -141,11 +139,11 @@ private fun MemberScreen(
                     modifier = contentModifier.nestedScroll(scrollBehavior.nestedScrollConnection),
                 ) {
                     item {
-                        TeachersCard(state.uiState.enrolledClassMembersModel.lecturers)
+                        TeachersCard(state.lecturers)
                     }
 
                     item {
-                        StudentsCard(state.uiState.enrolledClassMembersModel.students)
+                        StudentsCard(state.students)
                     }
                 }
 
@@ -192,7 +190,7 @@ private fun MemberScreenLoadingContent(
 
 @Composable
 private fun TeachersCard(
-    teachers: List<EnrolledClassMembersModel.ClassMember>,
+    teachers: List<MemberContract.ClassMemberState>,
     modifier: Modifier = Modifier
 ) {
     BaseMemberCard(
@@ -201,7 +199,7 @@ private fun TeachersCard(
     ) {
         teachers.forEach { teacher ->
             MemberRow(
-                photoProfile = null,
+                profilePicUiState = teacher.profilePicUiState,
                 name = teacher.name
             )
         }
@@ -210,7 +208,7 @@ private fun TeachersCard(
 
 @Composable
 private fun StudentsCard(
-    students: List<EnrolledClassMembersModel.ClassMember>,
+    students: List<MemberContract.ClassMemberState>,
     modifier: Modifier = Modifier
 ) {
     BaseMemberCard(
@@ -219,7 +217,7 @@ private fun StudentsCard(
     ) {
         students.forEach { student ->
             MemberRow(
-                photoProfile = null,
+                profilePicUiState = student.profilePicUiState,
                 name = student.name
             )
         }
@@ -262,21 +260,27 @@ private fun BaseMemberCard(
 
 @Composable
 private fun MemberRow(
-    photoProfile: Bitmap?,
+    profilePicUiState: MemberContract.ProfilePicUiState,
     name: String,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(bottom = 12.dp)
     ) {
-        PhotoProfileImage(
-            photoProfile = photoProfile,
-            modifier = Modifier
-                .size(36.dp)
-                .clip(
-                    CircleShape
-                )
-        )
+        val profilePicModifier = Modifier
+            .size(36.dp)
+            .clip(CircleShape)
+
+        when (profilePicUiState) {
+            MemberContract.ProfilePicUiState.Loading -> Box(
+                modifier = profilePicModifier.shimmerEffect()
+            )
+
+            is MemberContract.ProfilePicUiState.Success -> PhotoProfileImage(
+                photoProfile = profilePicUiState.profilePic,
+                modifier = profilePicModifier
+            )
+        }
 
         Spacer(modifier = Modifier.width(12.dp))
         

@@ -16,4 +16,6 @@ interface ProfileRepository {
     fun uploadProfilePic(pic: File): Flow<String>
 
     fun getProfilePic(): Flow<Bitmap?>
+
+    fun getProfilePicByUrl(profilePicUrl: String): Flow<Bitmap?>
 }

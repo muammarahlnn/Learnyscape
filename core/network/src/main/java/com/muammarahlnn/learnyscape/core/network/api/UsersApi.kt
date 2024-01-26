@@ -21,6 +21,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Url
 
 
 /**
@@ -69,4 +70,9 @@ interface UsersApi {
     suspend fun getClassMembers(
         @Path("classId") classId: String,
     ): BaseResponse<ClassMembersResponse>
+
+    @GET
+    suspend fun getProfilePicByUrl(
+        @Url profilePicUrl: String,
+    ): Response<ResponseBody>
 }
