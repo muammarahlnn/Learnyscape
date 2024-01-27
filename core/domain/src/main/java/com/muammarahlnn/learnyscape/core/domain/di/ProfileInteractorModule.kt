@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
+import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByUrlUeCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
@@ -47,5 +48,13 @@ object ProfileInteractorModule {
         profileRepository: ProfileRepository
     ): GetProfilePicByUrlUeCase = GetProfilePicByUrlUeCase(
         profileRepository::getProfilePicByUrl
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesGetProfilePicByIdUseCase(
+        profileRepository: ProfileRepository
+    ): GetProfilePicByIdUseCase = GetProfilePicByIdUseCase(
+        profileRepository::getProfilePicById
     )
 }

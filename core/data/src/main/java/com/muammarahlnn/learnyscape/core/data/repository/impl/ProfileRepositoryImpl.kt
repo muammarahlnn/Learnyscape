@@ -30,4 +30,7 @@ class ProfileRepositoryImpl @Inject constructor(
 
     override fun getProfilePicByUrl(profilePicUrl: String): Flow<Bitmap?> =
         profileNetworkDataSource.getProfilePicByUrl(profilePicUrl)
+
+    override fun getProfilePicById(userId: String): Flow<Bitmap?> =
+        profileNetworkDataSource.getProfilePicById(userId)
 }

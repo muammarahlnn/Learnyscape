@@ -127,11 +127,12 @@ private fun JoinRequestScreen(
                         modifier = contentModifier.nestedScroll(scrollBehavior.nestedScrollConnection)
                     ) {
                         items(
-                            items = state.uiState.waitingList,
+                            items = state.waitingListStudents,
                             key = { it.id },
                         ) { waitingList ->
                             JoinRequestCard(
-                                studentName = waitingList.fullName,
+                                photoProfileImageUiState = waitingList.profilePicUiState,
+                                studentName = waitingList.name,
                                 onRejectClick = {
                                     event(JoinRequestContract.Event.OnRejectStudent(waitingList.id))
                                 },
@@ -180,6 +181,7 @@ private fun JoinRequestContentLoading(
 
 @Composable
 private fun JoinRequestCard(
+    photoProfileImageUiState: PhotoProfileImageUiState,
     studentName: String,
     onRejectClick: () -> Unit,
     onAcceptClick: () -> Unit,
@@ -193,7 +195,7 @@ private fun JoinRequestCard(
             modifier = Modifier.padding(16.dp),
         ) {
             PhotoProfileImage(
-                uiState = PhotoProfileImageUiState.Success(null),
+                uiState = photoProfileImageUiState,
                 modifier = Modifier
                     .size(36.dp)
                     .clip(CircleShape)

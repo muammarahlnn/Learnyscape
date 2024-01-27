@@ -3,7 +3,7 @@ package com.muammarahlnn.learnyscape.feature.joinrequest
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
-import com.muammarahlnn.learnyscape.core.model.data.WaitingListModel
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -17,6 +17,14 @@ interface JoinRequestContract :
     data class State(
         val classId: String = "",
         val uiState: JoinRequestUiState = JoinRequestUiState.Loading,
+        val waitingListStudents: List<WaitingListStudentState> = listOf(),
+    )
+
+    data class WaitingListStudentState(
+        val id: String = "",
+        val userId: String = "",
+        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
+        val name: String = "",
     )
 
     sealed interface Event {
@@ -42,7 +50,7 @@ sealed interface JoinRequestUiState {
 
     data object Loading : JoinRequestUiState
 
-    data class Success(val waitingList: List<WaitingListModel>) : JoinRequestUiState
+    data object Success : JoinRequestUiState
 
     data object SuccessEmpty : JoinRequestUiState
 
