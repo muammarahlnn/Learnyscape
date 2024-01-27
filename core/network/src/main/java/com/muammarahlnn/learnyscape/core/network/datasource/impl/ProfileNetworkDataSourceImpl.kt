@@ -49,6 +49,10 @@ class ProfileNetworkDataSourceImpl @Inject constructor(
         emit(usersApi.getProfilePicByUrl(fullUrl).toBitmap())
     }
 
+    override fun getProfilePicById(userId: String): Flow<Bitmap?> = flow {
+        emit(usersApi.getProfilePicById(userId).toBitmap())
+    }
+
     private fun Response<ResponseBody>.toBitmap(): Bitmap? =
         if (this.isSuccessful) {
             val imageBytes = this.body()?.bytes() ?: byteArrayOf()

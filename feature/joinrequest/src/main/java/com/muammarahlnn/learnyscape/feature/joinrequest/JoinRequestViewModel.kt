@@ -12,6 +12,9 @@ import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.joinrequest.GetWaitingClassUseCase
 import com.muammarahlnn.learnyscape.core.domain.joinrequest.PutStudentAcceptanceUseCase
+import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
+import com.muammarahlnn.learnyscape.core.model.data.WaitingListModel
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.JoinRequestArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +37,7 @@ class JoinRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getWaitingClassUseCase: GetWaitingClassUseCase,
     private val putStudentAcceptanceUseCase: PutStudentAcceptanceUseCase,
+    private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
 ) : ViewModel(), JoinRequestContract {
 
     private val joinRequestArgs = JoinRequestArgs(savedStateHandle)
@@ -79,14 +83,22 @@ class JoinRequestViewModel @Inject constructor(
                 result.onLoading {
                     onUiStateLoading()
                 }.onSuccess { waitingList ->
-                    _state.update {
-                        it.copy(
-                            uiState = if (waitingList.isNotEmpty()) {
-                                JoinRequestUiState.Success(waitingList)
-                            } else {
-                                JoinRequestUiState.SuccessEmpty
-                            }
-                        )
+                    if (waitingList.isNotEmpty()) {
+                        _state.update {
+                            it.copy(
+                                uiState = JoinRequestUiState.Success,
+                                waitingListStudents = waitingList.map { waitingListModel ->
+                                    waitingListModel.toWaitingListStudentState()
+                                }
+                            )
+                        }
+                        fetchProfilePics()
+                    } else {
+                        _state.update {
+                            it.copy(
+                                uiState = JoinRequestUiState.SuccessEmpty
+                            )
+                        }
                     }
                 }.onNoInternet { message ->
                     onErrorFetchWaitingList(message)
@@ -97,6 +109,67 @@ class JoinRequestViewModel @Inject constructor(
                     onErrorFetchWaitingList(message)
                 }
             }
+        }
+    }
+
+    private fun WaitingListModel.toWaitingListStudentState(): JoinRequestContract.WaitingListStudentState =
+        JoinRequestContract.WaitingListStudentState(
+            id = id,
+            userId = userId,
+            name = fullName,
+        )
+
+    private fun fetchProfilePics() {
+        viewModelScope.launch {
+            state.value.waitingListStudents.forEachIndexed { index, student ->
+                getProfilePicByIdUseCase(student.userId)
+                    .asResult()
+                    .collect { result ->
+                        result.onLoading {
+                            _state.update {
+                                it.copy(
+                                    waitingListStudents = it.waitingListStudents.toMutableList().apply {
+                                        this[index] = this[index].copy(
+                                            profilePicUiState = PhotoProfileImageUiState.Loading
+                                        )
+                                    }.toList()
+                                )
+                            }
+                        }.onSuccess { profilePic ->
+                            _state.update {
+                                it.copy(
+                                    waitingListStudents = it.waitingListStudents.toMutableList().apply {
+                                        this[index] = this[index].copy(
+                                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic)
+                                        )
+                                    }.toList()
+                                )
+                            }
+                        }.onNoInternet { message ->
+                            onErrorFetchProfilePicWaitingList(message, index)
+                        }.onError { _, message ->
+                            onErrorFetchProfilePicWaitingList(message, index)
+                        }.onException { exception, _ ->
+                            onErrorFetchProfilePicWaitingList(exception?.message.toString(), index)
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun onErrorFetchProfilePicWaitingList(
+        message: String,
+        index: Int,
+    ) {
+        Log.e(TAG, message)
+        _state.update {
+            it.copy(
+                waitingListStudents = it.waitingListStudents.toMutableList().apply {
+                    this[index] = this[index].copy(
+                        profilePicUiState = PhotoProfileImageUiState.Success(null)
+                    )
+                }.toList()
+            )
         }
     }
 
@@ -118,7 +191,7 @@ class JoinRequestViewModel @Inject constructor(
             }.onError { _, message ->
                 showToast(message)
             }.onException { exception, message ->
-                Log.e("JoinRequestViewModel", exception?.message.toString())
+                Log.e(TAG, exception?.message.toString())
                 showToast(message)
             }
         }.onCompletion {
@@ -144,5 +217,10 @@ class JoinRequestViewModel @Inject constructor(
         viewModelScope.launch {
             _effect.emit(JoinRequestContract.Effect.NavigateBack)
         }
+    }
+
+    companion object {
+
+        private const val TAG = "JoinRequestViewModel"
     }
 }

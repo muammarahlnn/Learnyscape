@@ -16,4 +16,6 @@ interface ProfileNetworkDataSource {
     fun getProfilePic(): Flow<Bitmap?>
 
     fun getProfilePicByUrl(profilePicUrl: String): Flow<Bitmap?>
+
+    fun getProfilePicById(userId: String): Flow<Bitmap?>
 }

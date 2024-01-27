@@ -75,4 +75,9 @@ interface UsersApi {
     suspend fun getProfilePicByUrl(
         @Url profilePicUrl: String,
     ): Response<ResponseBody>
+
+    @GET("users/{userId}/pic")
+    suspend fun getProfilePicById(
+        @Path("userId") userId: String,
+    ): Response<ResponseBody>
 }
