@@ -2,6 +2,8 @@ package com.muammarahlnn.learnyscape.feature.aclass
 
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.model.data.ClassFeedModel
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 
 /**
@@ -10,18 +12,32 @@ import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
  */
 interface ClassContract :
     BaseContract<ClassContract.State, ClassContract.Event>,
-    EffectProvider<ClassContract.Effect> {
+    EffectProvider<ClassContract.Effect>,
+    RefreshProvider {
 
     data class State(
         val classId: String = "",
+        val uiState: UiState = UiState.Loading,
         val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
+        val announcementAuthorProfilePicUiStateMap: Map<Int, PhotoProfileImageUiState> = mapOf(),
     )
+
+    sealed interface UiState {
+
+        data object Loading : UiState
+
+        data class Success(val classFeeds: List<ClassFeedModel>) : UiState
+
+        data class Error(val message: String) : UiState
+    }
 
     sealed interface Event {
 
         data class SetClassId(val classId: String) : Event
 
         data object FetchProfilePic : Event
+
+        data object FetchClassFeeds : Event
 
         data object OnNavigateBack : Event
 

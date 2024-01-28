@@ -2,7 +2,9 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.model.response.AvailableClassResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.ClassFeedResponse
 import retrofit2.http.GET
+import retrofit2.http.Path
 
 
 /**
@@ -11,11 +13,11 @@ import retrofit2.http.GET
  */
 interface ClassesApi {
 
-    @GET(CLASSES_END_POINT)
+    @GET("classes")
     suspend fun getAvailableClasses(): BaseResponse<List<AvailableClassResponse>>
 
-    companion object {
-
-        private const val CLASSES_END_POINT = "classes"
-    }
+    @GET("classes/{classId}/histories")
+    suspend fun getClassHistories(
+        @Path("classId") classId: String,
+    ): BaseResponse<List<ClassFeedResponse>>
 }
