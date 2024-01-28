@@ -40,6 +40,7 @@ fun PostCard(
     isCaptionOverflowed: Boolean,
     modifier: Modifier = Modifier,
     onPostClick: (Int) -> Unit = {},
+    profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Success(null),
 ) {
     BaseCard(
         modifier = modifier
@@ -61,31 +62,27 @@ fun PostCard(
                 )
             ) {
                 when (classResourceType) {
-                    ClassResourceType.ANNOUNCEMENT -> {
-                        PhotoProfileImage(
-                            uiState = PhotoProfileImageUiState.Success(null),
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(36.dp)
-                        )
-                    }
+                    ClassResourceType.ANNOUNCEMENT -> PhotoProfileImage(
+                        uiState = profilePicUiState,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(36.dp)
+                    )
 
                     ClassResourceType.MODULE,
                     ClassResourceType.ASSIGNMENT,
-                    ClassResourceType.QUIZ -> {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary)
-                                .padding(8.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = classResourceType.iconRes),
-                                contentDescription = null,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
+                    ClassResourceType.QUIZ -> Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary)
+                            .padding(8.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = classResourceType.iconRes),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
 
