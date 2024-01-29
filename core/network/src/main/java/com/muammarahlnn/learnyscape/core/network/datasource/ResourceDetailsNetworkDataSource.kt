@@ -13,4 +13,6 @@ interface ResourceDetailsNetworkDataSource {
     fun getReferenceDetails(referenceId: String): Flow<ReferenceDetailsResponse>
 
     fun getReferenceAttachment(attachmentUrl: String): Flow<File?>
+
+    fun deleteReference(referenceId: String): Flow<String>
 }

@@ -10,4 +10,6 @@ import kotlinx.coroutines.flow.Flow
 interface ResourceDetailsRepository {
 
     fun getModuleDetails(moduleId: String): Flow<ModuleDetailsModel>
+
+    fun deleteModule(moduleId: String): Flow<String>
 }

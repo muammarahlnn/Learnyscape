@@ -15,5 +15,9 @@
     <string name="multiple_choice_questions">Multiple choice questions</string>
     <string name="photo_answer">Photo answer</string>
     <string name="edit_resource">Edit resource</string>
+    <string name="delete">Delete</string>
     <string name="delete_resource">Delete resource</string>
+    <string name="delete_dialog_title">Delete %1$s</string>
+    <string name="delete_dialog_text">Are you sure want to delete this %1$s</string>
+    <string name="success_deleting_dialog_text">%1$s successfully deleted</string>
 </resources>

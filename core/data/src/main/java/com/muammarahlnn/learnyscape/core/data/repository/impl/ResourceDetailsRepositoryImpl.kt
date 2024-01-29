@@ -30,4 +30,7 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
 
             referenceDetailsResponse.toModuleDetailsModel(attachments.toList())
         }
+
+    override fun deleteModule(moduleId: String): Flow<String> =
+        resourceDetailsNetworkDataSource.deleteReference(moduleId)
 }
