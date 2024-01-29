@@ -10,6 +10,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class ResourceDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getModuleDetailsUseCase: GetModuleDetailsUseCase,
+    private val deleteModuleUseCase: DeleteModuleUseCase,
 ) : ViewModel(), ResourceDetailsContract {
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
@@ -55,6 +57,23 @@ class ResourceDetailsViewModel @Inject constructor(
 
             ResourceDetailsContract.Event.OnBackClick ->
                 navigateBack()
+
+            ResourceDetailsContract.Event.OnDeleteClick ->
+                showDeleteResourceDialog(true)
+
+            ResourceDetailsContract.Event.OnConfirmDeleteResourceDialog ->
+                deleteResource()
+
+            ResourceDetailsContract.Event.OnDismissDeleteResourceDialog ->
+                showDeleteResourceDialog(false)
+
+            ResourceDetailsContract.Event.OnConfirmSuccessDeletingResourceDialog -> {
+                showDeletingResourceDialog(false)
+                navigateBack()
+            }
+
+            ResourceDetailsContract.Event.OnDismissDeletingResourceDialog ->
+                showDeletingResourceDialog(false)
 
             ResourceDetailsContract.Event.OnAddWorkButtonClick ->
                 showAddWorkBottomSheet(true)
@@ -118,6 +137,81 @@ class ResourceDetailsViewModel @Inject constructor(
         _state.update {
             it.copy(
                 uiState = ResourceDetailsContract.UiState.Error(message)
+            )
+        }
+    }
+
+    private fun showDeleteResourceDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    showDeleteResourceDialog = show
+                )
+            )
+        }
+    }
+
+    private fun deleteResource() {
+        showDeleteResourceDialog(false)
+        showDeletingResourceDialog(true)
+
+        when (state.value.resourceType) {
+            ClassResourceType.ANNOUNCEMENT -> TODO()
+            ClassResourceType.MODULE -> deleteModule()
+            ClassResourceType.ASSIGNMENT -> TODO()
+            ClassResourceType.QUIZ -> TODO()
+        }
+    }
+
+    private fun deleteModule() {
+        viewModelScope.launch {
+            deleteModuleUseCase(state.value.resourceId).asResult().collect { result ->
+                result.onLoading {
+                    onLoadingDeletingResource()
+                }.onSuccess {
+                    onSuccessDeletingResource()
+                }.onNoInternet { message ->
+                    onErrorDeletingResource(message)
+                }.onError { _, message ->
+                    onErrorDeletingResource(message)
+                }.onException { exception, message ->
+                    Log.e(TAG, exception?.message.toString())
+                    onErrorDeletingResource(message)
+                }
+            }
+        }
+    }
+
+    private fun onLoadingDeletingResource() {
+        _state.update {
+            it.copy(
+                deletingResourceUiState = ResourceDetailsContract.DeletingResourceDialogState.Loading,
+            )
+        }
+    }
+
+    private fun onSuccessDeletingResource() {
+        _state.update {
+            it.copy(
+                deletingResourceUiState = ResourceDetailsContract.DeletingResourceDialogState.Success,
+            )
+        }
+    }
+
+    private fun onErrorDeletingResource(message: String) {
+        _state.update {
+            it.copy(
+                deletingResourceUiState = ResourceDetailsContract.DeletingResourceDialogState.Error(message),
+            )
+        }
+    }
+
+    private fun showDeletingResourceDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    showDeletingResourceDialog = show
+                )
             )
         }
     }

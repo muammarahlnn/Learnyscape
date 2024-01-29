@@ -45,6 +45,10 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
         }
     }
 
+    override fun deleteReference(referenceId: String): Flow<String> = flow {
+        emit(referencesApi.deleteReference(referenceId).data)
+    }
+
     private fun createFile(
         inputStream: InputStream,
         fileName: String,

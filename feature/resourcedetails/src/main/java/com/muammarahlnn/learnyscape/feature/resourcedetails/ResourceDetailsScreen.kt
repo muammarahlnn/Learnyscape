@@ -1,36 +1,15 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -40,33 +19,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.LayoutCoordinates
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
-import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
-import com.muammarahlnn.learnyscape.core.model.ui.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
-import com.muammarahlnn.learnyscape.core.ui.PostCard
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
-import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
-import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.AddWorkBottomSheet
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.AddWorkButton
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.AttachmentsCard
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeleteResourceDialog
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeletingResourceDialog
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.QuizDetailsCard
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsCard
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsTopAppBar
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StartQuizButton
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StartQuizDialog
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.quizType
 import java.io.File
-import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
 /**
@@ -146,11 +122,29 @@ private fun ResourceDetailsScreen(
         )
     }
 
+    if (state.overlayComposableVisibility.showDeleteResourceDialog) {
+        DeleteResourceDialog(
+            classResourceType = state.resourceType,
+            onDelete = { event(ResourceDetailsContract.Event.OnConfirmDeleteResourceDialog) },
+            onDismiss = { event(ResourceDetailsContract.Event.OnDismissDeleteResourceDialog) },
+        )
+    }
+
+    if (state.overlayComposableVisibility.showDeletingResourceDialog) {
+        DeletingResourceDialog(
+            state = state.deletingResourceUiState,
+            resourceType = state.resourceType,
+            onConfirmSuccess = { event(ResourceDetailsContract.Event.OnConfirmSuccessDeletingResourceDialog) },
+            onDismiss = { event(ResourceDetailsContract.Event.OnDismissDeletingResourceDialog) },
+        )
+    }
+
     Scaffold(
         topBar = {
             ResourceDetailsTopAppBar(
                 titleRes = state.resourceType.nameRes,
                 onBackClick = { event(ResourceDetailsContract.Event.OnBackClick) },
+                onDeleteClick = { event(ResourceDetailsContract.Event.OnDeleteClick) }
             )
         },
         modifier = modifier,
@@ -211,7 +205,7 @@ private fun ResourceDetailsContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                DetailPostCard(
+                ResourceDetailsCard(
                     resourceType = state.resourceType,
                     name = state.name,
                     date = state.date,
@@ -264,411 +258,5 @@ private fun ResourceDetailsContent(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun DetailPostCard(
-    resourceType: ClassResourceType,
-    name: String,
-    date: String,
-    description: String,
-    modifier: Modifier = Modifier,
-) {
-    PostCard(
-        classResourceType = resourceType,
-        title = name,
-        timePosted = date,
-        caption = description,
-        isCaptionOverflowed = false,
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun AttachmentsCard(
-    attachments: List<File>,
-    onAttachmentClick: (File) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BaseCard(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.attachments),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontSize = 13.sp,
-                )
-            )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-
-            attachments.forEach { attachment ->
-                AttachmentItem(
-                    attachment = attachment,
-                    onAttachmentClick = onAttachmentClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun AttachmentItem(
-    attachment: File,
-    onAttachmentClick: (File) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier.noRippleClickable {
-            onAttachmentClick(attachment)
-        }
-    ) {
-        Card(
-            shape = RoundedCornerShape(8.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.onSecondary,
-            ),
-            border = BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.surfaceVariant,
-            ),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_document),
-                    contentDescription = stringResource(id = R.string.document_icon_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .align(Alignment.Center),
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(4.dp))
-
-
-        Text(
-            text = attachment.nameWithoutExtension,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurface,
-            overflow = TextOverflow.Ellipsis,
-            maxLines = 1,
-        )
-    }
-}
-
-@Composable
-private fun QuizDetailsCard(
-    quizStartTime: String,
-    quizDuration: String,
-    quizType: QuizType,
-    modifier: Modifier = Modifier,
-) {
-    BaseCard(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                text = stringResource(id = R.string.details),
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontSize = 13.sp,
-                )
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_play_arrow),
-                    contentDescription = stringResource(id = R.string.start_icon_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = quizStartTime,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_timer),
-                    contentDescription = stringResource(id = R.string.timer_icon_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = quizDuration,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_quiz_type),
-                    contentDescription = stringResource(id = R.string.quiz_type_icon_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(
-                        id = when (quizType) {
-                            QuizType.MULTIPLE_CHOICE_QUESTIONS -> R.string.multiple_choice_questions
-                            QuizType.PHOTO_ANSWER -> R.string.photo_answer
-                        }
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun ResourceDetailsTopAppBar(
-    titleRes: Int,
-    onBackClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    LearnyscapeCenterTopAppBar(
-        title = stringResource(id = titleRes),
-        colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
-        navigationIcon = {
-            IconButton(
-                onClick = onBackClick,
-            ) {
-                Icon(
-                    painter = painterResource(
-                        id = designSystemR.drawable.ic_arrow_back
-                    ),
-                    contentDescription = stringResource(
-                        id = designSystemR.string.navigation_back_icon_description,
-                    ),
-                )
-            }
-        },
-        actionsIcon = {
-            LecturerOnlyComposable {
-                Row {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(id = designSystemR.drawable.ic_edit),
-                            contentDescription = stringResource(id = R.string.edit_resource)
-                        )
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(
-                            painter = painterResource(id = designSystemR.drawable.ic_delete),
-                            contentDescription = stringResource(id = R.string.delete_resource)
-                        )
-                    }
-                }
-            }
-        },
-        modifier = modifier,
-    )
-}
-
-@Composable
-private fun AddWorkButton(
-    onButtonClick: () -> Unit,
-    onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BaseActionButton(
-        onButtonClick = onButtonClick,
-        onButtonGloballyPositioned = onButtonGloballyPositioned,
-        modifier = modifier,
-    ) {
-        Icon(
-            painter = painterResource(id = designSystemR.drawable.ic_add),
-            contentDescription = stringResource(
-                id = designSystemR.string.add_icon_description,
-            )
-        )
-        Spacer(modifier = Modifier.size(ButtonDefaults.IconSpacing))
-        Text(text = stringResource(id = R.string.add_work))
-    }
-}
-
-@Composable
-private fun StartQuizButton(
-    onButtonClick: () -> Unit,
-    onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BaseActionButton(
-        onButtonClick = onButtonClick,
-        onButtonGloballyPositioned = onButtonGloballyPositioned,
-        modifier = modifier,
-    ) {
-        Text(text = stringResource(id = R.string.start_quiz))
-    }
-}
-
-@Composable
-private fun BaseActionButton(
-    onButtonClick: () -> Unit,
-    onButtonGloballyPositioned: (LayoutCoordinates) -> Unit,
-    modifier: Modifier = Modifier,
-    buttonContent: @Composable RowScope.() -> Unit,
-) {
-    BaseCard(
-        shape = RoundedCornerShape(
-            topStart = 8.dp,
-            topEnd = 8.dp,
-        ),
-        modifier = modifier
-            .fillMaxWidth()
-            .onGloballyPositioned { coordinates ->
-                onButtonGloballyPositioned(coordinates)
-            }
-    ) {
-        Button(
-            onClick = onButtonClick,
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 16.dp,
-                    bottom = 8.dp,
-                ),
-            content = buttonContent,
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun AddWorkBottomSheet(
-    onCameraActionClick: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    val bottomSheetState = rememberModalBottomSheetState()
-    ModalBottomSheet(
-        sheetState = bottomSheetState,
-        containerColor = MaterialTheme.colorScheme.onPrimary,
-        onDismissRequest = onDismiss,
-        dragHandle = {
-            BottomSheetDefaults.DragHandle()
-        }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp,
-                )
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .weight(0.5f)
-                    .clickable {
-                        onCameraActionClick()
-                    },
-            ) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_photo_camera_border),
-                    contentDescription = stringResource(id = R.string.camera),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(id = R.string.camera),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(0.5f),
-            ) {
-                Icon(
-                    painter = painterResource(id = designSystemR.drawable.ic_upload),
-                    contentDescription = stringResource(id = R.string.upload_file),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(48.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(id = R.string.upload_file),
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun StartQuizDialog(
-    onConfirm: (Int, String, Int) -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BaseAlertDialog(
-        title = stringResource(id = R.string.start_quiz),
-        dialogText = stringResource(
-            R.string.start_quiz_dialog_text,
-            "Lorem Ipsum Dolor Sit Amet"
-        ),
-        onConfirm = {
-            onConfirm(
-                quizType.ordinal,
-                "Lorem Ipsum Dolor Sit Amat Lorem Ipsum Dolor Sit Amet",
-                10
-            )
-        },
-        onDismiss = onDismiss,
-        confirmText = stringResource(
-            id = R.string.start_quiz_dialog_confirm_button_text,
-        ),
-        modifier = modifier,
-    )
-}
-
-// dummy quiz type that random generated
-private val quizType by lazy {
-    when ((0..1).random()) {
-        0 -> QuizType.MULTIPLE_CHOICE_QUESTIONS
-        else -> QuizType.PHOTO_ANSWER
     }
 }

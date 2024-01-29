@@ -20,6 +20,7 @@ interface ResourceDetailsContract :
         val resourceId: String = "",
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
         val uiState: UiState = UiState.Loading,
+        val deletingResourceUiState: DeletingResourceDialogState = DeletingResourceDialogState.Loading,
         val name: String = "",
         val date: String = "",
         val description: String = "",
@@ -36,7 +37,18 @@ interface ResourceDetailsContract :
         data class Error(val message: String) : UiState
     }
 
+    sealed interface DeletingResourceDialogState {
+
+        data object Loading : DeletingResourceDialogState
+
+        data object Success : DeletingResourceDialogState
+
+        data class Error(val message: String) : DeletingResourceDialogState
+    }
+
     data class OverlayComposableVisibility(
+        val showDeleteResourceDialog: Boolean = false,
+        val showDeletingResourceDialog: Boolean = false,
         val showAddWorkBottomSheet: Boolean = false,
         val showStartQuizDialog: Boolean = false,
     )
@@ -46,6 +58,16 @@ interface ResourceDetailsContract :
         data object FetchResourceDetails : Event
 
         data object OnBackClick : Event
+
+        data object OnDeleteClick : Event
+
+        data object OnConfirmDeleteResourceDialog : Event
+
+        data object OnDismissDeleteResourceDialog : Event
+
+        data object OnConfirmSuccessDeletingResourceDialog : Event
+
+        data object OnDismissDeletingResourceDialog : Event
 
         data object OnAddWorkButtonClick : Event
 

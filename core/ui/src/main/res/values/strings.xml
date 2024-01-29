@@ -12,4 +12,5 @@
     <string name="module_time_label">Posted %1$s</string>
     <string name="assignment_time_label">Due %1$s</string>
     <string name="quiz_time_label">Start at %1$s</string>
+    <string name="ok">OK</string>
 </resources>

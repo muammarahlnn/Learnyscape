@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import dagger.Module
 import dagger.Provides
@@ -22,5 +23,13 @@ object ResourceDetailsInteractorModule {
         resourceDetailsRepository: ResourceDetailsRepository
     ): GetModuleDetailsUseCase = GetModuleDetailsUseCase(
         resourceDetailsRepository::getModuleDetails
+    )
+
+    @ViewModelScoped
+    @Provides
+    fun providesDeleteModuleUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): DeleteModuleUseCase = DeleteModuleUseCase(
+        resourceDetailsRepository::deleteModule
     )
 }
