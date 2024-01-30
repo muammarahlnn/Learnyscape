@@ -33,6 +33,13 @@ import java.io.File
  * @Author Muammar Ahlan Abimanyu
  * @File InstructionsContent, 29/01/2024 18.32
  */
+internal data class InstructionsContentEvent(
+    val onAddWorkButtonClick: () -> Unit,
+    val onStartQuizButtonClick: () -> Unit,
+    val onAttachmentClick: (File) -> Unit,
+    val onRefresh: () -> Unit,
+)
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun InstructionsContent(
@@ -85,10 +92,10 @@ private fun InstructionsContent(
     onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val user = LocalUserModel.current
+    val isStudent = isStudent(LocalUserModel.current.role)
     val isAssignment = state.resourceType == ClassResourceType.ASSIGNMENT
     val isQuiz = state.resourceType == ClassResourceType.QUIZ
-    val showStickyBottomActionButton = (isAssignment || isQuiz) && isStudent(user.role)
+    val showStickyBottomActionButton = isStudent && (isAssignment || isQuiz)
 
     val localDensity = LocalDensity.current
     Box(modifier = modifier.fillMaxSize()) {
