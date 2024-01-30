@@ -5,6 +5,7 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
 import com.muammarahlnn.learnyscape.core.network.BuildConfig
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
+import com.muammarahlnn.learnyscape.core.network.api.AttachmentApi
 import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
 import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
@@ -119,6 +120,13 @@ object NetworkModule {
         networkJson: Json,
         @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
     ): WaitingListApi = buildRetrofit(networkJson, client).create(WaitingListApi::class.java)
+
+    @Provides
+    @Singleton
+    fun providesAttachmentApi(
+        networkJson: Json,
+        @Named(BEARER_TOKEN_AUTH) client: OkHttpClient,
+    ): AttachmentApi = buildRetrofit(networkJson, client).create(AttachmentApi::class.java)
 }
 
 internal const val BASE_URL = BuildConfig.BASE_URL

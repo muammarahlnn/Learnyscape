@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import kotlinx.coroutines.flow.Flow
 
@@ -12,4 +13,8 @@ interface ResourceDetailsRepository {
     fun getModuleDetails(moduleId: String): Flow<ModuleDetailsModel>
 
     fun deleteModule(moduleId: String): Flow<String>
+
+    fun getAssignmentDetails(assignmentId: String): Flow<AssignmentDetailsModel>
+
+    fun deleteAssignment(assignmentId: String): Flow<String>
 }

@@ -2,9 +2,11 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskOverviewResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -18,7 +20,7 @@ import retrofit2.http.Path
 interface TasksApi {
 
     @Multipart
-    @POST(TASKS_END_POINT)
+    @POST("tasks")
     suspend fun postTask(
         @Part files: List<MultipartBody.Part>,
         @Part(ResourceClassPartKey.CLASS_ID_PART) classId: RequestBody,
@@ -27,17 +29,18 @@ interface TasksApi {
         @Part(ResourceClassPartKey.DUE_DATE_PART) dueDate: RequestBody,
     ): BaseResponse<String>
 
-    @GET(GET_TASKS_END_POINT)
+    @GET("tasks/classes/{classId}")
     suspend fun getTasks(
-        @Path(CLASS_ID_PATH) classId: String
+        @Path("classId") classId: String
     ): BaseResponse<List<TaskOverviewResponse>>
 
-    companion object {
+    @GET("tasks/{taskId}")
+    suspend fun getTaskDetails(
+        @Path("taskId") taskId: String,
+    ): BaseResponse<TaskDetailsResponse>
 
-        private const val TASKS_END_POINT = "tasks"
-
-        private const val CLASS_ID_PATH = "classId"
-
-        private const val GET_TASKS_END_POINT = "$TASKS_END_POINT/classes/{$CLASS_ID_PATH}"
-    }
+    @DELETE("tasks/{taskId}")
+    suspend fun deleteTask(
+        @Path("taskId") taskId: String,
+    ): BaseResponse<String>
 }

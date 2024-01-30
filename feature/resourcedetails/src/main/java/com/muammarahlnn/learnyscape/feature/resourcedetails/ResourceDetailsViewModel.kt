@@ -4,13 +4,16 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
@@ -34,6 +37,8 @@ class ResourceDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getModuleDetailsUseCase: GetModuleDetailsUseCase,
     private val deleteModuleUseCase: DeleteModuleUseCase,
+    private val getAssignmentDetailsUseCase: GetAssignmentDetailsUseCase,
+    private val deleteAssignmentUseCase: DeleteAssignmentUseCase,
 ) : ViewModel(), ResourceDetailsContract {
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
@@ -103,14 +108,19 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun fetchResourceDetails() {
+        when (state.value.resourceType) {
+            ClassResourceType.ANNOUNCEMENT -> TODO()
+            ClassResourceType.MODULE -> fetchModuleDetails()
+            ClassResourceType.ASSIGNMENT -> fetchAssignmentDetails()
+            ClassResourceType.QUIZ -> TODO()
+        }
+    }
+
+    private fun fetchModuleDetails() {
         viewModelScope.launch {
             getModuleDetailsUseCase(moduleId = _state.value.resourceId).asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
-                        it.copy(
-                            uiState = ResourceDetailsContract.UiState.Loading
-                        )
-                    }
+                    onLoadingFetchResourceDetails()
                 }.onSuccess { moduleDetails ->
                     _state.update {
                         it.copy(
@@ -130,6 +140,43 @@ class ResourceDetailsViewModel @Inject constructor(
                     onErrorFetchResourceDetails(message)
                 }
             }
+        }
+    }
+
+    private fun fetchAssignmentDetails() {
+        viewModelScope.launch {
+            getAssignmentDetailsUseCase(assignmentId = state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    result.onLoading {
+                        onLoadingFetchResourceDetails()
+                    }.onSuccess { assignmentDetails ->
+                        _state.update {
+                            it.copy(
+                                name = assignmentDetails.name,
+                                description = assignmentDetails.description,
+                                date = assignmentDetails.dueDate,
+                                attachments = assignmentDetails.attachments,
+                                uiState = ResourceDetailsContract.UiState.Success,
+                            )
+                        }
+                    }.onNoInternet { message ->
+                        onErrorFetchResourceDetails(message)
+                    }.onError { _, message ->
+                        onErrorFetchResourceDetails(message)
+                    }.onException { exception, message ->
+                        Log.e(TAG, exception?.message.toString())
+                        onErrorFetchResourceDetails(message)
+                    }
+                }
+        }
+    }
+
+    private fun onLoadingFetchResourceDetails() {
+        _state.update {
+            it.copy(
+                uiState = ResourceDetailsContract.UiState.Loading
+            )
         }
     }
 
@@ -158,7 +205,7 @@ class ResourceDetailsViewModel @Inject constructor(
         when (state.value.resourceType) {
             ClassResourceType.ANNOUNCEMENT -> TODO()
             ClassResourceType.MODULE -> deleteModule()
-            ClassResourceType.ASSIGNMENT -> TODO()
+            ClassResourceType.ASSIGNMENT -> deleteAssignment()
             ClassResourceType.QUIZ -> TODO()
         }
     }
@@ -166,19 +213,31 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun deleteModule() {
         viewModelScope.launch {
             deleteModuleUseCase(state.value.resourceId).asResult().collect { result ->
-                result.onLoading {
-                    onLoadingDeletingResource()
-                }.onSuccess {
-                    onSuccessDeletingResource()
-                }.onNoInternet { message ->
-                    onErrorDeletingResource(message)
-                }.onError { _, message ->
-                    onErrorDeletingResource(message)
-                }.onException { exception, message ->
-                    Log.e(TAG, exception?.message.toString())
-                    onErrorDeletingResource(message)
-                }
+                handleDeleteResourceResult(result)
             }
+        }
+    }
+
+    private fun deleteAssignment() {
+        viewModelScope.launch {
+            deleteAssignmentUseCase(state.value.resourceId).asResult().collect { result ->
+                handleDeleteResourceResult(result)
+            }
+        }
+    }
+
+    private fun handleDeleteResourceResult(result: Result<String>) {
+        result.onLoading {
+            onLoadingDeletingResource()
+        }.onSuccess {
+            onSuccessDeletingResource()
+        }.onNoInternet { message ->
+            onErrorDeletingResource(message)
+        }.onError { _, message ->
+            onErrorDeletingResource(message)
+        }.onException { exception, message ->
+            Log.e(TAG, exception?.message.toString())
+            onErrorDeletingResource(message)
         }
     }
 
