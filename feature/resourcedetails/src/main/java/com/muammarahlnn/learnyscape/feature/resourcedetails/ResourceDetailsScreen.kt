@@ -9,14 +9,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.isLecturer
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.AddWorkBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeleteResourceDialog
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeletingResourceDialog
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.InstructionsContent
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.InstructionsContentEvent
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsPager
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsTopAppBar
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StartQuizDialog
@@ -125,30 +128,42 @@ private fun ResourceDetailsScreen(
         },
         modifier = modifier,
     ) { paddingValues ->
+        val instructionsContentEvent = InstructionsContentEvent(
+            onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
+            onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
+            onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) },
+            onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) },
+        )
+
         val screenModifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
 
-        when (state.resourceType) {
-            ClassResourceType.ANNOUNCEMENT,
-            ClassResourceType.MODULE -> InstructionsContent(
+        val isLecturer = isLecturer(LocalUserModel.current.role)
+        val isAssignmentOrQuiz = state.resourceType in listOf(
+            ClassResourceType.ASSIGNMENT,
+            ClassResourceType.QUIZ
+        )
+        val isContentWithStudentWork =  isLecturer && isAssignmentOrQuiz
+
+        if (isContentWithStudentWork) {
+            ResourceDetailsPager(
                 state = state,
                 refreshState = refreshState,
-                onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
-                onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
-                onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) },
-                onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) },
+                onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
+                onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
+                onAttachmentClick = instructionsContentEvent.onAttachmentClick,
+                onRefresh = instructionsContentEvent.onRefresh,
                 modifier = screenModifier
             )
-
-            ClassResourceType.ASSIGNMENT,
-            ClassResourceType.QUIZ -> ResourceDetailsPager(
+        } else {
+            InstructionsContent(
                 state = state,
                 refreshState = refreshState,
-                onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
-                onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
-                onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) },
-                onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) },
+                onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
+                onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
+                onAttachmentClick = instructionsContentEvent.onAttachmentClick,
+                onRefresh = instructionsContentEvent.onRefresh,
                 modifier = screenModifier
             )
         }
