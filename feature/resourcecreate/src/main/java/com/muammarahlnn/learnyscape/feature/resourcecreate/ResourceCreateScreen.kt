@@ -111,6 +111,7 @@ private fun ResourceCreateScreen(
     event: (ResourceCreateContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    /// TODO: add bottom padding
     if (state.overlayComposableVisibility.addAttachmentBottomSheet) {
         AddAttachmentBottomSheet(
             onUploadFileClick = {

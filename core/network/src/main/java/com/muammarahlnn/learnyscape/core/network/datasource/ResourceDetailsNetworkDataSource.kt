@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import kotlinx.coroutines.flow.Flow
 import java.io.File
 
@@ -10,9 +11,13 @@ import java.io.File
  */
 interface ResourceDetailsNetworkDataSource {
 
+    fun getAttachment(attachmentUrl: String): Flow<File?>
+
     fun getReferenceDetails(referenceId: String): Flow<ReferenceDetailsResponse>
 
-    fun getReferenceAttachment(attachmentUrl: String): Flow<File?>
-
     fun deleteReference(referenceId: String): Flow<String>
+
+    fun getTaskDetails(taskId: String): Flow<TaskDetailsResponse>
+
+    fun deleteTask(taskId: String): Flow<String>
 }

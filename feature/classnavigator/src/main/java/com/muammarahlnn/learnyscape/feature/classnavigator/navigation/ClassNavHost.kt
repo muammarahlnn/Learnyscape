@@ -49,7 +49,7 @@ internal fun ClassNavHost(
         assignmentScreen(
             classId = state.classId,
             navigateBack = navigateBack,
-            navigateToResourceDetails = {},
+            navigateToResourceDetails = navigateToResourceDetails,
             navigateToResourceCreate = navigateToResourceCreate,
         )
         quizScreen(

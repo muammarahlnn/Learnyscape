@@ -51,8 +51,8 @@ class AssignmentViewModel @Inject constructor(
             AssignmentContract.Event.OnNavigateBack ->
                 navigateBack()
 
-            AssignmentContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails()
+            is AssignmentContract.Event.OnNavigateToResourceDetails ->
+                navigateToResourceDetails(event.assignmentId)
 
             AssignmentContract.Event.OnNavigateToResourceCreate ->
                 navigateToResourceCreate()
@@ -110,10 +110,11 @@ class AssignmentViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToResourceDetails() {
+    private fun navigateToResourceDetails(assignmentId: String) {
         viewModelScope.launch {
             _effect.emit(
                 AssignmentContract.Effect.NavigateToResourceDetails(
+                    resourceId = assignmentId,
                     resourceTypeOrdinal = assignmentOrdinal
                 )
             )

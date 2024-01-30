@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 internal fun AssignmentRoute(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AssignmentViewModel = hiltViewModel(),
@@ -63,7 +63,10 @@ internal fun AssignmentRoute(
                 navigateBack()
 
             is AssignmentContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(it.resourceTypeOrdinal)
+                navigateToResourceDetails(
+                    it.resourceId,
+                    it.resourceTypeOrdinal,
+                )
 
             is AssignmentContract.Effect.NavigateToResourceCreate ->
                 navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
@@ -115,7 +118,10 @@ private fun AssignmentScreen(
                             ClassResourceCard(
                                 classResourceType = ClassResourceType.ASSIGNMENT,
                                 title = assignment.name,
-                                timeLabel = assignment.dueDate
+                                timeLabel = assignment.dueDate,
+                                onItemClick = {
+                                    event(AssignmentContract.Event.OnNavigateToResourceDetails(assignment.id))
+                                },
                             )
                         }
                     }
