@@ -1,8 +1,10 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
@@ -19,6 +21,22 @@ import dagger.hilt.android.scopes.ViewModelScoped
 @Module
 @InstallIn(ViewModelComponent::class)
 object ResourceDetailsInteractorModule {
+
+    @Provides
+    @ViewModelScoped
+    fun providesGetAnnouncementDetailsUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): GetAnnouncementDetailsUseCase = GetAnnouncementDetailsUseCase(
+        resourceDetailsRepository::getAnnouncementDetails
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesDeleteAnnouncementUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): DeleteAnnouncementUseCase = DeleteAnnouncementUseCase(
+        resourceDetailsRepository::deleteAnnouncement
+    )
 
     @ViewModelScoped
     @Provides
