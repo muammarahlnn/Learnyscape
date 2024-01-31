@@ -37,7 +37,7 @@ import kotlinx.coroutines.launch
 internal fun QuizRoute(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: QuizViewModel = hiltViewModel(),
@@ -59,7 +59,10 @@ internal fun QuizRoute(
                 navigateBack()
 
             is QuizContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(it.resourceTypeOrdinal)
+                navigateToResourceDetails(
+                    it.resourceId,
+                    it.resourceTypeOrdinal
+                )
 
             is QuizContract.Effect.NavigateToResourceCreate ->
                 navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
@@ -115,6 +118,7 @@ private fun QuizScreen(
                             classResourceType = ClassResourceType.QUIZ,
                             title = quiz.name,
                             timeLabel = quiz.startDate,
+                            onItemClick = { event(QuizContract.Event.OnNavigateToResourceDetails(quiz.id)) }
                         )
                     }
                 }

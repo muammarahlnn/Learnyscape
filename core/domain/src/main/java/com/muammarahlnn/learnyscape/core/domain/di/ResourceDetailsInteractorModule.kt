@@ -5,6 +5,7 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignment
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,5 +50,13 @@ object ResourceDetailsInteractorModule {
         resourceDetailsRepository: ResourceDetailsRepository
     ): DeleteAssignmentUseCase = DeleteAssignmentUseCase(
         resourceDetailsRepository::deleteAssignment
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesGetQuizDetailsUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): GetQuizDetailsUseCase = GetQuizDetailsUseCase(
+        resourceDetailsRepository::getQuizDetails
     )
 }

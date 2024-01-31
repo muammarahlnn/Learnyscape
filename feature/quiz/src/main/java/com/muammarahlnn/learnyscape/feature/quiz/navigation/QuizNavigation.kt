@@ -20,7 +20,7 @@ fun NavController.navigateToQuiz(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.quizScreen(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
 ) {
     composable(route = QUIZ_ROUTE) {

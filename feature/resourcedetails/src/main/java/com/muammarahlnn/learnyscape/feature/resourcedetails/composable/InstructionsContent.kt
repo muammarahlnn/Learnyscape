@@ -124,9 +124,10 @@ private fun InstructionsContent(
             item {
                 if (isQuiz) {
                     QuizDetailsCard(
-                        quizStartTime = "12 August 2023, 11:12",
-                        quizDuration = "10 Minutes",
-                        quizType = quizType
+                        quizStartDate = state.startQuizDate,
+                        quizEndDate = state.endQuizDate,
+                        quizDuration = state.quizDuration,
+                        quizType = state.quizType,
                     )
                 } else {
                     AttachmentsCard(

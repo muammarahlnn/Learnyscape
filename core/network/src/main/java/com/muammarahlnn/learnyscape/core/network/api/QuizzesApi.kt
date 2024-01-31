@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.network.model.request.AddQuizQuestionsR
 import com.muammarahlnn.learnyscape.core.network.model.request.CreateQuizRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.CreateQuizResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizOverviewResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -31,4 +32,9 @@ interface QuizzesApi {
     suspend fun getQuizzes(
         @Path("classId") classId: String,
     ): BaseResponse<List<QuizOverviewResponse>>
+
+    @GET("quizzes/{quizId}")
+    suspend fun getQuizDetails(
+        @Path("quizId") quizId: String,
+    ): BaseResponse<QuizDetailsResponse>
 }
