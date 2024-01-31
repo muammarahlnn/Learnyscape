@@ -12,7 +12,7 @@
     <string name="start_icon_description">Start quiz</string>
     <string name="timer_icon_description">Quiz duration</string>
     <string name="quiz_type_icon_description">Quiz type</string>
-    <string name="multiple_choice_questions">Multiple choice questions</string>
+    <string name="multiple_choice">Multiple choice</string>
     <string name="photo_answer">Photo answer</string>
     <string name="edit_resource">Edit resource</string>
     <string name="delete">Delete</string>
@@ -22,4 +22,5 @@
     <string name="success_deleting_dialog_text">%1$s successfully deleted</string>
     <string name="instructions">Instructions</string>
     <string name="student_work">Student work</string>
+    <string name="n_minutes">%1$d minutes</string>
 </resources>

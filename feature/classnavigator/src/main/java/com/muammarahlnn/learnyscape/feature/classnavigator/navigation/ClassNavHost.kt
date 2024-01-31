@@ -55,7 +55,7 @@ internal fun ClassNavHost(
         quizScreen(
             classId = state.classId,
             navigateBack = navigateBack,
-            navigateToResourceDetails = {},
+            navigateToResourceDetails = navigateToResourceDetails,
             navigateToResourceCreate = navigateToResourceCreate,
         )
         memberScreen(

@@ -2,9 +2,11 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toModuleDetailsModel
+import com.muammarahlnn.learnyscape.core.data.mapper.toQuizDetailsModel
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
+import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -38,6 +40,11 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
 
     override fun deleteAssignment(assignmentId: String): Flow<String> =
         resourceDetailsNetworkDataSource.deleteTask(assignmentId)
+
+    override fun getQuizDetails(quizId: String): Flow<QuizDetailsModel> =
+        resourceDetailsNetworkDataSource.getQuizDetails(quizId).map { quizDetailsResponse ->
+            quizDetailsResponse.toQuizDetailsModel()
+        }
 
     private suspend fun getAttachments(attachmentUrls: List<String>): List<File> {
         val attachments = mutableListOf<File>()

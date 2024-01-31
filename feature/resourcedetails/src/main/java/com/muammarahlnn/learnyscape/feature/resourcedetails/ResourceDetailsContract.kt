@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.resourcedetails
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import java.io.File
 
@@ -25,6 +26,10 @@ interface ResourceDetailsContract :
         val date: String = "",
         val description: String = "",
         val attachments: List<File> = listOf(),
+        val startQuizDate: String = "",
+        val endQuizDate: String = "",
+        val quizDuration: Int = 0,
+        val quizType: QuizType = QuizType.NONE,
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility()
     )
 

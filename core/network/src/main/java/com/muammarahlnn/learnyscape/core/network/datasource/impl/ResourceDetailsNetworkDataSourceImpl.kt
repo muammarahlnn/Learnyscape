@@ -3,10 +3,12 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 import android.content.Context
 import android.os.Environment
 import com.muammarahlnn.learnyscape.core.network.api.AttachmentApi
+import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -30,6 +32,7 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
     private val referencesApi: ReferencesApi,
     private val tasksApi: TasksApi,
     private val attachmentApi: AttachmentApi,
+    private val quizzesApi: QuizzesApi,
 ) : ResourceDetailsNetworkDataSource {
 
     override fun getAttachment(attachmentUrl: String): Flow<File?> = flow {
@@ -52,6 +55,10 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
 
     override fun deleteTask(taskId: String): Flow<String> = flow {
         emit(tasksApi.deleteTask(taskId).data)
+    }
+
+    override fun getQuizDetails(quizId: String): Flow<QuizDetailsResponse> = flow {
+        emit(quizzesApi.getQuizDetails(quizId).data)
     }
 
     private fun Response<ResponseBody>.toAttachmentFile(): File? {

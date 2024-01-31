@@ -51,8 +51,8 @@ class QuizViewModel @Inject constructor(
             QuizContract.Event.OnNavigateBack ->
                 navigateBack()
 
-            QuizContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails()
+            is QuizContract.Event.OnNavigateToResourceDetails ->
+                navigateToResourceDetails(event.quizId)
 
             QuizContract.Event.OnNavigateToResourceCreate ->
                 navigateToResourceCreate()
@@ -112,10 +112,11 @@ class QuizViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToResourceDetails() {
+    private fun navigateToResourceDetails(quizId: String) {
         viewModelScope.launch {
             _effect.emit(
                 QuizContract.Effect.NavigateToResourceDetails(
+                    resourceId = quizId,
                     resourceTypeOrdinal = moduleOrdinal
                 )
             )

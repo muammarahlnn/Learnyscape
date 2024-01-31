@@ -19,8 +19,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.model.ui.QuizType
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.feature.resourcedetails.R
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -28,8 +29,9 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.R
  */
 @Composable
 internal fun QuizDetailsCard(
-    quizStartTime: String,
-    quizDuration: String,
+    quizStartDate: String,
+    quizEndDate: String,
+    quizDuration: Int,
     quizType: QuizType,
     modifier: Modifier = Modifier,
 ) {
@@ -58,9 +60,12 @@ internal fun QuizDetailsCard(
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
+                val quizRangeDate = "$quizStartDate - $quizEndDate"
                 Text(
-                    text = quizStartTime,
+                    text = quizRangeDate,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -72,14 +77,16 @@ internal fun QuizDetailsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(id = com.muammarahlnn.learnyscape.core.designsystem.R.drawable.ic_timer),
+                    painter = painterResource(id = designSystemR.drawable.ic_timer),
                     contentDescription = stringResource(id = R.string.timer_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = quizDuration,
+                    text = stringResource(id = R.string.n_minutes, quizDuration),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -91,17 +98,20 @@ internal fun QuizDetailsCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(
-                    painter = painterResource(id = com.muammarahlnn.learnyscape.core.designsystem.R.drawable.ic_quiz_type),
+                    painter = painterResource(id = designSystemR.drawable.ic_quiz_type),
                     contentDescription = stringResource(id = R.string.quiz_type_icon_description),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
                 )
+
                 Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
                     text = stringResource(
                         id = when (quizType) {
-                            QuizType.MULTIPLE_CHOICE_QUESTIONS -> R.string.multiple_choice_questions
+                            QuizType.MULTIPLE_CHOICE -> R.string.multiple_choice
                             QuizType.PHOTO_ANSWER -> R.string.photo_answer
+                            QuizType.NONE -> R.string.quiz_type_icon_description
                         }
                     ),
                     style = MaterialTheme.typography.bodySmall,

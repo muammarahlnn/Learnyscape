@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import kotlinx.coroutines.flow.Flow
@@ -20,4 +21,6 @@ interface ResourceDetailsNetworkDataSource {
     fun getTaskDetails(taskId: String): Flow<TaskDetailsResponse>
 
     fun deleteTask(taskId: String): Flow<String>
+
+    fun getQuizDetails(quizId: String): Flow<QuizDetailsResponse>
 }
