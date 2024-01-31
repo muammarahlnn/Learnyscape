@@ -23,7 +23,7 @@ fun NavGraphBuilder.classScreen(
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
 ) {
     composable(route = CLASS_ROUTE) {
         ClassRoute(

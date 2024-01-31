@@ -46,6 +46,7 @@ fun ClassSuccessContent(
     onBackClick: () -> Unit,
     onJoinRequestsClick: () -> Unit,
     onCreateNewAnnouncementClick: () -> Unit,
+    onFeedClick: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val user = LocalUserModel.current
@@ -138,7 +139,7 @@ fun ClassSuccessContent(
                         caption = feed.description,
                         isCaptionOverflowed = true,
                         onPostClick = { resourceTypeOrdinal ->
-                            // TODO: on click feed
+                            onFeedClick(feed.uri, resourceTypeOrdinal)
                         },
                         modifier = cardPaddingModifier,
                     )

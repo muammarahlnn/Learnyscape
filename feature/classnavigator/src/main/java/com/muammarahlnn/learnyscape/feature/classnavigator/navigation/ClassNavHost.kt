@@ -37,7 +37,7 @@ internal fun ClassNavHost(
             classId = state.classId,
             navigateBack = navigateBack,
             navigateToJoinRequests = navigateToJoinRequests,
-            navigateToResourceDetails = {},
+            navigateToResourceDetails = navigateToResourceDetails,
             navigateToResourceCreate = navigateToResourceCreate,
         )
         moduleScreen(

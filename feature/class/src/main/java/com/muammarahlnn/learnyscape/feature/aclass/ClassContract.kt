@@ -45,7 +45,10 @@ interface ClassContract :
 
         data object OnNavigateToResourceCreate : Event
 
-        data class OnNavigateToResourceDetails(val resourceTypeOrdinal: Int) : Event
+        data class OnNavigateToResourceDetails(
+            val resourceId: String,
+            val resourceTypeOrdinal: Int,
+        ) : Event
     }
 
     sealed interface Effect {
@@ -61,6 +64,9 @@ interface ClassContract :
             val resourceTypeOrdinal: Int,
         ) : Effect
 
-        data class NavigateToResourceDetails(val resourceTypeOrdinal: Int) : Effect
+        data class NavigateToResourceDetails(
+            val resourceId: String,
+            val resourceTypeOrdinal: Int,
+        ) : Effect
     }
 }
