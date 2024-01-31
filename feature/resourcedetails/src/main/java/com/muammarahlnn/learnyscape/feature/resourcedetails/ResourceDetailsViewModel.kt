@@ -134,6 +134,7 @@ class ResourceDetailsViewModel @Inject constructor(
                                 date = announcementDetails.updatedAt,
                                 description =  announcementDetails.description,
                                 attachments = announcementDetails.attachments,
+                                uiState = ResourceDetailsContract.UiState.Success,
                             )
                         }
                     }
