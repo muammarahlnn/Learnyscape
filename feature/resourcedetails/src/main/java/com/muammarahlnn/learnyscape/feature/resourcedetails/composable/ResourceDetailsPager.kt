@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.R
 import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract
@@ -94,6 +95,12 @@ internal fun ResourceDetailsPager(
                 .fillMaxWidth()
                 .weight(1f)
         ) { pageIndex ->
+            val studentWorkType = when (state.resourceType) {
+                ClassResourceType.ASSIGNMENT -> StudentWorkType.ASSIGNMENT
+                ClassResourceType.QUIZ -> StudentWorkType.QUIZ
+                else -> throw IllegalAccessException("Only assignment and quiz is expected")
+            }
+
             when (pageIndex) {
                 0 -> InstructionsContent(
                     state = state,
@@ -102,6 +109,11 @@ internal fun ResourceDetailsPager(
                     onStartQuizButtonClick = onStartQuizButtonClick,
                     onAttachmentClick = onAttachmentClick,
                     onRefresh = onRefresh,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                1 -> StudentWorkContent(
+                    studentWorkType  = studentWorkType,
                     modifier = Modifier.fillMaxSize()
                 )
             }

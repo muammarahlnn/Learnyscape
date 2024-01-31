@@ -23,4 +23,7 @@
     <string name="instructions">Instructions</string>
     <string name="student_work">Student work</string>
     <string name="n_minutes">%1$d minutes</string>
+    <string name="turned_in">Turned In</string>
+    <string name="submitted">Submitted</string>
+    <string name="missing">Missing</string>
 </resources>
