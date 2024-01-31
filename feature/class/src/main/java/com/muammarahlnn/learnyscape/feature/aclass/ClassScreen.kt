@@ -25,7 +25,7 @@ internal fun ClassRoute(
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
-    navigateToResourceDetails: (Int) -> Unit,
+    navigateToResourceDetails: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ClassViewModel = hiltViewModel(),
 ) {
@@ -56,7 +56,7 @@ internal fun ClassRoute(
                 navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
 
             is ClassContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(it.resourceTypeOrdinal)
+                navigateToResourceDetails(it.resourceId, it.resourceTypeOrdinal)
         }
     }
 
@@ -94,6 +94,9 @@ private fun ClassScreen(
             onBackClick = { event(ClassContract.Event.OnNavigateBack) },
             onJoinRequestsClick = { event(ClassContract.Event.OnNavigateToJoinRequests) },
             onCreateNewAnnouncementClick = { event(ClassContract.Event.OnNavigateToResourceCreate) },
+            onFeedClick = { feedId, resourceTypeOrdinal ->
+                event(ClassContract.Event.OnNavigateToResourceDetails(feedId, resourceTypeOrdinal))
+            },
             modifier = modifier,
         )
 

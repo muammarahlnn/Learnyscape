@@ -69,7 +69,7 @@ class ClassViewModel @Inject constructor(
                 navigateToResourceCreate()
 
             is ClassContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails()
+                navigateToResourceDetails(event.resourceId, event.resourceTypeOrdinal)
         }
     }
 
@@ -234,11 +234,15 @@ class ClassViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToResourceDetails() {
+    private fun navigateToResourceDetails(
+        resourceId: String,
+        resourceTypeOrdinal: Int,
+    ) {
         viewModelScope.launch {
             _effect.emit(
                 ClassContract.Effect.NavigateToResourceDetails(
-                    resourceTypeOrdinal = announcementOrdinal
+                    resourceId = resourceId,
+                    resourceTypeOrdinal = resourceTypeOrdinal,
                 )
             )
         }
