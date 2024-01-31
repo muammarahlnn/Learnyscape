@@ -2,12 +2,14 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import android.content.Context
 import android.os.Environment
+import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.AttachmentApi
 import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
+import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
@@ -29,6 +31,7 @@ import javax.inject.Singleton
 @Singleton
 class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val announcementsApi: AnnouncementsApi,
     private val referencesApi: ReferencesApi,
     private val tasksApi: TasksApi,
     private val attachmentApi: AttachmentApi,
@@ -39,6 +42,14 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
         val fullUrl = BASE_URL + attachmentUrl
         val response = attachmentApi.getAttachment(fullUrl)
         emit(response.toAttachmentFile())
+    }
+
+    override fun getAnnouncementDetails(announcementId: String): Flow<AnnouncementDetailsResponse> = flow {
+        emit(announcementsApi.getAnnouncementDetails(announcementId).data)
+    }
+
+    override fun deleteAnnouncement(announcementId: String): Flow<String> = flow {
+        emit(announcementsApi.deleteAnnouncement(announcementId).data)
     }
 
     override fun getReferenceDetails(referenceId: String): Flow<ReferenceDetailsResponse> = flow {

@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.core.data.repository.impl
 
+import com.muammarahlnn.learnyscape.core.data.mapper.toAnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toQuizDetailsModel
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
+import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
@@ -20,6 +22,16 @@ import javax.inject.Inject
 class ResourceDetailsRepositoryImpl @Inject constructor(
     private val resourceDetailsNetworkDataSource: ResourceDetailsNetworkDataSource,
 ) : ResourceDetailsRepository {
+
+    override fun getAnnouncementDetails(announcementId: String): Flow<AnnouncementDetailsModel> =
+        resourceDetailsNetworkDataSource.getAnnouncementDetails(announcementId).map { announcementDetailsResponse ->
+            announcementDetailsResponse.toAnnouncementDetailsModel(
+                getAttachments(announcementDetailsResponse.attachmentUrls)
+            )
+        }
+
+    override fun deleteAnnouncement(announcementId: String): Flow<String> =
+        resourceDetailsNetworkDataSource.deleteAnnouncement(announcementId)
 
     override fun getModuleDetails(moduleId: String): Flow<ModuleDetailsModel> =
         resourceDetailsNetworkDataSource.getReferenceDetails(moduleId).map { referenceDetailsResponse ->

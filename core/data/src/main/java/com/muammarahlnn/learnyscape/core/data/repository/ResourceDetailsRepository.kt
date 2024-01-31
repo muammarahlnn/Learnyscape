@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
+import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
@@ -10,6 +11,10 @@ import kotlinx.coroutines.flow.Flow
  * @File ResourceDetailsRepository, 18/01/2024 17.40
  */
 interface ResourceDetailsRepository {
+
+    fun getAnnouncementDetails(announcementId: String): Flow<AnnouncementDetailsModel>
+
+    fun deleteAnnouncement(announcementId: String): Flow<String>
 
     fun getModuleDetails(moduleId: String): Flow<ModuleDetailsModel>
 

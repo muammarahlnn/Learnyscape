@@ -11,8 +11,10 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
@@ -36,6 +38,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ResourceDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val getAnnouncementDetailsUseCase: GetAnnouncementDetailsUseCase,
+    private val deleteAnnouncementUseCase: DeleteAnnouncementUseCase,
     private val getModuleDetailsUseCase: GetModuleDetailsUseCase,
     private val deleteModuleUseCase: DeleteModuleUseCase,
     private val getAssignmentDetailsUseCase: GetAssignmentDetailsUseCase,
@@ -111,10 +115,29 @@ class ResourceDetailsViewModel @Inject constructor(
 
     private fun fetchResourceDetails() {
         when (state.value.resourceType) {
-            ClassResourceType.ANNOUNCEMENT -> TODO()
+            ClassResourceType.ANNOUNCEMENT -> fetchAnnouncementDetails()
             ClassResourceType.MODULE -> fetchModuleDetails()
             ClassResourceType.ASSIGNMENT -> fetchAssignmentDetails()
             ClassResourceType.QUIZ -> fetchQuizDetails()
+        }
+    }
+
+    private fun fetchAnnouncementDetails() {
+        viewModelScope.launch {
+            getAnnouncementDetailsUseCase(announcementId = state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    handleFetchResourceDetails(result) { announcementDetails ->
+                        _state.update {
+                            it.copy(
+                                name = announcementDetails.authorName,
+                                date = announcementDetails.updatedAt,
+                                description =  announcementDetails.description,
+                                attachments = announcementDetails.attachments,
+                            )
+                        }
+                    }
+                }
         }
     }
 
@@ -230,10 +253,18 @@ class ResourceDetailsViewModel @Inject constructor(
         showDeletingResourceDialog(true)
 
         when (state.value.resourceType) {
-            ClassResourceType.ANNOUNCEMENT -> TODO()
+            ClassResourceType.ANNOUNCEMENT -> deleteAnnouncement()
             ClassResourceType.MODULE -> deleteModule()
             ClassResourceType.ASSIGNMENT -> deleteAssignment()
             ClassResourceType.QUIZ -> TODO()
+        }
+    }
+
+    private fun deleteAnnouncement() {
+        viewModelScope.launch {
+            deleteAnnouncementUseCase(state.value.resourceId).asResult().collect { result ->
+                handleDeleteResourceResult(result)
+            }
         }
     }
 
