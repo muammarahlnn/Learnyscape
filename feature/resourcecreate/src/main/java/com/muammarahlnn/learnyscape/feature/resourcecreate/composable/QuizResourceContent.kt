@@ -68,5 +68,7 @@ internal fun QuizResourceContent(
             duration = state.duration,
             onDurationClick = onDurationClick,
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
