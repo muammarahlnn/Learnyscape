@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 /**
  * @Author Muammar Ahlan Abimanyu
- * @File GetAssignmentSubmissionsUseCase, 31/01/2024 20.54
+ * @File GetQuizSubmissionsUseCase, 01/02/2024 15.22
  */
-fun interface GetAssignmentSubmissionsUseCase {
+fun interface GetQuizSubmissionsUseCase {
 
-    operator fun invoke(assignmentId: String): Flow<List<StudentSubmissionModel>>
+    operator fun invoke(quizId: String): Flow<List<StudentSubmissionModel>>
 }
