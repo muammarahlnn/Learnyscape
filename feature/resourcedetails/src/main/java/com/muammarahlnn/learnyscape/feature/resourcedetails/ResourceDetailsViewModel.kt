@@ -104,6 +104,12 @@ class ResourceDetailsViewModel @Inject constructor(
             ResourceDetailsContract.Event.OnCameraActionClick ->
                 navigateToCamera()
 
+            ResourceDetailsContract.Event.OnUploadFileActionClick ->
+                openFiles()
+
+            is ResourceDetailsContract.Event.OnFileSelected -> TODO()
+
+
             is ResourceDetailsContract.Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
 
@@ -568,8 +574,16 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun navigateToCamera() {
+        showAddWorkBottomSheet(false)
         viewModelScope.launch {
             _effect.emit(ResourceDetailsContract.Effect.NavigateToCamera)
+        }
+    }
+
+    private fun openFiles() {
+        showAddWorkBottomSheet(false)
+        viewModelScope.launch {
+            _effect.emit(ResourceDetailsContract.Effect.OpenFiles)
         }
     }
 

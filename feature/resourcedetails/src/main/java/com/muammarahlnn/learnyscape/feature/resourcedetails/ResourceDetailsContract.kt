@@ -91,6 +91,10 @@ interface ResourceDetailsContract :
 
         data object OnCameraActionClick : Event
 
+        data object OnUploadFileActionClick : Event
+
+        data class OnFileSelected(val file: File) : Event
+
         data class OnAttachmentClick(val attachment: File) : Event
 
         data object OnDismissAddWorkBottomSheet : Event
@@ -111,6 +115,8 @@ interface ResourceDetailsContract :
         data object NavigateBack : Effect
 
         data object NavigateToCamera : Effect
+
+        data object OpenFiles : Effect
 
         data class OpenAttachment(val attachment: File) : Effect
 

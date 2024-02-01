@@ -1,5 +1,7 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -44,6 +46,13 @@ internal fun ResourceDetailsRoute(
     }
 
     val context = LocalContext.current
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) {
+        if (it != null) {
+            // TODO: handle selected file
+        }
+    }
     viewModel.effect.collectInLaunchedEffect {
         when (it) {
             ResourceDetailsContract.Effect.NavigateBack ->
@@ -51,6 +60,9 @@ internal fun ResourceDetailsRoute(
 
             ResourceDetailsContract.Effect.NavigateToCamera ->
                 navigateToCamera()
+
+            ResourceDetailsContract.Effect.OpenFiles ->
+                launcher.launch("*/*")
 
             is ResourceDetailsContract.Effect.NavigateToQuizSession ->
                 navigateToQuizSession(it.quizDuration, it.quizName, it.quizDuration)
@@ -82,6 +94,7 @@ private fun ResourceDetailsScreen(
     if (state.overlayComposableVisibility.showAddWorkBottomSheet) {
         AddWorkBottomSheet(
             onCameraActionClick = { event(ResourceDetailsContract.Event.OnCameraActionClick) },
+            onUploadFileActionClick = { event(ResourceDetailsContract.Event.OnUploadFileActionClick) },
             onDismiss = { event(ResourceDetailsContract.Event.OnDismissAddWorkBottomSheet) },
         )
     }

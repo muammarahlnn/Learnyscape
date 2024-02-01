@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails.composable
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.R
+import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -31,6 +31,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R
 @Composable
 internal fun AddWorkBottomSheet(
     onCameraActionClick: () -> Unit,
+    onUploadFileActionClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val bottomSheetState = rememberModalBottomSheetState()
@@ -55,7 +56,7 @@ internal fun AddWorkBottomSheet(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .weight(0.5f)
-                    .clickable {
+                    .noRippleClickable {
                         onCameraActionClick()
                     },
             ) {
@@ -74,7 +75,11 @@ internal fun AddWorkBottomSheet(
             }
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .weight(0.5f)
+                    .noRippleClickable {
+                        onUploadFileActionClick()
+                    },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_upload),
