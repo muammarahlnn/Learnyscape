@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.ResetCapturedPhotoUseCase
+import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
@@ -39,7 +40,8 @@ class ProfileViewModel @Inject constructor(
     private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
     private val resetCapturedPhotoUseCase: ResetCapturedPhotoUseCase,
     private val uploadProfilePicUseCase: UploadProfilePicUseCase,
-    private val getProfilePicUseCase: GetProfilePicUseCase
+    private val getProfilePicUseCase: GetProfilePicUseCase,
+    private val saveImageToFileUseCase: SaveImageToFileUseCase,
 ) : ViewModel(), ProfileContract {
 
     private val _state = MutableStateFlow(ProfileContract.State())
@@ -94,7 +96,13 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
-                    _effect.emit(ProfileContract.Effect.OnGetCapturedPhoto(capturedPhoto))
+                    saveImageToFileUseCase(capturedPhoto).collect { imageFile ->
+                        if (imageFile != null) {
+                            updateProfilePic(imageFile)
+                        } else {
+                            updateStateOnError("Error save image to file")
+                        }
+                    }
                 }
             }.join()
 
