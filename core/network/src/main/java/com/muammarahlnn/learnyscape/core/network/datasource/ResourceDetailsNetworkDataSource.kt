@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.datasource
 
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
@@ -31,4 +32,6 @@ interface ResourceDetailsNetworkDataSource {
     fun deleteTask(taskId: String): Flow<String>
 
     fun getQuizDetails(quizId: String): Flow<QuizDetailsResponse>
+
+    fun getQuizSubmissions(quizId: String): Flow<List<QuizSubmissionResponse>>
 }

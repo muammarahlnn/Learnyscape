@@ -9,6 +9,7 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDet
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -85,5 +86,13 @@ object ResourceDetailsInteractorModule {
         resourceDetailsRepository: ResourceDetailsRepository
     ): GetAssignmentSubmissionsUseCase = GetAssignmentSubmissionsUseCase(
         resourceDetailsRepository::getAssignmentSubmissions
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesGetQuizSubmissionsUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): GetQuizSubmissionsUseCase = GetQuizSubmissionsUseCase(
+        resourceDetailsRepository::getQuizSubmissions
     )
 }

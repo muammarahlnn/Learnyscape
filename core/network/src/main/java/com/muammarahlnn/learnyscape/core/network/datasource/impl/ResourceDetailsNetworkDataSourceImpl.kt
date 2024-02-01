@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetwo
 import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
@@ -75,6 +76,10 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
 
     override fun getQuizDetails(quizId: String): Flow<QuizDetailsResponse> = flow {
         emit(quizzesApi.getQuizDetails(quizId).data)
+    }
+
+    override fun getQuizSubmissions(quizId: String): Flow<List<QuizSubmissionResponse>> = flow {
+        emit(quizzesApi.getQuizSubmissions(quizId).data)
     }
 
     private fun Response<ResponseBody>.toAttachmentFile(): File? {

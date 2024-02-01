@@ -21,7 +21,8 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDet
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
-import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
@@ -52,6 +53,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private val getQuizDetailsUseCase: GetQuizDetailsUseCase,
     private val getAssignmentSubmissionsUseCase: GetAssignmentSubmissionsUseCase,
     private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
+    private val getQuizSubmissionsUseCase: GetQuizSubmissionsUseCase,
 ) : ViewModel(), ResourceDetailsContract {
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
@@ -134,7 +136,10 @@ class ResourceDetailsViewModel @Inject constructor(
                 fetchStudentWorks()
             }
 
-            ClassResourceType.QUIZ -> fetchQuizDetails()
+            ClassResourceType.QUIZ -> {
+                fetchQuizDetails()
+                fetchStudentWorks()
+            }
         }
     }
 
@@ -258,7 +263,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun fetchStudentWorks() {
         when (state.value.resourceType) {
             ClassResourceType.ASSIGNMENT -> fetchAssignmentSubmissions()
-            ClassResourceType.QUIZ -> TODO()
+            ClassResourceType.QUIZ -> fetchQuizSubmissions()
             else -> return
         }
     }
@@ -268,36 +273,50 @@ class ResourceDetailsViewModel @Inject constructor(
             getAssignmentSubmissionsUseCase(state.value.resourceId)
                 .asResult()
                 .collect { result ->
-                    result.onLoading {
-                        _state.update {
-                            it.copy(
-                                studentWorkUiState = ResourceDetailsContract.UiState.Loading,
-                            )
-                        }
-                    }.onSuccess { assignmentSubmissions ->
-                        onSuccessFetchStudentWorks(assignmentSubmissions)
-                    }.onNoInternet { message ->
-                        onErrorFetchStudentWorks(message)
-                    }.onError { _, message ->
-                        onErrorFetchStudentWorks(message)
-                    }.onException { exception, message ->
-                        Log.e(TAG, exception?.message.toString())
-                        onErrorFetchStudentWorks(message)
-                    }
+                    handleFetchStudentWorks(result)
                 }
         }
     }
 
-    private fun onSuccessFetchStudentWorks(assignmentSubmissions: List<AssignmentSubmissionModel>) {
+    private fun fetchQuizSubmissions() {
+        viewModelScope.launch {
+            getQuizSubmissionsUseCase(state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    handleFetchStudentWorks(result)
+                }
+        }
+    }
 
-        fun AssignmentSubmissionModel.toStudentSubmissionState() =
+    private fun handleFetchStudentWorks(result: Result<List<StudentSubmissionModel>>) {
+        result.onLoading {
+            _state.update {
+                it.copy(
+                    studentWorkUiState = ResourceDetailsContract.UiState.Loading,
+                )
+            }
+        }.onSuccess { submissions ->
+            onSuccessFetchStudentWorks(submissions)
+        }.onNoInternet { message ->
+            onErrorFetchStudentWorks(message)
+        }.onError { _, message ->
+            onErrorFetchStudentWorks(message)
+        }.onException { exception, message ->
+            Log.e(TAG, exception?.message.toString())
+            onErrorFetchStudentWorks(message)
+        }
+    }
+
+    private fun onSuccessFetchStudentWorks(submissions: List<StudentSubmissionModel>) {
+
+        fun StudentSubmissionModel.toStudentSubmissionState() =
             ResourceDetailsContract.StudentSubmissionState(
                 id = id,
                 userId = userId,
                 name = studentName,
             )
 
-        val (submittedSubmissions, missingSubmissions) = assignmentSubmissions.partition { submission ->
+        val (submittedSubmissions, missingSubmissions) = submissions.partition { submission ->
             submission.turnInStatus
         }.let { submissionsPair ->
             Pair(
@@ -315,6 +334,14 @@ class ResourceDetailsViewModel @Inject constructor(
         }
 
         fetchProfilePics()
+    }
+
+    private fun onErrorFetchStudentWorks(message: String) {
+        _state.update {
+            it.copy(
+                studentWorkUiState = ResourceDetailsContract.UiState.Error(message),
+            )
+        }
     }
 
     private fun fetchProfilePics() {
@@ -431,14 +458,6 @@ class ResourceDetailsViewModel @Inject constructor(
                         profilePicUiState = PhotoProfileImageUiState.Success(null)
                     )
                 }.toList()
-            )
-        }
-    }
-
-    private fun onErrorFetchStudentWorks(message: String) {
-        _state.update {
-            it.copy(
-                studentWorkUiState = ResourceDetailsContract.UiState.Error(message),
             )
         }
     }

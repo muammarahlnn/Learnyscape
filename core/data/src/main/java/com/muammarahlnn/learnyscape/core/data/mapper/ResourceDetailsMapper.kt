@@ -4,12 +4,13 @@ import com.muammarahlnn.learnyscape.core.data.util.formatEpochSeconds
 import com.muammarahlnn.learnyscape.core.data.util.formatIsoDate
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
-import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
+import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.QuizSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
@@ -60,11 +61,22 @@ fun QuizDetailsResponse.toQuizDetailsModel() = QuizDetailsModel(
 )
 
 fun List<TaskSubmissionResponse>.toAssignmentSubmissionModels() = map {
-    it.toAssignmentSubmissionModel()
+    it.toStudentSubmission()
 }
 
-fun TaskSubmissionResponse.toAssignmentSubmissionModel() = AssignmentSubmissionModel(
+fun TaskSubmissionResponse.toStudentSubmission() = StudentSubmissionModel(
     id = id.orEmpty(),
+    userId = userId,
+    studentName = studentName,
+    turnInStatus = turnInStatus,
+)
+
+fun List<QuizSubmissionResponse>.toQuizSubmissionModels() = map {
+    it.toStudentSubmission()
+}
+
+fun QuizSubmissionResponse.toStudentSubmission() = StudentSubmissionModel(
+    id = "",
     userId = userId,
     studentName = studentName,
     turnInStatus = turnInStatus,
