@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.core.ui.util
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.provider.OpenableColumns
@@ -60,6 +61,18 @@ fun uriToFile(context: Context, selectedFileUri: Uri): File {
     inputStream.close()
 
     return file
+}
+
+fun bitmapToFile(context: Context, bitmap: Bitmap): File {
+    val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+    val imageFile = File(storageDir, "$timeStamp.jpg")
+
+    val outputStream = FileOutputStream(imageFile)
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    outputStream.flush()
+    outputStream.close()
+
+    return imageFile
 }
 
 fun createCustomTempImageFile(context: Context): File {

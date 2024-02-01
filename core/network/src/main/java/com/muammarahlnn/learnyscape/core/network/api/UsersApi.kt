@@ -6,6 +6,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.ClassMembersResp
 import com.muammarahlnn.learnyscape.core.network.model.response.EnrolledClassInfoResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.LoginResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ScheduleResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.UploadProfilePicResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.UserResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.WaitingListResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.WaitingListStatusResponse
@@ -52,7 +53,7 @@ interface UsersApi {
     @POST("users/pic")
     suspend fun postProfilePic(
         @Part pic: MultipartBody.Part,
-    ): BaseResponse<String>
+    ): BaseResponse<UploadProfilePicResponse>
 
     @GET("users/pic")
     suspend fun getProfilePic(): Response<ResponseBody>
