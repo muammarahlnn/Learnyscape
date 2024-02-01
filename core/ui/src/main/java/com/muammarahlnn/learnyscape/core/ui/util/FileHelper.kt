@@ -27,24 +27,6 @@ private val timeStamp: String = SimpleDateFormat(
     Locale.US
 ).format(System.currentTimeMillis())
 
-fun imageUriToFile(selectedImg: Uri, context: Context): File {
-    val contentResolver: ContentResolver = context.contentResolver
-    val myFile = createCustomTempImageFile(context)
-
-    val inputStream = contentResolver.openInputStream(selectedImg) as InputStream
-    val outputStream = FileOutputStream(myFile)
-    val buf = ByteArray(1024)
-
-    var len: Int
-    while (inputStream.read(buf).also { len = it } > 0) {
-        outputStream.write(buf, 0, len)
-    }
-    outputStream.close()
-    inputStream.close()
-
-    return myFile
-}
-
 fun uriToFile(context: Context, selectedFileUri: Uri): File {
     val file = createFile(context, selectedFileUri)
     val contentResolver = context.contentResolver

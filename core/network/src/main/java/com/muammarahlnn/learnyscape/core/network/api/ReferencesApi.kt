@@ -6,15 +6,12 @@ import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetails
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceOverviewResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
-import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
-import retrofit2.http.Url
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -40,11 +37,6 @@ interface ReferencesApi {
     suspend fun getReferenceDetails(
         @Path("referenceId") referenceId: String,
     ): BaseResponse<ReferenceDetailsResponse>
-
-    @GET
-    suspend fun getReferenceAttachment(
-        @Url attachmentUrl: String,
-    ): Response<ResponseBody>
 
     @DELETE("references/{referenceId}")
     suspend fun deleteReference(
