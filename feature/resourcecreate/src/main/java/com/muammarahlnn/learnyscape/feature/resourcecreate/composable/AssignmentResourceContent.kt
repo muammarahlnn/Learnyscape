@@ -61,5 +61,7 @@ internal fun AssignmentResourceContent(
             time = state.dueDate?.toLocalTime(),
             onDueDateClick = onDueDateClick
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

@@ -43,5 +43,7 @@ internal fun AnnouncementResourceContent(
             onAttachmentClick = onAttachmentClick,
             onMoreVertAttachmentClick = onMoreVertAttachmentClick,
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }

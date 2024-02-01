@@ -52,5 +52,7 @@ internal fun ModuleResourceContent(
             onAttachmentClick = onAttachmentClick,
             onMoreVertAttachmentClick = onMoreVertAttachmentClick,
         )
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
