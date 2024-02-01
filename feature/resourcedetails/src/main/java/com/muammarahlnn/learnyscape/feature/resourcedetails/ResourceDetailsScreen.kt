@@ -153,7 +153,8 @@ private fun ResourceDetailsScreen(
                 onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
                 onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
                 onAttachmentClick = instructionsContentEvent.onAttachmentClick,
-                onRefresh = instructionsContentEvent.onRefresh,
+                onRefreshInstructions = instructionsContentEvent.onRefresh,
+                onRefreshStudentWork = { event(ResourceDetailsContract.Event.FetchStudentWorks) },
                 modifier = screenModifier
             )
         } else {

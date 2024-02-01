@@ -5,6 +5,7 @@ import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import java.io.File
 
 /**
@@ -21,6 +22,7 @@ interface ResourceDetailsContract :
         val resourceId: String = "",
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
         val uiState: UiState = UiState.Loading,
+        val studentWorkUiState: UiState = UiState.Loading,
         val deletingResourceUiState: DeletingResourceDialogState = DeletingResourceDialogState.Loading,
         val name: String = "",
         val date: String = "",
@@ -30,6 +32,8 @@ interface ResourceDetailsContract :
         val endQuizDate: String = "",
         val quizDuration: Int = 0,
         val quizType: QuizType = QuizType.NONE,
+        val submittedSubmissions: List<StudentSubmissionState> = listOf(),
+        val missingSubmissions: List<StudentSubmissionState> = listOf(),
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility()
     )
 
@@ -51,6 +55,13 @@ interface ResourceDetailsContract :
         data class Error(val message: String) : DeletingResourceDialogState
     }
 
+    data class StudentSubmissionState(
+        val id: String = "",
+        val userId: String = "",
+        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
+        val name: String = "",
+    )
+
     data class OverlayComposableVisibility(
         val showDeleteResourceDialog: Boolean = false,
         val showDeletingResourceDialog: Boolean = false,
@@ -61,6 +72,8 @@ interface ResourceDetailsContract :
     sealed interface Event {
 
         data object FetchResourceDetails : Event
+
+        data object FetchStudentWorks : Event
 
         data object OnBackClick : Event
 

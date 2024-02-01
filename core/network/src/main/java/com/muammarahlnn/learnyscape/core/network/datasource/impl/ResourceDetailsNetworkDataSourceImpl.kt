@@ -13,6 +13,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDeta
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -62,6 +63,10 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
 
     override fun getTaskDetails(taskId: String): Flow<TaskDetailsResponse> = flow {
         emit(tasksApi.getTaskDetails(taskId).data)
+    }
+
+    override fun getTaskSubmissions(taskId: String): Flow<List<TaskSubmissionResponse>> = flow {
+        emit(tasksApi.getTaskSubmissions(taskId).data)
     }
 
     override fun deleteTask(taskId: String): Flow<String> = flow {

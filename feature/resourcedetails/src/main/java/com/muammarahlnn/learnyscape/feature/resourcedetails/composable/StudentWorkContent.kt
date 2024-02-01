@@ -28,9 +28,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.R
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -42,7 +45,9 @@ internal enum class StudentWorkType {
 
 @Composable
 internal fun StudentWorkContent(
+    state: ResourceDetailsContract.State,
     studentWorkType: StudentWorkType,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val submittedText = stringResource(
@@ -52,46 +57,56 @@ internal fun StudentWorkContent(
         }
     )
 
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier,
-    ) {
-        item {
-            StudentSubmissionStatus(
-                submittedText = submittedText,
-                modifier = Modifier.fillMaxWidth()
-            )
+    when (state.studentWorkUiState) {
+        ResourceDetailsContract.UiState.Loading -> LoadingScreen(modifier = modifier)
+
+        ResourceDetailsContract.UiState.Success -> LazyColumn(
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = modifier,
+        ) {
+            item {
+                StudentSubmissionStatus(
+                    submittedText = submittedText,
+                    submittedSubmissionSize = state.submittedSubmissions.size,
+                    missingSubmissionSize = state.missingSubmissions.size,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            if (state.submittedSubmissions.isNotEmpty()) {
+                item {
+                    SubmittedStudentsCard(
+                        submittedText = submittedText,
+                        submittedStudents = state.submittedSubmissions,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+
+            if (state.missingSubmissions.isNotEmpty()) {
+                item {
+                    MissingStudentsCard(
+                        missingStudents = state.missingSubmissions,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
         }
 
-        item {
-            SubmittedStudentsCard(
-                submittedText = submittedText,
-                submittedStudents = listOf(
-                    "Lorem ipsum dolor sit amet",
-                    "Lorem ipsum dolor sit amet",
-                    "Lorem ipsum dolor sit amet",
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-
-        item {
-            MissingStudentsCard(
-                missingStudents = listOf(
-                    "Lorem ipsum dolor sit amet",
-                    "Lorem ipsum dolor sit amet",
-                    "Lorem ipsum dolor sit amet",
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        is ResourceDetailsContract.UiState.Error -> ErrorScreen(
+            text = state.studentWorkUiState.message,
+            onRefresh = onRefresh,
+            modifier = modifier,
+        )
     }
 }
 
 @Composable
 private fun StudentSubmissionStatus(
     submittedText: String,
+    submittedSubmissionSize: Int,
+    missingSubmissionSize: Int,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(modifier = modifier) {
@@ -103,7 +118,7 @@ private fun StudentSubmissionStatus(
         ) {
             Column {
                 Text(
-                    text = "21",
+                    text = submittedSubmissionSize.toString(),
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
@@ -130,7 +145,7 @@ private fun StudentSubmissionStatus(
 
             Column {
                 Text(
-                    text = "7",
+                    text = missingSubmissionSize.toString(),
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.onSurface
@@ -149,16 +164,17 @@ private fun StudentSubmissionStatus(
 @Composable
 private fun SubmittedStudentsCard(
     submittedText: String,
-    submittedStudents: List<String>,
+    submittedStudents: List<ResourceDetailsContract.StudentSubmissionState>,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
         title = submittedText,
         modifier = modifier,
     ) {
-        submittedStudents.forEach {
+        submittedStudents.forEach { submission ->
             SubmissionItem(
-                name = it,
+                profilePicUiState = submission.profilePicUiState,
+                name = submission.name,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 SubmittedText(submittedText)
@@ -171,16 +187,17 @@ private fun SubmittedStudentsCard(
 
 @Composable
 private fun MissingStudentsCard(
-    missingStudents: List<String>,
+    missingStudents: List<ResourceDetailsContract.StudentSubmissionState>,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
         title = stringResource(id = R.string.missing),
         modifier = modifier,
     ) {
-        missingStudents.forEach {
+        missingStudents.forEach { submission ->
             SubmissionItem(
-                name = it,
+                profilePicUiState = submission.profilePicUiState,
+                name = submission.name,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 MissingText()
@@ -218,6 +235,7 @@ private fun SubmissionsCard(
 
 @Composable
 private fun SubmissionItem(
+    profilePicUiState: PhotoProfileImageUiState,
     name: String,
     modifier: Modifier = Modifier,
     submissionStatusContent: @Composable () -> Unit,
@@ -227,7 +245,7 @@ private fun SubmissionItem(
         modifier = modifier
     ) {
         PhotoProfileImage(
-            uiState = PhotoProfileImageUiState.Success(null),
+            uiState = profilePicUiState,
             modifier = Modifier
                 .size(36.dp)
                 .clip(CircleShape)

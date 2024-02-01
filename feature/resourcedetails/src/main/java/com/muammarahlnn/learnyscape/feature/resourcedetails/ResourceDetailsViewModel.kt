@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -11,14 +12,18 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -45,6 +50,8 @@ class ResourceDetailsViewModel @Inject constructor(
     private val getAssignmentDetailsUseCase: GetAssignmentDetailsUseCase,
     private val deleteAssignmentUseCase: DeleteAssignmentUseCase,
     private val getQuizDetailsUseCase: GetQuizDetailsUseCase,
+    private val getAssignmentSubmissionsUseCase: GetAssignmentSubmissionsUseCase,
+    private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
 ) : ViewModel(), ResourceDetailsContract {
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
@@ -65,6 +72,9 @@ class ResourceDetailsViewModel @Inject constructor(
         when (event) {
             ResourceDetailsContract.Event.FetchResourceDetails ->
                 fetchResourceDetails()
+
+            ResourceDetailsContract.Event.FetchStudentWorks ->
+                fetchStudentWorks()
 
             ResourceDetailsContract.Event.OnBackClick ->
                 navigateBack()
@@ -116,8 +126,14 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun fetchResourceDetails() {
         when (state.value.resourceType) {
             ClassResourceType.ANNOUNCEMENT -> fetchAnnouncementDetails()
+
             ClassResourceType.MODULE -> fetchModuleDetails()
-            ClassResourceType.ASSIGNMENT -> fetchAssignmentDetails()
+
+            ClassResourceType.ASSIGNMENT -> {
+                fetchAssignmentDetails()
+                fetchStudentWorks()
+            }
+
             ClassResourceType.QUIZ -> fetchQuizDetails()
         }
     }
@@ -235,6 +251,194 @@ class ResourceDetailsViewModel @Inject constructor(
         _state.update {
             it.copy(
                 uiState = ResourceDetailsContract.UiState.Error(message)
+            )
+        }
+    }
+
+    private fun fetchStudentWorks() {
+        when (state.value.resourceType) {
+            ClassResourceType.ASSIGNMENT -> fetchAssignmentSubmissions()
+            ClassResourceType.QUIZ -> TODO()
+            else -> return
+        }
+    }
+
+    private fun fetchAssignmentSubmissions() {
+        viewModelScope.launch {
+            getAssignmentSubmissionsUseCase(state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    result.onLoading {
+                        _state.update {
+                            it.copy(
+                                studentWorkUiState = ResourceDetailsContract.UiState.Loading,
+                            )
+                        }
+                    }.onSuccess { assignmentSubmissions ->
+                        onSuccessFetchStudentWorks(assignmentSubmissions)
+                    }.onNoInternet { message ->
+                        onErrorFetchStudentWorks(message)
+                    }.onError { _, message ->
+                        onErrorFetchStudentWorks(message)
+                    }.onException { exception, message ->
+                        Log.e(TAG, exception?.message.toString())
+                        onErrorFetchStudentWorks(message)
+                    }
+                }
+        }
+    }
+
+    private fun onSuccessFetchStudentWorks(assignmentSubmissions: List<AssignmentSubmissionModel>) {
+
+        fun AssignmentSubmissionModel.toStudentSubmissionState() =
+            ResourceDetailsContract.StudentSubmissionState(
+                id = id,
+                userId = userId,
+                name = studentName,
+            )
+
+        val (submittedSubmissions, missingSubmissions) = assignmentSubmissions.partition { submission ->
+            submission.turnInStatus
+        }.let { submissionsPair ->
+            Pair(
+                submissionsPair.first.map { it.toStudentSubmissionState() },
+                submissionsPair.second.map { it.toStudentSubmissionState() },
+            )
+        }
+
+        _state.update {
+            it.copy(
+                submittedSubmissions = submittedSubmissions,
+                missingSubmissions = missingSubmissions,
+                studentWorkUiState = ResourceDetailsContract.UiState.Success,
+            )
+        }
+
+        fetchProfilePics()
+    }
+
+    private fun fetchProfilePics() {
+        viewModelScope.launch {
+            state.value.submittedSubmissions.forEachIndexed { index, submission ->
+                getProfilePicByIdUseCase(submission.userId)
+                    .asResult()
+                    .collect { result ->
+                        handleFetchProfilePicSubmittedSubmissionResult(result, index)
+                    }
+            }
+
+            state.value.missingSubmissions.forEachIndexed { index, submission ->
+                getProfilePicByIdUseCase(submission.userId)
+                    .asResult()
+                    .collect { result ->
+                        handleFetchProfilePicMissingSubmissionResult(result, index)
+                    }
+            }
+        }
+    }
+
+    private fun handleFetchProfilePicSubmittedSubmissionResult(
+        result: Result<Bitmap?>,
+        index: Int,
+    ) {
+        result.onLoading {
+            _state.update {
+                it.copy(
+                    submittedSubmissions = it.submittedSubmissions.toMutableList().apply {
+                        this[index] = this[index].copy(
+                            profilePicUiState = PhotoProfileImageUiState.Loading
+                        )
+                    }.toList()
+                )
+            }
+        }.onSuccess { profilePic ->
+            _state.update {
+                it.copy(
+                    submittedSubmissions = it.submittedSubmissions.toMutableList().apply {
+                        this[index] = this[index].copy(
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic)
+                        )
+                    }.toList()
+                )
+            }
+        }.onNoInternet { message ->
+            onErrorFetchProfilePicSubmittedSubmission(message, index)
+        }.onError { _, message ->
+            onErrorFetchProfilePicSubmittedSubmission(message, index)
+        }.onException { exception, _ ->
+            onErrorFetchProfilePicSubmittedSubmission(exception?.message.toString(), index)
+        }
+    }
+
+    private fun onErrorFetchProfilePicSubmittedSubmission(
+        message: String,
+        index: Int,
+    ) {
+        Log.e(TAG, message)
+        _state.update {
+            it.copy(
+                submittedSubmissions = it.submittedSubmissions.toMutableList().apply {
+                    this[index] = this[index].copy(
+                        profilePicUiState = PhotoProfileImageUiState.Success(null)
+                    )
+                }.toList()
+            )
+        }
+    }
+
+    private fun handleFetchProfilePicMissingSubmissionResult(
+        result: Result<Bitmap?>,
+        index: Int,
+    ) {
+        result.onLoading {
+            _state.update {
+                it.copy(
+                    missingSubmissions = it.missingSubmissions.toMutableList().apply {
+                        this[index] = this[index].copy(
+                            profilePicUiState = PhotoProfileImageUiState.Loading
+                        )
+                    }.toList()
+                )
+            }
+        }.onSuccess { profilePic ->
+            _state.update {
+                it.copy(
+                    missingSubmissions = it.missingSubmissions.toMutableList().apply {
+                        this[index] = this[index].copy(
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic)
+                        )
+                    }.toList()
+                )
+            }
+        }.onNoInternet { message ->
+            onErrorFetchProfilePicMissingSubmission(message, index)
+        }.onError { _, message ->
+            onErrorFetchProfilePicMissingSubmission(message, index)
+        }.onException { exception, _ ->
+            onErrorFetchProfilePicMissingSubmission(exception?.message.toString(), index)
+        }
+    }
+
+    private fun onErrorFetchProfilePicMissingSubmission(
+        message: String,
+        index: Int,
+    ) {
+        Log.e(TAG, message)
+        _state.update {
+            it.copy(
+                missingSubmissions = it.missingSubmissions.toMutableList().apply {
+                    this[index] = this[index].copy(
+                        profilePicUiState = PhotoProfileImageUiState.Success(null)
+                    )
+                }.toList()
+            )
+        }
+    }
+
+    private fun onErrorFetchStudentWorks(message: String) {
+        _state.update {
+            it.copy(
+                studentWorkUiState = ResourceDetailsContract.UiState.Error(message),
             )
         }
     }

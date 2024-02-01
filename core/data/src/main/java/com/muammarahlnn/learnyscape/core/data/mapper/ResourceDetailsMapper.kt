@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.data.util.formatEpochSeconds
 import com.muammarahlnn.learnyscape.core.data.util.formatIsoDate
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
@@ -11,6 +12,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDeta
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
 import java.io.File
 
 /**
@@ -55,4 +57,15 @@ fun QuizDetailsResponse.toQuizDetailsModel() = QuizDetailsModel(
         QuizDetailsResponse.QuizType.MULTIPLE_CHOICE -> QuizType.MULTIPLE_CHOICE
         QuizDetailsResponse.QuizType.PHOTO_ANSWER -> QuizType.PHOTO_ANSWER
     }
+)
+
+fun List<TaskSubmissionResponse>.toAssignmentSubmissionModels() = map {
+    it.toAssignmentSubmissionModel()
+}
+
+fun TaskSubmissionResponse.toAssignmentSubmissionModel() = AssignmentSubmissionModel(
+    id = id.orEmpty(),
+    userId = userId,
+    studentName = studentName,
+    turnInStatus = turnInStatus,
 )
