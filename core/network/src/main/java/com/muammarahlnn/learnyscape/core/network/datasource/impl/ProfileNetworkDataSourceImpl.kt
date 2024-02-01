@@ -6,11 +6,11 @@ import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
 import com.muammarahlnn.learnyscape.core.network.di.BEARER_TOKEN_AUTH
+import com.muammarahlnn.learnyscape.core.network.model.response.UploadProfilePicResponse
+import com.muammarahlnn.learnyscape.core.network.util.toImageRequestBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 import java.io.File
@@ -28,16 +28,14 @@ class ProfileNetworkDataSourceImpl @Inject constructor(
     @Named(BEARER_TOKEN_AUTH) private val usersApi: UsersApi
 ) : ProfileNetworkDataSource {
 
-    override fun postProfilePic(pic: File): Flow<String> {
-        val requestImageFile = pic.asRequestBody("image/jpeg".toMediaTypeOrNull())
+    override fun postProfilePic(pic: File): Flow<UploadProfilePicResponse> = flow {
+        val profilePicBody = pic.toImageRequestBody()
         val profilePicMultipart = MultipartBody.Part.createFormData(
             "pic",
             pic.name,
-            requestImageFile
+            profilePicBody
         )
-        return flow {
-            emit(usersApi.postProfilePic(profilePicMultipart).data)
-        }
+        emit(usersApi.postProfilePic(profilePicMultipart).data)
     }
 
     override fun getProfilePic(): Flow<Bitmap?> = flow {

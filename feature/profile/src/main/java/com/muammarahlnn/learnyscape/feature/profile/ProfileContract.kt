@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
+import android.graphics.Bitmap
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
@@ -30,7 +31,7 @@ interface ProfileContract :
 
         data class OnShowChangePhotoProfileBottomSheet(val show: Boolean) : Event
 
-        data class OnUploadGalleryImage(val imageFile: File) : Event
+        data class OnUpdateProfilePic(val imageFile: File) : Event
 
         data class OnShowLogoutDialog(val show: Boolean) : Event
 
@@ -40,5 +41,7 @@ interface ProfileContract :
     sealed interface Effect {
 
         data class ShowToast(val message: String) : Effect
+
+        data class OnGetCapturedPhoto(val photo: Bitmap) : Effect
     }
 }

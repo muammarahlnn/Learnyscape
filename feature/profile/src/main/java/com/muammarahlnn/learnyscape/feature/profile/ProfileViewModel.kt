@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
-import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +11,6 @@ import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.ResetCapturedPhotoUseCase
-import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
@@ -40,7 +38,6 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
     private val resetCapturedPhotoUseCase: ResetCapturedPhotoUseCase,
-    private val saveImageToFileUseCase: SaveImageToFileUseCase,
     private val uploadProfilePicUseCase: UploadProfilePicUseCase,
     private val getProfilePicUseCase: GetProfilePicUseCase
 ) : ViewModel(), ProfileContract {
@@ -67,8 +64,8 @@ class ProfileViewModel @Inject constructor(
         ProfileContract.Event.OnLogout ->
             logout()
 
-        is ProfileContract.Event.OnUploadGalleryImage ->
-            uploadGalleryPhoto(event.imageFile)
+        is ProfileContract.Event.OnUpdateProfilePic ->
+            updateProfilePic(event.imageFile)
     }
 
     private fun getProfilePic() {
@@ -97,7 +94,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
-                    uploadCapturePhoto(capturedPhoto)
+                    _effect.emit(ProfileContract.Effect.OnGetCapturedPhoto(capturedPhoto))
                 }
             }.join()
 
@@ -107,29 +104,14 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
-    private fun uploadCapturePhoto(profilePic: Bitmap) {
-        viewModelScope.launch {
-            saveImageToFileUseCase(profilePic).collect { profilePicFile ->
-                if (profilePicFile != null) {
-                    invokeUploadProfilePicUseCase(profilePicFile)
-                } else {
-                    updateStateOnError("Error save image to file")
-                }
-            }
-        }
-    }
-
-    private fun uploadGalleryPhoto(imageFile: File) {
-        invokeUploadProfilePicUseCase(imageFile)
-    }
-
-    private fun invokeUploadProfilePicUseCase(profilePicFile: File) {
+    private fun updateProfilePic(profilePicFile: File) {
         viewModelScope.launch {
             uploadProfilePicUseCase(profilePicFile).asResult().collect { result ->
                 result.onLoading {
                     updateStateOnLoading()
                 }.onSuccess {
                     getProfilePic()
+                    showToast("Profile pic updated successfully")
                 }.onNoInternet { message ->
                     updateStateOnError(message)
                 }.onError { _, message ->
@@ -173,29 +155,25 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateStateOnError(message: String) {
         Log.e(TAG, message)
-
         _state.update {
             it.copy(
                 profilePicUiState = PhotoProfileImageUiState.Success(null),
             )
         }
-
-        viewModelScope.launch {
-            _effect.emit(
-                ProfileContract.Effect.ShowToast(message)
-            )
-        }
+        showToast(message)
     }
 
     private fun updateStateOnException(exception: Throwable?, message: String) {
         Log.e(TAG, exception?.message.toString())
-
         _state.update {
             it.copy(
                 profilePicUiState = PhotoProfileImageUiState.Success(null),
             )
         }
+        showToast(message)
+    }
 
+    private fun showToast(message: String) {
         viewModelScope.launch {
             _effect.emit(
                 ProfileContract.Effect.ShowToast(message)
