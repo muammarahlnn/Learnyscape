@@ -2,11 +2,13 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.mapper.toAnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentDetailsModel
+import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentSubmissionModels
 import com.muammarahlnn.learnyscape.core.data.mapper.toModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toQuizDetailsModel
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
@@ -48,6 +50,11 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
             taskDetailsResponse.toAssignmentDetailsModel(
                 getAttachments(taskDetailsResponse.attachmentUrls)
             )
+        }
+
+    override fun getAssignmentSubmissions(assignmentId: String): Flow<List<AssignmentSubmissionModel>> =
+        resourceDetailsNetworkDataSource.getTaskSubmissions(assignmentId).map { taskSubmissionResponses ->
+            taskSubmissionResponses.toAssignmentSubmissionModels()
         }
 
     override fun deleteAssignment(assignmentId: String): Flow<String> =

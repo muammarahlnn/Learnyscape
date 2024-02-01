@@ -39,7 +39,8 @@ internal fun ResourceDetailsPager(
     onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     onAttachmentClick: (File) -> Unit,
-    onRefresh: () -> Unit,
+    onRefreshInstructions: () -> Unit,
+    onRefreshStudentWork: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -108,12 +109,14 @@ internal fun ResourceDetailsPager(
                     onAddWorkButtonClick = onAddWorkButtonClick,
                     onStartQuizButtonClick = onStartQuizButtonClick,
                     onAttachmentClick = onAttachmentClick,
-                    onRefresh = onRefresh,
+                    onRefresh = onRefreshInstructions,
                     modifier = Modifier.fillMaxSize()
                 )
 
                 1 -> StudentWorkContent(
+                    state = state,
                     studentWorkType  = studentWorkType,
+                    onRefresh = onRefreshStudentWork,
                     modifier = Modifier.fillMaxSize()
                 )
             }

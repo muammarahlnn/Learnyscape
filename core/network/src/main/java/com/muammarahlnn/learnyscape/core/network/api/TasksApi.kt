@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartK
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskOverviewResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.DELETE
@@ -43,4 +44,9 @@ interface TasksApi {
     suspend fun deleteTask(
         @Path("taskId") taskId: String,
     ): BaseResponse<String>
+
+    @GET("tasks/{taskId}/submissions")
+    suspend fun getTaskSubmissions(
+        @Path("taskId") taskId: String,
+    ): BaseResponse<List<TaskSubmissionResponse>>
 }
