@@ -45,7 +45,6 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCente
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
-import com.muammarahlnn.learnyscape.core.ui.util.bitmapToFile
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
@@ -91,9 +90,6 @@ internal fun ProfileRoute(
         when (it) {
             is ProfileContract.Effect.ShowToast ->
                 Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-
-            is ProfileContract.Effect.OnGetCapturedPhoto ->
-                event(ProfileContract.Event.OnUpdateProfilePic(bitmapToFile(context, it.photo)))
         }
     }
 
