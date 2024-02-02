@@ -23,6 +23,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -63,6 +64,10 @@ internal fun ResourceCreateRoute(
     viewModel: ResourceCreateViewModel = hiltViewModel(),
 ) {
     val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(ResourceCreateContract.Event.OnGetCapturedPhoto)
+    }
+
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()

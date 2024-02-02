@@ -10,6 +10,8 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
+import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
@@ -48,6 +51,9 @@ class ResourceCreateViewModel @Inject constructor(
     private val createModuleUseCase: CreateModuleUseCase,
     private val createAssignmentUseCase: CreateAssignmentUseCase,
     private val createQuizUseCase: CreateQuizUseCase,
+    private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
+    private val resetPhotoUseCase: GetCapturedPhotoUseCase,
+    private val saveImageToFileUseCase: SaveImageToFileUseCase,
 ) : ViewModel(), ResourceCreateContract {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
@@ -91,6 +97,9 @@ class ResourceCreateViewModel @Inject constructor(
 
             is ResourceCreateContract.Event.OnFileSelected ->
                 addAttachmentToCurrentAttachments(event.selectedFile)
+
+            ResourceCreateContract.Event.OnGetCapturedPhoto ->
+                getCapturedPhoto()
 
             is ResourceCreateContract.Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
@@ -443,6 +452,26 @@ class ResourceCreateViewModel @Inject constructor(
             it.copy(
                 attachments = addedAttachments
             )
+        }
+    }
+
+    private fun getCapturedPhoto() {
+        viewModelScope.launch {
+            launch {
+                getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
+                    saveImageToFileUseCase(capturedPhoto).collect { imageFile ->
+                        if (imageFile != null) {
+                            addAttachmentToCurrentAttachments(imageFile)
+                        } else {
+                            showToast("Error capturing photo")
+                        }
+                    }
+                }
+            }.join()
+
+            launch {
+                resetPhotoUseCase()
+            }
         }
     }
 

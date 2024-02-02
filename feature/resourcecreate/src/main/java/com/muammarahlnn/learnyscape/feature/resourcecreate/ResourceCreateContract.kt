@@ -60,6 +60,8 @@ interface ResourceCreateContract :
 
         data class OnFileSelected(val selectedFile: File) : Event
 
+        data object OnGetCapturedPhoto : Event
+
         data class OnAttachmentClick(val attachment: File) : Event
 
         data class OnMoreVertAttachmentClick(val attachmentIndex: Int) : Event
