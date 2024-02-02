@@ -64,7 +64,7 @@ fun createCustomTempImageFile(context: Context): File {
 
 fun createFile(context: Context, uri: Uri): File {
     val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-    val fileName = getFileName(context, uri) + getFileExtension(context, uri)
+    val fileName = getFileName(context, uri)
     return File(storageDir, fileName)
 }
 
@@ -82,23 +82,23 @@ fun getFileExtension(context: Context, uri: Uri): String? {
     return formattedExtension
 }
 
-fun getFileName(context: Context, uri: Uri): String? {
-    var result: String? = null
+fun getFileName(context: Context, uri: Uri): String {
+    var result: String = ""
     if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
         val contentResolver = context.contentResolver
         val cursor = contentResolver.query(uri, null, null, null, null)
         cursor.use { it ->
             if (it != null && it.moveToFirst()) {
-                result = it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
+                result += it.getString(it.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME))
             }
         }
     }
 
-    if (result == null) {
-        result = uri.path
-        val cut = result!!.lastIndexOf('/')
+    if (result.isEmpty()) {
+        result = uri.path.orEmpty()
+        val cut = result.lastIndexOf('/')
         if (cut != -1) {
-            result = result!!.substring(cut + 1)
+            result = result.substring(cut + 1)
         }
     }
 

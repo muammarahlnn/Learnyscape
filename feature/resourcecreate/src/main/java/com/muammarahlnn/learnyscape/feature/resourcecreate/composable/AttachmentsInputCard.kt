@@ -130,7 +130,7 @@ private fun AttachmentItem(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = file.nameWithoutExtension,
+                text = file.name,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 overflow = TextOverflow.Ellipsis,
