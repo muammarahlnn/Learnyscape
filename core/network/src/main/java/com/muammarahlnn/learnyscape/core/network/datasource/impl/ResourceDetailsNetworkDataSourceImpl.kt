@@ -2,7 +2,6 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import android.content.Context
 import android.os.Environment
-import android.webkit.MimeTypeMap
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.AttachmentApi
 import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
@@ -88,13 +87,8 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
 
         val attachmentInputStream = this.body()?.byteStream()
         val attachmentName = this.headers().get("Content-Title")
-        val attachmentMimeType = this.headers().get("Content-Type")
-        return if (
-            attachmentInputStream != null
-            && attachmentName != null
-            && attachmentMimeType != null
-        ) {
-            createFile(attachmentInputStream, attachmentName, attachmentMimeType)
+        return if (attachmentInputStream != null && attachmentName != null) {
+            createFile(attachmentInputStream, attachmentName)
         } else {
             null
         }
@@ -103,11 +97,9 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
     private fun createFile(
         inputStream: InputStream,
         fileName: String,
-        mimeType: String,
     ): File {
         val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
-        val file =  File(storageDir, "$fileName.$extension")
+        val file =  File(storageDir, fileName)
 
         val outputStream = FileOutputStream(file)
         val buf = ByteArray(1024)
