@@ -52,14 +52,14 @@ fun AttachmentItem(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(100.dp)
             ) {
                 Icon(
                     painter = painterResource(id = designSystemR.drawable.ic_document),
                     contentDescription = stringResource(id = designSystemR.string.attachment_icon_desc),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(32.dp)
                         .align(Alignment.Center),
                 )
             }
