@@ -108,6 +108,8 @@ interface ResourceDetailsContract :
         ) : Event
 
         data object OnDismissStartQuizDialog : Event
+
+        data object OnSubmissionClick : Event
     }
 
     sealed interface Effect {
@@ -124,6 +126,10 @@ interface ResourceDetailsContract :
             val quizTypeOrdinal: Int,
             val quizName: String,
             val quizDuration: Int,
+        ) : Effect
+
+        data class NavigateToSubmissionDetails(
+            val submissionTypeOrdinal: Int,
         ) : Effect
     }
 }

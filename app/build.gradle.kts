@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":feature:changepassword"))
     implementation(project(":feature:joinrequest"))
     implementation(project(":feature:resourcecreate"))
+    implementation(project(":feature:submissiondetails"))
 
     implementation(project(":core:designsystem"))
     implementation(project(":core:ui"))

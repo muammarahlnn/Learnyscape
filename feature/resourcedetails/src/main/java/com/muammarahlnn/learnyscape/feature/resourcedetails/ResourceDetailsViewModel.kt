@@ -23,6 +23,7 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetails
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
+import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
@@ -128,6 +129,9 @@ class ResourceDetailsViewModel @Inject constructor(
 
             ResourceDetailsContract.Event.OnDismissStartQuizDialog ->
                 showStartQuizDialog(false)
+
+            ResourceDetailsContract.Event.OnSubmissionClick ->
+                navigateToSubmissionDetails()
         }
     }
 
@@ -614,6 +618,20 @@ class ResourceDetailsViewModel @Inject constructor(
                     quizTypeOrdinal = quizTypeOrdinal,
                     quizName = quizName,
                     quizDuration = quizDuration,
+                )
+            )
+        }
+    }
+
+    private fun navigateToSubmissionDetails() {
+        viewModelScope.launch {
+            _effect.emit(
+                ResourceDetailsContract.Effect.NavigateToSubmissionDetails(
+                    when (state.value.resourceType) {
+                        ClassResourceType.ASSIGNMENT -> SubmissionType.ASSIGNMENT.ordinal
+                        ClassResourceType.QUIZ -> SubmissionType.QUIZ.ordinal
+                        else -> return@launch
+                    }
                 )
             )
         }
