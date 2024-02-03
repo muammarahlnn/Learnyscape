@@ -27,6 +27,8 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.resourceCr
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.navigateToResourceDetails
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.resourceDetailsScreen
 import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
+import com.muammarahlnn.submissiondetails.navigation.navigateToSubmissionDetails
+import com.muammarahlnn.submissiondetails.navigation.submissionDetailsScreen
 
 
 /**
@@ -97,6 +99,7 @@ fun LearnyscapeNavHost(
             navigateBack = navController::popBackStack,
             navigateToCamera = navController::navigateToCamera,
             navigateToQuizSession = navController::navigateToQuizSession,
+            navigateToSubmissionDetails = navController::navigateToSubmissionDetails
         )
         quizSessionScreen(
             onQuizIsOver = navController::popBackStack
@@ -116,6 +119,9 @@ fun LearnyscapeNavHost(
         resourceCreateScreen(
             navigateBack = navController::popBackStack,
             navigateToCamera = navController::navigateToCamera
+        )
+        submissionDetailsScreen(
+            navigateBack = navController::popBackStack
         )
     }
 }

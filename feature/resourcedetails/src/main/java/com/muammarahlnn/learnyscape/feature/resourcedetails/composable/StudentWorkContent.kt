@@ -32,6 +32,7 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
 import com.muammarahlnn.learnyscape.feature.resourcedetails.R
 import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract
 
@@ -48,6 +49,7 @@ internal fun StudentWorkContent(
     state: ResourceDetailsContract.State,
     studentWorkType: StudentWorkType,
     onRefresh: () -> Unit,
+    onSubmissionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val submittedText = stringResource(
@@ -88,6 +90,7 @@ internal fun StudentWorkContent(
                 item {
                     MissingStudentsCard(
                         missingStudents = state.missingSubmissions,
+                        onSubmissionClick = onSubmissionClick,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -188,6 +191,7 @@ private fun SubmittedStudentsCard(
 @Composable
 private fun MissingStudentsCard(
     missingStudents: List<ResourceDetailsContract.StudentSubmissionState>,
+    onSubmissionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
@@ -198,7 +202,9 @@ private fun MissingStudentsCard(
             SubmissionItem(
                 profilePicUiState = submission.profilePicUiState,
                 name = submission.name,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .noRippleClickable { onSubmissionClick() }
             ) {
                 MissingText()
             }

@@ -41,6 +41,7 @@ internal fun ResourceDetailsPager(
     onAttachmentClick: (File) -> Unit,
     onRefreshInstructions: () -> Unit,
     onRefreshStudentWork: () -> Unit,
+    onSubmissionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -117,6 +118,7 @@ internal fun ResourceDetailsPager(
                     state = state,
                     studentWorkType  = studentWorkType,
                     onRefresh = onRefreshStudentWork,
+                    onSubmissionClick = onSubmissionClick,
                     modifier = Modifier.fillMaxSize()
                 )
             }

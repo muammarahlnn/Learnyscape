@@ -46,6 +46,7 @@ fun NavGraphBuilder.resourceDetailsScreen(
     navigateBack: () -> Unit,
     navigateToCamera: () -> Unit,
     navigateToQuizSession: (Int, String, Int) -> Unit,
+    navigateToSubmissionDetails: (Int) -> Unit,
 ) {
     composable(
         route = RESOURCE_DETAILS_ROUTE_WITH_ARGS,
@@ -62,6 +63,7 @@ fun NavGraphBuilder.resourceDetailsScreen(
             navigateBack = navigateBack,
             navigateToCamera = navigateToCamera,
             navigateToQuizSession = navigateToQuizSession,
+            navigateToSubmissionDetails = navigateToSubmissionDetails,
         )
     }
 }
