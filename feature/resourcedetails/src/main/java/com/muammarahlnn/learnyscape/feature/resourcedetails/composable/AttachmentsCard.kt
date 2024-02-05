@@ -68,14 +68,6 @@ internal fun AttachmentsCard(
 
                 Spacer(modifier = Modifier.height(8.dp))
             }
-//            attachments.forEach { attachment ->
-//                AttachmentItem(
-//                    attachment = attachment,
-//                    onAttachmentClick = onAttachmentClick,
-//                    modifier = Modifier.fillMaxWidth()
-//                )
-//                Spacer(modifier = Modifier.height(8.dp))
-//            }
         }
     }
 }
