@@ -25,6 +25,7 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.Instructi
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsPager
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsTopAppBar
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StartQuizDialog
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StudentAssignmentContent
 
 
 /**
@@ -135,56 +136,83 @@ private fun ResourceDetailsScreen(
         )
     }
 
-    Scaffold(
-        topBar = {
-            ResourceDetailsTopAppBar(
-                titleRes = state.resourceType.nameRes,
-                onBackClick = { event(ResourceDetailsContract.Event.OnBackClick) },
-                onDeleteClick = { event(ResourceDetailsContract.Event.OnDeleteClick) }
-            )
-        },
-        modifier = modifier,
-    ) { paddingValues ->
-        val instructionsContentEvent = InstructionsContentEvent(
-            onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
-            onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
-            onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) },
-            onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) },
+    val instructionsContentEvent = InstructionsContentEvent(
+        onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
+        onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
+        onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) },
+        onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) },
+    )
+
+    val resourceDetailsTopAppBar = @Composable {
+        ResourceDetailsTopAppBar(
+            titleRes = state.resourceType.nameRes,
+            onBackClick = { event(ResourceDetailsContract.Event.OnBackClick) },
+            onDeleteClick = { event(ResourceDetailsContract.Event.OnDeleteClick) }
         )
+    }
 
-        val screenModifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
+    val isLecturer = isLecturer(LocalUserModel.current.role)
+    if (isLecturer) {
+        Scaffold(
+            topBar = resourceDetailsTopAppBar,
+            modifier = modifier,
+        ) { paddingValues ->
+            val contentModifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
 
-        val isLecturer = isLecturer(LocalUserModel.current.role)
-        val isAssignmentOrQuiz = state.resourceType in listOf(
-            ClassResourceType.ASSIGNMENT,
-            ClassResourceType.QUIZ
-        )
-        val isContentWithStudentWork =  isLecturer && isAssignmentOrQuiz
+            when (state.resourceType) {
+                ClassResourceType.ANNOUNCEMENT,
+                ClassResourceType.MODULE -> InstructionsContent(
+                    state = state,
+                    refreshState = refreshState,
+                    onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
+                    onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
+                    onAttachmentClick = instructionsContentEvent.onAttachmentClick,
+                    onRefresh = instructionsContentEvent.onRefresh,
+                    modifier = contentModifier
+                )
 
-        if (isContentWithStudentWork) {
-            ResourceDetailsPager(
+                ClassResourceType.ASSIGNMENT,
+                ClassResourceType.QUIZ -> ResourceDetailsPager(
+                    state = state,
+                    refreshState = refreshState,
+                    onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
+                    onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
+                    onAttachmentClick = instructionsContentEvent.onAttachmentClick,
+                    onRefreshInstructions = instructionsContentEvent.onRefresh,
+                    onRefreshStudentWork = { event(ResourceDetailsContract.Event.FetchStudentWorks) },
+                    onSubmissionClick = { event(ResourceDetailsContract.Event.OnSubmissionClick) },
+                    modifier = contentModifier
+                )
+            }
+        }
+    } else {
+        when (state.resourceType) {
+            ClassResourceType.ASSIGNMENT -> StudentAssignmentContent(
                 state = state,
                 refreshState = refreshState,
-                onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
-                onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
-                onAttachmentClick = instructionsContentEvent.onAttachmentClick,
-                onRefreshInstructions = instructionsContentEvent.onRefresh,
-                onRefreshStudentWork = { event(ResourceDetailsContract.Event.FetchStudentWorks) },
-                onSubmissionClick = { event(ResourceDetailsContract.Event.OnSubmissionClick) },
-                modifier = screenModifier
+                event = event,
+                topAppBar = resourceDetailsTopAppBar,
+                modifier = Modifier.fillMaxSize()
             )
-        } else {
-            InstructionsContent(
-                state = state,
-                refreshState = refreshState,
-                onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
-                onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
-                onAttachmentClick = instructionsContentEvent.onAttachmentClick,
-                onRefresh = instructionsContentEvent.onRefresh,
-                modifier = screenModifier
-            )
+
+            else -> Scaffold(
+                topBar = resourceDetailsTopAppBar,
+                modifier = modifier,
+            ) { paddingValues ->
+                InstructionsContent(
+                    state = state,
+                    refreshState = refreshState,
+                    onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
+                    onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
+                    onAttachmentClick = instructionsContentEvent.onAttachmentClick,
+                    onRefresh = instructionsContentEvent.onRefresh,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            }
         }
     }
 }

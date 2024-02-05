@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="attachments">Attachments</string>
+    <string name="singular_attachment">See 1 attachment</string>
+    <string name="plural_attachment">See %1$d attachments</string>
     <string name="add_work">Add work</string>
     <string name="camera">Camera</string>
     <string name="upload_file">Upload file</string>
@@ -26,4 +28,8 @@
     <string name="turned_in">Turned In</string>
     <string name="submitted">Submitted</string>
     <string name="missing">Missing</string>
+    <string name="turn_in">Turn in</string>
+    <string name="your_work">Your work</string>
+    <string name="remove_attachment">Remove attachment</string>
+    <string name="no_attachments_uploaded_desc">You have no attachments uploaded.\nLet\'s add it right away.</string>
 </resources>

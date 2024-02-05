@@ -43,7 +43,7 @@ internal fun AttachmentsInputCard(
     modifier: Modifier = Modifier,
 ) {
     InputCard(
-        iconRes = R.drawable.ic_attachment,
+        iconRes = designSystemR.drawable.ic_attachment,
         iconDescriptionRes = R.string.attachment,
         modifier = modifier,
     ) {

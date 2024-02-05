@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
@@ -93,9 +92,10 @@ private fun InstructionsContent(
     modifier: Modifier = Modifier,
 ) {
     val isStudent = isStudent(LocalUserModel.current.role)
-    val isAssignment = state.resourceType == ClassResourceType.ASSIGNMENT
+//    val isAssignment = state.resourceType == ClassResourceType.ASSIGNMENT
     val isQuiz = state.resourceType == ClassResourceType.QUIZ
-    val showStickyBottomActionButton = isStudent && (isAssignment || isQuiz)
+    val showStickyBottomActionButton = isStudent && isQuiz
+//    val showStickyBottomActionButton = isStudent && (isAssignment || isQuiz)
 
     val localDensity = LocalDensity.current
     Box(modifier = modifier.fillMaxSize()) {
@@ -145,30 +145,42 @@ private fun InstructionsContent(
         }
 
         StudentOnlyComposable {
-            val actionButtonModifier = Modifier.align(Alignment.BottomCenter)
-            val onButtonGloballyPositioned: (LayoutCoordinates) -> Unit = { coordinates ->
-                addWorkButtonHeight = with(localDensity) {
-                    coordinates.size.height.toDp()
-                }
+            if (isQuiz) {
+                StartQuizButton(
+                    onButtonClick = onStartQuizButtonClick,
+                    onButtonGloballyPositioned = { layoutCoordinates ->
+                        addWorkButtonHeight = with(localDensity) {
+                            layoutCoordinates.size.height.toDp()
+                        }
+                    },
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
             }
 
-            when {
-                isAssignment -> {
-                    AddWorkButton(
-                        onButtonClick = onAddWorkButtonClick,
-                        onButtonGloballyPositioned = onButtonGloballyPositioned,
-                        modifier = actionButtonModifier,
-                    )
-                }
-
-                isQuiz -> {
-                    StartQuizButton(
-                        onButtonClick = onStartQuizButtonClick,
-                        onButtonGloballyPositioned = onButtonGloballyPositioned,
-                        modifier = actionButtonModifier,
-                    )
-                }
-            }
+//            val actionButtonModifier = Modifier.align(Alignment.BottomCenter)
+//            val onButtonGloballyPositioned: (LayoutCoordinates) -> Unit = { coordinates ->
+//                addWorkButtonHeight = with(localDensity) {
+//                    coordinates.size.height.toDp()
+//                }
+//            }
+//
+//            when {
+//                isAssignment -> {
+//                    AddWorkButton(
+//                        onButtonClick = onAddWorkButtonClick,
+//                        onButtonGloballyPositioned = onButtonGloballyPositioned,
+//                        modifier = actionButtonModifier,
+//                    )
+//                }
+//
+//                isQuiz -> {
+//                    StartQuizButton(
+//                        onButtonClick = onStartQuizButtonClick,
+//                        onButtonGloballyPositioned = onButtonGloballyPositioned,
+//                        modifier = actionButtonModifier,
+//                    )
+//                }
+//            }
         }
     }
 }
