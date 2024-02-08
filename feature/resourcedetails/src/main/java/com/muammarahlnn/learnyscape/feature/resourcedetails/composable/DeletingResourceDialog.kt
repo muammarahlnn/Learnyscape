@@ -15,15 +15,15 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContr
  */
 @Composable
 internal fun DeletingResourceDialog(
-    state: ResourceDetailsContract.DeletingResourceDialogState,
+    state: ResourceDetailsContract.UiState,
     resourceType: ClassResourceType,
     onConfirmSuccess: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     when (state) {
-        ResourceDetailsContract.DeletingResourceDialogState.Loading -> LoadingDialog()
+        ResourceDetailsContract.UiState.Loading -> LoadingDialog()
         
-        ResourceDetailsContract.DeletingResourceDialogState.Success -> SuccessDialog(
+        ResourceDetailsContract.UiState.Success -> SuccessDialog(
             message = stringResource(
                 id = R.string.success_deleting_dialog_text,
                 stringResource(id = resourceType.nameRes)
@@ -31,7 +31,7 @@ internal fun DeletingResourceDialog(
             onConfirm = onConfirmSuccess,
         )
 
-        is ResourceDetailsContract.DeletingResourceDialogState.Error -> ErrorDialog(
+        is ResourceDetailsContract.UiState.Error -> ErrorDialog(
             message = state.message,
             onDismiss = onDismiss
         )

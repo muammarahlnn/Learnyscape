@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
  * @File TaskSubmissionResponse, 31/01/2024 20.33
  */
 @Serializable
-data class TaskSubmissionResponse(
+data class LecturerTaskSubmissionResponse(
     @SerialName("taskSubmissionId") val id: String?,
     val userId: String,
     val studentName: String,

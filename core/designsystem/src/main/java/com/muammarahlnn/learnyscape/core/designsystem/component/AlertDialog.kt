@@ -29,7 +29,7 @@ fun BaseAlertDialog(
     confirmText: String = stringResource(
         id = R.string.alert_dialog_confirm_button_text,
     ),
-    dismissText: String = stringResource(
+    dismissText: String? = stringResource(
         id = R.string.alert_dialog_dismiss_button_text,
     ),
     onDismissRequest: (() -> Unit)? = null,
@@ -39,16 +39,14 @@ fun BaseAlertDialog(
         title = {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
+                style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onBackground,
             )
         },
         content = {
             Text(
                 text = dialogText,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground,
             )
         },
@@ -70,7 +68,7 @@ fun BaseAlertDialog(
     confirmText: String = stringResource(
         id = R.string.alert_dialog_confirm_button_text,
     ),
-    dismissText: String = stringResource(
+    dismissText: String? = stringResource(
         id = R.string.alert_dialog_dismiss_button_text,
     ),
     onDismissRequest: (() -> Unit)? = null,
@@ -120,7 +118,7 @@ fun BaseAlertDialog(
             ) {
                 Text(
                     text = confirmText,
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.tertiary,
                 )
             }
@@ -132,7 +130,7 @@ fun BaseAlertDialog(
                 ) {
                     Text(
                         text = dismissText,
-                        style = MaterialTheme.typography.labelLarge,
+                        style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.tertiary,
                     )
                 }

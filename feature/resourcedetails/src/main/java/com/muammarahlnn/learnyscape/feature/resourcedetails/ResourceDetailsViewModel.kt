@@ -12,16 +12,23 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
+import com.muammarahlnn.learnyscape.core.domain.capturedphoto.ResetCapturedPhotoUseCase
+import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
-import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.LecturerGetAssignmentSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.StudentGetAssignmentSubmissionUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.TurnInAssignmentSubmissionUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UpdateAssignmentAttachmentsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UploadAssignmentAttachmentsUseCase
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
@@ -32,6 +39,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
@@ -52,9 +61,16 @@ class ResourceDetailsViewModel @Inject constructor(
     private val getAssignmentDetailsUseCase: GetAssignmentDetailsUseCase,
     private val deleteAssignmentUseCase: DeleteAssignmentUseCase,
     private val getQuizDetailsUseCase: GetQuizDetailsUseCase,
-    private val getAssignmentSubmissionsUseCase: GetAssignmentSubmissionsUseCase,
+    private val lecturerGetAssignmentSubmissionsUseCase: LecturerGetAssignmentSubmissionsUseCase,
     private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
     private val getQuizSubmissionsUseCase: GetQuizSubmissionsUseCase,
+    private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
+    private val resetPhotoUseCase: ResetCapturedPhotoUseCase,
+    private val saveImageToFileUseCase: SaveImageToFileUseCase,
+    private val uploadAssignmentAttachmentsUseCase: UploadAssignmentAttachmentsUseCase,
+    private val studentGetAssignmentSubmissionUseCase: StudentGetAssignmentSubmissionUseCase,
+    private val updateAssignmentAttachmentsUseCase: UpdateAssignmentAttachmentsUseCase,
+    private val turnInAssignmentSubmissionUseCase: TurnInAssignmentSubmissionUseCase,
 ) : ViewModel(), ResourceDetailsContract {
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
@@ -78,6 +94,9 @@ class ResourceDetailsViewModel @Inject constructor(
 
             ResourceDetailsContract.Event.FetchStudentWorks ->
                 fetchStudentWorks()
+
+            ResourceDetailsContract.Event.FetchStudentAssignmentSubmission ->
+                fetchStudentAssignmentSubmission()
 
             ResourceDetailsContract.Event.OnBackClick ->
                 navigateBack()
@@ -108,8 +127,11 @@ class ResourceDetailsViewModel @Inject constructor(
             ResourceDetailsContract.Event.OnUploadFileActionClick ->
                 openFiles()
 
-            is ResourceDetailsContract.Event.OnFileSelected -> TODO()
+            is ResourceDetailsContract.Event.OnFileSelected ->
+                addAssignmentSubmissionAttachment(event.file)
 
+            ResourceDetailsContract.Event.OnGetCapturedPhoto ->
+                getCapturedPhoto()
 
             is ResourceDetailsContract.Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
@@ -132,6 +154,18 @@ class ResourceDetailsViewModel @Inject constructor(
 
             ResourceDetailsContract.Event.OnSubmissionClick ->
                 navigateToSubmissionDetails()
+
+            is ResourceDetailsContract.Event.OnRemoveAssignmentSubmissionAttachment ->
+                removeAssignmentSubmissionAttachment(event.index)
+
+            ResourceDetailsContract.Event.OnSaveStudentCurrentWorkClick ->
+                uploadAssignmentAttachments()
+
+            ResourceDetailsContract.Event.OnTurnInAssignmentSubmission ->
+                turnInAssignmentSubmission(true)
+
+            ResourceDetailsContract.Event.OnUnsubmitAssignmentSubmission ->
+                turnInAssignmentSubmission(false)
         }
     }
 
@@ -144,6 +178,7 @@ class ResourceDetailsViewModel @Inject constructor(
             ClassResourceType.ASSIGNMENT -> {
                 fetchAssignmentDetails()
                 fetchStudentWorks()
+                fetchStudentAssignmentSubmission()
             }
 
             ClassResourceType.QUIZ -> {
@@ -280,7 +315,7 @@ class ResourceDetailsViewModel @Inject constructor(
 
     private fun fetchAssignmentSubmissions() {
         viewModelScope.launch {
-            getAssignmentSubmissionsUseCase(state.value.resourceId)
+            lecturerGetAssignmentSubmissionsUseCase(state.value.resourceId)
                 .asResult()
                 .collect { result ->
                     handleFetchStudentWorks(result)
@@ -472,6 +507,54 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun fetchStudentAssignmentSubmission() {
+
+        fun onErrorFetchStudentAssignmentSubmission(message: String) {
+            _state.update {
+                it.copy(
+                    studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Error(message)
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            studentGetAssignmentSubmissionUseCase(state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    result.onLoading {
+                        _state.update {
+                            it.copy(
+                                studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Loading
+                            )
+                        }
+                    }.onSuccess { assignmentSubmission ->
+                        _state.update {
+                            it.copy(
+                                assignmentSubmission = assignmentSubmission,
+                                studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Success,
+                            )
+                        }
+                    }.onNoInternet { message ->
+                        onErrorFetchStudentAssignmentSubmission(message)
+                    }.onError { code, message ->
+                        val notFoundErrorCode = "E444"
+                        if (code.equals(notFoundErrorCode, true)) {
+                            _state.update {
+                                it.copy(
+                                    studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Success,
+                                )
+                            }
+                        } else {
+                            onErrorFetchStudentAssignmentSubmission(message)
+                        }
+                    }.onException { exception, message ->
+                        Log.e(TAG, exception?.message.toString())
+                        onErrorFetchStudentAssignmentSubmission(message)
+                    }
+                }
+        }
+    }
+
     private fun showDeleteResourceDialog(show: Boolean) {
         _state.update {
             it.copy(
@@ -536,7 +619,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun onLoadingDeletingResource() {
         _state.update {
             it.copy(
-                deletingResourceUiState = ResourceDetailsContract.DeletingResourceDialogState.Loading,
+                deletingResourceUiState = ResourceDetailsContract.UiState.Loading,
             )
         }
     }
@@ -544,7 +627,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun onSuccessDeletingResource() {
         _state.update {
             it.copy(
-                deletingResourceUiState = ResourceDetailsContract.DeletingResourceDialogState.Success,
+                deletingResourceUiState = ResourceDetailsContract.UiState.Success,
             )
         }
     }
@@ -552,7 +635,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun onErrorDeletingResource(message: String) {
         _state.update {
             it.copy(
-                deletingResourceUiState = ResourceDetailsContract.DeletingResourceDialogState.Error(message),
+                deletingResourceUiState = ResourceDetailsContract.UiState.Error(message),
             )
         }
     }
@@ -591,6 +674,45 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
+    private fun addAssignmentSubmissionAttachment(attachment: File) {
+        _state.update {
+            it.copy(
+                assignmentSubmission = it.assignmentSubmission.copy(
+                    attachments = it.assignmentSubmission.attachments.toMutableList().apply {
+                        add(attachment)
+                    }.toList()
+                ),
+            )
+        }
+        updateIsStudentCurrentWorkChange(true)
+    }
+
+    private fun getCapturedPhoto() {
+        viewModelScope.launch {
+            launch {
+                getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
+                    saveImageToFileUseCase(capturedPhoto).collect { imageFile ->
+                        if (imageFile != null) {
+                            addAssignmentSubmissionAttachment(imageFile)
+                        } else {
+                            showToast("Error capturing photo")
+                        }
+                    }
+                }
+            }.join()
+
+            launch {
+                resetPhotoUseCase
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.launch {
+            _effect.emit(ResourceDetailsContract.Effect.ShowToast(message))
+        }
+    }
+
     private fun openAttachment(attachment: File) {
         viewModelScope.launch {
             _effect.emit(ResourceDetailsContract.Effect.OpenAttachment(attachment))
@@ -604,6 +726,141 @@ class ResourceDetailsViewModel @Inject constructor(
                     showStartQuizDialog = show
                 )
             )
+        }
+    }
+
+    private fun removeAssignmentSubmissionAttachment(index: Int) {
+        _state.update {
+            it.copy(
+                assignmentSubmission = it.assignmentSubmission.copy(
+                    attachments = it.assignmentSubmission.attachments.toMutableList().apply {
+                        removeAt(index)
+                    }.toList()
+                ),
+            )
+        }
+        updateIsStudentCurrentWorkChange(true)
+    }
+
+    private fun uploadAssignmentAttachments() {
+        val uploadAssignmentAttachmentsStream =
+            if (state.value.assignmentSubmission.assignmentSubmissionId.isEmpty()) {
+                uploadAssignmentAttachmentsUseCase(
+                    assignmentId = state.value.resourceId,
+                    attachments = state.value.assignmentSubmission.attachments,
+                )
+            } else {
+                updateAssignmentAttachmentsUseCase(
+                    submissionId = state.value.assignmentSubmission.assignmentSubmissionId,
+                    attachments = state.value.assignmentSubmission.attachments,
+                )
+            }
+
+        viewModelScope.launch {
+            uploadAssignmentAttachmentsStream.asResult().collect { result ->
+                handleUploadAssignmentAttachmentResult(result)
+            }
+        }
+    }
+
+    private fun handleUploadAssignmentAttachmentResult(result: Result<String>) {
+
+        fun updateIsSaveStudentCurrentWorkLoading(loading: Boolean) {
+            _state.update {
+                it.copy(
+                    isSaveStudentCurrentWorkLoading = loading
+                )
+            }
+        }
+
+        result.onLoading {
+            updateIsSaveStudentCurrentWorkLoading(true)
+        }.onSuccess {
+            showToast("Your current work successfully saved")
+            updateIsSaveStudentCurrentWorkLoading(false)
+            updateIsStudentCurrentWorkChange(false)
+        }.onNoInternet { message ->
+            showToast(message)
+            updateIsSaveStudentCurrentWorkLoading(false)
+        }.onError { _, message ->
+            showToast(message)
+            updateIsSaveStudentCurrentWorkLoading(false)
+        }.onException { exception, message ->
+            Log.e(TAG, exception?.message.toString())
+            showToast(message)
+            updateIsSaveStudentCurrentWorkLoading(false)
+        }
+    }
+
+    private fun updateIsStudentCurrentWorkChange(change: Boolean) {
+        _state.update {
+            it.copy(
+                isStudentCurrentWorkChange = change,
+            )
+        }
+    }
+
+    private fun turnInAssignmentSubmission(turnIn: Boolean) {
+
+        fun updateIsTurnInAssignmentSubmissionLoading(loading: Boolean) {
+            _state.update {
+                it.copy(
+                    isTurnInAssignmentSubmissionLoading = loading
+                )
+            }
+        }
+
+        val successMessage = if (turnIn) {
+            "Assignment turned in"
+        } else {
+            "Assignment has been unsubmitted"
+        }
+
+        viewModelScope.launch {
+            updateIsTurnInAssignmentSubmissionLoading(true)
+
+            if (turnIn && state.value.isStudentCurrentWorkChange) {
+                launch {
+                    updateAssignmentAttachmentsUseCase(
+                        submissionId = state.value.assignmentSubmission.assignmentSubmissionId,
+                        attachments = state.value.assignmentSubmission.attachments,
+                    ).asResult().collect { result ->
+                        handleUploadAssignmentAttachmentResult(result)
+                    }
+                }.join()
+            }
+
+            launch {
+                turnInAssignmentSubmissionUseCase(
+                    submissionId = state.value.assignmentSubmission.assignmentSubmissionId,
+                    turnIn = turnIn,
+                )
+                    .asResult()
+                    .onCompletion {
+                        updateIsTurnInAssignmentSubmissionLoading(false)
+                    }
+                    .collect { result ->
+                        result.onLoading {
+                            updateIsTurnInAssignmentSubmissionLoading(true)
+                        }.onSuccess {
+                            showToast(successMessage)
+                            _state.update {
+                                it.copy(
+                                    assignmentSubmission = it.assignmentSubmission.copy(
+                                        turnInStatus = turnIn
+                                    )
+                                )
+                            }
+                        }.onNoInternet { message ->
+                            showToast(message)
+                        }.onError { _, message ->
+                            showToast(message)
+                        }.onException { exception, message ->
+                            Log.e(TAG, exception?.message.toString())
+                            showToast(message)
+                        }
+                }
+            }
         }
     }
 

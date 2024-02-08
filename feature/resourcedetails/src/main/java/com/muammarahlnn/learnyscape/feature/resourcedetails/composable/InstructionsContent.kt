@@ -33,7 +33,6 @@ import java.io.File
  * @File InstructionsContent, 29/01/2024 18.32
  */
 internal data class InstructionsContentEvent(
-    val onAddWorkButtonClick: () -> Unit,
     val onStartQuizButtonClick: () -> Unit,
     val onAttachmentClick: (File) -> Unit,
     val onRefresh: () -> Unit,
@@ -44,7 +43,6 @@ internal data class InstructionsContentEvent(
 internal fun InstructionsContent(
     state: ResourceDetailsContract.State,
     refreshState: RefreshState,
-    onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     onAttachmentClick: (File) -> Unit,
     onRefresh: () -> Unit,
@@ -68,7 +66,6 @@ internal fun InstructionsContent(
             ) {
                 InstructionsContent(
                     state = state,
-                    onAddWorkButtonClick = onAddWorkButtonClick,
                     onStartQuizButtonClick = onStartQuizButtonClick,
                     onAttachmentClick = onAttachmentClick,
                 )
@@ -86,16 +83,13 @@ internal fun InstructionsContent(
 @Composable
 private fun InstructionsContent(
     state: ResourceDetailsContract.State,
-    onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isStudent = isStudent(LocalUserModel.current.role)
-//    val isAssignment = state.resourceType == ClassResourceType.ASSIGNMENT
     val isQuiz = state.resourceType == ClassResourceType.QUIZ
     val showStickyBottomActionButton = isStudent && isQuiz
-//    val showStickyBottomActionButton = isStudent && (isAssignment || isQuiz)
 
     val localDensity = LocalDensity.current
     Box(modifier = modifier.fillMaxSize()) {
@@ -156,31 +150,6 @@ private fun InstructionsContent(
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
-
-//            val actionButtonModifier = Modifier.align(Alignment.BottomCenter)
-//            val onButtonGloballyPositioned: (LayoutCoordinates) -> Unit = { coordinates ->
-//                addWorkButtonHeight = with(localDensity) {
-//                    coordinates.size.height.toDp()
-//                }
-//            }
-//
-//            when {
-//                isAssignment -> {
-//                    AddWorkButton(
-//                        onButtonClick = onAddWorkButtonClick,
-//                        onButtonGloballyPositioned = onButtonGloballyPositioned,
-//                        modifier = actionButtonModifier,
-//                    )
-//                }
-//
-//                isQuiz -> {
-//                    StartQuizButton(
-//                        onButtonClick = onStartQuizButtonClick,
-//                        onButtonGloballyPositioned = onButtonGloballyPositioned,
-//                        modifier = actionButtonModifier,
-//                    )
-//                }
-//            }
         }
     }
 }

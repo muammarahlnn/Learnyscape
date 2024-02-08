@@ -36,7 +36,6 @@ import java.io.File
 internal fun ResourceDetailsPager(
     state: ResourceDetailsContract.State,
     refreshState: RefreshState,
-    onAddWorkButtonClick: () -> Unit,
     onStartQuizButtonClick: () -> Unit,
     onAttachmentClick: (File) -> Unit,
     onRefreshInstructions: () -> Unit,
@@ -107,7 +106,6 @@ internal fun ResourceDetailsPager(
                 0 -> InstructionsContent(
                     state = state,
                     refreshState = refreshState,
-                    onAddWorkButtonClick = onAddWorkButtonClick,
                     onStartQuizButtonClick = onStartQuizButtonClick,
                     onAttachmentClick = onAttachmentClick,
                     onRefresh = onRefreshInstructions,

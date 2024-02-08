@@ -1,16 +1,20 @@
 package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
+import com.muammarahlnn.learnyscape.core.network.model.request.TurnInTaskSubmissionRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.LecturerTaskSubmissionResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.StudentTaskSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskOverviewResponse
-import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -46,7 +50,32 @@ interface TasksApi {
     ): BaseResponse<String>
 
     @GET("tasks/{taskId}/submissions")
-    suspend fun getTaskSubmissions(
+    suspend fun lecturerGetTaskSubmissions(
         @Path("taskId") taskId: String,
-    ): BaseResponse<List<TaskSubmissionResponse>>
+    ): BaseResponse<List<LecturerTaskSubmissionResponse>>
+
+    @GET("tasks/{taskId}/submissions")
+    suspend fun studentGetTaskSubmission(
+        @Path("taskId") taskId: String,
+    ): BaseResponse<StudentTaskSubmissionResponse>
+
+    @Multipart
+    @POST("tasks/submissions")
+    suspend fun uploadTaskSubmission(
+        @Part("taskId") taskId: RequestBody,
+        @Part files: List<MultipartBody.Part>,
+    ): BaseResponse<String>
+
+    @Multipart
+    @PUT("tasks/submissions/{submissionId}")
+    suspend fun updateTaskSubmission(
+        @Path("submissionId") submissionId: String,
+        @Part files: List<MultipartBody.Part>,
+    ): BaseResponse<String>
+
+    @PUT("tasks/submissions/{submissionId}/turn-in")
+    suspend fun turnInTaskSubmission(
+        @Path("submissionId") submissionId: String,
+        @Body turnInTaskSubmissionRequest: TurnInTaskSubmissionRequest,
+    ): BaseResponse<String>
 }

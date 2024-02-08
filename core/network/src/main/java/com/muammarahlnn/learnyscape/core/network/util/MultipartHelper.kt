@@ -32,16 +32,16 @@ fun File.getMimeType(): String =
 fun List<File>.toFileParts(partName: String): List<MultipartBody.Part> {
     val filesParts = mutableListOf<MultipartBody.Part>()
     this.forEach { file ->
-        filesParts.add(
-            createFormData(
-                partName = partName,
-                fileName = file.name,
-                requestBody = file.asRequestBody(file.getMimeType().toMediaTypeOrNull())
-            )
-        )
+        filesParts.add(file.toFilePart(partName))
     }
     return filesParts
 }
+
+fun File.toFilePart(partName: String): MultipartBody.Part = createFormData(
+    partName = partName,
+    fileName = this.name,
+    requestBody = this.asRequestBody(this.getMimeType().toMediaTypeOrNull())
+)
 
 fun createFormData(
     partName: String,

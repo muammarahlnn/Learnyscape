@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
+import com.muammarahlnn.learnyscape.core.domain.capturedphoto.ResetCapturedPhotoUseCase
 import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
@@ -52,7 +53,7 @@ class ResourceCreateViewModel @Inject constructor(
     private val createAssignmentUseCase: CreateAssignmentUseCase,
     private val createQuizUseCase: CreateQuizUseCase,
     private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
-    private val resetPhotoUseCase: GetCapturedPhotoUseCase,
+    private val resetPhotoUseCase: ResetCapturedPhotoUseCase,
     private val saveImageToFileUseCase: SaveImageToFileUseCase,
 ) : ViewModel(), ResourceCreateContract {
 

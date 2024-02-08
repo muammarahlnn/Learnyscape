@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.data.mapper
 
 import com.muammarahlnn.learnyscape.core.data.util.formatEpochSeconds
 import com.muammarahlnn.learnyscape.core.data.util.formatIsoDate
+import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
@@ -9,11 +10,12 @@ import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.LecturerTaskSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.StudentTaskSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
-import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
 import java.io.File
 
 /**
@@ -60,11 +62,11 @@ fun QuizDetailsResponse.toQuizDetailsModel() = QuizDetailsModel(
     }
 )
 
-fun List<TaskSubmissionResponse>.toAssignmentSubmissionModels() = map {
+fun List<LecturerTaskSubmissionResponse>.toAssignmentSubmissionModels() = map {
     it.toStudentSubmission()
 }
 
-fun TaskSubmissionResponse.toStudentSubmission() = StudentSubmissionModel(
+fun LecturerTaskSubmissionResponse.toStudentSubmission() = StudentSubmissionModel(
     id = id.orEmpty(),
     userId = userId,
     studentName = studentName,
@@ -81,3 +83,12 @@ fun QuizSubmissionResponse.toStudentSubmission() = StudentSubmissionModel(
     studentName = studentName,
     turnInStatus = turnInStatus,
 )
+
+fun StudentTaskSubmissionResponse.toAssignmentSubmissionModel(attachments: List<File>) =
+    AssignmentSubmissionModel(
+        assignmentSubmissionId = taskSubmissionId,
+        userId = userId,
+        studentName = studentName,
+        turnInStatus = turnInStatus,
+        attachments = attachments,
+    )
