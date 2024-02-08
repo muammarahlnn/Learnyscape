@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.isLecturer
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
+import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.AddWorkBottomSheet
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeleteResourceDialog
@@ -45,6 +47,7 @@ internal fun ResourceDetailsRoute(
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(ResourceDetailsContract.Event.FetchResourceDetails)
+        event(ResourceDetailsContract.Event.OnGetCapturedPhoto)
     }
 
     val context = LocalContext.current
@@ -52,11 +55,22 @@ internal fun ResourceDetailsRoute(
         ActivityResultContracts.GetContent()
     ) {
         if (it != null) {
-            // TODO: handle selected file
+            event(
+                ResourceDetailsContract.Event.OnFileSelected(
+                    uriToFile(
+                        context = context,
+                        selectedFileUri = it
+                    )
+                )
+            )
         }
     }
+
     viewModel.effect.collectInLaunchedEffect {
         when (it) {
+            is ResourceDetailsContract.Effect.ShowToast ->
+                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+
             ResourceDetailsContract.Effect.NavigateBack ->
                 navigateBack()
 
@@ -137,7 +151,6 @@ private fun ResourceDetailsScreen(
     }
 
     val instructionsContentEvent = InstructionsContentEvent(
-        onAddWorkButtonClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
         onStartQuizButtonClick = { event(ResourceDetailsContract.Event.OnStartQuizButtonClick) },
         onAttachmentClick = { event(ResourceDetailsContract.Event.OnAttachmentClick(it)) },
         onRefresh = { event(ResourceDetailsContract.Event.FetchResourceDetails) },
@@ -166,7 +179,6 @@ private fun ResourceDetailsScreen(
                 ClassResourceType.MODULE -> InstructionsContent(
                     state = state,
                     refreshState = refreshState,
-                    onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
                     onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
                     onAttachmentClick = instructionsContentEvent.onAttachmentClick,
                     onRefresh = instructionsContentEvent.onRefresh,
@@ -177,7 +189,6 @@ private fun ResourceDetailsScreen(
                 ClassResourceType.QUIZ -> ResourceDetailsPager(
                     state = state,
                     refreshState = refreshState,
-                    onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
                     onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
                     onAttachmentClick = instructionsContentEvent.onAttachmentClick,
                     onRefreshInstructions = instructionsContentEvent.onRefresh,
@@ -204,7 +215,6 @@ private fun ResourceDetailsScreen(
                 InstructionsContent(
                     state = state,
                     refreshState = refreshState,
-                    onAddWorkButtonClick = instructionsContentEvent.onAddWorkButtonClick,
                     onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
                     onAttachmentClick = instructionsContentEvent.onAttachmentClick,
                     onRefresh = instructionsContentEvent.onRefresh,

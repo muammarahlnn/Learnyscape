@@ -7,14 +7,19 @@ import com.muammarahlnn.learnyscape.core.network.api.AttachmentApi
 import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
+import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartKey
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.di.BASE_URL
+import com.muammarahlnn.learnyscape.core.network.model.request.TurnInTaskSubmissionRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.AnnouncementDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.LecturerTaskSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ReferenceDetailsResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.StudentTaskSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
-import com.muammarahlnn.learnyscape.core.network.model.response.TaskSubmissionResponse
+import com.muammarahlnn.learnyscape.core.network.util.toFileParts
+import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBody
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -66,8 +71,12 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
         emit(tasksApi.getTaskDetails(taskId).data)
     }
 
-    override fun getTaskSubmissions(taskId: String): Flow<List<TaskSubmissionResponse>> = flow {
-        emit(tasksApi.getTaskSubmissions(taskId).data)
+    override fun lecturerGetTaskSubmissions(taskId: String): Flow<List<LecturerTaskSubmissionResponse>> = flow {
+        emit(tasksApi.lecturerGetTaskSubmissions(taskId).data)
+    }
+
+    override fun studentGetTaskSubmission(taskId: String): Flow<StudentTaskSubmissionResponse> = flow {
+        emit(tasksApi.studentGetTaskSubmission(taskId).data)
     }
 
     override fun deleteTask(taskId: String): Flow<String> = flow {
@@ -80,6 +89,33 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
 
     override fun getQuizSubmissions(quizId: String): Flow<List<QuizSubmissionResponse>> = flow {
         emit(quizzesApi.getQuizSubmissions(quizId).data)
+    }
+
+    override fun uploadTaskSubmission(taskId: String, attachments: List<File>): Flow<String> = flow {
+        emit(
+            tasksApi.uploadTaskSubmission(
+                taskId = taskId.toTextRequestBody(),
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+            ).data
+        )
+    }
+
+    override fun updateTaskSubmission(submissionId: String, attachments: List<File>): Flow<String> = flow {
+        emit(
+            tasksApi.updateTaskSubmission(
+                submissionId = submissionId,
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+            ).data
+        )
+    }
+
+    override fun turnInTaskSubmission(submissionId: String, turnIn: Boolean): Flow<String> = flow {
+        emit(
+            tasksApi.turnInTaskSubmission(
+                submissionId = submissionId,
+                turnInTaskSubmissionRequest = TurnInTaskSubmissionRequest(turnedIn = turnIn)
+            ).data
+        )
     }
 
     private fun Response<ResponseBody>.toAttachmentFile(): File? {

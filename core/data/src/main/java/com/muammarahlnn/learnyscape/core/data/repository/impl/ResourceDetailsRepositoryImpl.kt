@@ -2,11 +2,13 @@ package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.mapper.toAnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentDetailsModel
+import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentSubmissionModels
 import com.muammarahlnn.learnyscape.core.data.mapper.toModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toQuizDetailsModel
 import com.muammarahlnn.learnyscape.core.data.mapper.toQuizSubmissionModels
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
+import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
@@ -53,9 +55,16 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
             )
         }
 
-    override fun getAssignmentSubmissions(assignmentId: String): Flow<List<StudentSubmissionModel>> =
-        resourceDetailsNetworkDataSource.getTaskSubmissions(assignmentId).map { taskSubmissionResponses ->
-            taskSubmissionResponses.toAssignmentSubmissionModels()
+    override fun lecturerGetAssignmentSubmissions(assignmentId: String): Flow<List<StudentSubmissionModel>> =
+        resourceDetailsNetworkDataSource.lecturerGetTaskSubmissions(assignmentId).map { lecturerTaskSubmissionResponses ->
+            lecturerTaskSubmissionResponses.toAssignmentSubmissionModels()
+        }
+
+    override fun studentGetAssignmentSubmission(assignmentId: String): Flow<AssignmentSubmissionModel> =
+        resourceDetailsNetworkDataSource.studentGetTaskSubmission(assignmentId).map { studentTaskSubmissionResponse ->
+            studentTaskSubmissionResponse.toAssignmentSubmissionModel(
+                getAttachments(studentTaskSubmissionResponse.attachmentUrls)
+            )
         }
 
     override fun deleteAssignment(assignmentId: String): Flow<String> =
@@ -70,6 +79,17 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
         resourceDetailsNetworkDataSource.getQuizSubmissions(quizId).map { quizSubmissionResponses ->
             quizSubmissionResponses.toQuizSubmissionModels()
         }
+
+    override fun uploadAssignmentAttachments(assignmentId: String, attachments: List<File>): Flow<String> =
+        resourceDetailsNetworkDataSource.uploadTaskSubmission(assignmentId, attachments)
+
+    override fun updateAssignmentAttachments(
+        submissionId: String,
+        attachments: List<File>
+    ): Flow<String> = resourceDetailsNetworkDataSource.updateTaskSubmission(submissionId, attachments)
+
+    override fun turnInAssignmentSubmission(submissionId: String, turnIn: Boolean): Flow<String> =
+        resourceDetailsNetworkDataSource.turnInTaskSubmission(submissionId, turnIn)
 
     private suspend fun getAttachments(attachmentUrls: List<String>): List<File> {
         val attachments = mutableListOf<File>()

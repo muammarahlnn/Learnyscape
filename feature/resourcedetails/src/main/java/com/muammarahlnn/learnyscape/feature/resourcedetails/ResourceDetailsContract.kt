@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.feature.resourcedetails
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
@@ -22,8 +23,10 @@ interface ResourceDetailsContract :
         val resourceId: String = "",
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
         val uiState: UiState = UiState.Loading,
+        val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
         val studentWorkUiState: UiState = UiState.Loading,
-        val deletingResourceUiState: DeletingResourceDialogState = DeletingResourceDialogState.Loading,
+        val deletingResourceUiState: UiState = UiState.Loading,
+        val studentAssignmentBottomSheetUiState: UiState = UiState.Loading,
         val name: String = "",
         val date: String = "",
         val description: String = "",
@@ -34,7 +37,10 @@ interface ResourceDetailsContract :
         val quizType: QuizType = QuizType.NONE,
         val submittedSubmissions: List<StudentSubmissionState> = listOf(),
         val missingSubmissions: List<StudentSubmissionState> = listOf(),
-        val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility()
+        val assignmentSubmission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
+        val isSaveStudentCurrentWorkLoading: Boolean = false,
+        val isStudentCurrentWorkChange: Boolean = false,
+        val isTurnInAssignmentSubmissionLoading: Boolean = false,
     )
 
     sealed interface UiState {
@@ -44,15 +50,6 @@ interface ResourceDetailsContract :
         data object Success : UiState
 
         data class Error(val message: String) : UiState
-    }
-
-    sealed interface DeletingResourceDialogState {
-
-        data object Loading : DeletingResourceDialogState
-
-        data object Success : DeletingResourceDialogState
-
-        data class Error(val message: String) : DeletingResourceDialogState
     }
 
     data class StudentSubmissionState(
@@ -75,6 +72,8 @@ interface ResourceDetailsContract :
 
         data object FetchStudentWorks : Event
 
+        data object FetchStudentAssignmentSubmission : Event
+
         data object OnBackClick : Event
 
         data object OnDeleteClick : Event
@@ -95,6 +94,8 @@ interface ResourceDetailsContract :
 
         data class OnFileSelected(val file: File) : Event
 
+        data object OnGetCapturedPhoto : Event
+
         data class OnAttachmentClick(val attachment: File) : Event
 
         data object OnDismissAddWorkBottomSheet : Event
@@ -110,9 +111,19 @@ interface ResourceDetailsContract :
         data object OnDismissStartQuizDialog : Event
 
         data object OnSubmissionClick : Event
+
+        data class OnRemoveAssignmentSubmissionAttachment(val index: Int) : Event
+
+        data object OnSaveStudentCurrentWorkClick : Event
+
+        data object OnTurnInAssignmentSubmission : Event
+
+        data object OnUnsubmitAssignmentSubmission : Event
     }
 
     sealed interface Effect {
+
+        data class ShowToast(val message: String) : Effect
 
         data object NavigateBack : Effect
 

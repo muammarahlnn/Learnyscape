@@ -6,10 +6,14 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignment
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
-import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.LecturerGetAssignmentSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.StudentGetAssignmentSubmissionUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.TurnInAssignmentSubmissionUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UpdateAssignmentAttachmentsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UploadAssignmentAttachmentsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -82,10 +86,10 @@ object ResourceDetailsInteractorModule {
 
     @Provides
     @ViewModelScoped
-    fun providesGetAssignmentSubmissionsUseCase(
+    fun providesLecturerGetAssignmentSubmissionsUseCase(
         resourceDetailsRepository: ResourceDetailsRepository
-    ): GetAssignmentSubmissionsUseCase = GetAssignmentSubmissionsUseCase(
-        resourceDetailsRepository::getAssignmentSubmissions
+    ): LecturerGetAssignmentSubmissionsUseCase = LecturerGetAssignmentSubmissionsUseCase(
+        resourceDetailsRepository::lecturerGetAssignmentSubmissions
     )
 
     @Provides
@@ -94,5 +98,37 @@ object ResourceDetailsInteractorModule {
         resourceDetailsRepository: ResourceDetailsRepository
     ): GetQuizSubmissionsUseCase = GetQuizSubmissionsUseCase(
         resourceDetailsRepository::getQuizSubmissions
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesUploadAssignmentAttachmentsUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): UploadAssignmentAttachmentsUseCase = UploadAssignmentAttachmentsUseCase(
+        resourceDetailsRepository::uploadAssignmentAttachments
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesStudentGetAssignmentSubmissionUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): StudentGetAssignmentSubmissionUseCase = StudentGetAssignmentSubmissionUseCase(
+        resourceDetailsRepository::studentGetAssignmentSubmission
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesUpdateAssignmentAttachmentsUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): UpdateAssignmentAttachmentsUseCase = UpdateAssignmentAttachmentsUseCase(
+        resourceDetailsRepository::updateAssignmentAttachments
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesTurnInAssignmentSubmissionUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): TurnInAssignmentSubmissionUseCase = TurnInAssignmentSubmissionUseCase(
+        resourceDetailsRepository::turnInAssignmentSubmission
     )
 }
