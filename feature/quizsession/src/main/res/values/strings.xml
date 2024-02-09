@@ -12,5 +12,5 @@
     <string name="photo_answer_button_text">Add answer</string>
     <string name="you_can_not_leave_dialog_title">You can\'t leave</string>
     <string name="you_can_not_leave_dialog_text">Please complete and submit your quiz. You can\'t leave until your quiz is submitted.</string>
-    <string name="ok">Ok</string>
+    <string name="ok">@android:string/ok</string>
 </resources>
