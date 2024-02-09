@@ -139,7 +139,7 @@ fun rememberQuizSessionTopAppBarState(quizDuration: Int): QuizSessionTopAppBarSt
 
 class QuizSessionTopAppBarState(quizDuration: Int) {
 
-    var currentRemainingTime by mutableIntStateOf(quizDuration)
+    var currentRemainingTime by mutableIntStateOf(quizDuration * 60) // convert to seconds
         private set
 
     var textTime by mutableStateOf(formatToMinutesAndSeconds())

@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.quizsession
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
@@ -56,7 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.model.ui.QuizType
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import kotlin.math.roundToInt
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -71,6 +72,13 @@ internal fun QuizSessionRoute(
     modifier: Modifier = Modifier,
     viewModel: QuizSessionViewModel = hiltViewModel()
 ) {
+    var showYouCanNotLeaveDialog by rememberSaveable { mutableStateOf(false) }
+
+    // prevent user to go back when pressed back
+    BackHandler {
+        showYouCanNotLeaveDialog = true
+    }
+
     var showSubmitAnswerDialog by rememberSaveable {
         mutableStateOf(false)
     }
@@ -86,6 +94,7 @@ internal fun QuizSessionRoute(
         questions = viewModel.questions,
         showSubmitAnswerDialog = showSubmitAnswerDialog,
         showTimeoutDialog = showTimeoutDialog,
+        showYouCanNotLeaveDialog = showYouCanNotLeaveDialog,
         selectedOptionLetters = viewModel.selectedOptionLetters,
         onSubmitButtonClick = {
             showSubmitAnswerDialog = true
@@ -105,6 +114,7 @@ internal fun QuizSessionRoute(
             showTimeoutDialog = false
             showSubmitAnswerDialog = false
         },
+        onDismissYouCanNotLeaveDialog = { showYouCanNotLeaveDialog = false},
         modifier = modifier,
     )
 }
@@ -116,6 +126,7 @@ private fun QuizSessionScreen(
     quizDuration: Int,
     showSubmitAnswerDialog: Boolean,
     showTimeoutDialog: Boolean,
+    showYouCanNotLeaveDialog: Boolean,
     questions: List<MultipleChoiceQuestion>,
     selectedOptionLetters: SnapshotStateList<OptionLetter>,
     onSubmitButtonClick: () -> Unit,
@@ -123,6 +134,7 @@ private fun QuizSessionScreen(
     onDismissSubmitAnswerDialog: () -> Unit,
     onTimeout: () -> Unit,
     onContinueTimeoutDialog: () -> Unit,
+    onDismissYouCanNotLeaveDialog: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (showSubmitAnswerDialog) {
@@ -135,6 +147,12 @@ private fun QuizSessionScreen(
     if (showTimeoutDialog) {
         TimeoutDialog(
             onContinue = onContinueTimeoutDialog,
+        )
+    }
+
+    if (showYouCanNotLeaveDialog) {
+        YouCanNotLeaveDialog(
+            onDismiss = onDismissYouCanNotLeaveDialog
         )
     }
 
@@ -250,7 +268,7 @@ private fun QuizSessionContent(
             }
         ) { index, question ->
             when (quizType) {
-                QuizType.MULTIPLE_CHOICE_QUESTIONS -> {
+                QuizType.MULTIPLE_CHOICE -> {
                     MultipleChoiceQuestion(
                         number = index + 1,
                         question = question,
@@ -269,6 +287,8 @@ private fun QuizSessionContent(
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
+
+                QuizType.NONE -> Unit
             }
         }
     }
@@ -534,6 +554,22 @@ private fun SubmitAnswerDialog(
         onConfirm = onConfirm,
         onDismiss = onDismiss,
         confirmText = stringResource(id = R.string.submit),
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun YouCanNotLeaveDialog(
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseAlertDialog(
+        title = stringResource(id = R.string.you_can_not_leave_dialog_title),
+        dialogText = stringResource(id = R.string.you_can_not_leave_dialog_text),
+        onConfirm = onDismiss,
+        onDismiss = onDismiss,
+        confirmText = stringResource(id = R.string.ok),
+        dismissText = null,
         modifier = modifier,
     )
 }

@@ -1,8 +1,8 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
-import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel

@@ -81,7 +81,7 @@ internal fun ResourceDetailsRoute(
                 launcher.launch("*/*")
 
             is ResourceDetailsContract.Effect.NavigateToQuizSession ->
-                navigateToQuizSession(it.quizDuration, it.quizName, it.quizDuration)
+                navigateToQuizSession(it.quizTypeOrdinal, it.quizName, it.quizDuration)
 
             is ResourceDetailsContract.Effect.OpenAttachment ->
                 openFile(context, it.attachment)
@@ -120,15 +120,8 @@ private fun ResourceDetailsScreen(
 
     if (state.overlayComposableVisibility.showStartQuizDialog) {
         StartQuizDialog(
-            onConfirm = { quizTypeOrdinal, quizName, quizDuration ->
-                event(
-                    ResourceDetailsContract.Event.OnConfirmStartQuizDialog(
-                        quizTypeOrdinal = quizTypeOrdinal,
-                        quizName = quizName,
-                        quizDuration = quizDuration,
-                    )
-                )
-            },
+            quizName = state.name,
+            onConfirm = { event(ResourceDetailsContract.Event.OnConfirmStartQuizDialog) },
             onDismiss = { event(ResourceDetailsContract.Event.OnDismissStartQuizDialog) },
         )
     }

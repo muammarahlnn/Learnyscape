@@ -2,9 +2,9 @@ package com.muammarahlnn.learnyscape.core.data.mapper
 
 import com.muammarahlnn.learnyscape.core.data.util.formatEpochSeconds
 import com.muammarahlnn.learnyscape.core.data.util.formatIsoDate
-import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.AnnouncementDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentDetailsModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
