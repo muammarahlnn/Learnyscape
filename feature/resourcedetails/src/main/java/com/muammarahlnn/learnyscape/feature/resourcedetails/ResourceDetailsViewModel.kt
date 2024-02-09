@@ -143,11 +143,7 @@ class ResourceDetailsViewModel @Inject constructor(
                 showStartQuizDialog(true)
 
             is ResourceDetailsContract.Event.OnConfirmStartQuizDialog ->
-                navigateToQuizSession(
-                    event.quizTypeOrdinal,
-                    event.quizName,
-                    event.quizDuration,
-                )
+                navigateToQuizSession()
 
             ResourceDetailsContract.Event.OnDismissStartQuizDialog ->
                 showStartQuizDialog(false)
@@ -864,20 +860,18 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToQuizSession(
-        quizTypeOrdinal: Int,
-        quizName: String,
-        quizDuration: Int,
-    ) {
+    private fun navigateToQuizSession() {
         viewModelScope.launch {
             _effect.emit(
                 ResourceDetailsContract.Effect.NavigateToQuizSession(
-                    quizTypeOrdinal = quizTypeOrdinal,
-                    quizName = quizName,
-                    quizDuration = quizDuration,
+                    quizTypeOrdinal = state.value.quizType.ordinal,
+                    quizName = state.value.name,
+                    quizDuration = state.value.quizDuration,
                 )
             )
         }
+
+        showStartQuizDialog(false)
     }
 
     private fun navigateToSubmissionDetails() {

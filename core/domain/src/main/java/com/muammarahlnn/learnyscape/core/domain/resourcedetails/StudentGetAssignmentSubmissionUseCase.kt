@@ -1,6 +1,6 @@
 package com.muammarahlnn.learnyscape.core.domain.resourcedetails
 
-import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import kotlinx.coroutines.flow.Flow
 
 /**

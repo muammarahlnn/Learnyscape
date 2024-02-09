@@ -3,15 +3,16 @@ package com.muammarahlnn.learnyscape.feature.quizsession
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.muammarahlnn.learnyscape.core.model.ui.QuizType
+import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.QuizSessionArgs
+import javax.inject.Inject
 
 
 /**
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file QuizSessionViewModel, 28/08/2023 21.45 by Muammar Ahlan Abimanyu
  */
-class QuizSessionViewModel(
+class QuizSessionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -29,8 +30,8 @@ class QuizSessionViewModel(
         OptionLetter.UNSELECTED
     }.toMutableStateList()
 
-    private fun getQuizTypeArg() = when (quizSessionArgs.quizTypeOrdinal) {
-        QuizType.MULTIPLE_CHOICE_QUESTIONS.ordinal -> QuizType.MULTIPLE_CHOICE_QUESTIONS
+    private fun getQuizTypeArg(): QuizType = when (quizSessionArgs.quizTypeOrdinal) {
+        QuizType.MULTIPLE_CHOICE.ordinal -> QuizType.MULTIPLE_CHOICE
         QuizType.PHOTO_ANSWER.ordinal -> QuizType.PHOTO_ANSWER
         else -> throw IllegalStateException("The given QuizType ordinal not matched any QuizType ordinals")
     }

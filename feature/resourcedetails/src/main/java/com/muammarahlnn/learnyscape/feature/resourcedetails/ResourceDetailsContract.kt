@@ -3,7 +3,7 @@ package com.muammarahlnn.learnyscape.feature.resourcedetails
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
-import com.muammarahlnn.learnyscape.core.model.AssignmentSubmissionModel
+import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
@@ -102,11 +102,7 @@ interface ResourceDetailsContract :
 
         data object OnStartQuizButtonClick : Event
 
-        data class OnConfirmStartQuizDialog(
-            val quizTypeOrdinal: Int,
-            val quizName: String,
-            val quizDuration: Int,
-        ) : Event
+        data object OnConfirmStartQuizDialog : Event
 
         data object OnDismissStartQuizDialog : Event
 
