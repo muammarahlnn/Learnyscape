@@ -9,6 +9,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.data.repository.JoinRequestRepository
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
+import com.muammarahlnn.learnyscape.core.data.repository.QuizSessionRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewRepository
@@ -22,6 +23,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.impl.HomeRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.JoinRequestRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.LoginRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ProfileRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.QuizSessionRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceCreateRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceDetailsRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceOverviewRepositoryImpl
@@ -107,4 +109,9 @@ interface DataModule {
     fun bindsClassFeedRepository(
         classFeedRepository: ClassFeedRepositoryImpl
     ): ClassFeedRepository
+
+    @Binds
+    fun bindsQuizSessionRepository(
+        quizSessionRepository: QuizSessionRepositoryImpl
+    ): QuizSessionRepository
 }

@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.feature.quizsession
+package com.muammarahlnn.learnyscape.feature.quizsession.composable
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.feature.quizsession.R
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR

@@ -7,5 +7,15 @@ package com.muammarahlnn.learnyscape.core.model.data
 enum class QuizType {
     NONE,
     MULTIPLE_CHOICE,
-    PHOTO_ANSWER
+    PHOTO_ANSWER;
+
+    companion object {
+
+        fun getQuizType(quizTypeOrdinal: Int): QuizType = when (quizTypeOrdinal) {
+            NONE.ordinal -> NONE
+            MULTIPLE_CHOICE.ordinal -> MULTIPLE_CHOICE
+            PHOTO_ANSWER.ordinal -> PHOTO_ANSWER
+            else -> throw IllegalArgumentException("The given ordinal not matched any QuizType")
+        }
+    }
 }
