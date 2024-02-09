@@ -864,6 +864,7 @@ class ResourceDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             _effect.emit(
                 ResourceDetailsContract.Effect.NavigateToQuizSession(
+                    quizId = state.value.resourceId,
                     quizTypeOrdinal = state.value.quizType.ordinal,
                     quizName = state.value.name,
                     quizDuration = state.value.quizDuration,

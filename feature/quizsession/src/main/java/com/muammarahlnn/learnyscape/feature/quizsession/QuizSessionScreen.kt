@@ -31,13 +31,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,6 +57,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.quizsession.composable.QuizSessionTopAppBar
 import kotlin.math.roundToInt
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -68,91 +72,56 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun QuizSessionRoute(
-    onQuizIsOver: () -> Unit,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: QuizSessionViewModel = hiltViewModel()
 ) {
-    var showYouCanNotLeaveDialog by rememberSaveable { mutableStateOf(false) }
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(QuizSessionContract.Event.FetchQuizQuestions)
+    }
 
     // prevent user to go back when pressed back
     BackHandler {
-        showYouCanNotLeaveDialog = true
+        event(QuizSessionContract.Event.ShowYouCanNotLeaveDialog(true))
     }
 
-    var showSubmitAnswerDialog by rememberSaveable {
-        mutableStateOf(false)
-    }
-
-    var showTimeoutDialog by rememberSaveable {
-        mutableStateOf(false)
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            QuizSessionContract.Effect.NavigateBack ->
+                navigateBack()
+        }
     }
 
     QuizSessionScreen(
-        quizType = viewModel.quizType,
-        quizName = viewModel.quizName,
-        quizDuration = viewModel.quizDuration,
-        questions = viewModel.questions,
-        showSubmitAnswerDialog = showSubmitAnswerDialog,
-        showTimeoutDialog = showTimeoutDialog,
-        showYouCanNotLeaveDialog = showYouCanNotLeaveDialog,
-        selectedOptionLetters = viewModel.selectedOptionLetters,
-        onSubmitButtonClick = {
-            showSubmitAnswerDialog = true
-        },
-        onConfirmSubmitAnswerDialog = {
-            onQuizIsOver()
-            showSubmitAnswerDialog = false
-        },
-        onDismissSubmitAnswerDialog = {
-            showSubmitAnswerDialog = false
-        },
-        onTimeout = {
-            showTimeoutDialog = true
-        },
-        onContinueTimeoutDialog = {
-            onQuizIsOver()
-            showTimeoutDialog = false
-            showSubmitAnswerDialog = false
-        },
-        onDismissYouCanNotLeaveDialog = { showYouCanNotLeaveDialog = false},
+        state = state,
+        event = { event(it) },
         modifier = modifier,
     )
 }
 
 @Composable
 private fun QuizSessionScreen(
-    quizType: QuizType,
-    quizName: String,
-    quizDuration: Int,
-    showSubmitAnswerDialog: Boolean,
-    showTimeoutDialog: Boolean,
-    showYouCanNotLeaveDialog: Boolean,
-    questions: List<MultipleChoiceQuestion>,
-    selectedOptionLetters: SnapshotStateList<OptionLetter>,
-    onSubmitButtonClick: () -> Unit,
-    onConfirmSubmitAnswerDialog: () -> Unit,
-    onDismissSubmitAnswerDialog: () -> Unit,
-    onTimeout: () -> Unit,
-    onContinueTimeoutDialog: () -> Unit,
-    onDismissYouCanNotLeaveDialog: () -> Unit,
+    state: QuizSessionContract.State,
+    event: (QuizSessionContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (showSubmitAnswerDialog) {
+    if (state.overlayComposableVisibility.showSubmitAnswerDialog) {
         SubmitAnswerDialog(
-            onConfirm = onConfirmSubmitAnswerDialog,
-            onDismiss = onDismissSubmitAnswerDialog,
+            onConfirm = { event(QuizSessionContract.Event.OnQuizIsOver) },
+            onDismiss = { event(QuizSessionContract.Event.ShowSubmitAnswerDialog(false)) },
         )
     }
 
-    if (showTimeoutDialog) {
+    if (state.overlayComposableVisibility.showTimeoutDialog) {
         TimeoutDialog(
-            onContinue = onContinueTimeoutDialog,
+            onContinue = { event(QuizSessionContract.Event.OnQuizIsOver) },
         )
     }
 
-    if (showYouCanNotLeaveDialog) {
+    if (state.overlayComposableVisibility.showYouCanNotLeaveDialog) {
         YouCanNotLeaveDialog(
-            onDismiss = onDismissYouCanNotLeaveDialog
+            onDismiss = { event(QuizSessionContract.Event.ShowYouCanNotLeaveDialog(false)) }
         )
     }
 
@@ -194,47 +163,64 @@ private fun QuizSessionScreen(
             }
         }
     }
-    Box(modifier = modifier
-        .fillMaxSize()
-        .nestedScroll(nestedScrollConnection)
-    ) {
-        QuizSessionContent(
-            topPadding = topAppBarHeightPx,
-            bottomPadding = submitButtonHeightPx,
-            quizType = quizType,
-            questions = questions,
-            selectedOptionLetters = selectedOptionLetters,
-            onAtBottomList = { updatedIsAtBottomList ->
-                isAtBottomList = updatedIsAtBottomList
-            },
+
+    when (state.uiState) {
+        QuizSessionContract.UiState.Loading -> LoadingScreen(
+            modifier = Modifier.fillMaxSize()
         )
-        QuizSessionTopAppBar(
-            quizName = quizName,
-            quizDuration = quizDuration,
-            topAppBarOffsetHeightPx = animateTopAppBarOffset,
-            onGloballyPositioned = { topAppBarHeight ->
-                topAppBarHeightPx = topAppBarHeight
-            },
-            onTimeout = onTimeout,
+
+        is QuizSessionContract.UiState.Error -> ErrorScreen(
+            text = state.uiState.message,
+            onRefresh = { event(QuizSessionContract.Event.FetchQuizQuestions) },
+            modifier = Modifier.fillMaxSize()
         )
-        SubmitButton(
-            buttonOffsetHeightPx = animateSubmitButtonOffset,
-            onButtonClick = onSubmitButtonClick,
-            onButtonGloballyPositioned = { buttonHeight ->
-                submitButtonHeightPx = buttonHeight
-            },
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+
+        QuizSessionContract.UiState.Success -> Box(
+            modifier = modifier
+                .fillMaxSize()
+                .nestedScroll(nestedScrollConnection)
+        ) {
+            QuizSessionContent(
+                state = state,
+                topPadding = topAppBarHeightPx,
+                bottomPadding = submitButtonHeightPx,
+                onAtBottomList = { updatedIsAtBottomList ->
+                    isAtBottomList = updatedIsAtBottomList
+                },
+                onOptionSelected = { index, option ->
+                    event(QuizSessionContract.Event.OnOptionSelected(index, option))
+                },
+                modifier = Modifier.fillMaxSize()
+            )
+
+            QuizSessionTopAppBar(
+                quizName = state.quizName,
+                quizDuration = state.quizDuration,
+                topAppBarOffsetHeightPx = animateTopAppBarOffset,
+                onGloballyPositioned = { topAppBarHeight ->
+                    topAppBarHeightPx = topAppBarHeight
+                },
+                onTimeout = { event(QuizSessionContract.Event.ShowTimeoutDialog(true)) },
+            )
+
+            SubmitButton(
+                buttonOffsetHeightPx = animateSubmitButtonOffset,
+                onButtonClick = { event(QuizSessionContract.Event.ShowSubmitAnswerDialog(true)) },
+                onButtonGloballyPositioned = { buttonHeight ->
+                    submitButtonHeightPx = buttonHeight
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
+        }
     }
 }
 
 @Composable
 private fun QuizSessionContent(
+    state: QuizSessionContract.State,
     topPadding: Float,
     bottomPadding: Float,
-    quizType: QuizType,
-    questions: List<MultipleChoiceQuestion>,
-    selectedOptionLetters: SnapshotStateList<OptionLetter>,
+    onOptionSelected: (Int, OptionLetter) -> Unit,
     onAtBottomList: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -260,21 +246,21 @@ private fun QuizSessionContent(
         item {
             Spacer(modifier = Modifier.height(16.dp))
         }
-        
+
         itemsIndexed(
-            items = questions,
-            key = { _, item ->
-                item.id
+            items = state.multipleChoiceQuestions,
+            key = { index, _ ->
+                index
             }
         ) { index, question ->
-            when (quizType) {
+            when (state.quizType) {
                 QuizType.MULTIPLE_CHOICE -> {
                     MultipleChoiceQuestion(
                         number = index + 1,
                         question = question,
-                        selectedOptionLetter = selectedOptionLetters[index],
-                        onOptionSelect = { optionLetter ->
-                            selectedOptionLetters[index] = optionLetter
+                        selectedOptionLetter = state.multipleChoiceAnswers[index],
+                        onOptionSelected = { option ->
+                            onOptionSelected(index, option)
                         },
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -321,7 +307,7 @@ private fun MultipleChoiceQuestion(
     number: Int,
     question: MultipleChoiceQuestion,
     selectedOptionLetter: OptionLetter,
-    onOptionSelect: (OptionLetter) -> Unit,
+    onOptionSelected: (OptionLetter) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseQuestion(
@@ -332,7 +318,7 @@ private fun MultipleChoiceQuestion(
         MultipleChoiceAnswer(
             options = question.options,
             currentSelectedOptionLetter = selectedOptionLetter,
-            onOptionSelect = onOptionSelect
+            onOptionSelected = onOptionSelected
         )
     }
 }
@@ -423,7 +409,7 @@ private fun QuestionText(
 private fun MultipleChoiceAnswer(
     options: List<Option>,
     currentSelectedOptionLetter: OptionLetter,
-    onOptionSelect: (OptionLetter) -> Unit,
+    onOptionSelected: (OptionLetter) -> Unit,
 ) {
     options.forEach { option ->
         val isSelected = currentSelectedOptionLetter == option.letter
@@ -454,7 +440,7 @@ private fun MultipleChoiceAnswer(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    onOptionSelect(option.letter)
+                    onOptionSelected(option.letter)
                 }
         ) {
             Row(
@@ -537,7 +523,10 @@ private fun SubmitButton(
                     bottom = 8.dp,
                 ),
         ) {
-            Text(text = stringResource(id = R.string.submit))
+            Text(
+                text = stringResource(id = R.string.submit),
+                style = MaterialTheme.typography.labelMedium
+            )
         }
     }
 }

@@ -39,7 +39,7 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StudentAs
 internal fun ResourceDetailsRoute(
     navigateBack: () -> Unit,
     navigateToCamera: () -> Unit,
-    navigateToQuizSession: (Int, String, Int) -> Unit,
+    navigateToQuizSession: (String, Int, String, Int) -> Unit,
     navigateToSubmissionDetails: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
@@ -81,7 +81,7 @@ internal fun ResourceDetailsRoute(
                 launcher.launch("*/*")
 
             is ResourceDetailsContract.Effect.NavigateToQuizSession ->
-                navigateToQuizSession(it.quizTypeOrdinal, it.quizName, it.quizDuration)
+                navigateToQuizSession(it.quizId, it.quizTypeOrdinal, it.quizName, it.quizDuration)
 
             is ResourceDetailsContract.Effect.OpenAttachment ->
                 openFile(context, it.attachment)

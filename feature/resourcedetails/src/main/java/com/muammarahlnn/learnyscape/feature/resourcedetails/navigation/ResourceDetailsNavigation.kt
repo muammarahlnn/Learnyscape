@@ -45,7 +45,7 @@ fun NavController.navigateToResourceDetails(
 fun NavGraphBuilder.resourceDetailsScreen(
     navigateBack: () -> Unit,
     navigateToCamera: () -> Unit,
-    navigateToQuizSession: (Int, String, Int) -> Unit,
+    navigateToQuizSession: (String, Int, String, Int) -> Unit,
     navigateToSubmissionDetails: (Int) -> Unit,
 ) {
     composable(

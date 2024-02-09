@@ -130,6 +130,7 @@ interface ResourceDetailsContract :
         data class OpenAttachment(val attachment: File) : Effect
 
         data class NavigateToQuizSession(
+            val quizId: String,
             val quizTypeOrdinal: Int,
             val quizName: String,
             val quizDuration: Int,

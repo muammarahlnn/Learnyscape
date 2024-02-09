@@ -7,6 +7,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSourc
 import com.muammarahlnn.learnyscape.core.network.datasource.JoinRequestNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.QuizSessionNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceOverviewNetworkDataSource
@@ -18,6 +19,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkData
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.JoinRequestNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.LoginNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ProfileNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.QuizSessionNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceCreateNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceDetailsNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceOverviewNetworkDataSourceImpl
@@ -91,4 +93,9 @@ interface NetworkDataSourceModule {
     fun bindsClassFeedNetworkDataSource(
         classFeedNetworkDataSource: ClassFeedNetworkDataSourceImpl
     ): ClassFeedNetworkDataSource
+
+    @Binds
+    fun bindsQuizSessionNetworkDataSource(
+        quizSessionNetworkDataSource: QuizSessionNetworkDataSourceImpl
+    ): QuizSessionNetworkDataSource
 }
