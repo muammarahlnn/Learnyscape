@@ -246,7 +246,7 @@ class QuizSessionViewModel @Inject constructor(
         fun onErrorSubmitAnswers(message: String) {
             _state.update {
                 it.copy(
-                    submittingAnswersDialogUiState = QuizSessionContract.UiState.Error(message)
+                    submittingAnswersDialogUiState = QuizSessionContract.SubmittingAnswersDialogUiState.Error(message)
                 )
             }
         }
@@ -262,13 +262,13 @@ class QuizSessionViewModel @Inject constructor(
                 result.onLoading {
                     _state.update {
                         it.copy(
-                            submittingAnswersDialogUiState = QuizSessionContract.UiState.Loading
+                            submittingAnswersDialogUiState = QuizSessionContract.SubmittingAnswersDialogUiState.Loading
                         )
                     }
                 }.onSuccess {
                     _state.update {
                         it.copy(
-                            submittingAnswersDialogUiState = QuizSessionContract.UiState.Success
+                            submittingAnswersDialogUiState = QuizSessionContract.SubmittingAnswersDialogUiState.Success
                         )
                     }
                 }.onNoInternet { message ->
