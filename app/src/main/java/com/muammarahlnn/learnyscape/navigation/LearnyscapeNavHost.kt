@@ -102,7 +102,7 @@ fun LearnyscapeNavHost(
             navigateToSubmissionDetails = navController::navigateToSubmissionDetails
         )
         quizSessionScreen(
-            onQuizIsOver = navController::popBackStack
+            navigateBack = navController::popBackStack
         )
         cameraScreen(
             onCameraClosed = navController::navigateUp

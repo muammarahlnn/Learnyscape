@@ -15,13 +15,15 @@ interface QuizSessionContract :
 
     data class State(
         val uiState: UiState = UiState.Loading,
+        val submittingAnswersDialogUiState: UiState = UiState.Loading,
         val quizId: String = "",
         val quizType: QuizType = QuizType.NONE,
         val quizName: String = "",
         val quizDuration: Int = 0,
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
         val multipleChoiceQuestions: List<MultipleChoiceQuestion> = listOf(),
-        val multipleChoiceAnswers: List<OptionLetter> = listOf()
+        val multipleChoiceAnswers: List<OptionLetter> = listOf(),
+        val unansweredQuestions: String = "",
     )
 
     sealed interface UiState {
@@ -37,6 +39,8 @@ interface QuizSessionContract :
         val showSubmitAnswerDialog: Boolean = false,
         val showTimeoutDialog: Boolean = false,
         val showYouCanNotLeaveDialog: Boolean = false,
+        val showUnansweredQuestionsDialog: Boolean = false,
+        val showSubmittingAnswersDialog: Boolean = false,
     )
 
     sealed interface Event {
@@ -51,10 +55,16 @@ interface QuizSessionContract :
 
         data class ShowTimeoutDialog(val show: Boolean) : Event
 
+        data class ShowUnansweredQuestionsDialog(val show: Boolean) : Event
+
+        data class ShowSubmittingAnswersDialog(val show: Boolean) : Event
+
         data class OnOptionSelected(
             val index: Int,
             val option: OptionLetter,
         ) : Event
+
+        data object OnSubmitAnswers : Event
     }
 
     sealed interface Effect {

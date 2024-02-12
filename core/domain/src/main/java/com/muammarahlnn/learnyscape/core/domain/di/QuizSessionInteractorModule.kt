@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.QuizSessionRepository
 import com.muammarahlnn.learnyscape.core.domain.quizsession.GetQuizMultipleChoiceQuestionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.quizsession.SubmitMultipleChoiceAnswersUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,5 +23,13 @@ object QuizSessionInteractorModule {
         quizSessionRepository: QuizSessionRepository
     ): GetQuizMultipleChoiceQuestionsUseCase = GetQuizMultipleChoiceQuestionsUseCase(
         quizSessionRepository::getQuizMultipleChoiceQuestions
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesSubmitMultipleChoiceAnswersUseCase(
+        quizSessionRepository: QuizSessionRepository
+    ): SubmitMultipleChoiceAnswersUseCase = SubmitMultipleChoiceAnswersUseCase(
+        quizSessionRepository::submitMultipleChoiceAnswers
     )
 }

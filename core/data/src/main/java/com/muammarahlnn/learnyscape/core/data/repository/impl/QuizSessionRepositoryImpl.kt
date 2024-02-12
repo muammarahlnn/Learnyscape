@@ -20,4 +20,7 @@ class QuizSessionRepositoryImpl @Inject constructor(
         quizSessionNetworkDataSource.getQuizMultipleChoiceProblems(quizId).map { quizMultipleChoiceProblemResponses ->
             quizMultipleChoiceProblemResponses.toMultipleChoiceQuestionModels()
         }
+
+    override fun submitMultipleChoiceAnswers(quizId: String, answers: List<String>): Flow<String> =
+        quizSessionNetworkDataSource.putMultipleChoiceAnswers(quizId, answers)
 }

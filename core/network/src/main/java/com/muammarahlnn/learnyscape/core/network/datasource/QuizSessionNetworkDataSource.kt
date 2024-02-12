@@ -10,4 +10,9 @@ import kotlinx.coroutines.flow.Flow
 interface QuizSessionNetworkDataSource {
 
     fun getQuizMultipleChoiceProblems(quizId: String): Flow<List<QuizMultipleChoiceProblemResponse>>
+
+    fun putMultipleChoiceAnswers(
+        quizId: String,
+        answers: List<String>,
+    ): Flow<String>
 }
