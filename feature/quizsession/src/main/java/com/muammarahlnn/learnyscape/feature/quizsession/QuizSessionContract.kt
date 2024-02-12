@@ -15,7 +15,8 @@ interface QuizSessionContract :
 
     data class State(
         val uiState: UiState = UiState.Loading,
-        val submittingAnswersDialogUiState: UiState = UiState.Loading,
+        val submittingAnswersDialogUiState: SubmittingAnswersDialogUiState =
+            SubmittingAnswersDialogUiState.None,
         val quizId: String = "",
         val quizType: QuizType = QuizType.NONE,
         val quizName: String = "",
@@ -33,6 +34,17 @@ interface QuizSessionContract :
         data object Success : UiState
 
         data class Error(val message: String) : UiState
+    }
+
+    sealed interface SubmittingAnswersDialogUiState {
+
+        data object None : SubmittingAnswersDialogUiState
+
+        data object Loading : SubmittingAnswersDialogUiState
+
+        data object Success : SubmittingAnswersDialogUiState
+
+        data class Error(val message: String) : SubmittingAnswersDialogUiState
     }
 
     data class OverlayComposableVisibility(

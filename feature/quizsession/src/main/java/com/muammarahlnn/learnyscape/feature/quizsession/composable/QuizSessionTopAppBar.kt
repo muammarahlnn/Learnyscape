@@ -48,6 +48,7 @@ fun QuizSessionTopAppBar(
     quizName: String,
     quizDuration: Int,
     topAppBarOffsetHeightPx: Float,
+    isSubmittingAnswers: Boolean,
     onGloballyPositioned: (Float) -> Unit,
     onTimeout: () -> Unit,
     modifier: Modifier = Modifier,
@@ -55,9 +56,11 @@ fun QuizSessionTopAppBar(
         quizDuration = quizDuration,
     ),
 ) {
-    LaunchedEffect(state.currentRemainingTime) {
-        delay(1000L)
-        state.updateCurrentRemainingTime()
+    LaunchedEffect(state.currentRemainingTime, isSubmittingAnswers) {
+        if (!isSubmittingAnswers) {
+            delay(1000L)
+            state.updateCurrentRemainingTime()
+        }
     }
 
     val currentTimeout by rememberUpdatedState(onTimeout)

@@ -211,10 +211,13 @@ private fun QuizSessionScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
+            val isSubmittingAnswers =
+                state.submittingAnswersDialogUiState !is QuizSessionContract.SubmittingAnswersDialogUiState.None
             QuizSessionTopAppBar(
                 quizName = state.quizName,
                 quizDuration = state.quizDuration,
                 topAppBarOffsetHeightPx = animateTopAppBarOffset,
+                isSubmittingAnswers = isSubmittingAnswers,
                 onGloballyPositioned = { topAppBarHeight ->
                     topAppBarHeightPx = topAppBarHeight
                 },
@@ -653,21 +656,26 @@ private fun TimeoutDialog(
 
 @Composable
 private fun SubmittingAnswersDialog(
-    uiState: QuizSessionContract.UiState,
+    uiState: QuizSessionContract.SubmittingAnswersDialogUiState,
     onContinue: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     when (uiState) {
-        QuizSessionContract.UiState.Loading -> LoadingDialog()
+        QuizSessionContract.SubmittingAnswersDialogUiState.None -> Unit
 
-        is QuizSessionContract.UiState.Success -> SuccessDialog(
+        QuizSessionContract.SubmittingAnswersDialogUiState.Loading -> LoadingDialog()
+
+        is QuizSessionContract.SubmittingAnswersDialogUiState.Success -> SuccessDialog(
             message = stringResource(id = R.string.submitting_answers_dialog_text),
             onConfirm = onContinue,
         )
 
-        is QuizSessionContract.UiState.Error -> ErrorDialog(
+        is QuizSessionContract.SubmittingAnswersDialogUiState.Error -> ErrorDialog(
             message = uiState.message,
-            onDismiss = onDismiss
+            onDismiss = {
+                onDismiss()
+                onContinue()
+            }
         )
     }
 }
