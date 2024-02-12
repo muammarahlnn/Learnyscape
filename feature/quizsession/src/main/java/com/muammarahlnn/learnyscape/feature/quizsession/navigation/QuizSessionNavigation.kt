@@ -54,7 +54,7 @@ fun NavHostController.navigateToQuizSession(
 }
 
 fun NavGraphBuilder.quizSessionScreen(
-    onQuizIsOver: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     composable(
         route = QUIZ_SESSION_ROUTE_WITH_ARGS,
@@ -74,7 +74,7 @@ fun NavGraphBuilder.quizSessionScreen(
         )
     ) {
         QuizSessionRoute(
-            onQuizIsOver = onQuizIsOver,
+            navigateBack = navigateBack,
         )
     }
 }

@@ -10,4 +10,9 @@ import kotlinx.coroutines.flow.Flow
 interface QuizSessionRepository {
 
     fun getQuizMultipleChoiceQuestions(quizId: String): Flow<List<MultipleChoiceQuestionModel>>
+
+    fun submitMultipleChoiceAnswers(
+        quizId: String,
+        answers: List<String>,
+    ): Flow<String>
 }

@@ -11,6 +11,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.quizsession.GetQuizMultipleChoiceQuestionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.quizsession.SubmitMultipleChoiceAnswersUseCase
 import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.QuizSessionArgs
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class QuizSessionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getQuizMultipleChoiceQuestionsUseCase: GetQuizMultipleChoiceQuestionsUseCase,
+    private val submitMultipleChoiceAnswersUseCase: SubmitMultipleChoiceAnswersUseCase,
 ) : ViewModel(), QuizSessionContract {
 
     private val quizSessionArgs = QuizSessionArgs(savedStateHandle)
@@ -66,8 +68,17 @@ class QuizSessionViewModel @Inject constructor(
             is QuizSessionContract.Event.ShowTimeoutDialog ->
                 showTimeoutDialog(event.show)
 
+            is QuizSessionContract.Event.ShowUnansweredQuestionsDialog ->
+                showUnansweredQuestionsDialog(event.show)
+
+            is QuizSessionContract.Event.ShowSubmittingAnswersDialog ->
+                showSubmittingAnswersDialog(event.show)
+
             is QuizSessionContract.Event.OnOptionSelected ->
                 onOptionSelected(event.index, event.option)
+
+            QuizSessionContract.Event.OnSubmitAnswers ->
+                submitAnswers()
         }
     }
 
@@ -173,6 +184,26 @@ class QuizSessionViewModel @Inject constructor(
         }
     }
 
+    private fun showUnansweredQuestionsDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    showUnansweredQuestionsDialog = show
+                )
+            )
+        }
+    }
+
+    private fun showSubmittingAnswersDialog(show: Boolean) {
+        _state.update {
+            it.copy(
+                overlayComposableVisibility = it.overlayComposableVisibility.copy(
+                    showSubmittingAnswersDialog = show
+                )
+            )
+        }
+    }
+
     private fun onOptionSelected(index: Int, option: OptionLetter) {
         _state.update {
             it.copy(
@@ -180,6 +211,75 @@ class QuizSessionViewModel @Inject constructor(
                     this[index] = option
                 }.toList()
             )
+        }
+    }
+
+    private fun submitAnswers() {
+        showSubmitAnswerDialog(false)
+
+        val unansweredQuestions = mutableListOf<Int>()
+        state.value.multipleChoiceAnswers.forEachIndexed { index, option ->
+            if (option == OptionLetter.UNSELECTED) {
+                unansweredQuestions.add(index + 1)
+            }
+        }
+        if (unansweredQuestions.isNotEmpty()) {
+            var unansweredQuestionsString = ""
+            unansweredQuestions.forEachIndexed { index, number ->
+                if (unansweredQuestions.size > 1 && index == unansweredQuestions.size - 1)
+                    unansweredQuestionsString += " and "
+                unansweredQuestionsString += number
+                if (index < unansweredQuestions.size - 2)
+                    unansweredQuestionsString += ", "
+            }
+
+            _state.update {
+                it.copy(
+                    unansweredQuestions = unansweredQuestionsString
+                )
+            }
+            showUnansweredQuestionsDialog(true)
+
+            return
+        }
+
+        fun onErrorSubmitAnswers(message: String) {
+            _state.update {
+                it.copy(
+                    submittingAnswersDialogUiState = QuizSessionContract.UiState.Error(message)
+                )
+            }
+        }
+
+        showSubmittingAnswersDialog(true)
+        viewModelScope.launch {
+            submitMultipleChoiceAnswersUseCase(
+                quizId = state.value.quizId,
+                answers = state.value.multipleChoiceAnswers.map {
+                    it.name
+                }
+            ).asResult().collect { result ->
+                result.onLoading {
+                    _state.update {
+                        it.copy(
+                            submittingAnswersDialogUiState = QuizSessionContract.UiState.Loading
+                        )
+                    }
+                }.onSuccess {
+                    _state.update {
+                        it.copy(
+                            submittingAnswersDialogUiState = QuizSessionContract.UiState.Success
+                        )
+                    }
+                }.onNoInternet { message ->
+                    onErrorSubmitAnswers(message)
+                }.onError { _, message ->
+                    onErrorSubmitAnswers(message)
+                }.onException { exception, message ->
+                    Log.e(TAG, exception?.message.toString())
+                    onErrorSubmitAnswers(message)
+                }
+            }
         }
     }
 

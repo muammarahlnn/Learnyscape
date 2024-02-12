@@ -57,8 +57,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
+import com.muammarahlnn.learnyscape.core.ui.ErrorDialog
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingDialog
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
+import com.muammarahlnn.learnyscape.core.ui.SuccessDialog
 import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.quizsession.composable.QuizSessionTopAppBar
@@ -108,8 +111,15 @@ private fun QuizSessionScreen(
 ) {
     if (state.overlayComposableVisibility.showSubmitAnswerDialog) {
         SubmitAnswerDialog(
-            onConfirm = { event(QuizSessionContract.Event.OnQuizIsOver) },
+            onConfirm = { event(QuizSessionContract.Event.OnSubmitAnswers) },
             onDismiss = { event(QuizSessionContract.Event.ShowSubmitAnswerDialog(false)) },
+        )
+    }
+
+    if (state.overlayComposableVisibility.showUnansweredQuestionsDialog) {
+        UnansweredQuestionsDialog(
+            unansweredQuestions = state.unansweredQuestions,
+            onDismiss = { event(QuizSessionContract.Event.ShowUnansweredQuestionsDialog(false)) }
         )
     }
 
@@ -122,6 +132,14 @@ private fun QuizSessionScreen(
     if (state.overlayComposableVisibility.showYouCanNotLeaveDialog) {
         YouCanNotLeaveDialog(
             onDismiss = { event(QuizSessionContract.Event.ShowYouCanNotLeaveDialog(false)) }
+        )
+    }
+
+    if (state.overlayComposableVisibility.showSubmittingAnswersDialog) {
+        SubmittingAnswersDialog(
+            uiState = state.submittingAnswersDialogUiState,
+            onContinue = { event(QuizSessionContract.Event.OnQuizIsOver) },
+            onDismiss = { event(QuizSessionContract.Event.ShowSubmittingAnswersDialog(false)) }
         )
     }
 
@@ -564,6 +582,26 @@ private fun YouCanNotLeaveDialog(
 }
 
 @Composable
+private fun UnansweredQuestionsDialog(
+    unansweredQuestions: String,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseAlertDialog(
+        title = stringResource(id = R.string.unanswered_dialog_title,),
+        dialogText = stringResource(
+            id = R.string.unanswered_dialog_text,
+            unansweredQuestions,
+        ),
+        onConfirm = onDismiss,
+        onDismiss = onDismiss,
+        confirmText = stringResource(id = R.string.ok),
+        dismissText = null,
+        modifier = modifier,
+    )
+}
+
+@Composable
 private fun TimeoutDialog(
     onContinue: () -> Unit,
     modifier: Modifier = Modifier,
@@ -611,4 +649,25 @@ private fun TimeoutDialog(
         containerColor = MaterialTheme.colorScheme.onPrimary,
         modifier = modifier,
     )
+}
+
+@Composable
+private fun SubmittingAnswersDialog(
+    uiState: QuizSessionContract.UiState,
+    onContinue: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    when (uiState) {
+        QuizSessionContract.UiState.Loading -> LoadingDialog()
+
+        is QuizSessionContract.UiState.Success -> SuccessDialog(
+            message = stringResource(id = R.string.submitting_answers_dialog_text),
+            onConfirm = onContinue,
+        )
+
+        is QuizSessionContract.UiState.Error -> ErrorDialog(
+            message = uiState.message,
+            onDismiss = onDismiss
+        )
+    }
 }

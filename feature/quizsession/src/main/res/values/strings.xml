@@ -13,4 +13,7 @@
     <string name="you_can_not_leave_dialog_title">You can\'t leave</string>
     <string name="you_can_not_leave_dialog_text">Please complete and submit your quiz. You can\'t leave until your quiz is submitted.</string>
     <string name="ok">@android:string/ok</string>
+    <string name="unanswered_dialog_title">Unanswered questions</string>
+    <string name="unanswered_dialog_text">You haven\'t answer question number %1$s. Please answer it then submit your quiz</string>
+    <string name="submitting_answers_dialog_text">Your quiz submitted successfully</string>
 </resources>

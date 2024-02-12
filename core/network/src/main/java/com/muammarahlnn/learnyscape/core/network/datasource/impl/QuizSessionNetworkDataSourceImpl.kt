@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.datasource.QuizSessionNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.model.request.SubmitMultipleChoiceAnswersRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizMultipleChoiceProblemResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,4 +22,13 @@ class QuizSessionNetworkDataSourceImpl @Inject constructor(
         flow {
             emit(quizzesApi.getQuizMultipleChoiceProblems(quizId).data.problems)
         }
+
+    override fun putMultipleChoiceAnswers(quizId: String, answers: List<String>): Flow<String> = flow {
+        emit(
+            quizzesApi.putMultipleChoiceAnswers(
+                quizId = quizId,
+                submitMultipleChoiceAnswersRequest = SubmitMultipleChoiceAnswersRequest(answers)
+            ).data
+        )
+    }
 }
