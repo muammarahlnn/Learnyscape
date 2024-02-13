@@ -41,6 +41,7 @@ interface ResourceDetailsContract :
         val isSaveStudentCurrentWorkLoading: Boolean = false,
         val isStudentCurrentWorkChange: Boolean = false,
         val isTurnInAssignmentSubmissionLoading: Boolean = false,
+        val isQuizTaken: Boolean = false,
     )
 
     sealed interface UiState {

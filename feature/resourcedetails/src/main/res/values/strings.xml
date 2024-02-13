@@ -45,4 +45,5 @@
     <string name="unsubmit_dialog_text">Unsubmit to make changes for your work. Don\'t forget to resubmit once you\'re done.</string>
     <string name="can_not_start_quiz_dialog_title">Can\'t start quiz</string>
     <string name="can_not_start_quiz_dialog_text">You only can start this quiz from %1$s to %2$s</string>
+    <string name="you_have_taken_this_quiz">You\'ve taken this quiz</string>
 </resources>

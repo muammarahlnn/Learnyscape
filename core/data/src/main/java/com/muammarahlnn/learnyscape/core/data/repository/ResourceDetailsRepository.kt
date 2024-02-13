@@ -49,4 +49,6 @@ interface ResourceDetailsRepository {
         submissionId: String,
         turnIn: Boolean,
     ): Flow<String>
+
+    fun isQuizTaken(quizId: String): Flow<Boolean>
 }

@@ -91,6 +91,10 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
     override fun turnInAssignmentSubmission(submissionId: String, turnIn: Boolean): Flow<String> =
         resourceDetailsNetworkDataSource.turnInTaskSubmission(submissionId, turnIn)
 
+
+    override fun isQuizTaken(quizId: String): Flow<Boolean> =
+        resourceDetailsNetworkDataSource.isQuizTaken(quizId)
+
     private suspend fun getAttachments(attachmentUrls: List<String>): List<File> {
         val attachments = mutableListOf<File>()
         attachmentUrls.forEach { attachmentUrl ->

@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.model.request.AddQuizQuestionsRequest
 import com.muammarahlnn.learnyscape.core.network.model.request.CreateQuizRequest
+import com.muammarahlnn.learnyscape.core.network.model.request.QuizSolutionResponse
 import com.muammarahlnn.learnyscape.core.network.model.request.SubmitMultipleChoiceAnswersRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.CreateQuizResponse
@@ -57,4 +58,9 @@ interface QuizzesApi {
         @Path("quizId") quizId: String,
         @Body submitMultipleChoiceAnswersRequest: SubmitMultipleChoiceAnswersRequest,
     ): BaseResponse<String>
+
+    @GET("quizzes/{quizId}/problems")
+    suspend fun getQuizSolutions(
+        @Path("quizId") quizId: String,
+    ): BaseResponse<QuizSolutionResponse>
 }
