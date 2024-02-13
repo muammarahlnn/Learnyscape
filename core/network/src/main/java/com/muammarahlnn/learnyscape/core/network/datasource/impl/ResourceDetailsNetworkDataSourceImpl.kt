@@ -118,6 +118,12 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
         )
     }
 
+    override fun isQuizTaken(quizId: String): Flow<Boolean> = flow {
+        emit(
+            quizzesApi.getQuizSolutions(quizId).data.problems[0].solution != null
+        )
+    }
+
     private fun Response<ResponseBody>.toAttachmentFile(): File? {
         if (!this.isSuccessful) return null
 

@@ -9,6 +9,7 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDet
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.IsQuizTakenUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.LecturerGetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.StudentGetAssignmentSubmissionUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.TurnInAssignmentSubmissionUseCase
@@ -130,5 +131,13 @@ object ResourceDetailsInteractorModule {
         resourceDetailsRepository: ResourceDetailsRepository
     ): TurnInAssignmentSubmissionUseCase = TurnInAssignmentSubmissionUseCase(
         resourceDetailsRepository::turnInAssignmentSubmission
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesIsQuizTakenUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): IsQuizTakenUseCase = IsQuizTakenUseCase(
+        resourceDetailsRepository::isQuizTaken
     )
 }

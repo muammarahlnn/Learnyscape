@@ -24,6 +24,7 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDet
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.IsQuizTakenUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.LecturerGetAssignmentSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.StudentGetAssignmentSubmissionUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.TurnInAssignmentSubmissionUseCase
@@ -39,6 +40,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.update
@@ -71,6 +73,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private val studentGetAssignmentSubmissionUseCase: StudentGetAssignmentSubmissionUseCase,
     private val updateAssignmentAttachmentsUseCase: UpdateAssignmentAttachmentsUseCase,
     private val turnInAssignmentSubmissionUseCase: TurnInAssignmentSubmissionUseCase,
+    private val isQuizTakenUseCase: IsQuizTakenUseCase,
 ) : ViewModel(), ResourceDetailsContract {
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
@@ -246,12 +249,17 @@ class ResourceDetailsViewModel @Inject constructor(
 
     private fun fetchQuizDetails() {
         viewModelScope.launch {
-            getQuizDetailsUseCase(quizId = state.value.resourceId)
+            combine(
+                getQuizDetailsUseCase(state.value.resourceId),
+                isQuizTakenUseCase(state.value.resourceId),
+                ::Pair
+            )
                 .asResult()
                 .collect { result ->
-                    handleFetchResourceDetails(result) { quizDetails ->
-                        _state.update {
-                            it.copy(
+                    handleFetchResourceDetails(result) {
+                        val (quizDetails, isQuizTaken) = it
+                        _state.update { updatedState ->
+                            updatedState.copy(
                                 name = quizDetails.name,
                                 date = quizDetails.updatedAt,
                                 description = quizDetails.description,
@@ -259,6 +267,7 @@ class ResourceDetailsViewModel @Inject constructor(
                                 endQuizDate = quizDetails.endDate,
                                 quizDuration = quizDetails.duration,
                                 quizType = quizDetails.quizType,
+                                isQuizTaken = isQuizTaken,
                                 uiState = ResourceDetailsContract.UiState.Success,
                             )
                         }
