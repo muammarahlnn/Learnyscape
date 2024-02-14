@@ -14,22 +14,26 @@ import com.muammarahlnn.submissiondetails.SubmissionDetailsRoute
  */
 private const val SUBMISSION_DETAILS_ROUTE = "submission_details_route"
 private const val SUBMISSION_TYPE_ORDINAL_ARG = "submission_type_ordinal"
+private const val SUBMISSION_ID_ARG = "submission_id"
 private const val SUBMISSION_DETAILS_ROUTE_WITH_ARGS =
-    "$SUBMISSION_DETAILS_ROUTE/{$SUBMISSION_TYPE_ORDINAL_ARG}"
+    "$SUBMISSION_DETAILS_ROUTE/{$SUBMISSION_TYPE_ORDINAL_ARG}/{$SUBMISSION_ID_ARG}"
 
 internal class SubmissionDetailsArgs(
     val submissionTypeOrdinal: Int,
+    val submissionId: String,
 ) {
 
     constructor(savedStateHandle: SavedStateHandle) : this(
         submissionTypeOrdinal = checkNotNull(savedStateHandle[SUBMISSION_TYPE_ORDINAL_ARG]),
+        submissionId = checkNotNull(savedStateHandle[SUBMISSION_ID_ARG]),
     )
 }
 
 fun NavController.navigateToSubmissionDetails(
     submissionTypeOrdinal: Int,
+    submissionId: String,
 ) {
-    this.navigate("$SUBMISSION_DETAILS_ROUTE/$submissionTypeOrdinal") {
+    this.navigate("$SUBMISSION_DETAILS_ROUTE/$submissionTypeOrdinal/$submissionId") {
         launchSingleTop = true
     }
 }
@@ -42,6 +46,9 @@ fun NavGraphBuilder.submissionDetailsScreen(
         arguments = listOf(
             navArgument(SUBMISSION_TYPE_ORDINAL_ARG) {
                 type = NavType.IntType
+            },
+            navArgument(SUBMISSION_ID_ARG) {
+                type = NavType.StringType
             },
         )
     ) {
