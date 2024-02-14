@@ -42,11 +42,11 @@ fun NavController.navigateToResourceDetails(
     }
 }
 
-fun NavGraphBuilder.resourceDetailsScreen(
+fun NavGraphBuilder.resourceDetailScreen(
     navigateBack: () -> Unit,
     navigateToCamera: () -> Unit,
     navigateToQuizSession: (String, Int, String, Int) -> Unit,
-    navigateToSubmissionDetails: (Int) -> Unit,
+    navigateToSubmissionDetails: (Int, String) -> Unit,
 ) {
     composable(
         route = RESOURCE_DETAILS_ROUTE_WITH_ARGS,

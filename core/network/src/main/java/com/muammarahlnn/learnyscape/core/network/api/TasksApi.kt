@@ -78,4 +78,9 @@ interface TasksApi {
         @Path("submissionId") submissionId: String,
         @Body turnInTaskSubmissionRequest: TurnInTaskSubmissionRequest,
     ): BaseResponse<String>
+
+    @GET("tasks/submissions/{submissionId}")
+    suspend fun getTaskSubmissionDetails(
+        @Path("submissionId") submissionId: String,
+    ): BaseResponse<StudentTaskSubmissionResponse>
 }

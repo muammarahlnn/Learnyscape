@@ -40,6 +40,7 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContr
  * @Author Muammar Ahlan Abimanyu
  * @File StudentWorkContent, 31/01/2024 16.48
  */
+
 internal enum class StudentWorkType {
     ASSIGNMENT, QUIZ
 }
@@ -49,7 +50,7 @@ internal fun StudentWorkContent(
     state: ResourceDetailsContract.State,
     studentWorkType: StudentWorkType,
     onRefresh: () -> Unit,
-    onSubmissionClick: () -> Unit,
+    onSubmissionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val submittedText = stringResource(
@@ -81,6 +82,7 @@ internal fun StudentWorkContent(
                     SubmittedStudentsCard(
                         submittedText = submittedText,
                         submittedStudents = state.submittedSubmissions,
+                        onSubmissionClick = onSubmissionClick,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -90,7 +92,6 @@ internal fun StudentWorkContent(
                 item {
                     MissingStudentsCard(
                         missingStudents = state.missingSubmissions,
-                        onSubmissionClick = onSubmissionClick,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -168,6 +169,7 @@ private fun StudentSubmissionStatus(
 private fun SubmittedStudentsCard(
     submittedText: String,
     submittedStudents: List<ResourceDetailsContract.StudentSubmissionState>,
+    onSubmissionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
@@ -178,7 +180,9 @@ private fun SubmittedStudentsCard(
             SubmissionItem(
                 profilePicUiState = submission.profilePicUiState,
                 name = submission.name,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .noRippleClickable { onSubmissionClick(submission.id) }
             ) {
                 SubmittedText(submittedText)
             }
@@ -191,7 +195,6 @@ private fun SubmittedStudentsCard(
 @Composable
 private fun MissingStudentsCard(
     missingStudents: List<ResourceDetailsContract.StudentSubmissionState>,
-    onSubmissionClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
@@ -202,9 +205,7 @@ private fun MissingStudentsCard(
             SubmissionItem(
                 profilePicUiState = submission.profilePicUiState,
                 name = submission.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .noRippleClickable { onSubmissionClick() }
+                modifier = Modifier.fillMaxWidth()
             ) {
                 MissingText()
             }

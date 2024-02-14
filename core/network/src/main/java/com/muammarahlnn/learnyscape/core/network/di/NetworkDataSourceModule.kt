@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.di
 
+import com.muammarahlnn.learnyscape.core.network.datasource.AttachmentNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.AvailableClassNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ClassFeedNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ClassMembersNetworkDataSource
@@ -12,6 +13,8 @@ import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetwor
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceOverviewNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.SchedulesNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.SubmissionDetailsNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.AttachmentNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.AvailableClassNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ClassFeedNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ClassMembersNetworkDataSourceImpl
@@ -24,6 +27,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceCreateN
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceDetailsNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ResourceOverviewNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.SchedulesNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.SubmissionDetailsNetworkDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -98,4 +102,14 @@ interface NetworkDataSourceModule {
     fun bindsQuizSessionNetworkDataSource(
         quizSessionNetworkDataSource: QuizSessionNetworkDataSourceImpl
     ): QuizSessionNetworkDataSource
+
+    @Binds
+    fun bindsSubmissionDetailsNetworkDataSource(
+        submissionDetailsNetworkDataSource: SubmissionDetailsNetworkDataSourceImpl
+    ): SubmissionDetailsNetworkDataSource
+
+    @Binds
+    fun bindsAttachmentNetworkDataSource(
+        attachmentNetworkDataSource: AttachmentNetworkDataSourceImpl
+    ): AttachmentNetworkDataSource
 }

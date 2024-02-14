@@ -10,8 +10,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StudentTaskSubmissionResponse(
     val userId: String,
+    val taskSubmissionId: String,
     val studentName: String,
     val turnInStatus: Boolean,
-    val taskSubmissionId: String,
     @SerialName("attachment") val attachmentUrls: List<String>,
 )

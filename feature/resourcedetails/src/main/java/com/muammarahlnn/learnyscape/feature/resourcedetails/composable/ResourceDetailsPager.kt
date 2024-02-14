@@ -40,7 +40,7 @@ internal fun ResourceDetailsPager(
     onAttachmentClick: (File) -> Unit,
     onRefreshInstructions: () -> Unit,
     onRefreshStudentWork: () -> Unit,
-    onSubmissionClick: () -> Unit,
+    onSubmissionClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()

@@ -15,14 +15,16 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -32,8 +34,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import com.muammarahlnn.learnyscape.core.ui.AttachmentItem
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.openFile
+import com.muammarahlnn.learnyscape.core.ui.util.use
+import java.io.File
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
@@ -46,17 +54,33 @@ internal fun SubmissionDetailsRoute(
     modifier: Modifier = Modifier,
     viewModel: SubmissionDetailsViewModel = hiltViewModel(),
 ) {
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(SubmissionDetailsContract.Event.FetchSubmissionDetails)
+    }
+
+    val context = LocalContext.current
+    viewModel.effect.collectInLaunchedEffect {
+        when (it) {
+            is SubmissionDetailsContract.Effect.OpenAttachment ->
+                openFile(context, it.attachment)
+
+            SubmissionDetailsContract.Effect.NavigateBack ->
+                navigateBack()
+        }
+    }
+
     SubmissionDetailsScreen(
-        submissionType = viewModel.submissionType,
-        navigateBack = navigateBack,
+        state = state,
+        event = { event(it) },
         modifier = modifier,
     )
 }
 
 @Composable
 private fun SubmissionDetailsScreen(
-    submissionType: SubmissionType,
-    navigateBack: () -> Unit,
+    state: SubmissionDetailsContract.State,
+    event: (SubmissionDetailsContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -74,7 +98,7 @@ private fun SubmissionDetailsScreen(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.background)
                 .size(32.dp)
-                .clickable { navigateBack() }
+                .clickable { event(SubmissionDetailsContract.Event.OnBackClick) }
         ) {
             Icon(
                 painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
@@ -87,18 +111,38 @@ private fun SubmissionDetailsScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        when (submissionType) {
-            SubmissionType.ASSIGNMENT -> StudentSubmissionCard(
-                modifier = Modifier.fillMaxWidth()
+        when (state.uiState) {
+            SubmissionDetailsContract.UiState.Loading -> LoadingScreen(
+                modifier = Modifier.weight(1f)
             )
 
-            SubmissionType.QUIZ -> StudentQuizAnswersContent()
+            is SubmissionDetailsContract.UiState.Error -> ErrorScreen(
+                text = state.uiState.message,
+                onRefresh = { event(SubmissionDetailsContract.Event.FetchSubmissionDetails) },
+                modifier = Modifier.weight(1f)
+            )
+
+            SubmissionDetailsContract.UiState.Success -> when (state.submissionType) {
+                SubmissionType.ASSIGNMENT -> StudentSubmissionCard(
+                    studentName = state.assignmentSubmission.studentName,
+                    attachments = state.assignmentSubmission.attachments,
+                    onAttachmentClick = { event(SubmissionDetailsContract.Event.OnAttachmentClick(it)) },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                SubmissionType.QUIZ -> StudentQuizAnswersContent(
+                    studentName = state.assignmentSubmission.studentName,
+                )
+            }
         }
     }
 }
 
 @Composable
 private fun StudentSubmissionCard(
+    studentName: String,
+    attachments: List<File>,
+    onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(modifier = modifier) {
@@ -106,24 +150,31 @@ private fun StudentSubmissionCard(
             modifier = Modifier.padding(16.dp)
         ) {
             StudentSubmissionDetailsRow(
+                studentName = studentName,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            repeat(2) {
+            for (i in attachments.indices step 2) {
                 Row(modifier = Modifier.fillMaxWidth()) {
                     AttachmentItem(
-                        name = "Lorem ipsum dolor sit amet.pdf",
+                        attachment = attachments[i],
+                        onAttachmentClick = onAttachmentClick,
                         modifier = Modifier.weight(0.5f)
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    AttachmentItem(
-                        name = "Lorem ipsum dolor sit amet.pdf",
-                        modifier = Modifier.weight(0.5f)
-                    )
+                    if (i + 1 < attachments.size) {
+                        AttachmentItem(
+                            attachment = attachments[i + 1],
+                            onAttachmentClick = onAttachmentClick,
+                            modifier = Modifier.weight(0.5f)
+                        )
+                    } else {
+                        Spacer(modifier = Modifier.weight(0.5f))
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -134,11 +185,13 @@ private fun StudentSubmissionCard(
 
 @Composable
 private fun StudentQuizAnswersContent(
+    studentName: String,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         BaseCard(modifier = modifier) {
             StudentSubmissionDetailsRow(
+                studentName = studentName,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -153,6 +206,7 @@ private fun StudentQuizAnswersContent(
 
 @Composable
 private fun StudentSubmissionDetailsRow(
+    studentName: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -170,14 +224,14 @@ private fun StudentSubmissionDetailsRow(
 
         Column {
             Text(
-                text = "Lorem ipsum dolor sit amet",
+                text = studentName,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "Turned in at 21:12",
+                text = "Turned in at TODO: need from BE",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.tertiary,
             )

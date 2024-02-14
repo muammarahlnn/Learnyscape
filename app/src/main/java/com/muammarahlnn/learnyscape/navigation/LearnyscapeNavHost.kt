@@ -25,7 +25,7 @@ import com.muammarahlnn.learnyscape.feature.quizsession.navigation.quizSessionSc
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.navigateToResourceCreate
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.resourceCreateScreen
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.navigateToResourceDetails
-import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.resourceDetailsScreen
+import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.resourceDetailScreen
 import com.muammarahlnn.learnyscape.ui.LearnyscapeAppState
 import com.muammarahlnn.submissiondetails.navigation.navigateToSubmissionDetails
 import com.muammarahlnn.submissiondetails.navigation.submissionDetailsScreen
@@ -95,7 +95,7 @@ fun LearnyscapeNavHost(
             onNotificationClick = {}, // TODO: implement it later
             onBackClick = navController::popBackStack
         )
-        resourceDetailsScreen(
+        resourceDetailScreen(
             navigateBack = navController::popBackStack,
             navigateToCamera = navController::navigateToCamera,
             navigateToQuizSession = navController::navigateToQuizSession,

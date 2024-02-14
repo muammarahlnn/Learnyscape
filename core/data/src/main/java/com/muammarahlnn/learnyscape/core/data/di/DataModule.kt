@@ -14,6 +14,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepositor
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceOverviewRepository
 import com.muammarahlnn.learnyscape.core.data.repository.SchedulesRepository
+import com.muammarahlnn.learnyscape.core.data.repository.SubmissionDetailsRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.AvailableClassRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.CapturedPhotoRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ClassFeedRepositoryImpl
@@ -28,6 +29,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceCreateRepo
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceDetailsRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceOverviewRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.SchedulesRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.SubmissionDetailsRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -114,4 +116,9 @@ interface DataModule {
     fun bindsQuizSessionRepository(
         quizSessionRepository: QuizSessionRepositoryImpl
     ): QuizSessionRepository
+
+    @Binds
+    fun bindsSubmissionDetailsRepository(
+        submissionDetailsRepository: SubmissionDetailsRepositoryImpl
+    ): SubmissionDetailsRepository
 }
