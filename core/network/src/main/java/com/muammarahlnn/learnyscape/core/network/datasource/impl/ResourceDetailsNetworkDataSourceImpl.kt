@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
-import android.content.Context
 import com.muammarahlnn.learnyscape.core.network.api.AnnouncementsApi
 import com.muammarahlnn.learnyscape.core.network.api.QuizzesApi
 import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
@@ -17,7 +16,6 @@ import com.muammarahlnn.learnyscape.core.network.model.response.StudentTaskSubmi
 import com.muammarahlnn.learnyscape.core.network.model.response.TaskDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.util.toFileParts
 import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBody
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.io.File
@@ -30,7 +28,6 @@ import javax.inject.Singleton
  */
 @Singleton
 class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val announcementsApi: AnnouncementsApi,
     private val referencesApi: ReferencesApi,
     private val tasksApi: TasksApi,
