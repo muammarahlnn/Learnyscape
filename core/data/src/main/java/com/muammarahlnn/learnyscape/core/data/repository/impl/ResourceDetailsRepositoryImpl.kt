@@ -14,8 +14,10 @@ import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.ModuleDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
+import com.muammarahlnn.learnyscape.core.network.datasource.AttachmentNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceDetailsNetworkDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import java.io.File
 import javax.inject.Inject
@@ -26,33 +28,34 @@ import javax.inject.Inject
  */
 class ResourceDetailsRepositoryImpl @Inject constructor(
     private val resourceDetailsNetworkDataSource: ResourceDetailsNetworkDataSource,
+    private val attachmentNetworkDataSource: AttachmentNetworkDataSource,
 ) : ResourceDetailsRepository {
 
     override fun getAnnouncementDetails(announcementId: String): Flow<AnnouncementDetailsModel> =
-        resourceDetailsNetworkDataSource.getAnnouncementDetails(announcementId).map { announcementDetailsResponse ->
-            announcementDetailsResponse.toAnnouncementDetailsModel(
-                getAttachments(announcementDetailsResponse.attachmentUrls)
-            )
+        resourceDetailsNetworkDataSource.getAnnouncementDetails(announcementId).flatMapLatest { announcementDetailsResponse ->
+            getAttachments(announcementDetailsResponse.attachmentUrls).map { attachmentResponses ->
+                announcementDetailsResponse.toAnnouncementDetailsModel(attachmentResponses)
+            }
         }
 
     override fun deleteAnnouncement(announcementId: String): Flow<String> =
         resourceDetailsNetworkDataSource.deleteAnnouncement(announcementId)
 
     override fun getModuleDetails(moduleId: String): Flow<ModuleDetailsModel> =
-        resourceDetailsNetworkDataSource.getReferenceDetails(moduleId).map { referenceDetailsResponse ->
-            referenceDetailsResponse.toModuleDetailsModel(
-                getAttachments(referenceDetailsResponse.attachmentUrls)
-            )
+        resourceDetailsNetworkDataSource.getReferenceDetails(moduleId).flatMapLatest { referenceDetailsResponse ->
+            getAttachments(referenceDetailsResponse.attachmentUrls).map { attachmentResponses ->
+                referenceDetailsResponse.toModuleDetailsModel(attachmentResponses)
+            }
         }
 
     override fun deleteModule(moduleId: String): Flow<String> =
         resourceDetailsNetworkDataSource.deleteReference(moduleId)
 
     override fun getAssignmentDetails(assignmentId: String): Flow<AssignmentDetailsModel> =
-        resourceDetailsNetworkDataSource.getTaskDetails(assignmentId).map { taskDetailsResponse ->
-            taskDetailsResponse.toAssignmentDetailsModel(
-                getAttachments(taskDetailsResponse.attachmentUrls)
-            )
+        resourceDetailsNetworkDataSource.getTaskDetails(assignmentId).flatMapLatest { taskDetailsResponse ->
+            getAttachments(taskDetailsResponse.attachmentUrls).map { attachmentResponses ->
+                taskDetailsResponse.toAssignmentDetailsModel(attachmentResponses)
+            }
         }
 
     override fun lecturerGetAssignmentSubmissions(assignmentId: String): Flow<List<StudentSubmissionModel>> =
@@ -61,10 +64,10 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
         }
 
     override fun studentGetAssignmentSubmission(assignmentId: String): Flow<AssignmentSubmissionModel> =
-        resourceDetailsNetworkDataSource.studentGetTaskSubmission(assignmentId).map { studentTaskSubmissionResponse ->
-            studentTaskSubmissionResponse.toAssignmentSubmissionModel(
-                getAttachments(studentTaskSubmissionResponse.attachmentUrls)
-            )
+        resourceDetailsNetworkDataSource.studentGetTaskSubmission(assignmentId).flatMapLatest { studentTaskSubmissionResponse ->
+            getAttachments(studentTaskSubmissionResponse.attachmentUrls).map { attachmentResponses ->
+                studentTaskSubmissionResponse.toAssignmentSubmissionModel(attachmentResponses)
+            }
         }
 
     override fun deleteAssignment(assignmentId: String): Flow<String> =
@@ -95,16 +98,6 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
     override fun isQuizTaken(quizId: String): Flow<Boolean> =
         resourceDetailsNetworkDataSource.isQuizTaken(quizId)
 
-    private suspend fun getAttachments(attachmentUrls: List<String>): List<File> {
-        val attachments = mutableListOf<File>()
-        attachmentUrls.forEach { attachmentUrl ->
-            resourceDetailsNetworkDataSource.getAttachment(attachmentUrl).collect { attachment ->
-                attachment?.let {
-                    attachments.add(it)
-                }
-            }
-        }
-
-        return attachments.toList()
-    }
+    private fun getAttachments(attachmentUrls: List<String>): Flow<List<File>> =
+        attachmentNetworkDataSource.getAttachments(attachmentUrls).map { it.filterNotNull() }
 }
