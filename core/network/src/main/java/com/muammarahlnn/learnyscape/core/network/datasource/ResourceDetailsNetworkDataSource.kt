@@ -16,8 +16,6 @@ import java.io.File
  */
 interface ResourceDetailsNetworkDataSource {
 
-    fun getAttachment(attachmentUrl: String): Flow<File?>
-
     fun getAnnouncementDetails(announcementId: String): Flow<AnnouncementDetailsResponse>
 
     fun deleteAnnouncement(announcementId: String): Flow<String>
