@@ -50,7 +50,7 @@ internal fun StudentWorkContent(
     state: ResourceDetailsContract.State,
     studentWorkType: StudentWorkType,
     onRefresh: () -> Unit,
-    onSubmissionClick: (String) -> Unit,
+    onSubmissionClick: (String, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val submittedText = stringResource(
@@ -169,7 +169,7 @@ private fun StudentSubmissionStatus(
 private fun SubmittedStudentsCard(
     submittedText: String,
     submittedStudents: List<ResourceDetailsContract.StudentSubmissionState>,
-    onSubmissionClick: (String) -> Unit,
+    onSubmissionClick: (String, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
@@ -182,7 +182,9 @@ private fun SubmittedStudentsCard(
                 name = submission.name,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .noRippleClickable { onSubmissionClick(submission.id) }
+                    .noRippleClickable {
+                        onSubmissionClick(submission.id, submission.userId, submission.name)
+                    }
             ) {
                 SubmittedText(submittedText)
             }

@@ -152,7 +152,7 @@ class ResourceDetailsViewModel @Inject constructor(
                 showStartQuizDialog(false)
 
             is ResourceDetailsContract.Event.OnSubmissionClick ->
-                navigateToSubmissionDetails(event.submissionId)
+                navigateToSubmissionDetails(event.submissionId, event.studentId, event.studentName)
 
             is ResourceDetailsContract.Event.OnRemoveAssignmentSubmissionAttachment ->
                 removeAssignmentSubmissionAttachment(event.index)
@@ -884,18 +884,28 @@ class ResourceDetailsViewModel @Inject constructor(
         showStartQuizDialog(false)
     }
 
-    private fun navigateToSubmissionDetails(submissionId: String) {
+    private fun navigateToSubmissionDetails(
+        submissionId: String,
+        studentId: String,
+        studentName: String,
+    ) {
         viewModelScope.launch {
-            val submissionTypeOrdinal = when (state.value.resourceType) {
-                ClassResourceType.ASSIGNMENT -> SubmissionType.ASSIGNMENT.ordinal
-                ClassResourceType.QUIZ -> SubmissionType.QUIZ.ordinal
+            val (submissionTypeOrdinal, resolvedSubmissionId) = when (state.value.resourceType) {
+                ClassResourceType.ASSIGNMENT ->
+                    SubmissionType.ASSIGNMENT.ordinal to submissionId
+
+                ClassResourceType.QUIZ ->
+                    SubmissionType.QUIZ.ordinal to state.value.resourceId
+
                 else -> return@launch
             }
 
             _effect.emit(
                 ResourceDetailsContract.Effect.NavigateToSubmissionDetails(
                     submissionTypeOrdinal = submissionTypeOrdinal,
-                    submissionId = submissionId,
+                    submissionId = resolvedSubmissionId,
+                    studentId = studentId,
+                    studentName = studentName,
                 )
             )
         }

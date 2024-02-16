@@ -32,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.model.data.StudentQuizAnswerModel
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import com.muammarahlnn.learnyscape.core.ui.AttachmentItem
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
@@ -131,7 +132,8 @@ private fun SubmissionDetailsScreen(
                 )
 
                 SubmissionType.QUIZ -> StudentQuizAnswersContent(
-                    studentName = state.assignmentSubmission.studentName,
+                    studentName = state.studentName,
+                    quizAnswers = state.quizAnswers
                 )
             }
         }
@@ -186,6 +188,7 @@ private fun StudentSubmissionCard(
 @Composable
 private fun StudentQuizAnswersContent(
     studentName: String,
+    quizAnswers: List<StudentQuizAnswerModel>,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -200,7 +203,9 @@ private fun StudentQuizAnswersContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        MultipleChoiceAnswers()
+        MultipleChoiceAnswers(
+            quizAnswers = quizAnswers,
+        )
     }
 }
 
@@ -240,9 +245,11 @@ private fun StudentSubmissionDetailsRow(
 }
 
 @Composable
-private fun MultipleChoiceAnswers() {
+private fun MultipleChoiceAnswers(
+    quizAnswers: List<StudentQuizAnswerModel>,
+) {
     Column {
-        repeat(5) {
+        quizAnswers.forEachIndexed { index, answer ->
             Row {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -257,7 +264,7 @@ private fun MultipleChoiceAnswers() {
                         .padding(5.dp)
                 ) {
                     Text(
-                        text = it.toString(),
+                        text = "${index + 1}",
                         style = MaterialTheme.typography.labelMedium.copy(
                             fontWeight = FontWeight.SemiBold
                         ),
@@ -274,17 +281,17 @@ private fun MultipleChoiceAnswers() {
                             .padding(10.dp)
                     ) {
                         Text(
-                            text = "A.",
+                            text = "${answer.option}.",
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = FontWeight.SemiBold
                             ),
                             color = MaterialTheme.colorScheme.onBackground,
                         )
 
-                        Spacer(modifier = Modifier.width(2.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
-                            text = "Lorem ipsum dolor sit amet, lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, lorem ipsum dolor sit amet.",
+                            text = answer.description,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onBackground,
                         )

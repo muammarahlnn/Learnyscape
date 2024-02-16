@@ -15,25 +15,33 @@ import com.muammarahlnn.submissiondetails.SubmissionDetailsRoute
 private const val SUBMISSION_DETAILS_ROUTE = "submission_details_route"
 private const val SUBMISSION_TYPE_ORDINAL_ARG = "submission_type_ordinal"
 private const val SUBMISSION_ID_ARG = "submission_id"
+private const val STUDENT_ID_ARG = "student_id"
+private const val STUDENT_NAME_ARG = "student_name"
 private const val SUBMISSION_DETAILS_ROUTE_WITH_ARGS =
-    "$SUBMISSION_DETAILS_ROUTE/{$SUBMISSION_TYPE_ORDINAL_ARG}/{$SUBMISSION_ID_ARG}"
+    "$SUBMISSION_DETAILS_ROUTE?$SUBMISSION_ID_ARG={$SUBMISSION_ID_ARG}/{$SUBMISSION_TYPE_ORDINAL_ARG}/{$STUDENT_ID_ARG}/{$STUDENT_NAME_ARG}"
 
 internal class SubmissionDetailsArgs(
     val submissionTypeOrdinal: Int,
-    val submissionId: String,
+    val submissionId: String?,
+    val studentId: String,
+    val studentName: String,
 ) {
 
     constructor(savedStateHandle: SavedStateHandle) : this(
         submissionTypeOrdinal = checkNotNull(savedStateHandle[SUBMISSION_TYPE_ORDINAL_ARG]),
-        submissionId = checkNotNull(savedStateHandle[SUBMISSION_ID_ARG]),
+        submissionId = savedStateHandle[SUBMISSION_ID_ARG],
+        studentId = checkNotNull(savedStateHandle[STUDENT_ID_ARG]),
+        studentName = checkNotNull(savedStateHandle[STUDENT_NAME_ARG]),
     )
 }
 
 fun NavController.navigateToSubmissionDetails(
     submissionTypeOrdinal: Int,
     submissionId: String,
+    studentId: String,
+    studentName: String,
 ) {
-    this.navigate("$SUBMISSION_DETAILS_ROUTE/$submissionTypeOrdinal/$submissionId") {
+    this.navigate("$SUBMISSION_DETAILS_ROUTE?$SUBMISSION_ID_ARG=$submissionId/$submissionTypeOrdinal/$studentId/$studentName") {
         launchSingleTop = true
     }
 }
@@ -48,6 +56,13 @@ fun NavGraphBuilder.submissionDetailsScreen(
                 type = NavType.IntType
             },
             navArgument(SUBMISSION_ID_ARG) {
+                type = NavType.StringType
+                nullable = true
+            },
+            navArgument(STUDENT_ID_ARG) {
+                type = NavType.StringType
+            },
+            navArgument(STUDENT_NAME_ARG) {
                 type = NavType.StringType
             },
         )
