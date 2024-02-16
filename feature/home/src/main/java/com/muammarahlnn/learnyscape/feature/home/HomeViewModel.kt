@@ -3,6 +3,10 @@ package com.muammarahlnn.learnyscape.feature.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -10,10 +14,11 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.home.GetEnrolledClassesUseCase
+import com.muammarahlnn.learnyscape.feature.home.HomeContract.Effect
+import com.muammarahlnn.learnyscape.feature.home.HomeContract.Event
+import com.muammarahlnn.learnyscape.feature.home.HomeContract.State
+import com.muammarahlnn.learnyscape.feature.home.HomeContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,49 +30,50 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getEnrolledClassesUseCase: GetEnrolledClassesUseCase
-) : ViewModel(), HomeContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow(HomeContract.State())
-    override val state: StateFlow<HomeContract.State> = _state
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    override fun event(event: HomeContract.Event) = when (event) {
-        HomeContract.Event.FetchEnrolledClasses -> fetchEnrolledClasses()
-        is HomeContract.Event.OnSearchQueryChanged -> onSearchQueryChanged(event.query)
+    override fun event(event: Event) {
+        when (event) {
+            Event.FetchEnrolledClasses -> fetchEnrolledClasses()
+            is Event.OnSearchQueryChanged -> onSearchQueryChanged(event.query)
+            is Event.OnClassClick -> navigateToClass(event.classId)
+            Event.OnNotificationsClick -> navigateToNotifications()
+        }
     }
 
     private fun fetchEnrolledClasses() {
         viewModelScope.launch {
             getEnrolledClassesUseCase().asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
-                        it.copy(uiState = HomeContract.UiState.Loading)
+                    updateState {
+                        it.copy(uiState = UiState.Loading)
                     }
                 }.onSuccess { enrolledClasses ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             uiState = if (enrolledClasses.isNotEmpty()) {
-                                HomeContract.UiState.Success(enrolledClasses)
+                                UiState.Success(enrolledClasses)
                             } else {
-                                HomeContract.UiState.SuccessEmptyClasses
+                                UiState.SuccessEmptyClasses
                             }
                         )
                     }
                 }.onNoInternet { message ->
-                    _state.update {
-                        it.copy(uiState = HomeContract.UiState.NoInternet(message))
+                    updateState {
+                        it.copy(uiState = UiState.NoInternet(message))
                     }
                 }.onError { _, message ->
                     Log.e(TAG, message)
-                    _state.update {
-                        it.copy(uiState = HomeContract.UiState.Error(message))
+                    updateState {
+                        it.copy(uiState = UiState.Error(message))
                     }
                 }.onException { exception, message ->
                     Log.e(TAG, exception?.message.toString())
-                    _state.update {
-                        it.copy(uiState = HomeContract.UiState.Error(message))
+                    updateState {
+                        it.copy(uiState = UiState.Error(message))
                     }
                 }
             }
@@ -75,9 +81,17 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onSearchQueryChanged(query: String) {
-        _state.update {
+        updateState {
             it.copy(searchQuery = query)
         }
+    }
+
+    private fun navigateToClass(classId: String) {
+        viewModelScope.emitEffect(Effect.NavigateToClass(classId))
+    }
+
+    private fun navigateToNotifications() {
+        viewModelScope.emitEffect(Effect.NavigateToNotifications)
     }
 
     companion object {

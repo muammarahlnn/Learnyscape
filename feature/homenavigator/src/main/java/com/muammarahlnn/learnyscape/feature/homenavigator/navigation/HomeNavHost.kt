@@ -19,8 +19,8 @@ import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
 @Composable
 internal fun HomeNavHost(
     state: HomeNavigatorState,
-    onNotificationsClick: () -> Unit,
-    onClassClick: (String) -> Unit,
+    navigateToNotifications: () -> Unit,
+    navigateToClass: (String) -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onCameraActionClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
@@ -34,14 +34,14 @@ internal fun HomeNavHost(
         modifier = modifier,
     ) {
         homeScreen(
-            onNotificationsClick = onNotificationsClick,
-            onClassClick = onClassClick,
+            navigateToNotifications = navigateToNotifications,
+            navigateToClass = navigateToClass,
         )
         searchScreen(
             onPendingClassRequestClick = onPendingClassRequestClick
         )
         scheduleScreen(
-            onScheduleClick = onClassClick,
+            onScheduleClick = navigateToClass,
         )
         profileScreen(
             onCameraActionClick = onCameraActionClick,

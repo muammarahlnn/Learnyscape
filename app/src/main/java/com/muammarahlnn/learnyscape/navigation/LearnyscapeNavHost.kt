@@ -73,10 +73,10 @@ fun LearnyscapeNavHost(
         }
     ) {
         homeNavigator(
-            onNotificationsClick = {
+            navigateToNotifications = {
                 navController.navigateToNotifications()
             },
-            onClassClick = navController::navigateToClassNavigator,
+            navigateToClass = navController::navigateToClassNavigator,
             onCameraActionClick = {
                 navController.navigateToCamera()
             },

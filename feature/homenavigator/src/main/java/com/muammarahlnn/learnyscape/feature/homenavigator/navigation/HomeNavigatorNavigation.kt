@@ -13,16 +13,16 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.HomeNavigatorRoute
 const val HOME_NAVIGATOR_ROUTE = "home_navigator_route"
 
 fun NavGraphBuilder.homeNavigator(
-    onNotificationsClick: () -> Unit,
-    onClassClick: (String) -> Unit,
+    navigateToNotifications: () -> Unit,
+    navigateToClass: (String) -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
 ) {
     composable(route = HOME_NAVIGATOR_ROUTE) {
         HomeNavigatorRoute(
-            onNotificationsClick = onNotificationsClick,
-            onClassClick = onClassClick,
+            navigateToNotifications = navigateToNotifications,
+            navigateToClass = navigateToClass,
             onCameraActionClick = onCameraActionClick,
             onPendingClassRequestClick = onPendingClassRequestClick,
             onChangePasswordButtonClick = onChangePasswordButtonClick,

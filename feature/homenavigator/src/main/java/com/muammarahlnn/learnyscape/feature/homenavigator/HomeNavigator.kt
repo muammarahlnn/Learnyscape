@@ -25,16 +25,16 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeNavHost
 
 @Composable
 internal fun HomeNavigatorRoute(
-    onNotificationsClick: () -> Unit,
-    onClassClick: (String) -> Unit,
+    navigateToNotifications: () -> Unit,
+    navigateToClass: (String) -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeNavigator(
-        onNotificationsClick = onNotificationsClick,
-        onClassClick = onClassClick,
+        navigateToNotifications = navigateToNotifications,
+        navigateToClass = navigateToClass,
         onCameraActionClick = onCameraActionClick,
         onPendingClassRequestClick = onPendingClassRequestClick,
         onChangePasswordButtonClick = onChangePasswordButtonClick,
@@ -44,8 +44,8 @@ internal fun HomeNavigatorRoute(
 
 @Composable
 private fun HomeNavigator(
-    onNotificationsClick: () -> Unit,
-    onClassClick: (String) -> Unit,
+    navigateToNotifications: () -> Unit,
+    navigateToClass: (String) -> Unit,
     onCameraActionClick: () -> Unit,
     onPendingClassRequestClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
@@ -67,8 +67,8 @@ private fun HomeNavigator(
     ) { paddingValues ->
         HomeNavHost(
             state = state,
-            onNotificationsClick = onNotificationsClick,
-            onClassClick = onClassClick,
+            navigateToNotifications = navigateToNotifications,
+            navigateToClass = navigateToClass,
             onPendingClassRequestClick = onPendingClassRequestClick,
             onCameraActionClick = onCameraActionClick,
             onChangePasswordButtonClick = onChangePasswordButtonClick,
