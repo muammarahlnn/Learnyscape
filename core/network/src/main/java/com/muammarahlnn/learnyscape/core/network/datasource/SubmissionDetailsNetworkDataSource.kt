@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.datasource
 
+import com.muammarahlnn.learnyscape.core.network.model.response.StudentQuizAnswerResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.StudentTaskSubmissionResponse
 import kotlinx.coroutines.flow.Flow
 
@@ -10,4 +11,9 @@ import kotlinx.coroutines.flow.Flow
 interface SubmissionDetailsNetworkDataSource {
 
     fun getTaskSubmissionDetails(submissionId: String): Flow<StudentTaskSubmissionResponse>
+
+    fun getStudentQuizAnswers(
+        quizId: String,
+        studentId: String,
+    ): Flow<List<StudentQuizAnswerResponse>>
 }

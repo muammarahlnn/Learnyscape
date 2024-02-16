@@ -3,6 +3,7 @@ package com.muammarahlnn.submissiondetails
 import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
+import com.muammarahlnn.learnyscape.core.model.data.StudentQuizAnswerModel
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import java.io.File
 
@@ -18,8 +19,11 @@ interface SubmissionDetailsContract :
     data class State(
         val submissionType: SubmissionType = SubmissionType.ASSIGNMENT,
         val submissionId: String = "",
+        val studentId: String = "",
+        val studentName: String = "",
         val uiState: UiState = UiState.Loading,
         val assignmentSubmission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
+        val quizAnswers: List<StudentQuizAnswerModel> = listOf(),
     )
 
     sealed interface UiState {

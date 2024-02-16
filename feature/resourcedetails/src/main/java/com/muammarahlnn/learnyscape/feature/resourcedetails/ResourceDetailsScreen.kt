@@ -40,7 +40,7 @@ internal fun ResourceDetailsRoute(
     navigateBack: () -> Unit,
     navigateToCamera: () -> Unit,
     navigateToQuizSession: (String, Int, String, Int) -> Unit,
-    navigateToSubmissionDetails: (Int, String) -> Unit,
+    navigateToSubmissionDetails: (Int, String, String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
 ) {
@@ -87,7 +87,12 @@ internal fun ResourceDetailsRoute(
                 openFile(context, it.attachment)
 
             is ResourceDetailsContract.Effect.NavigateToSubmissionDetails ->
-                navigateToSubmissionDetails(it.submissionTypeOrdinal, it.submissionId)
+                navigateToSubmissionDetails(
+                    it.submissionTypeOrdinal,
+                    it.submissionId,
+                    it.studentId,
+                    it.studentName,
+                )
         }
     }
 
@@ -186,7 +191,9 @@ private fun ResourceDetailsScreen(
                     onAttachmentClick = instructionsContentEvent.onAttachmentClick,
                     onRefreshInstructions = instructionsContentEvent.onRefresh,
                     onRefreshStudentWork = { event(ResourceDetailsContract.Event.FetchStudentWorks) },
-                    onSubmissionClick = { event(ResourceDetailsContract.Event.OnSubmissionClick(it)) },
+                    onSubmissionClick = { submissionId, studentId, studentName ->
+                        event(ResourceDetailsContract.Event.OnSubmissionClick(submissionId, studentId, studentName))
+                    },
                     modifier = contentModifier
                 )
             }

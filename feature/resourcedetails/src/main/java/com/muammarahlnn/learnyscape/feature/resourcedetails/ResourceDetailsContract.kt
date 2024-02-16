@@ -107,7 +107,11 @@ interface ResourceDetailsContract :
 
         data object OnDismissStartQuizDialog : Event
 
-        data class OnSubmissionClick(val submissionId: String) : Event
+        data class OnSubmissionClick(
+            val submissionId: String,
+            val studentId: String,
+            val studentName: String,
+        ) : Event
 
         data class OnRemoveAssignmentSubmissionAttachment(val index: Int) : Event
 
@@ -140,6 +144,8 @@ interface ResourceDetailsContract :
         data class NavigateToSubmissionDetails(
             val submissionTypeOrdinal: Int,
             val submissionId: String,
+            val studentId: String,
+            val studentName: String,
         ) : Effect
     }
 }

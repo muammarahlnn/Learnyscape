@@ -1,8 +1,10 @@
 package com.muammarahlnn.learnyscape.core.data.repository.impl
 
 import com.muammarahlnn.learnyscape.core.data.mapper.toAssignmentSubmissionModel
+import com.muammarahlnn.learnyscape.core.data.mapper.toStudentQuizAnswerModels
 import com.muammarahlnn.learnyscape.core.data.repository.SubmissionDetailsRepository
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
+import com.muammarahlnn.learnyscape.core.model.data.StudentQuizAnswerModel
 import com.muammarahlnn.learnyscape.core.network.datasource.AttachmentNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.SubmissionDetailsNetworkDataSource
 import kotlinx.coroutines.flow.Flow
@@ -29,4 +31,14 @@ class SubmissionDetailsRepositoryImpl @Inject constructor(
                         )
                     }
             }
+
+    override fun getStudentQuizAnswers(
+        quizId: String,
+        studentId: String
+    ): Flow<List<StudentQuizAnswerModel>> = submissionDetailsNetworkDataSource.getStudentQuizAnswers(
+        quizId = quizId,
+        studentId = studentId,
+    ).map { studentQuizAnswerResponses ->
+        studentQuizAnswerResponses.toStudentQuizAnswerModels()
+    }
 }
