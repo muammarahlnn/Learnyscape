@@ -19,13 +19,13 @@ fun NavController.navigateToHome(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.homeScreen(
-    onNotificationsClick: () -> Unit,
-    onClassClick: (String) -> Unit,
+    navigateToNotifications: () -> Unit,
+    navigateToClass: (String) -> Unit,
 ) {
     composable(route = HOME_ROUTE) {
         HomeRoute(
-            onNotificationsClick = onNotificationsClick,
-            onClassClick = onClassClick,
+            navigateToNotifications = navigateToNotifications,
+            navigateToClass = navigateToClass,
         )
     }
 }
