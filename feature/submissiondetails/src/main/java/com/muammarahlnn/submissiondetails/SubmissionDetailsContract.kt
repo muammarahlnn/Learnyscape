@@ -5,6 +5,7 @@ import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.StudentQuizAnswerModel
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import java.io.File
 
 /**
@@ -22,6 +23,7 @@ interface SubmissionDetailsContract :
         val studentId: String = "",
         val studentName: String = "",
         val uiState: UiState = UiState.Loading,
+        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val assignmentSubmission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
         val quizAnswers: List<StudentQuizAnswerModel> = listOf(),
     )

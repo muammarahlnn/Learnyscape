@@ -11,9 +11,11 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
 import com.muammarahlnn.learnyscape.core.domain.submissiondetails.GetAssignmentSubmissionDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.submissiondetails.GetStudentQuizAnswersUseCase
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
+import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.submissiondetails.navigation.SubmissionDetailsArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,6 +36,7 @@ class SubmissionDetailsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getAssignmentSubmissionDetailsUseCase: GetAssignmentSubmissionDetailsUseCase,
     private val getStudentQuizAnswersUseCase: GetStudentQuizAnswersUseCase,
+    private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
 ) : ViewModel(), SubmissionDetailsContract {
 
     private val args = SubmissionDetailsArgs(savedStateHandle)
@@ -68,6 +71,8 @@ class SubmissionDetailsViewModel @Inject constructor(
                 SubmissionType.ASSIGNMENT -> fetchStudentAssignmentSubmissionDetails()
                 SubmissionType.QUIZ -> fetchStudentQuizAnswers()
             }
+
+            fetchProfilePic()
         }
     }
 
@@ -130,6 +135,41 @@ class SubmissionDetailsViewModel @Inject constructor(
                 uiState = SubmissionDetailsContract.UiState.Error(message)
             )
         }
+    }
+
+    private suspend fun fetchProfilePic() {
+        fun onErrorFetchProfilePic(message: String) {
+            Log.e(TAG, message)
+            _state.update {
+                it.copy(
+                    profilePicUiState = PhotoProfileImageUiState.Success(null),
+                )
+            }
+        }
+
+        getProfilePicByIdUseCase(state.value.studentId)
+            .asResult()
+            .collect { result ->
+                result.onLoading {
+                    _state.update {
+                        it.copy(
+                            profilePicUiState = PhotoProfileImageUiState.Loading,
+                        )
+                    }
+                }.onSuccess { profilePic ->
+                    _state.update {
+                        it.copy(
+                            profilePicUiState = PhotoProfileImageUiState.Success(profilePic)
+                        )
+                    }
+                }.onNoInternet { message ->
+                    onErrorFetchProfilePic(message)
+                }.onError { _, message ->
+                    onErrorFetchProfilePic(message)
+                }.onException { exception, _ ->
+                    onErrorFetchProfilePic(exception?.message.toString())
+                }
+            }
     }
 
     private fun openAttachment(attachment: File) {
