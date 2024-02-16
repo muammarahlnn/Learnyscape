@@ -125,6 +125,7 @@ private fun SubmissionDetailsScreen(
 
             SubmissionDetailsContract.UiState.Success -> when (state.submissionType) {
                 SubmissionType.ASSIGNMENT -> StudentSubmissionCard(
+                    profilePicUiState = state.profilePicUiState,
                     studentName = state.assignmentSubmission.studentName,
                     attachments = state.assignmentSubmission.attachments,
                     onAttachmentClick = { event(SubmissionDetailsContract.Event.OnAttachmentClick(it)) },
@@ -132,6 +133,7 @@ private fun SubmissionDetailsScreen(
                 )
 
                 SubmissionType.QUIZ -> StudentQuizAnswersContent(
+                    profilePicUiState = state.profilePicUiState,
                     studentName = state.studentName,
                     quizAnswers = state.quizAnswers
                 )
@@ -142,6 +144,7 @@ private fun SubmissionDetailsScreen(
 
 @Composable
 private fun StudentSubmissionCard(
+    profilePicUiState: PhotoProfileImageUiState,
     studentName: String,
     attachments: List<File>,
     onAttachmentClick: (File) -> Unit,
@@ -152,6 +155,7 @@ private fun StudentSubmissionCard(
             modifier = Modifier.padding(16.dp)
         ) {
             StudentSubmissionDetailsRow(
+                profilePicUiState = profilePicUiState,
                 studentName = studentName,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -187,6 +191,7 @@ private fun StudentSubmissionCard(
 
 @Composable
 private fun StudentQuizAnswersContent(
+    profilePicUiState: PhotoProfileImageUiState,
     studentName: String,
     quizAnswers: List<StudentQuizAnswerModel>,
     modifier: Modifier = Modifier,
@@ -194,6 +199,7 @@ private fun StudentQuizAnswersContent(
     Column(modifier = modifier) {
         BaseCard(modifier = modifier) {
             StudentSubmissionDetailsRow(
+                profilePicUiState = profilePicUiState,
                 studentName = studentName,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -211,6 +217,7 @@ private fun StudentQuizAnswersContent(
 
 @Composable
 private fun StudentSubmissionDetailsRow(
+    profilePicUiState: PhotoProfileImageUiState,
     studentName: String,
     modifier: Modifier = Modifier,
 ) {
@@ -219,7 +226,7 @@ private fun StudentSubmissionDetailsRow(
         modifier = modifier,
     ) {
         PhotoProfileImage(
-            uiState = PhotoProfileImageUiState.Success(null),
+            uiState = profilePicUiState,
             modifier = Modifier
                 .size(36.dp)
                 .clip(CircleShape)
