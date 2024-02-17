@@ -14,30 +14,30 @@ import kotlinx.coroutines.launch
  * @Author Muammar Ahlan Abimanyu
  * @File ContractDelegate, 16/02/2024 19.35
  */
-private class ContractDelegate<STATE, EVENT, EFFECT>(
-    initialState: STATE,
-) : ContractProvider<STATE, EVENT, EFFECT> {
+private class ContractDelegate<State, Event, Effect>(
+    initialState: State,
+) : ContractProvider<State, Event, Effect> {
 
     private val _state = MutableStateFlow(initialState)
-    override val state: StateFlow<STATE> = _state.asStateFlow()
+    override val state: StateFlow<State> = _state.asStateFlow()
 
-    private val _effect by lazy { Channel<EFFECT>() }
-    override val effect: Flow<EFFECT> by lazy { _effect.receiveAsFlow() }
+    private val _effect by lazy { Channel<Effect>() }
+    override val effect: Flow<Effect> by lazy { _effect.receiveAsFlow() }
 
-    override fun event(event: EVENT) {}
+    override fun event(event: Event) {}
 
-    override fun updateState(state: STATE) {
+    override fun updateState(state: State) {
         _state.update { state }
     }
 
-    override fun updateState(block: (STATE) -> STATE) {
+    override fun updateState(block: (State) -> State) {
         _state.update(block)
     }
 
-    override fun CoroutineScope.emitEffect(effect: EFFECT) {
+    override fun CoroutineScope.emitEffect(effect: Effect) {
         this.launch { _effect.send(effect) }
     }
 }
 
-fun <STATE, EVENT, EFFECT> contract(initialState: STATE): ContractProvider<STATE, EVENT, EFFECT> =
+fun <State, Event, Effect> contract(initialState: State): ContractProvider<State, Event, Effect> =
     ContractDelegate(initialState)

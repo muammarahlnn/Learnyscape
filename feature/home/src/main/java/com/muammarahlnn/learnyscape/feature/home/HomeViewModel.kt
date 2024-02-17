@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.NavigationProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.navigation
 import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
@@ -16,6 +18,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.home.GetEnrolledClassesUseCase
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.Effect
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.Event
+import com.muammarahlnn.learnyscape.feature.home.HomeContract.Navigation
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.State
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +35,7 @@ class HomeViewModel @Inject constructor(
     private val getEnrolledClassesUseCase: GetEnrolledClassesUseCase
 ) : ViewModel(),
     ContractProvider<State, Event, Effect> by contract(State()),
+    NavigationProvider<Navigation> by navigation(),
     RefreshProvider by refresh()
 {
 
@@ -39,8 +43,6 @@ class HomeViewModel @Inject constructor(
         when (event) {
             Event.FetchEnrolledClasses -> fetchEnrolledClasses()
             is Event.OnSearchQueryChanged -> onSearchQueryChanged(event.query)
-            is Event.OnClassClick -> navigateToClass(event.classId)
-            Event.OnNotificationsClick -> navigateToNotifications()
         }
     }
 
@@ -84,14 +86,6 @@ class HomeViewModel @Inject constructor(
         updateState {
             it.copy(searchQuery = query)
         }
-    }
-
-    private fun navigateToClass(classId: String) {
-        viewModelScope.emitEffect(Effect.NavigateToClass(classId))
-    }
-
-    private fun navigateToNotifications() {
-        viewModelScope.emitEffect(Effect.NavigateToNotifications)
     }
 
     companion object {

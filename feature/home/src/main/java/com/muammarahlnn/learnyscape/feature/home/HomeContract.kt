@@ -31,16 +31,14 @@ interface HomeContract {
         data object FetchEnrolledClasses : Event
 
         data class OnSearchQueryChanged(val query: String) : Event
-
-        data class OnClassClick(val classId: String) : Event
-
-        data object OnNotificationsClick : Event
     }
 
-    sealed interface Effect {
+    sealed interface Effect
 
-        data class NavigateToClass(val classId: String) : Effect
+    sealed interface Navigation {
 
-        data object NavigateToNotifications : Effect
+        data class NavigateToClass(val classId: String) : Navigation
+
+        data object NavigateToNotifications : Navigation
     }
 }
