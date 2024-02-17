@@ -3,6 +3,10 @@ package com.muammarahlnn.learnyscape.feature.search
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -12,12 +16,11 @@ import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.availableclass.GetAvailableClassesUseCase
 import com.muammarahlnn.learnyscape.core.domain.availableclass.RequestJoinClassUseCase
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.Effect
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.Event
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.State
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,24 +33,18 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val getAvailableClassesUseCase: GetAvailableClassesUseCase,
     private val requestJoinClassUseCase: RequestJoinClassUseCase,
-) : ViewModel(), SearchContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow(SearchContract.State())
-    override val state: StateFlow<SearchContract.State> = _state
-
-    private val _effect = MutableSharedFlow<SearchContract.Effect>()
-    override val effect: SharedFlow<SearchContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    override fun event(event: SearchContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            SearchContract.Event.FetchAvailableClasses -> fetchAvailableClasses()
-            is SearchContract.Event.OnSearchQueryChanged -> onSearchQueryChanged(event.query)
-            is SearchContract.Event.OnAvailableClassClick -> onAvailableClassClick(event.availableClass)
-            SearchContract.Event.OnDismissJoinClass -> onDismissJoinRequestDialog()
-            SearchContract.Event.OnRequestJoinClass -> requestJoinClass()
+            Event.FetchAvailableClasses -> fetchAvailableClasses()
+            is Event.OnSearchQueryChanged -> onSearchQueryChanged(event.query)
+            is Event.OnAvailableClassClick -> onAvailableClassClick(event.availableClass)
+            Event.OnDismissJoinClass -> onDismissJoinRequestDialog()
+            Event.OnRequestJoinClass -> requestJoinClass()
         }
     }
 
@@ -55,39 +52,39 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             getAvailableClassesUseCase().asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
+                    updateState {
                         it.copy(
-                            uiState = SearchContract.UiState.Loading
+                            uiState = UiState.Loading
                         )
                     }
                 }.onSuccess { availableClasses ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             uiState = if (availableClasses.isNotEmpty()) {
-                                SearchContract.UiState.Success(availableClasses)
+                                UiState.Success(availableClasses)
                             } else {
-                                SearchContract.UiState.SuccessEmpty
+                                UiState.SuccessEmpty
                             }
                         )
                     }
                 }.onNoInternet { message ->
-                    _state.update {
+                    updateState {
                         it.copy(
-                            uiState = SearchContract.UiState.NoInternet(message)
+                            uiState = UiState.NoInternet(message)
                         )
                     }
                 }.onError { _, message ->
                     Log.e(TAG, message)
-                    _state.update {
+                    updateState {
                         it.copy(
-                            uiState = SearchContract.UiState.Error(message)
+                            uiState = UiState.Error(message)
                         )
                     }
                 }.onException { exception, message ->
                     Log.e(TAG, exception?.message.toString())
-                    _state.update {
+                    updateState {
                         it.copy(
-                            uiState = SearchContract.UiState.Error(message)
+                            uiState = UiState.Error(message)
                         )
                     }
                 }
@@ -96,13 +93,13 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onSearchQueryChanged(query: String) {
-        _state.update {
+        updateState {
             it.copy(searchQuery = query)
         }
     }
 
     private fun onAvailableClassClick(availableClass: AvailableClassModel) {
-        _state.update {
+        updateState {
             it.copy(
                 selectedAvailableClass = availableClass,
                 showJoinRequestDialog = true,
@@ -111,31 +108,30 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun requestJoinClass() {
-        viewModelScope.launch {
-            _state.value.selectedAvailableClass?.let { selectedAvailableClass ->
+        state.value.selectedAvailableClass?.let { selectedAvailableClass ->
+            viewModelScope.launch {
+
+                fun onErrorRequestJoinClass(message: String) {
+                    showToast(message)
+                    onDismissJoinRequestDialog()
+                }
+
                 requestJoinClassUseCase(selectedAvailableClass.id).asResult().collect { result ->
                     result.onLoading {
-                        _state.update {
+                        updateState {
                             it.copy(joinRequestClassDialogLoading = true)
                         }
                     }.onSuccess {
-                        _effect.emit(
-                            SearchContract.Effect.ShowToast(
-                                "Successfully requested to join ${selectedAvailableClass.name} class"
-                            )
-                        )
+                        showToast("Successfully requested to join ${selectedAvailableClass.name} class")
                         onDismissJoinRequestDialog()
                     }.onNoInternet { message ->
-                        _effect.emit(SearchContract.Effect.ShowToast(message))
-                        onDismissJoinRequestDialog()
+                        onErrorRequestJoinClass(message)
                     }.onError { _, message ->
                         Log.e(TAG, message)
-                        _effect.emit(SearchContract.Effect.ShowToast(message))
-                        onDismissJoinRequestDialog()
+                        onErrorRequestJoinClass(message)
                     }.onException { exception, message ->
                         Log.e(TAG, exception?.message.toString())
-                        _effect.emit(SearchContract.Effect.ShowToast(message))
-                        onDismissJoinRequestDialog()
+                        onErrorRequestJoinClass(message)
                     }
                 }
             }
@@ -143,13 +139,17 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun onDismissJoinRequestDialog() {
-        _state.update {
+        updateState {
             it.copy(
                 selectedAvailableClass = null,
                 showJoinRequestDialog = false,
                 joinRequestClassDialogLoading = false,
             )
         }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.emitEffect(Effect.ShowToast(message))
     }
 
     companion object {

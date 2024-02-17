@@ -1,18 +1,12 @@
 package com.muammarahlnn.learnyscape.feature.search
 
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
-import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 
 /**
  * @Author Muammar Ahlan Abimanyu
  * @File SearchContract, 13/12/2023 02.59
  */
-interface SearchContract :
-    BaseContract<SearchContract.State, SearchContract.Event>,
-    EffectProvider<SearchContract.Effect>,
-    RefreshProvider {
+interface SearchContract {
 
     data class State(
         val uiState: UiState = UiState.Loading,
@@ -51,5 +45,10 @@ interface SearchContract :
     sealed interface Effect {
 
         data class ShowToast(val message: String) : Effect
+    }
+
+    sealed interface Navigation {
+
+        data object NavigateToPendingClass : Navigation
     }
 }

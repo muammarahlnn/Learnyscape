@@ -28,7 +28,7 @@ internal fun HomeNavigatorRoute(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
     onCameraActionClick: () -> Unit,
-    onPendingClassRequestClick: () -> Unit,
+    navigateToPendingRequestClass: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -36,7 +36,7 @@ internal fun HomeNavigatorRoute(
         navigateToNotifications = navigateToNotifications,
         navigateToClass = navigateToClass,
         onCameraActionClick = onCameraActionClick,
-        onPendingClassRequestClick = onPendingClassRequestClick,
+        navigateToPendingRequestClass = navigateToPendingRequestClass,
         onChangePasswordButtonClick = onChangePasswordButtonClick,
         modifier = modifier,
     )
@@ -47,7 +47,7 @@ private fun HomeNavigator(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
     onCameraActionClick: () -> Unit,
-    onPendingClassRequestClick: () -> Unit,
+    navigateToPendingRequestClass: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
     state: HomeNavigatorState = rememberHomeNavigatorState()
@@ -69,7 +69,7 @@ private fun HomeNavigator(
             state = state,
             navigateToNotifications = navigateToNotifications,
             navigateToClass = navigateToClass,
-            onPendingClassRequestClick = onPendingClassRequestClick,
+            navigateToPendingRequestClass = navigateToPendingRequestClass,
             onCameraActionClick = onCameraActionClick,
             onChangePasswordButtonClick = onChangePasswordButtonClick,
             modifier = Modifier

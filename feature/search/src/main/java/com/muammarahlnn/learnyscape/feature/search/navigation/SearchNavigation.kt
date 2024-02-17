@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.search.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.search.SearchController
 import com.muammarahlnn.learnyscape.feature.search.SearchRoute
 
 
@@ -19,11 +21,14 @@ fun NavController.navigateToSearch(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.searchScreen(
-    onPendingClassRequestClick: () -> Unit,
+    navigateToPendingRequestClass: () -> Unit,
 ) {
     composable(route = SEARCH_ROUTE) {
         SearchRoute(
-            onPendingClassRequestClick = onPendingClassRequestClick,
+            controller = SearchController(
+                scope = rememberCoroutineScope(),
+                navigateToPendingRequestClass = navigateToPendingRequestClass,
+            )
         )
     }
 }

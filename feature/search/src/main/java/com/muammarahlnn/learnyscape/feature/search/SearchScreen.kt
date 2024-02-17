@@ -21,9 +21,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.PullRefreshState
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -54,11 +51,18 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingDialog
 import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.StudentOnlyComposable
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.Effect
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.Event
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.Navigation
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.State
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.UiState
 import kotlinx.datetime.LocalTime
 
 
@@ -66,52 +70,37 @@ import kotlinx.datetime.LocalTime
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file SearchScreen, 20/07/2023 22.06 by Muammar Ahlan Abimanyu
  */
-
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun SearchRoute(
-    onPendingClassRequestClick: () -> Unit,
+    controller: SearchController,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
-    val (state, event) = use(contract = viewModel)
-    LaunchedEffect(Unit) {
-        event(SearchContract.Event.FetchAvailableClasses)
-    }
-
-    val context = LocalContext.current
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            is SearchContract.Effect.ShowToast -> {
-                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-            }
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            Navigation.NavigateToPendingClass ->
+                controller.navigateToPendingRequestClass()
         }
     }
 
-    val (refreshing, pullRefreshState) = use(refreshProvider = viewModel) {
-        event(SearchContract.Event.FetchAvailableClasses)
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(Event.FetchAvailableClasses)
+    }
+
+    val context = LocalContext.current
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
+            is Effect.ShowToast ->
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     SearchScreen(
         state = state,
-        pullRefreshState = pullRefreshState,
-        refreshing = refreshing,
-        onRefresh = {
-            event(SearchContract.Event.FetchAvailableClasses)
-        },
-        onPendingClassRequestClick = onPendingClassRequestClick,
-        onSearchQueryChanged = { searchQuery ->
-            event(SearchContract.Event.OnSearchQueryChanged(searchQuery))
-        },
-        onClassItemClick = { availableClass ->
-            event(SearchContract.Event.OnAvailableClassClick(availableClass))
-        },
-        onRequestJoinRequestDialog = {
-            event(SearchContract.Event.OnRequestJoinClass)
-        },
-        onDismissJoinRequestDialog = {
-            event(SearchContract.Event.OnDismissJoinClass)
-        },
+        refreshState = use(viewModel) { event(Event.FetchAvailableClasses) },
+        event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -119,24 +108,18 @@ internal fun SearchRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun SearchScreen(
-    state: SearchContract.State,
-    pullRefreshState: PullRefreshState,
-    refreshing: Boolean,
-    onRefresh: () -> Unit,
-    onPendingClassRequestClick: () -> Unit,
-    onSearchQueryChanged: (String) -> Unit,
-    onClassItemClick: (AvailableClassModel) -> Unit,
-    onRequestJoinRequestDialog: () -> Unit,
-    onDismissJoinRequestDialog: () -> Unit,
+    state: State,
+    refreshState: RefreshState,
+    event: (Event) -> Unit,
+    navigate: (Navigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state.showJoinRequestDialog) {
-        // double bang operator used because it's guaranteed selectedAvailableClass will never be null
         JoinRequestClassDialog(
             loading = state.joinRequestClassDialogLoading,
             className = state.selectedAvailableClass?.name.orEmpty(),
-            onRequest = onRequestJoinRequestDialog,
-            onDismiss = onDismissJoinRequestDialog,
+            onRequest = { event(Event.OnRequestJoinClass) },
+            onDismiss = { event(Event.OnDismissJoinClass) },
         )
     }
 
@@ -145,61 +128,56 @@ private fun SearchScreen(
         topBar = {
             SearchTopAppBar(
                 scrollBehavior = scrollBehavior,
-                onPendingClassRequestClick = onPendingClassRequestClick
+                onPendingClassRequestClick = { navigate(Navigation.NavigateToPendingClass) }
             )
-        }
+        },
+        modifier = modifier
     ) { paddingValues ->
-        Box(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .pullRefresh(pullRefreshState)
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        PullRefreshScreen(
+            pullRefreshState = refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = Modifier.padding(paddingValues)
         ) {
             when (state.uiState) {
-                SearchContract.UiState.Loading -> {
+                UiState.Loading -> {
                     SearchContentLoading()
                 }
 
-                is SearchContract.UiState.Success -> {
+                is UiState.Success -> {
                     SearchContent(
                         availableClasses = state.uiState.availableClasses,
                         searchQuery = state.searchQuery,
-                        onSearchQueryChanged = onSearchQueryChanged,
-                        onClassItemClick = onClassItemClick,
-                        modifier = modifier.fillMaxSize()
+                        onSearchQueryChanged = { event(Event.OnSearchQueryChanged(it)) },
+                        onClassItemClick = { event(Event.OnAvailableClassClick(it)) },
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .nestedScroll(scrollBehavior.nestedScrollConnection)
                     )
                 }
 
-                SearchContract.UiState.SuccessEmpty -> {
+                UiState.SuccessEmpty -> {
                     NoDataScreen(
                         text = stringResource(id = R.string.empty_classes_text),
-                        modifier = modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
-                is SearchContract.UiState.NoInternet -> {
+                is UiState.NoInternet -> {
                     NoInternetScreen(
                         text = state.uiState.message,
-                        onRefresh = onRefresh,
-                        modifier = modifier.fillMaxSize()
+                        onRefresh = { event(Event.FetchAvailableClasses) },
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
 
-                is SearchContract.UiState.Error -> {
+                is UiState.Error -> {
                     ErrorScreen(
                         text = state.uiState.message,
-                        onRefresh = onRefresh,
-                        modifier = modifier.fillMaxSize()
+                        onRefresh = { event(Event.FetchAvailableClasses) },
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
-
-            PullRefreshIndicator(
-                refreshing = refreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }
