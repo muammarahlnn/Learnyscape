@@ -4,6 +4,10 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -15,16 +19,16 @@ import com.muammarahlnn.learnyscape.core.domain.joinrequest.PutStudentAcceptance
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
 import com.muammarahlnn.learnyscape.core.model.data.WaitingListModel
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestContract.Effect
+import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestContract.Event
+import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestContract.State
+import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestContract.UiState
+import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestContract.WaitingListStudentState
 import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.JoinRequestArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,55 +42,52 @@ class JoinRequestViewModel @Inject constructor(
     private val getWaitingClassUseCase: GetWaitingClassUseCase,
     private val putStudentAcceptanceUseCase: PutStudentAcceptanceUseCase,
     private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
-) : ViewModel(), JoinRequestContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val joinRequestArgs = JoinRequestArgs(savedStateHandle)
+    private val args = JoinRequestArgs(savedStateHandle)
 
-    private val _state = MutableStateFlow(
-        JoinRequestContract.State(classId = joinRequestArgs.classId)
-    )
-    override val state: StateFlow<JoinRequestContract.State> = _state
+    init {
+        updateState {
+            it.copy(
+                classId = args.classId,
+            )
+        }
+    }
 
-    private val _effect = MutableSharedFlow<JoinRequestContract.Effect>()
-    override val effect: SharedFlow<JoinRequestContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    override fun event(event: JoinRequestContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            JoinRequestContract.Event.FetchWaitingList ->
+            Event.FetchWaitingList ->
                 fetchWaitingList()
 
-            JoinRequestContract.Event.OnCloseClick ->
-                navigateBack()
-
-            is JoinRequestContract.Event.OnAcceptStudent ->
+            is Event.OnAcceptStudent ->
                 updateStudentAcceptance(event.studentId, true)
 
-            is JoinRequestContract.Event.OnRejectStudent ->
+            is Event.OnRejectStudent ->
                 updateStudentAcceptance(event.studentId, false)
         }
     }
 
     private fun fetchWaitingList() {
         fun onErrorFetchWaitingList(message: String) {
-            _state.update {
+            updateState {
                 it.copy(
-                    uiState = JoinRequestUiState.Error(message)
+                    uiState = UiState.Error(message)
                 )
             }
         }
 
         viewModelScope.launch {
-            getWaitingClassUseCase(classId = _state.value.classId).asResult().collect { result ->
+            getWaitingClassUseCase(classId = state.value.classId).asResult().collect { result ->
                 result.onLoading {
                     onUiStateLoading()
                 }.onSuccess { waitingList ->
                     if (waitingList.isNotEmpty()) {
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = JoinRequestUiState.Success,
+                                uiState = UiState.Success,
                                 waitingListStudents = waitingList.map { waitingListModel ->
                                     waitingListModel.toWaitingListStudentState()
                                 }
@@ -94,9 +95,9 @@ class JoinRequestViewModel @Inject constructor(
                         }
                         fetchProfilePics()
                     } else {
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = JoinRequestUiState.SuccessEmpty
+                                uiState = UiState.SuccessEmpty
                             )
                         }
                     }
@@ -112,8 +113,8 @@ class JoinRequestViewModel @Inject constructor(
         }
     }
 
-    private fun WaitingListModel.toWaitingListStudentState(): JoinRequestContract.WaitingListStudentState =
-        JoinRequestContract.WaitingListStudentState(
+    private fun WaitingListModel.toWaitingListStudentState(): WaitingListStudentState =
+        WaitingListStudentState(
             id = id,
             userId = userId,
             name = fullName,
@@ -126,7 +127,7 @@ class JoinRequestViewModel @Inject constructor(
                     .asResult()
                     .collect { result ->
                         result.onLoading {
-                            _state.update {
+                            updateState {
                                 it.copy(
                                     waitingListStudents = it.waitingListStudents.toMutableList().apply {
                                         this[index] = this[index].copy(
@@ -136,7 +137,7 @@ class JoinRequestViewModel @Inject constructor(
                                 )
                             }
                         }.onSuccess { profilePic ->
-                            _state.update {
+                            updateState {
                                 it.copy(
                                     waitingListStudents = it.waitingListStudents.toMutableList().apply {
                                         this[index] = this[index].copy(
@@ -162,7 +163,7 @@ class JoinRequestViewModel @Inject constructor(
         index: Int,
     ) {
         Log.e(TAG, message)
-        _state.update {
+        updateState {
             it.copy(
                 waitingListStudents = it.waitingListStudents.toMutableList().apply {
                     this[index] = this[index].copy(
@@ -200,23 +201,15 @@ class JoinRequestViewModel @Inject constructor(
     }
 
     private fun onUiStateLoading() {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = JoinRequestUiState.Loading
+                uiState = UiState.Loading
             )
         }
     }
 
     private fun showToast(message: String) {
-        viewModelScope.launch {
-            _effect.emit(JoinRequestContract.Effect.ShowToast(message))
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(JoinRequestContract.Effect.NavigateBack)
-        }
+        viewModelScope.emitEffect(Effect.ShowToast(message))
     }
 
     companion object {

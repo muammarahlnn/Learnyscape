@@ -48,8 +48,8 @@ import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -60,34 +60,34 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 @Composable
 internal fun JoinRequestRoute(
-    navigateBack: () -> Unit,
+    controller: JoinRequestController,
     modifier: Modifier = Modifier,
     viewModel: JoinRequestViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            JoinRequestNavigation.NavigateBack -> controller.navigateBack()
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(JoinRequestContract.Event.FetchWaitingList)
     }
 
     val context = LocalContext.current
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            JoinRequestContract.Effect.NavigateBack ->
-                navigateBack()
-
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
             is JoinRequestContract.Effect.ShowToast ->
-                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
         }
-    }
-
-    val refreshState = use(refreshProvider = viewModel) {
-        event(JoinRequestContract.Event.FetchWaitingList)
     }
 
     JoinRequestScreen(
         state = state,
-        refreshState = refreshState,
+        refreshState = use(viewModel) { event(JoinRequestContract.Event.FetchWaitingList) },
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier
     )
 }
@@ -98,13 +98,14 @@ private fun JoinRequestScreen(
     state: JoinRequestContract.State,
     refreshState: RefreshState,
     event: (JoinRequestContract.Event) -> Unit,
+    navigate: (JoinRequestNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         topBar = {
             JoinRequestTopAppBar(
-                onBackClick = { event(JoinRequestContract.Event.OnCloseClick) },
+                onBackClick = { navigate(JoinRequestNavigation.NavigateBack) },
                 scrollBehavior = scrollBehavior
             )
         }
@@ -118,9 +119,9 @@ private fun JoinRequestScreen(
         ) {
             val contentModifier = Modifier.fillMaxSize()
             when (state.uiState) {
-                JoinRequestUiState.Loading -> JoinRequestContentLoading(modifier = contentModifier)
+                JoinRequestContract.UiState.Loading -> JoinRequestContentLoading(modifier = contentModifier)
 
-                is JoinRequestUiState.Success -> {
+                is JoinRequestContract.UiState.Success -> {
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -144,12 +145,12 @@ private fun JoinRequestScreen(
                     }
                 }
                 
-                JoinRequestUiState.SuccessEmpty -> NoDataScreen(
+                JoinRequestContract.UiState.SuccessEmpty -> NoDataScreen(
                     text = stringResource(id = R.string.empty_waiting_list),
                     modifier = contentModifier,
                 )
                 
-                is JoinRequestUiState.Error -> ErrorScreen(
+                is JoinRequestContract.UiState.Error -> ErrorScreen(
                     text = state.uiState.message,
                     onRefresh = { event(JoinRequestContract.Event.FetchWaitingList) }
                 )
@@ -164,7 +165,7 @@ private fun JoinRequestContentLoading(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = modifier.padding(16.dp)
     ) {
         repeat(10) {
             Box(
