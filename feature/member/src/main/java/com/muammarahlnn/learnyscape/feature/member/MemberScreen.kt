@@ -17,8 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,8 +43,8 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import kotlinx.coroutines.launch
@@ -59,10 +59,17 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 @Composable
 internal fun MemberRoute(
     classId: String,
-    navigateBack: () -> Unit,
+    controller: MemberController,
     modifier: Modifier = Modifier,
     viewModel: MemberViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            MemberNavigation.NavigateBack ->
+                controller.navigateBack()
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         launch {
@@ -74,20 +81,11 @@ internal fun MemberRoute(
         }
     }
 
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            MemberContract.Effect.NavigateBack -> navigateBack()
-        }
-    }
-
-    val refreshState = use(refreshProvider = viewModel) {
-        event(MemberContract.Event.FetchClassMembers)
-    }
-
     MemberScreen(
         state = state,
-        refreshState = refreshState,
+        refreshState = use(viewModel) { event(MemberContract.Event.FetchClassMembers) },
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -98,6 +96,7 @@ private fun MemberScreen(
     state: MemberContract.State,
     refreshState: RefreshState,
     event: (MemberContract.Event) -> Unit,
+    navigate: (MemberNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -107,7 +106,7 @@ private fun MemberScreen(
                 title = stringResource(id = R.string.member),
                 navigationIcon = {
                     IconButton(
-                        onClick = { event(MemberContract.Event.OnNavigateBack) }
+                        onClick = { navigate(MemberNavigation.NavigateBack) }
                     ) {
                         Icon(
                             painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
@@ -247,9 +246,9 @@ private fun BaseMemberCard(
                 )
             )
 
-            Divider(
+            HorizontalDivider(
                 thickness = 2.dp,
-                color = MaterialTheme.colorScheme.outline
+                color = MaterialTheme.colorScheme.outline,
             )
 
             Column(Modifier.padding(16.dp)) {
