@@ -27,17 +27,17 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HomeNavHost
 internal fun HomeNavigatorRoute(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
-    onCameraActionClick: () -> Unit,
+    navigateToCamera: () -> Unit,
     navigateToPendingRequestClass: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
+    navigateToChangePassword: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeNavigator(
         navigateToNotifications = navigateToNotifications,
         navigateToClass = navigateToClass,
-        onCameraActionClick = onCameraActionClick,
+        navigateToCamera = navigateToCamera,
         navigateToPendingRequestClass = navigateToPendingRequestClass,
-        onChangePasswordButtonClick = onChangePasswordButtonClick,
+        navigateToChangePassword = navigateToChangePassword,
         modifier = modifier,
     )
 }
@@ -46,9 +46,9 @@ internal fun HomeNavigatorRoute(
 private fun HomeNavigator(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
-    onCameraActionClick: () -> Unit,
+    navigateToCamera: () -> Unit,
     navigateToPendingRequestClass: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
+    navigateToChangePassword: () -> Unit,
     modifier: Modifier = Modifier,
     state: HomeNavigatorState = rememberHomeNavigatorState()
 ) {
@@ -70,8 +70,8 @@ private fun HomeNavigator(
             navigateToNotifications = navigateToNotifications,
             navigateToClass = navigateToClass,
             navigateToPendingRequestClass = navigateToPendingRequestClass,
-            onCameraActionClick = onCameraActionClick,
-            onChangePasswordButtonClick = onChangePasswordButtonClick,
+            navigateToCamera = navigateToCamera,
+            navigateToChangePassword = navigateToChangePassword,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)

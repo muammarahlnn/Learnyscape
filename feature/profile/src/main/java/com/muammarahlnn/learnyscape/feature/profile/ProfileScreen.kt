@@ -44,10 +44,13 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.profile.ProfileContract.Effect
+import com.muammarahlnn.learnyscape.feature.profile.ProfileContract.Event
+import com.muammarahlnn.learnyscape.feature.profile.ProfileContract.State
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -58,20 +61,34 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ProfileRoute(
-    onCameraActionClick: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
+    controller: ProfileController,
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val (state, event) = use(contract = viewModel)
-    val effect = viewModel.effect
+
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            ProfileNavigation.NavigateToCamera ->
+                controller.navigateToCamera()
+
+            ProfileNavigation.NavigateToChangePassword ->
+                controller.navigateToChangePassword()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        event(Event.OnGetProfilePic)
+        event(Event.OnGetCapturedPhoto)
+    }
+
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         ActivityResultContracts.GetContent()
     ) {
         if (it != null) {
             event(
-                ProfileContract.Event.OnUpdateProfilePic(
+                Event.OnUpdateProfilePic(
                     uriToFile(
                         context = context,
                         selectedFileUri = it,
@@ -81,69 +98,47 @@ internal fun ProfileRoute(
         }
     }
 
-    LaunchedEffect(Unit) {
-        event(ProfileContract.Event.OnGetProfilePic)
-        event(ProfileContract.Event.OnGetCapturedPhoto)
-    }
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
+            is Effect.ShowToast ->
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
 
-    effect.collectInLaunchedEffect {
-        when (it) {
-            is ProfileContract.Effect.ShowToast ->
-                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+            Effect.OpenGallery -> {
+                launcher.launch("image/*")
+            }
         }
     }
 
     ProfileScreen(
         state = state,
-        onChangePhotoProfileButtonClick = {
-            event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(true))
-        },
-        onCameraActionClick = onCameraActionClick,
-        onGalleryActionClick = {
-            launcher.launch("image/*")
-        },
-        onDismissChangePhotoProfileBottomSheet = {
-            event(ProfileContract.Event.OnShowChangePhotoProfileBottomSheet(false))
-        },
-        onChangePasswordButtonClick = onChangePasswordButtonClick,
-        onLogoutButtonClick = {
-            event(ProfileContract.Event.OnShowLogoutDialog(true))
-        },
-        onConfirmLogoutDialog = {
-            event(ProfileContract.Event.OnLogout)
-        },
-        onDismissLogoutDialog = {
-            event(ProfileContract.Event.OnShowLogoutDialog(false))
-        },
+        event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
 
 @Composable
 private fun ProfileScreen(
-    state: ProfileContract.State,
-    onChangePhotoProfileButtonClick: () -> Unit,
-    onCameraActionClick: () -> Unit,
-    onGalleryActionClick: () -> Unit,
-    onDismissChangePhotoProfileBottomSheet: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
-    onLogoutButtonClick: () -> Unit,
-    onConfirmLogoutDialog: () -> Unit,
-    onDismissLogoutDialog: () -> Unit,
+    state: State,
+    event: (Event) -> Unit,
+    navigate: (ProfileNavigation) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (state.showChangePhotoProfileBottomSheet.value) {
+    if (state.showChangePhotoProfileBottomSheet) {
         ChangePhotoProfileBottomSheet(
-            onCameraActionClick = onCameraActionClick,
-            onGalleryActionClick = onGalleryActionClick,
-            onDismiss = onDismissChangePhotoProfileBottomSheet,
+            onCameraActionClick = {
+                event(Event.OnShowChangePhotoProfileBottomSheet(false))
+                navigate(ProfileNavigation.NavigateToCamera)
+            },
+            onGalleryActionClick = { event(Event.OnGalleryActionClick) },
+            onDismiss = { event(Event.OnShowChangePhotoProfileBottomSheet(false)) },
         )
     }
 
-    if (state.showLogoutDialog.value) {
+    if (state.showLogoutDialog) {
         LogoutDialog(
-            onLogout = onConfirmLogoutDialog,
-            onDismiss = onDismissLogoutDialog,
+            onLogout = { event(Event.OnLogout) },
+            onDismiss = { event(Event.OnShowLogoutDialog(false)) },
         )
     }
 
@@ -161,19 +156,19 @@ private fun ProfileScreen(
         ) {
             ProfileContent(
                 state = state,
-                onChangePhotoProfileButtonClick = onChangePhotoProfileButtonClick,
+                onChangePhotoProfileButtonClick = { event(Event.OnShowChangePhotoProfileBottomSheet(true)) },
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             ChangePasswordCard(
-                onClick = onChangePasswordButtonClick
+                onClick = { navigate(ProfileNavigation.NavigateToChangePassword) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
             LogoutCard(
-                onClick = onLogoutButtonClick,
+                onClick = { event(Event.OnShowLogoutDialog(true)) },
             )
         }
     }
@@ -181,7 +176,7 @@ private fun ProfileScreen(
 
 @Composable
 private fun ProfileContent(
-    state: ProfileContract.State,
+    state: State,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -297,7 +292,7 @@ private fun BaseProfileInfoText(
 
 @Composable
 private fun PhotoProfile(
-    state: ProfileContract.State,
+    state: State,
     onChangePhotoProfileButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

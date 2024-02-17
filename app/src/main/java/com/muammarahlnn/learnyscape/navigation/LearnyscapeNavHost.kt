@@ -77,11 +77,9 @@ fun LearnyscapeNavHost(
                 navController.navigateToNotifications()
             },
             navigateToClass = navController::navigateToClassNavigator,
-            onCameraActionClick = {
-                navController.navigateToCamera()
-            },
+            navigateToCamera = navController::navigateToCamera,
             navigateToPendingRequestClass = navController::navigateToPendingRequest,
-            onChangePasswordButtonClick = navController::navigateToChangePassword
+            navigateToChangePassword = navController::navigateToChangePassword
         )
         classNavigator(
             navigateBack = navController::popBackStack,

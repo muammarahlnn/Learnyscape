@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.profile.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.profile.ProfileController
 import com.muammarahlnn.learnyscape.feature.profile.ProfileRoute
 
 
@@ -19,13 +21,16 @@ fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.profileScreen(
-    onCameraActionClick: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
+    navigateToCamera: () -> Unit,
+    navigateToChangePassword: () -> Unit,
 ) {
     composable(route = PROFILE_ROUTE) {
         ProfileRoute(
-            onCameraActionClick = onCameraActionClick,
-            onChangePasswordButtonClick = onChangePasswordButtonClick,
+            controller = ProfileController(
+                scope = rememberCoroutineScope(),
+                navigateToCamera = navigateToCamera,
+                navigateToChangePassword = navigateToChangePassword,
+            )
         )
     }
 }
