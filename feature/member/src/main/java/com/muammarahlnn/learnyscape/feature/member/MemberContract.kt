@@ -1,18 +1,12 @@
 package com.muammarahlnn.learnyscape.feature.member
 
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
-import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 
 /**
  * @Author Muammar Ahlan Abimanyu
  * @File MemberContract, 25/01/2024 22.21
  */
-interface MemberContract :
-    BaseContract<MemberContract.State, MemberContract.Event>,
-    EffectProvider<MemberContract.Effect>,
-    RefreshProvider {
+interface MemberContract {
 
     data class State(
         val classId: String = "",
@@ -42,12 +36,7 @@ interface MemberContract :
         data class SetClassId(val classId: String) : Event
 
         data object FetchClassMembers : Event
-
-        data object OnNavigateBack : Event
     }
 
-    sealed interface Effect {
-
-        data object NavigateBack : Effect
-    }
+    sealed interface Effect
 }

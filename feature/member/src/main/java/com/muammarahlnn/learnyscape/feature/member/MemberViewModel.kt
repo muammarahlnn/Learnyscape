@@ -4,6 +4,10 @@ import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
@@ -15,12 +19,12 @@ import com.muammarahlnn.learnyscape.core.domain.classmembers.GetClassMembersUseC
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByUrlUeCase
 import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassMembersModel
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.learnyscape.feature.member.MemberContract.ClassMemberState
+import com.muammarahlnn.learnyscape.feature.member.MemberContract.Effect
+import com.muammarahlnn.learnyscape.feature.member.MemberContract.Event
+import com.muammarahlnn.learnyscape.feature.member.MemberContract.State
+import com.muammarahlnn.learnyscape.feature.member.MemberContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,32 +36,20 @@ import javax.inject.Inject
 class MemberViewModel @Inject constructor(
     private val getClassMembersUseCase: GetClassMembersUseCase,
     private val getProfilePicByUrlUeCase: GetProfilePicByUrlUeCase,
-) : ViewModel(), MemberContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow(MemberContract.State())
-    override val state: StateFlow<MemberContract.State> = _state
-
-    private val _effect = MutableSharedFlow<MemberContract.Effect>()
-    override val effect: SharedFlow<MemberContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    override fun event(event: MemberContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            is MemberContract.Event.SetClassId ->
-                setClassId(event.classId)
-
-            MemberContract.Event.FetchClassMembers ->
-                fetchClassMembers()
-
-            MemberContract.Event.OnNavigateBack ->
-                navigateBack()
+            is Event.SetClassId ->setClassId(event.classId)
+            Event.FetchClassMembers ->fetchClassMembers()
         }
     }
 
     private fun setClassId(classId: String) {
-        _state.update {
+        updateState {
             it.copy(classId = classId)
         }
     }
@@ -68,15 +60,15 @@ class MemberViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     result.onLoading {
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = MemberContract.UiState.Loading,
+                                uiState = UiState.Loading,
                             )
                         }
                     }.onSuccess { enrolledClassMembers ->
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = MemberContract.UiState.Success,
+                                uiState = UiState.Success,
                                 lecturers = enrolledClassMembers.lecturers.map { lecturer ->
                                     lecturer.toClassMemberState()
                                 },
@@ -98,8 +90,8 @@ class MemberViewModel @Inject constructor(
         }
     }
 
-    private fun EnrolledClassMembersModel.ClassMember.toClassMemberState(): MemberContract.ClassMemberState =
-        MemberContract.ClassMemberState(
+    private fun EnrolledClassMembersModel.ClassMember.toClassMemberState(): ClassMemberState =
+        ClassMemberState(
             name = name,
             profilePicUrl = profilePicUrl,
         )
@@ -129,7 +121,7 @@ class MemberViewModel @Inject constructor(
         index: Int,
     ) {
         result.onLoading {
-            _state.update {
+            updateState {
                 it.copy(
                     lecturers = it.lecturers.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -139,7 +131,7 @@ class MemberViewModel @Inject constructor(
                 )
             }
         }.onSuccess { profilePic ->
-            _state.update {
+            updateState {
                 it.copy(
                     lecturers = it.lecturers.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -165,7 +157,7 @@ class MemberViewModel @Inject constructor(
         index: Int,
     ) {
         Log.e(TAG, message)
-        _state.update {
+        updateState {
             it.copy(
                 lecturers = it.lecturers.toMutableList().apply {
                     this[index] = this[index].copy(
@@ -181,7 +173,7 @@ class MemberViewModel @Inject constructor(
         index: Int,
     ) {
         result.onLoading {
-            _state.update {
+            updateState {
                 it.copy(
                     students = it.students.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -191,7 +183,7 @@ class MemberViewModel @Inject constructor(
                 )
             }
         }.onSuccess { profilePic ->
-            _state.update {
+            updateState {
                 it.copy(
                     students = it.students.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -217,7 +209,7 @@ class MemberViewModel @Inject constructor(
         index: Int,
     ) {
         Log.e(TAG, message)
-        _state.update {
+        updateState {
             it.copy(
                 students = it.students.toMutableList().apply {
                     this[index] = this[index].copy(
@@ -229,21 +221,15 @@ class MemberViewModel @Inject constructor(
     }
 
     private fun onErrorFetchClassMembers(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = MemberContract.UiState.Error(message),
+                uiState = UiState.Error(message),
             )
         }
     }
 
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(MemberContract.Effect.NavigateBack)
-        }
-    }
+    private companion object {
 
-    companion object {
-
-        private const val TAG = "MemberViewModel"
+        const val TAG = "MemberViewModel"
     }
 }

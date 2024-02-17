@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.member.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.member.MemberController
 import com.muammarahlnn.learnyscape.feature.member.MemberRoute
 
 
@@ -24,7 +26,10 @@ fun NavGraphBuilder.memberScreen(
     composable(route = MEMBER_ROUTE) {
         MemberRoute(
             classId = classId,
-            navigateBack = navigateBack,
+            controller = MemberController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+            )
         )
     }
 }
