@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.schedule.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.schedule.ScheduleController
 import com.muammarahlnn.learnyscape.feature.schedule.ScheduleRoute
 
 
@@ -19,11 +21,14 @@ fun NavController.navigateToSchedule(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.scheduleScreen(
-    onScheduleClick: (String) -> Unit,
+    navigateToClass: (String) -> Unit,
 ) {
     composable(route = SCHEDULE_ROUTE) {
         ScheduleRoute(
-            onScheduleClick = onScheduleClick
+            ScheduleController(
+                scope = rememberCoroutineScope(),
+                navigateToClass = navigateToClass,
+            )
         )
     }
 }
