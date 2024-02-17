@@ -1,15 +1,10 @@
 package com.muammarahlnn.learnyscape.feature.login
 
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
-
 /**
  * @Author Muammar Ahlan Abimanyu
  * @File LoginContract, 07/12/2023 19.15
  */
-interface LoginContract :
-    BaseContract<LoginContract.State, LoginContract.Event>,
-    EffectProvider<LoginContract.Effect> {
+interface LoginContract {
 
     data class State(
         val loading: Boolean = false,

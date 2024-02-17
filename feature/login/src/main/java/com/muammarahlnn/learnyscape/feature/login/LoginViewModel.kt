@@ -3,6 +3,8 @@ package com.muammarahlnn.learnyscape.feature.login
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -11,13 +13,10 @@ import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.login.PostLoginUserUseCase
 import com.muammarahlnn.learnyscape.core.domain.login.SaveUserUseCase
+import com.muammarahlnn.learnyscape.feature.login.LoginContract.Effect
+import com.muammarahlnn.learnyscape.feature.login.LoginContract.Event
+import com.muammarahlnn.learnyscape.feature.login.LoginContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,38 +30,32 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val postLoginUserUseCase: PostLoginUserUseCase,
     private val saveUserUseCase: SaveUserUseCase
-) : ViewModel(), LoginContract {
+) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
-    private val _state = MutableStateFlow(LoginContract.State())
-    override val state: StateFlow<LoginContract.State> = _state.asStateFlow()
-
-    private val _effect = MutableSharedFlow<LoginContract.Effect>()
-    override val effect: SharedFlow<LoginContract.Effect> = _effect
-
-    override fun event(event: LoginContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            is LoginContract.Event.OnUsernameChange -> onUsernameChange(event.username)
-            is LoginContract.Event.OnPasswordChange -> onPasswordChange(event.password)
-            LoginContract.Event.OnLoginButtonClick -> onUserLogin()
+            is Event.OnUsernameChange -> onUsernameChange(event.username)
+            is Event.OnPasswordChange -> onPasswordChange(event.password)
+            Event.OnLoginButtonClick -> onUserLogin()
         }
     }
 
     private fun onUsernameChange(username: String) {
-        _state.update {
+        updateState {
             it.copy(username = username)
         }
         enablingLoginButton()
     }
 
     private fun onPasswordChange(password: String) {
-        _state.update {
+        updateState {
             it.copy(password = password)
         }
         enablingLoginButton()
     }
 
     private fun enablingLoginButton() {
-        _state.update {
+        updateState {
             if (it.username.isNotBlank() && it.password.isNotBlank()) {
                 it.copy(isLoginButtonEnabled = true)
             } else {
@@ -88,7 +81,7 @@ class LoginViewModel @Inject constructor(
                                 TAG,
                                 "User logged in: ${userModel.fullName} role -> ${userModel.role.name}"
                             )
-                            _state.update {
+                            updateState {
                                 it.copy(
                                     username = "",
                                     password = "",
@@ -115,7 +108,7 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun updateStateOnLoading() {
-        _state.update {
+        updateState {
             it.copy(loading = true)
         }
     }
@@ -124,16 +117,12 @@ class LoginViewModel @Inject constructor(
         message: String,
         exception: Throwable? = null,
     ) {
-        _state.update {
+        updateState {
             it.copy(loading = false)
         }
 
         Log.e(TAG, exception?.message ?: message)
-        viewModelScope.launch {
-            _effect.emit(
-                LoginContract.Effect.ShowSnackbar(message)
-            )
-        }
+        viewModelScope.emitEffect(Effect.ShowSnackbar(message))
     }
 
     companion object {

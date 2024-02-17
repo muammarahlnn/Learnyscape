@@ -46,7 +46,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -63,33 +63,22 @@ fun LoginRoute(
     ChangeStatusBarColor(statusBarColor = MaterialTheme.colorScheme.background)
 
     val (state, event) = use(contract = viewModel)
-    val effect = viewModel.effect
     val snackbarHostState = remember { SnackbarHostState() }
 
-    effect.collectInLaunchedEffect {
-        when (it) {
-            is LoginContract.Effect.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(
-                    message = it.message,
-                    withDismissAction = true,
-                    duration = SnackbarDuration.Short
-                )
-            }
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
+            is LoginContract.Effect.ShowSnackbar -> snackbarHostState.showSnackbar(
+                message = effect.message,
+                withDismissAction = true,
+                duration = SnackbarDuration.Short
+            )
         }
     }
     
     LoginScreen(
         state = state,
         snackbarHostState = snackbarHostState,
-        onUsernameChange = { username ->
-            event(LoginContract.Event.OnUsernameChange(username))
-        },
-        onPasswordChange = { password ->
-            event(LoginContract.Event.OnPasswordChange(password))
-        },
-        onLoginButtonClick = {
-            event(LoginContract.Event.OnLoginButtonClick)
-        },
+        event = { event(it) },
         modifier = modifier,
     )
 }
@@ -99,9 +88,7 @@ fun LoginRoute(
 private fun LoginScreen(
     state: LoginContract.State,
     snackbarHostState: SnackbarHostState,
-    onUsernameChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onLoginButtonClick: () -> Unit,
+    event: (LoginContract.Event) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -116,9 +103,9 @@ private fun LoginScreen(
             password = state.password,
             isLoginButtonEnabled = state.isLoginButtonEnabled,
             isLoading = state.loading,
-            onUsernameChange = onUsernameChange,
-            onPasswordChange = onPasswordChange,
-            onLoginButtonClick = onLoginButtonClick,
+            onUsernameChange = { event(LoginContract.Event.OnUsernameChange(it)) },
+            onPasswordChange = { event(LoginContract.Event.OnPasswordChange(it)) },
+            onLoginButtonClick = { event(LoginContract.Event.OnLoginButtonClick) },
             modifier = Modifier
                 .padding(padding)
                 .consumeWindowInsets(padding),
