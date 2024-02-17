@@ -22,8 +22,8 @@ import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import kotlinx.coroutines.launch
 
@@ -36,12 +36,29 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun ModuleRoute(
     classId: String,
-    navigateBack: () -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
-    navigateToResourceCreate: (String, Int) -> Unit,
+    controller: ModuleController,
     modifier: Modifier = Modifier,
     viewModel: ModuleViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            ModuleNavigation.NavigateBack ->
+                controller.navigateBack()
+
+            is ModuleNavigation.NavigateToResourceCreate ->
+                controller.navigateToResourceCreate(
+                    navigation.classId,
+                    navigation.resourceTypeOrdinal,
+                )
+
+            is ModuleNavigation.NavigateToResourceDetails ->
+                controller.navigateToResourceDetails(
+                    navigation.resourceId,
+                    navigation.resourceTypeOrdinal,
+                )
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         launch {
@@ -53,30 +70,11 @@ internal fun ModuleRoute(
         }
     }
 
-    val refreshState = use(refreshProvider = viewModel) {
-        event(ModuleContract.Event.FetchModules)
-    }
-
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            ModuleContract.Effect.NavigateBack ->
-                navigateBack()
-
-            is ModuleContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(
-                    it.resourceId,
-                    it.resourceTypeOrdinal,
-                )
-
-            is ModuleContract.Effect.NavigateToResourceCreate ->
-                navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
-        }
-    }
-
     ModuleScreen(
         state = state,
-        refreshState = refreshState,
+        refreshState = use(viewModel) { event(ModuleContract.Event.FetchModules) },
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -87,12 +85,18 @@ private fun ModuleScreen(
     state: ModuleContract.State,
     refreshState: RefreshState,
     event: (ModuleContract.Event) -> Unit,
+    navigate: (ModuleNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
         resourceTitle = stringResource(id = R.string.module),
-        onBackClick = { event(ModuleContract.Event.OnNavigateBack) },
-        onCreateNewResourceClick = { event(ModuleContract.Event.OnNavigateToResourceCreate) },
+        onBackClick = { navigate(ModuleNavigation.NavigateBack) },
+        onCreateNewResourceClick = {
+            navigate(ModuleNavigation.NavigateToResourceCreate(
+                classId = state.classId,
+                resourceTypeOrdinal = state.moduleOrdinal,
+            ))
+        },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
         PullRefreshScreen(
@@ -101,9 +105,9 @@ private fun ModuleScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             when (state.uiState) {
-                ModuleUiState.Loading -> ResourceScreenLoading()
+                ModuleContract.UiState.Loading -> ResourceScreenLoading()
 
-                is ModuleUiState.Success -> {
+                is ModuleContract.UiState.Success -> {
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -120,19 +124,22 @@ private fun ModuleScreen(
                                 title = module.name,
                                 timeLabel = module.updatedAt,
                                 onItemClick = {
-                                    event(ModuleContract.Event.OnNavigateToResourceDetails(module.id))
+                                    navigate(ModuleNavigation.NavigateToResourceDetails(
+                                        resourceId = module.id,
+                                        resourceTypeOrdinal = it,
+                                    ))
                                 }
                             )
                         }
                     }
                 }
 
-                ModuleUiState.SuccessEmpty -> NoDataScreen(
+                ModuleContract.UiState.SuccessEmpty -> NoDataScreen(
                     text = stringResource(id = R.string.empty_modules),
                     modifier = Modifier.fillMaxSize()
                 )
 
-                is ModuleUiState.Error -> ErrorScreen(
+                is ModuleContract.UiState.Error -> ErrorScreen(
                     text = state.uiState.message,
                     onRefresh = { event(ModuleContract.Event.FetchModules) },
                     modifier = Modifier.fillMaxSize()
