@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.quiz.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.quiz.QuizController
 import com.muammarahlnn.learnyscape.feature.quiz.QuizRoute
 
 
@@ -26,9 +28,12 @@ fun NavGraphBuilder.quizScreen(
     composable(route = QUIZ_ROUTE) {
         QuizRoute(
             classId = classId,
-            navigateBack = navigateBack,
-            navigateToResourceDetails = navigateToResourceDetails,
-            navigateToResourceCreate = navigateToResourceCreate,
+            controller = QuizController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+                navigateToResourceDetails = navigateToResourceDetails,
+                navigateToResourceCreate = navigateToResourceCreate,
+            )
         )
     }
 }

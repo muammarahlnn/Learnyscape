@@ -22,8 +22,8 @@ import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import kotlinx.coroutines.launch
 
@@ -36,12 +36,29 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun QuizRoute(
     classId: String,
-    navigateBack: () -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
-    navigateToResourceCreate: (String, Int) -> Unit,
+    controller: QuizController,
     modifier: Modifier = Modifier,
     viewModel: QuizViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            QuizNavigation.NavigateBack ->
+                controller.navigateBack
+
+            is QuizNavigation.NavigateToResourceCreate ->
+                controller.navigateToResourceCreate(
+                    navigation.classId,
+                    navigation.resourceTypeOrdinal,
+                )
+
+            is QuizNavigation.NavigateToResourceDetails ->
+                controller.navigateToResourceDetails(
+                    navigation.resourceId,
+                    navigation.resourceTypeOrdinal,
+                )
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         launch {
@@ -53,30 +70,11 @@ internal fun QuizRoute(
         }
     }
 
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            QuizContract.Effect.NavigateBack ->
-                navigateBack()
-
-            is QuizContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(
-                    it.resourceId,
-                    it.resourceTypeOrdinal
-                )
-
-            is QuizContract.Effect.NavigateToResourceCreate ->
-                navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
-        }
-    }
-
-    val refreshState = use(refreshProvider = viewModel) {
-        event(QuizContract.Event.FetchQuizzes)
-    }
-
     QuizScreen(
         state = state,
-        refreshState = refreshState,
+        refreshState = use(viewModel) { event(QuizContract.Event.FetchQuizzes) },
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -87,12 +85,18 @@ private fun QuizScreen(
     state: QuizContract.State,
     refreshState: RefreshState,
     event: (QuizContract.Event) -> Unit,
+    navigate: (QuizNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
         resourceTitle = stringResource(id = R.string.quiz),
-        onBackClick = { event(QuizContract.Event.OnNavigateBack) },
-        onCreateNewResourceClick = { event(QuizContract.Event.OnNavigateToResourceCreate) },
+        onBackClick = { navigate(QuizNavigation.NavigateBack) },
+        onCreateNewResourceClick = {
+            navigate(QuizNavigation.NavigateToResourceCreate(
+                classId = state.classId,
+                resourceTypeOrdinal = state.moduleOrdinal,
+            ))
+        },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
         PullRefreshScreen(
@@ -118,7 +122,12 @@ private fun QuizScreen(
                             classResourceType = ClassResourceType.QUIZ,
                             title = quiz.name,
                             timeLabel = quiz.startDate,
-                            onItemClick = { event(QuizContract.Event.OnNavigateToResourceDetails(quiz.id)) }
+                            onItemClick = {
+                                navigate(QuizNavigation.NavigateToResourceDetails(
+                                    resourceId = quiz.id,
+                                    resourceTypeOrdinal = it,
+                                ))
+                            }
                         )
                     }
                 }
