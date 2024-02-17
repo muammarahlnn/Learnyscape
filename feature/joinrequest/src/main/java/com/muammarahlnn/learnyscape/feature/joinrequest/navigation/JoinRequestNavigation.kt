@@ -1,11 +1,13 @@
 package com.muammarahlnn.learnyscape.feature.joinrequest.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestController
 import com.muammarahlnn.learnyscape.feature.joinrequest.JoinRequestRoute
 
 /**
@@ -46,6 +48,11 @@ fun NavGraphBuilder.joinRequestScreen(
             },
         ),
     ) {
-        JoinRequestRoute(navigateBack = navigateBack)
+        JoinRequestRoute(
+            controller = JoinRequestController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+            )
+        )
     }
 }
