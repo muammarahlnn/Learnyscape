@@ -3,6 +3,10 @@ package com.muammarahlnn.learnyscape.feature.quiz
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -10,13 +14,11 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetQuizzesUseCase
-import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.quiz.QuizContract.Effect
+import com.muammarahlnn.learnyscape.feature.quiz.QuizContract.Event
+import com.muammarahlnn.learnyscape.feature.quiz.QuizContract.State
+import com.muammarahlnn.learnyscape.feature.quiz.QuizContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,40 +29,20 @@ import javax.inject.Inject
 @HiltViewModel
 class QuizViewModel @Inject constructor(
     private val getQuizzesUseCase: GetQuizzesUseCase,
-) : ViewModel(), QuizContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow(QuizContract.State())
-    override val state: StateFlow<QuizContract.State> = _state
-
-    private val _effect = MutableSharedFlow<QuizContract.Effect>()
-    override val effect: SharedFlow<QuizContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    private val moduleOrdinal = ClassResourceType.QUIZ.ordinal
-
-    override fun event(event: QuizContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            is QuizContract.Event.SetClassId ->
-                setClassId(event.classId)
-
-            QuizContract.Event.FetchQuizzes ->
-                fetchQuizzes()
-
-            QuizContract.Event.OnNavigateBack ->
-                navigateBack()
-
-            is QuizContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails(event.quizId)
-
-            QuizContract.Event.OnNavigateToResourceCreate ->
-                navigateToResourceCreate()
+            is Event.SetClassId -> setClassId(event.classId)
+            Event.FetchQuizzes -> fetchQuizzes()
         }
     }
 
     private fun setClassId(classId: String) {
-        _state.update {
+        updateState {
             it.copy(classId = classId)
         }
     }
@@ -71,18 +53,18 @@ class QuizViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     result.onLoading {
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = QuizContract.UiState.Loading
+                                uiState = UiState.Loading
                             )
                         }
                     }.onSuccess { quizzes ->
-                        _state.update {
+                        updateState {
                             it.copy(
                                 uiState = if (quizzes.isNotEmpty()) {
-                                    QuizContract.UiState.Success(quizzes)
+                                    UiState.Success(quizzes)
                                 } else {
-                                    QuizContract.UiState.SuccessEmpty
+                                    UiState.SuccessEmpty
                                 }
                             )
                         }
@@ -99,37 +81,9 @@ class QuizViewModel @Inject constructor(
     }
 
     private fun onErrorGetQuizzes(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = QuizContract.UiState.Error(message)
-            )
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(QuizContract.Effect.NavigateBack)
-        }
-    }
-
-    private fun navigateToResourceDetails(quizId: String) {
-        viewModelScope.launch {
-            _effect.emit(
-                QuizContract.Effect.NavigateToResourceDetails(
-                    resourceId = quizId,
-                    resourceTypeOrdinal = moduleOrdinal
-                )
-            )
-        }
-    }
-
-    private fun navigateToResourceCreate() {
-        viewModelScope.launch {
-            _effect.emit(
-                QuizContract.Effect.NavigateToResourceCreate(
-                    classId = _state.value.classId,
-                    resourceTypeOrdinal = moduleOrdinal,
-                )
+                uiState = UiState.Error(message)
             )
         }
     }
