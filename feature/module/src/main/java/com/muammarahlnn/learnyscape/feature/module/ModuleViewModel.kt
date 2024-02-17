@@ -3,6 +3,10 @@ package com.muammarahlnn.learnyscape.feature.module
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -10,13 +14,11 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetModulesUseCase
-import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.module.ModuleContract.Effect
+import com.muammarahlnn.learnyscape.feature.module.ModuleContract.Event
+import com.muammarahlnn.learnyscape.feature.module.ModuleContract.State
+import com.muammarahlnn.learnyscape.feature.module.ModuleContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,60 +29,43 @@ import javax.inject.Inject
 @HiltViewModel
 class ModuleViewModel @Inject constructor(
     private val getModulesUseCase: GetModulesUseCase,
-) : ViewModel(), ModuleContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow(ModuleContract.State())
-    override val state: StateFlow<ModuleContract.State> = _state
-
-    private val _effect = MutableSharedFlow<ModuleContract.Effect>()
-    override val effect: SharedFlow<ModuleContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    private val moduleOrdinal = ClassResourceType.MODULE.ordinal
-
-    override fun event(event: ModuleContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            is ModuleContract.Event.SetClassId ->
+            is Event.SetClassId ->
                 setClassId(event.classId)
 
-            is ModuleContract.Event.FetchModules ->
+            is Event.FetchModules ->
                 fetchModules()
-
-            ModuleContract.Event.OnNavigateBack ->
-                navigateBack()
-
-            is ModuleContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails(event.moduleId)
-
-            ModuleContract.Event.OnNavigateToResourceCreate ->
-                navigateToResourceCreate()
         }
     }
 
     private fun setClassId(classId: String) {
-        _state.update {
+        updateState {
             it.copy(classId = classId)
         }
     }
 
     private fun fetchModules() {
         viewModelScope.launch {
-            getModulesUseCase(classId = _state.value.classId).asResult().collect { result ->
+            getModulesUseCase(classId = state.value.classId).asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
+                    updateState {
                         it.copy(
-                            uiState = ModuleUiState.Loading
+                            uiState = UiState.Loading
                         )
                     }
                 }.onSuccess { modules ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             uiState = if (modules.isNotEmpty()) {
-                                ModuleUiState.Success(modules)
+                                UiState.Success(modules)
                             } else {
-                                ModuleUiState.SuccessEmpty
+                                UiState.SuccessEmpty
                             }
                         )
                     }
@@ -97,37 +82,9 @@ class ModuleViewModel @Inject constructor(
     }
 
     private fun onErrorGetModules(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = ModuleUiState.Error(message)
-            )
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(ModuleContract.Effect.NavigateBack)
-        }
-    }
-
-    private fun navigateToResourceDetails(moduleId: String) {
-        viewModelScope.launch {
-            _effect.emit(
-                ModuleContract.Effect.NavigateToResourceDetails(
-                    resourceId = moduleId,
-                    resourceTypeOrdinal = moduleOrdinal,
-                )
-            )
-        }
-    }
-
-    private fun navigateToResourceCreate() {
-        viewModelScope.launch {
-            _effect.emit(
-                ModuleContract.Effect.NavigateToResourceCreate(
-                    classId = _state.value.classId,
-                    resourceTypeOrdinal = moduleOrdinal,
-                )
+                uiState = UiState.Error(message)
             )
         }
     }
