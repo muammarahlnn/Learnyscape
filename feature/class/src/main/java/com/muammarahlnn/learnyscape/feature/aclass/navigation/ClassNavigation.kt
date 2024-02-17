@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.aclass.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.aclass.ClassController
 import com.muammarahlnn.learnyscape.feature.aclass.ClassRoute
 
 
@@ -28,10 +30,13 @@ fun NavGraphBuilder.classScreen(
     composable(route = CLASS_ROUTE) {
         ClassRoute(
             classId = classId,
-            navigateBack = navigateBack,
-            navigateToJoinRequests = navigateToJoinRequests,
-            navigateToResourceCreate = navigateToResourceCreate,
-            navigateToResourceDetails = navigateToResourceDetails,
+            controller = ClassController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+                navigateToJoinRequests = navigateToJoinRequests,
+                navigateToResourceCreate = navigateToResourceCreate,
+                navigateToResourceDetails = navigateToResourceDetails,
+            )
         )
     }
 }
