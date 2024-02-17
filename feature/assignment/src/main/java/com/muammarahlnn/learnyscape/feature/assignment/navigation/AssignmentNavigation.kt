@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.assignment.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.assignment.AssignmentController
 import com.muammarahlnn.learnyscape.feature.assignment.AssignmentRoute
 
 
@@ -26,9 +28,12 @@ fun NavGraphBuilder.assignmentScreen(
     composable(route = ASSIGNMENT_ROUTE) {
         AssignmentRoute(
             classId = classId,
-            navigateBack = navigateBack,
-            navigateToResourceDetails = navigateToResourceDetails,
-            navigateToResourceCreate = navigateToResourceCreate,
+            controller = AssignmentController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+                navigateToResourceDetails = navigateToResourceDetails,
+                navigateToResourceCreate = navigateToResourceCreate,
+            )
         )
     }
 }

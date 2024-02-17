@@ -22,8 +22,8 @@ import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceClassScreen
 import com.muammarahlnn.learnyscape.core.ui.ResourceScreenLoading
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import kotlinx.coroutines.launch
 
@@ -36,12 +36,29 @@ import kotlinx.coroutines.launch
 @Composable
 internal fun AssignmentRoute(
     classId: String,
-    navigateBack: () -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
-    navigateToResourceCreate: (String, Int) -> Unit,
+    controller: AssignmentController,
     modifier: Modifier = Modifier,
     viewModel: AssignmentViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            AssignmentNavigation.NavigateBack ->
+                controller.navigateBack
+
+            is AssignmentNavigation.NavigateToResourceCreate ->
+                controller.navigateToResourceCreate(
+                    navigation.classId,
+                    navigation.resourceTypeOrdinal,
+                )
+
+            is AssignmentNavigation.NavigateToResourceDetails ->
+                controller.navigateToResourceDetails(
+                    navigation.resourceId,
+                    navigation.resourceTypeOrdinal,
+                )
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         launch {
@@ -53,30 +70,11 @@ internal fun AssignmentRoute(
         }
     }
 
-    val refreshState = use(refreshProvider = viewModel) {
-        event(AssignmentContract.Event.FetchAssignments)
-    }
-
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            AssignmentContract.Effect.NavigateBack ->
-                navigateBack()
-
-            is AssignmentContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(
-                    it.resourceId,
-                    it.resourceTypeOrdinal,
-                )
-
-            is AssignmentContract.Effect.NavigateToResourceCreate ->
-                navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
-        }
-    }
-
     AssignmentScreen(
         state = state,
-        refreshState = refreshState,
+        refreshState = use(viewModel) { event(AssignmentContract.Event.FetchAssignments) },
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -87,12 +85,18 @@ private fun AssignmentScreen(
     state: AssignmentContract.State,
     refreshState: RefreshState,
     event: (AssignmentContract.Event) -> Unit,
+    navigate: (AssignmentNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     ResourceClassScreen(
         resourceTitle = stringResource(id = R.string.assignment),
-        onBackClick = { event(AssignmentContract.Event.OnNavigateBack) },
-        onCreateNewResourceClick = { event(AssignmentContract.Event.OnNavigateToResourceCreate) },
+        onBackClick = { navigate(AssignmentNavigation.NavigateBack) },
+        onCreateNewResourceClick = {
+            navigate(AssignmentNavigation.NavigateToResourceCreate(
+                classId = state.classId,
+                resourceTypeOrdinal = state.assignmentOrdinal,
+            ))
+        },
         modifier = modifier,
     ) { paddingValues, scrollBehavior ->
         PullRefreshScreen(
@@ -101,9 +105,9 @@ private fun AssignmentScreen(
             modifier = Modifier.padding(paddingValues)
         ) {
             when (state.uiState) {
-                AssignmentUiState.Loading -> ResourceScreenLoading()
+                AssignmentContract.UiState.Loading -> ResourceScreenLoading()
 
-                is AssignmentUiState.Success -> {
+                is AssignmentContract.UiState.Success -> {
                     LazyColumn(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -120,19 +124,22 @@ private fun AssignmentScreen(
                                 title = assignment.name,
                                 timeLabel = assignment.dueDate,
                                 onItemClick = {
-                                    event(AssignmentContract.Event.OnNavigateToResourceDetails(assignment.id))
+                                    navigate(AssignmentNavigation.NavigateToResourceDetails(
+                                        resourceId = assignment.id,
+                                        resourceTypeOrdinal = it,
+                                    ))
                                 },
                             )
                         }
                     }
                 }
 
-                AssignmentUiState.SuccessEmpty -> NoDataScreen(
+                AssignmentContract.UiState.SuccessEmpty -> NoDataScreen(
                     text = stringResource(id = R.string.assignment),
                     modifier = Modifier.fillMaxSize()
                 )
 
-                is AssignmentUiState.Error -> ErrorScreen(
+                is AssignmentContract.UiState.Error -> ErrorScreen(
                     text = state.uiState.message,
                     onRefresh = { event(AssignmentContract.Event.FetchAssignments) },
                     modifier = Modifier.fillMaxSize()

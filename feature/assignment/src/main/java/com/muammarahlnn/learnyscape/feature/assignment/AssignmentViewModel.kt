@@ -3,6 +3,10 @@ package com.muammarahlnn.learnyscape.feature.assignment
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -10,13 +14,11 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourceoverview.GetAssignmentsUseCase
-import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.assignment.AssignmentContract.Effect
+import com.muammarahlnn.learnyscape.feature.assignment.AssignmentContract.Event
+import com.muammarahlnn.learnyscape.feature.assignment.AssignmentContract.State
+import com.muammarahlnn.learnyscape.feature.assignment.AssignmentContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,60 +29,40 @@ import javax.inject.Inject
 @HiltViewModel
 class AssignmentViewModel @Inject constructor(
     private val getAssignmentsUseCase: GetAssignmentsUseCase,
-) : ViewModel(), AssignmentContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow(AssignmentContract.State())
-    override val state: StateFlow<AssignmentContract.State> = _state
-
-    private val _effect = MutableSharedFlow<AssignmentContract.Effect>()
-    override val effect: SharedFlow<AssignmentContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    private val assignmentOrdinal = ClassResourceType.ASSIGNMENT.ordinal
-
-    override fun event(event: AssignmentContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            is AssignmentContract.Event.SetClassId ->
-                setClassId(event.classId)
-
-            is AssignmentContract.Event.FetchAssignments ->
-                fetchAssignments()
-
-            AssignmentContract.Event.OnNavigateBack ->
-                navigateBack()
-
-            is AssignmentContract.Event.OnNavigateToResourceDetails ->
-                navigateToResourceDetails(event.assignmentId)
-
-            AssignmentContract.Event.OnNavigateToResourceCreate ->
-                navigateToResourceCreate()
+            is Event.SetClassId -> setClassId(event.classId)
+            is Event.FetchAssignments -> fetchAssignments()
         }
     }
 
     private fun setClassId(classId: String) {
-        _state.update {
+        updateState {
             it.copy(classId = classId)
         }
     }
 
     private fun fetchAssignments() {
         viewModelScope.launch {
-            getAssignmentsUseCase(classId = _state.value.classId).asResult().collect { result ->
+            getAssignmentsUseCase(classId = state.value.classId).asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
+                    updateState {
                         it.copy(
-                            uiState = AssignmentUiState.Loading
+                            uiState = UiState.Loading
                         )
                     }
                 }.onSuccess { assignments ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             uiState = if (assignments.isNotEmpty()) {
-                                AssignmentUiState.Success(assignments)
+                                UiState.Success(assignments)
                             } else {
-                                AssignmentUiState.SuccessEmpty
+                                UiState.SuccessEmpty
                             }
                         )
                     }
@@ -97,37 +79,9 @@ class AssignmentViewModel @Inject constructor(
     }
 
     private fun onErrorGetAssignments(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = AssignmentUiState.Error(message)
-            )
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(AssignmentContract.Effect.NavigateBack)
-        }
-    }
-
-    private fun navigateToResourceDetails(assignmentId: String) {
-        viewModelScope.launch {
-            _effect.emit(
-                AssignmentContract.Effect.NavigateToResourceDetails(
-                    resourceId = assignmentId,
-                    resourceTypeOrdinal = assignmentOrdinal
-                )
-            )
-        }
-    }
-
-    private fun navigateToResourceCreate() {
-        viewModelScope.launch {
-            _effect.emit(
-                AssignmentContract.Effect.NavigateToResourceCreate(
-                    classId = _state.value.classId,
-                    resourceTypeOrdinal = assignmentOrdinal,
-                )
+                uiState = UiState.Error(message)
             )
         }
     }
