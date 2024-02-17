@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.home.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
@@ -26,6 +27,7 @@ fun NavGraphBuilder.homeScreen(
     composable(route = HOME_ROUTE) {
         HomeRoute(
             controller = HomeController(
+                scope = rememberCoroutineScope(),
                 navigateToNotifications = navigateToNotifications,
                 navigateToClass = navigateToClass,
             )
