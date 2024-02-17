@@ -58,8 +58,8 @@ import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
-import com.muammarahlnn.learnyscape.feature.home.HomeContract.Effect
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.Event
+import com.muammarahlnn.learnyscape.feature.home.HomeContract.Navigation
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.State
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.UiState
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -71,8 +71,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 @Composable
 internal fun HomeRoute(
-    navigateToNotifications: () -> Unit,
-    navigateToClass: (String) -> Unit,
+    controller: HomeController,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -81,10 +80,13 @@ internal fun HomeRoute(
         event(Event.FetchEnrolledClasses)
     }
 
-    CollectEffect(viewModel.effect) { effect ->
-        when (effect) {
-            is Effect.NavigateToClass -> navigateToClass(effect.classId)
-            Effect.NavigateToNotifications -> navigateToNotifications()
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            is Navigation.NavigateToClass ->
+                controller.navigateToClass(navigation.classId)
+
+            Navigation.NavigateToNotifications ->
+                controller.navigateToNotifications()
         }
     }
 
@@ -92,6 +94,7 @@ internal fun HomeRoute(
         state = state,
         refreshState = use(viewModel) { event(Event.FetchEnrolledClasses) },
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -102,6 +105,7 @@ private fun HomeScreen(
     state: State,
     refreshState: RefreshState,
     event: (Event) -> Unit,
+    navigate: (Navigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -109,7 +113,7 @@ private fun HomeScreen(
         topBar = {
             HomeTopAppBar(
                 scrollBehavior = scrollBehavior,
-                onNotificationsClick = { event(Event.OnNotificationsClick) },
+                onNotificationsClick = { navigate(Navigation.NavigateToNotifications) },
             )
         },
         modifier = modifier.fillMaxSize(),
@@ -144,7 +148,7 @@ private fun HomeScreen(
                     searchQuery = state.searchQuery,
                     classes = state.uiState.classes,
                     onSearchQueryChanged = { event(Event.OnSearchQueryChanged(it)) },
-                    onClassClick = { event(Event.OnClassClick(it)) },
+                    onClassClick = { navigate(Navigation.NavigateToClass(it)) },
                     modifier = Modifier
                         .fillMaxSize()
                         .nestedScroll(scrollBehavior.nestedScrollConnection)

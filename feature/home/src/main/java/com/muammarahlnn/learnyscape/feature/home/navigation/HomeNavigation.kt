@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.home.HomeController
 import com.muammarahlnn.learnyscape.feature.home.HomeRoute
 
 
@@ -24,8 +25,10 @@ fun NavGraphBuilder.homeScreen(
 ) {
     composable(route = HOME_ROUTE) {
         HomeRoute(
-            navigateToNotifications = navigateToNotifications,
-            navigateToClass = navigateToClass,
+            controller = HomeController(
+                navigateToNotifications = navigateToNotifications,
+                navigateToClass = navigateToClass,
+            )
         )
     }
 }

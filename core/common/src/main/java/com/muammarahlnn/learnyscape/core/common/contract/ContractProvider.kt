@@ -8,17 +8,17 @@ import kotlinx.coroutines.flow.StateFlow
  * @Author Muammar Ahlan Abimanyu
  * @File ContractProvider, 16/02/2024 21.37
  */
-interface ContractProvider<STATE, EVENT, EFFECT> {
+interface ContractProvider<State, Event, Effect> {
 
-    val state: StateFlow<STATE>
+    val state: StateFlow<State>
 
-    val effect: Flow<EFFECT>
+    val effect: Flow<Effect>
 
-    fun event(event: EVENT)
+    fun event(event: Event)
 
-    fun updateState(block: (STATE) -> STATE)
+    fun updateState(block: (State) -> State)
 
-    fun updateState(state: STATE)
+    fun updateState(state: State)
 
-    fun CoroutineScope.emitEffect(effect: EFFECT)
+    fun CoroutineScope.emitEffect(effect: Effect)
 }
