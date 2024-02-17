@@ -41,7 +41,7 @@ internal fun HomeNavHost(
             navigateToPendingRequestClass = navigateToPendingRequestClass
         )
         scheduleScreen(
-            onScheduleClick = navigateToClass,
+            navigateToClass = navigateToClass,
         )
         profileScreen(
             onCameraActionClick = onCameraActionClick,

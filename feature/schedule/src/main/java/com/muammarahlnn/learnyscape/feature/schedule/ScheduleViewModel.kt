@@ -3,6 +3,10 @@ package com.muammarahlnn.learnyscape.feature.schedule
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -10,10 +14,10 @@ import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.schedules.GetSchedulesUseCase
+import com.muammarahlnn.learnyscape.feature.schedule.ScheduleContract.Effect
+import com.muammarahlnn.learnyscape.feature.schedule.ScheduleContract.Event
+import com.muammarahlnn.learnyscape.feature.schedule.ScheduleContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,47 +28,43 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
     private val getSchedulesUseCase: GetSchedulesUseCase,
-) : ViewModel(), ScheduleContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State.Loading),
+    RefreshProvider by refresh()
+{
 
-    private val _state = MutableStateFlow<ScheduleContract.State>(ScheduleContract.State.Loading)
-    override val state: StateFlow<ScheduleContract.State> = _state
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-
-    override fun event(event: ScheduleContract.Event) = when (event) {
-        ScheduleContract.Event.OnGetSchedules -> getSchedules()
+    override fun event(event: Event) = when (event) {
+        Event.FetchSchedules -> fetchSchedules()
     }
 
-    private fun getSchedules() {
+    private fun fetchSchedules() {
         viewModelScope.launch {
             getSchedulesUseCase().asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
-                        ScheduleContract.State.Loading
+                    updateState {
+                        State.Loading
                     }
                 }.onSuccess { schedules ->
-                    _state.update {
+                    updateState {
                         if (schedules.isNotEmpty()) {
-                            ScheduleContract.State.Success(schedules)
+                            State.Success(schedules)
                         } else {
-                            ScheduleContract.State.SuccessEmpty
+                            State.SuccessEmpty
                         }
                     }
                 }.onNoInternet { message ->
-                    _state.update {
-                        ScheduleContract.State.NoInternet(message)
+                    updateState {
+                        State.NoInternet(message)
                     }
                 }.onError { _, message ->
                     Log.e(TAG, message)
-                    _state.update {
-                        ScheduleContract.State.Error(message)
+                    updateState {
+                        State.Error(message)
                     }
                 }.onException { exception, message ->
                     Log.e(TAG, exception?.message.toString())
-                    _state.update {
-                        ScheduleContract.State.Error(message)
+                    updateState {
+                        State.Error(message)
                     }
                 }
             }

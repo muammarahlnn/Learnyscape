@@ -1,7 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.schedule
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,9 +10,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.PullRefreshState
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,7 +18,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
@@ -33,9 +28,14 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCente
 import com.muammarahlnn.learnyscape.core.ui.EmptyScreen
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.getCurrentDate
 import com.muammarahlnn.learnyscape.core.ui.util.getCurrentDay
 import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.schedule.ScheduleContract.Event
+import com.muammarahlnn.learnyscape.feature.schedule.ScheduleContract.State
 import com.muammarahlnn.learnyscape.feature.schedule.composable.LoadingScheduleScreen
 import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCalendar
 
@@ -44,30 +44,29 @@ import com.muammarahlnn.learnyscape.feature.schedule.composable.TodayScheduleCal
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file ScheduleScreen, 20/07/2023 22.04 by Muammar Ahlan Abimanyu
  */
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 internal fun ScheduleRoute(
-    onScheduleClick: (String) -> Unit,
+    controller: ScheduleController,
     modifier: Modifier = Modifier,
     viewModel: ScheduleViewModel = hiltViewModel(),
 ) {
-    val (state, event) = use(contract = viewModel)
-    LaunchedEffect(Unit) {
-        event(ScheduleContract.Event.OnGetSchedules)
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            is ScheduleNavigation.NavigateToClass ->
+                controller.navigateToClass(navigation.classId)
+        }
     }
 
-    val (refreshing, pullRefreshState) = use(refreshProvider = viewModel) {
-        event(ScheduleContract.Event.OnGetSchedules)
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(Event.FetchSchedules)
     }
 
     ScheduleScreen(
         state = state,
-        pullRefreshState = pullRefreshState,
-        refreshing = refreshing,
-        onRefresh = {
-            event(ScheduleContract.Event.OnGetSchedules)
-        },
-        onScheduleClick = onScheduleClick,
+        refreshState = use(viewModel) { event(Event.FetchSchedules) },
+        event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -75,11 +74,10 @@ internal fun ScheduleRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun ScheduleScreen(
-    state: ScheduleContract.State,
-    pullRefreshState: PullRefreshState,
-    refreshing: Boolean,
-    onRefresh: () -> Unit,
-    onScheduleClick: (String) -> Unit,
+    state: State,
+    refreshState: RefreshState,
+    event: (Event) -> Unit,
+    navigate: (ScheduleNavigation) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -91,11 +89,10 @@ private fun ScheduleScreen(
         },
         modifier = modifier,
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .pullRefresh(pullRefreshState)
+        PullRefreshScreen(
+            pullRefreshState = refreshState.pullRefreshState,
+            refreshing = refreshState.refreshing,
+            modifier = Modifier.padding(paddingValues)
         ) {
             Column(
                 modifier = Modifier.fillMaxSize()
@@ -104,13 +101,13 @@ private fun ScheduleScreen(
 
                 val contentModifier = Modifier.fillMaxSize()
                 when (state) {
-                    ScheduleContract.State.Loading -> {
+                    State.Loading -> {
                         LoadingScheduleScreen(
                             modifier = contentModifier
                         )
                     }
 
-                    is ScheduleContract.State.Success -> {
+                    is State.Success -> {
                         LazyColumn(
                             contentPadding = PaddingValues(16.dp),
                             modifier = contentModifier
@@ -119,14 +116,14 @@ private fun ScheduleScreen(
                             item {
                                 TodayScheduleCalendar(
                                     schedules = state.schedules,
-                                    onScheduleClick = onScheduleClick,
+                                    onScheduleClick = { navigate(ScheduleNavigation.NavigateToClass(it)) },
                                     modifier = modifier.wrapContentSize()
                                 )
                             }
                         }
                     }
 
-                    ScheduleContract.State.SuccessEmpty -> {
+                    State.SuccessEmpty -> {
                         EmptyScreen(
                             text = stringResource(id = R.string.empty_schedule_text),
                             modifier = contentModifier
@@ -134,29 +131,23 @@ private fun ScheduleScreen(
                     }
 
 
-                    is ScheduleContract.State.NoInternet -> {
+                    is State.NoInternet -> {
                         NoInternetScreen(
                             text = state.message,
-                            onRefresh = onRefresh,
+                            onRefresh = { event(Event.FetchSchedules) },
                             modifier = contentModifier
                         )
                     }
 
-                    is ScheduleContract.State.Error -> {
+                    is State.Error -> {
                         ErrorScreen(
                             text = state.message,
-                            onRefresh = onRefresh,
+                            onRefresh = { event(Event.FetchSchedules) },
                             modifier = contentModifier
                         )
                     }
                 }
             }
-
-            PullRefreshIndicator(
-                refreshing = refreshing,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
         }
     }
 }
