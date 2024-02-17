@@ -6,8 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.aclass.composable.ClassErrorContent
 import com.muammarahlnn.learnyscape.feature.aclass.composable.ClassLoadingContent
@@ -22,10 +22,7 @@ import com.muammarahlnn.learnyscape.feature.aclass.composable.ClassSuccessConten
 @Composable
 internal fun ClassRoute(
     classId: String,
-    navigateBack: () -> Unit,
-    navigateToJoinRequests: (String) -> Unit,
-    navigateToResourceCreate: (String, Int) -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
+    controller: ClassController,
     modifier: Modifier = Modifier,
     viewModel: ClassViewModel = hiltViewModel(),
 ) {
@@ -40,23 +37,33 @@ internal fun ClassRoute(
         }
     }
 
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            ClassNavigation.NavigateBack ->
+                controller.navigateBack()
+
+            is ClassNavigation.NavigateToJoinRequests ->
+                controller.navigateToJoinRequests(navigation.classId)
+
+            is ClassNavigation.NavigateToResourceCreate ->
+                controller.navigateToResourceCreate(
+                    navigation.classId,
+                    navigation.resourceTypeOrdinal,
+                )
+
+            is ClassNavigation.NavigateToResourceDetails ->
+                controller.navigateToResourceDetails(
+                    navigation.resourceId,
+                    navigation.resourceTypeOrdinal,
+                )
+        }
+    }
+
     val context = LocalContext.current
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
             is ClassContract.Effect.ShowToast ->
-                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-
-            ClassContract.Effect.NavigateBack ->
-                navigateBack()
-
-            is ClassContract.Effect.NavigateToJoinRequests ->
-                navigateToJoinRequests(it.classId)
-
-            is ClassContract.Effect.NavigateToResourceCreate ->
-                navigateToResourceCreate(it.classId, it.resourceTypeOrdinal)
-
-            is ClassContract.Effect.NavigateToResourceDetails ->
-                navigateToResourceDetails(it.resourceId, it.resourceTypeOrdinal)
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -69,6 +76,7 @@ internal fun ClassRoute(
         state = state,
         refreshState = refreshState,
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -78,12 +86,15 @@ private fun ClassScreen(
     state: ClassContract.State,
     refreshState: RefreshState,
     event: (ClassContract.Event) -> Unit,
+    navigate: (ClassNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (state.uiState) {
         ClassContract.UiState.Loading -> ClassLoadingContent(
-            onBackClick = { event(ClassContract.Event.OnNavigateBack) },
-            onJoinRequestsClick = { event(ClassContract.Event.OnNavigateToJoinRequests) },
+            onBackClick = { navigate(ClassNavigation.NavigateBack) },
+            onJoinRequestsClick = {
+                navigate(ClassNavigation.NavigateToJoinRequests(state.classId))
+            },
         )
 
         is ClassContract.UiState.Success -> ClassSuccessContent(
@@ -91,19 +102,27 @@ private fun ClassScreen(
             profilePicUiState = state.profilePicUiState,
             classFeeds = state.uiState.classFeeds,
             announcementAuthorProfilePicUiStateMap = state.announcementAuthorProfilePicUiStateMap,
-            onBackClick = { event(ClassContract.Event.OnNavigateBack) },
-            onJoinRequestsClick = { event(ClassContract.Event.OnNavigateToJoinRequests) },
-            onCreateNewAnnouncementClick = { event(ClassContract.Event.OnNavigateToResourceCreate) },
+            onBackClick = { navigate(ClassNavigation.NavigateBack) },
+            onJoinRequestsClick = { navigate(ClassNavigation.NavigateToJoinRequests(state.classId)) },
+            onCreateNewAnnouncementClick = {
+                navigate(ClassNavigation.NavigateToResourceCreate(
+                    classId = state.classId,
+                    resourceTypeOrdinal = state.announcementOrdinal,
+                ))
+            },
             onFeedClick = { feedId, resourceTypeOrdinal ->
-                event(ClassContract.Event.OnNavigateToResourceDetails(feedId, resourceTypeOrdinal))
+                navigate(ClassNavigation.NavigateToResourceDetails(
+                    resourceId = feedId,
+                    resourceTypeOrdinal = resourceTypeOrdinal,
+                ))
             },
             modifier = modifier,
         )
 
         is ClassContract.UiState.Error -> ClassErrorContent(
             errorMessage = state.uiState.message,
-            onBackClick = { event(ClassContract.Event.OnNavigateBack) },
-            onJoinRequestsClick = { event(ClassContract.Event.OnNavigateToJoinRequests) },
+            onBackClick = { navigate(ClassNavigation.NavigateBack) },
+            onJoinRequestsClick = { navigate(ClassNavigation.NavigateToJoinRequests(state.classId)) },
             onRefresh = {
                 event(ClassContract.Event.FetchClassFeeds)
                 event(ClassContract.Event.FetchProfilePic)
