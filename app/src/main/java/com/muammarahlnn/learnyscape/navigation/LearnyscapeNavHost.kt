@@ -80,9 +80,7 @@ fun LearnyscapeNavHost(
             onCameraActionClick = {
                 navController.navigateToCamera()
             },
-            onPendingClassRequestClick = {
-                navController.navigateToPendingRequest()
-            },
+            navigateToPendingRequestClass = navController::navigateToPendingRequest,
             onChangePasswordButtonClick = navController::navigateToChangePassword
         )
         classNavigator(

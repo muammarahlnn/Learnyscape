@@ -21,7 +21,7 @@ internal fun HomeNavHost(
     state: HomeNavigatorState,
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
-    onPendingClassRequestClick: () -> Unit,
+    navigateToPendingRequestClass: () -> Unit,
     onCameraActionClick: () -> Unit,
     onChangePasswordButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -38,7 +38,7 @@ internal fun HomeNavHost(
             navigateToClass = navigateToClass,
         )
         searchScreen(
-            onPendingClassRequestClick = onPendingClassRequestClick
+            navigateToPendingRequestClass = navigateToPendingRequestClass
         )
         scheduleScreen(
             onScheduleClick = navigateToClass,
