@@ -3,6 +3,8 @@ package com.muammarahlnn.learnyscape.feature.profile
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -16,15 +18,11 @@ import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.LogoutUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.UploadProfilePicUseCase
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.learnyscape.feature.profile.ProfileContract.Effect
+import com.muammarahlnn.learnyscape.feature.profile.ProfileContract.Event
+import com.muammarahlnn.learnyscape.feature.profile.ProfileContract.State
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -42,32 +40,31 @@ class ProfileViewModel @Inject constructor(
     private val uploadProfilePicUseCase: UploadProfilePicUseCase,
     private val getProfilePicUseCase: GetProfilePicUseCase,
     private val saveImageToFileUseCase: SaveImageToFileUseCase,
-) : ViewModel(), ProfileContract {
+) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
-    private val _state = MutableStateFlow(ProfileContract.State())
-    override val state: StateFlow<ProfileContract.State> = _state.asStateFlow()
+    override fun event(event: Event) {
+        when (event) {
+            Event.OnGetProfilePic ->
+                getProfilePic()
 
-    private val _effect = MutableSharedFlow<ProfileContract.Effect>()
-    override val effect: SharedFlow<ProfileContract.Effect> = _effect.asSharedFlow()
+            Event.OnGetCapturedPhoto ->
+                getCapturedPhoto()
 
-    override fun event(event: ProfileContract.Event) = when (event) {
-        ProfileContract.Event.OnGetProfilePic ->
-            getProfilePic()
+            is Event.OnShowChangePhotoProfileBottomSheet ->
+                showChangePhotoProfileBottomSheet(event.show)
 
-        ProfileContract.Event.OnGetCapturedPhoto ->
-            getCapturedPhoto()
+            is Event.OnShowLogoutDialog ->
+                showLogoutDialog(event.show)
 
-        is ProfileContract.Event.OnShowChangePhotoProfileBottomSheet ->
-            showChangePhotoProfileBottomSheet(event.show)
+            Event.OnLogout ->
+                logout()
 
-        is ProfileContract.Event.OnShowLogoutDialog ->
-            showLogoutDialog(event.show)
+            is Event.OnUpdateProfilePic ->
+                updateProfilePic(event.imageFile)
 
-        ProfileContract.Event.OnLogout ->
-            logout()
-
-        is ProfileContract.Event.OnUpdateProfilePic ->
-            updateProfilePic(event.imageFile)
+            Event.OnGalleryActionClick ->
+                openGallery()
+        }
     }
 
     private fun getProfilePic() {
@@ -76,7 +73,7 @@ class ProfileViewModel @Inject constructor(
                 result.onLoading {
                     updateStateOnLoading()
                 }.onSuccess { profilePic ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             profilePicUiState = PhotoProfileImageUiState.Success(profilePic),
                         )
@@ -132,18 +129,18 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun showChangePhotoProfileBottomSheet(show: Boolean) {
-        _state.update {
-            it.apply {
-                showChangePhotoProfileBottomSheet.value = show
-            }
+        updateState {
+            it.copy(
+                showChangePhotoProfileBottomSheet = show
+            )
         }
     }
 
     private fun showLogoutDialog(show: Boolean) {
-        _state.update {
-            it.apply {
-                showLogoutDialog.value = show
-            }
+        updateState {
+            it.copy(
+                showLogoutDialog = show
+            )
         }
     }
 
@@ -154,7 +151,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun updateStateOnLoading() {
-        _state.update {
+        updateState {
             it.copy(
                 profilePicUiState = PhotoProfileImageUiState.Loading,
             )
@@ -163,7 +160,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateStateOnError(message: String) {
         Log.e(TAG, message)
-        _state.update {
+        updateState {
             it.copy(
                 profilePicUiState = PhotoProfileImageUiState.Success(null),
             )
@@ -173,7 +170,7 @@ class ProfileViewModel @Inject constructor(
 
     private fun updateStateOnException(exception: Throwable?, message: String) {
         Log.e(TAG, exception?.message.toString())
-        _state.update {
+        updateState {
             it.copy(
                 profilePicUiState = PhotoProfileImageUiState.Success(null),
             )
@@ -182,13 +179,13 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun showToast(message: String) {
-        viewModelScope.launch {
-            _effect.emit(
-                ProfileContract.Effect.ShowToast(message)
-            )
-        }
+        viewModelScope.emitEffect(Effect.ShowToast(message))
     }
 
+    private fun openGallery() {
+        viewModelScope.emitEffect(Effect.OpenGallery)
+        showChangePhotoProfileBottomSheet(false)
+    }
     companion object {
 
         private const val TAG = "ProfileViewModel"

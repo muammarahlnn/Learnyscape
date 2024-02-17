@@ -15,17 +15,17 @@ const val HOME_NAVIGATOR_ROUTE = "home_navigator_route"
 fun NavGraphBuilder.homeNavigator(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
-    onCameraActionClick: () -> Unit,
+    navigateToCamera: () -> Unit,
     navigateToPendingRequestClass: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
+    navigateToChangePassword: () -> Unit,
 ) {
     composable(route = HOME_NAVIGATOR_ROUTE) {
         HomeNavigatorRoute(
             navigateToNotifications = navigateToNotifications,
             navigateToClass = navigateToClass,
-            onCameraActionClick = onCameraActionClick,
+            navigateToCamera = navigateToCamera,
             navigateToPendingRequestClass = navigateToPendingRequestClass,
-            onChangePasswordButtonClick = onChangePasswordButtonClick,
+            navigateToChangePassword = navigateToChangePassword,
         )
     }
 }

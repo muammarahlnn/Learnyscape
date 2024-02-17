@@ -1,9 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.profile
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import java.io.File
 
@@ -12,14 +8,12 @@ import java.io.File
  * @author Muammar Ahlan Abimanyu (muammarahlnn)
  * @file ProfileContract, 28/11/2023 20.38 by Muammar Ahlan Abimanyu
  */
-interface ProfileContract :
-    BaseContract<ProfileContract.State, ProfileContract.Event>,
-    EffectProvider<ProfileContract.Effect> {
+interface ProfileContract  {
 
     data class State(
         val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
-        val showChangePhotoProfileBottomSheet: MutableState<Boolean> = mutableStateOf(false),
-        val showLogoutDialog: MutableState<Boolean> = mutableStateOf(false),
+        val showChangePhotoProfileBottomSheet: Boolean = false,
+        val showLogoutDialog: Boolean = false,
     )
 
     sealed interface Event {
@@ -29,6 +23,8 @@ interface ProfileContract :
         data object OnGetCapturedPhoto : Event
 
         data class OnShowChangePhotoProfileBottomSheet(val show: Boolean) : Event
+
+        data object OnGalleryActionClick : Event
 
         data class OnUpdateProfilePic(val imageFile: File) : Event
 
@@ -40,5 +36,7 @@ interface ProfileContract :
     sealed interface Effect {
 
         data class ShowToast(val message: String) : Effect
+
+        data object OpenGallery : Effect
     }
 }

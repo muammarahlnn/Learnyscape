@@ -22,8 +22,8 @@ internal fun HomeNavHost(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
     navigateToPendingRequestClass: () -> Unit,
-    onCameraActionClick: () -> Unit,
-    onChangePasswordButtonClick: () -> Unit,
+    navigateToCamera: () -> Unit,
+    navigateToChangePassword: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -44,8 +44,8 @@ internal fun HomeNavHost(
             navigateToClass = navigateToClass,
         )
         profileScreen(
-            onCameraActionClick = onCameraActionClick,
-            onChangePasswordButtonClick = onChangePasswordButtonClick,
+            navigateToCamera = navigateToCamera,
+            navigateToChangePassword = navigateToChangePassword,
         )
     }
 }
