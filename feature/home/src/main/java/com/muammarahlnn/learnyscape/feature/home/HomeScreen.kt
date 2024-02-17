@@ -75,11 +75,6 @@ internal fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val (state, event) = use(contract = viewModel)
-    LaunchedEffect(Unit) {
-        event(Event.FetchEnrolledClasses)
-    }
-
     CollectEffect(controller.navigation) { navigation ->
         when (navigation) {
             is Navigation.NavigateToClass ->
@@ -88,6 +83,11 @@ internal fun HomeRoute(
             Navigation.NavigateToNotifications ->
                 controller.navigateToNotifications()
         }
+    }
+
+    val (state, event) = use(contract = viewModel)
+    LaunchedEffect(Unit) {
+        event(Event.FetchEnrolledClasses)
     }
 
     HomeScreen(
