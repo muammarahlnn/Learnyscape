@@ -62,7 +62,7 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingDialog
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.SuccessDialog
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.quizsession.composable.QuizSessionTopAppBar
 import kotlin.math.roundToInt
@@ -75,10 +75,17 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun QuizSessionRoute(
-    navigateBack: () -> Unit,
+    controller: QuizSessionController,
     modifier: Modifier = Modifier,
     viewModel: QuizSessionViewModel = hiltViewModel()
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            QuizSessionNavigation.NavigateBack ->
+                controller.navigateBack()
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(QuizSessionContract.Event.FetchQuizQuestions)
@@ -89,16 +96,10 @@ internal fun QuizSessionRoute(
         event(QuizSessionContract.Event.ShowYouCanNotLeaveDialog(true))
     }
 
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            QuizSessionContract.Effect.NavigateBack ->
-                navigateBack()
-        }
-    }
-
     QuizSessionScreen(
         state = state,
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -107,6 +108,7 @@ internal fun QuizSessionRoute(
 private fun QuizSessionScreen(
     state: QuizSessionContract.State,
     event: (QuizSessionContract.Event) -> Unit,
+    navigate: (QuizSessionNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state.overlayComposableVisibility.showSubmitAnswerDialog) {
@@ -124,8 +126,9 @@ private fun QuizSessionScreen(
     }
 
     if (state.overlayComposableVisibility.showTimeoutDialog) {
+        // TODO: automatically submit answers when timeout
         TimeoutDialog(
-            onContinue = { event(QuizSessionContract.Event.OnQuizIsOver) },
+            onContinue = { navigate(QuizSessionNavigation.NavigateBack) },
         )
     }
 
@@ -138,7 +141,7 @@ private fun QuizSessionScreen(
     if (state.overlayComposableVisibility.showSubmittingAnswersDialog) {
         SubmittingAnswersDialog(
             uiState = state.submittingAnswersDialogUiState,
-            onContinue = { event(QuizSessionContract.Event.OnQuizIsOver) },
+            onContinue = { navigate(QuizSessionNavigation.NavigateBack) },
             onDismiss = { event(QuizSessionContract.Event.ShowSubmittingAnswersDialog(false)) }
         )
     }
@@ -591,7 +594,7 @@ private fun UnansweredQuestionsDialog(
     modifier: Modifier = Modifier,
 ) {
     BaseAlertDialog(
-        title = stringResource(id = R.string.unanswered_dialog_title,),
+        title = stringResource(id = R.string.unanswered_dialog_title),
         dialogText = stringResource(
             id = R.string.unanswered_dialog_text,
             unansweredQuestions,

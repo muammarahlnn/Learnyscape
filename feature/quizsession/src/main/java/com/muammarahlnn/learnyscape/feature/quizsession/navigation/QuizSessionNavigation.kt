@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.quizsession.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -7,6 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.muammarahlnn.learnyscape.core.common.decoder.StringCodec
+import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionController
 import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionRoute
 
 
@@ -74,7 +76,10 @@ fun NavGraphBuilder.quizSessionScreen(
         )
     ) {
         QuizSessionRoute(
-            navigateBack = navigateBack,
+            controller = QuizSessionController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+            )
         )
     }
 }
