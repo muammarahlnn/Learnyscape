@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -14,13 +16,13 @@ import com.muammarahlnn.learnyscape.core.domain.quizsession.GetQuizMultipleChoic
 import com.muammarahlnn.learnyscape.core.domain.quizsession.SubmitMultipleChoiceAnswersUseCase
 import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
+import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionContract.Effect
+import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionContract.Event
+import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionContract.State
+import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionContract.SubmittingAnswersDialogUiState
+import com.muammarahlnn.learnyscape.feature.quizsession.QuizSessionContract.UiState
 import com.muammarahlnn.learnyscape.feature.quizsession.navigation.QuizSessionArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -34,50 +36,45 @@ class QuizSessionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getQuizMultipleChoiceQuestionsUseCase: GetQuizMultipleChoiceQuestionsUseCase,
     private val submitMultipleChoiceAnswersUseCase: SubmitMultipleChoiceAnswersUseCase,
-) : ViewModel(), QuizSessionContract {
+) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
     private val quizSessionArgs = QuizSessionArgs(savedStateHandle)
 
-    private val _state = MutableStateFlow(
-        QuizSessionContract.State(
-            quizId = quizSessionArgs.quizId,
-            quizType = QuizType.getQuizType(quizSessionArgs.quizTypeOrdinal),
-            quizName = quizSessionArgs.quizName,
-            quizDuration = quizSessionArgs.quizDuration,
-        )
-    )
-    override val state: StateFlow<QuizSessionContract.State> = _state
+    init {
+        updateState {
+            it.copy(
+                quizId = quizSessionArgs.quizId,
+                quizType = QuizType.getQuizType(quizSessionArgs.quizTypeOrdinal),
+                quizName = quizSessionArgs.quizName,
+                quizDuration = quizSessionArgs.quizDuration,
+            )
+        }
+    }
 
-    private val _effect = MutableSharedFlow<QuizSessionContract.Effect>()
-    override val effect: SharedFlow<QuizSessionContract.Effect> = _effect
-
-    override fun event(event: QuizSessionContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            QuizSessionContract.Event.FetchQuizQuestions ->
+            Event.FetchQuizQuestions ->
                 fetchQuizQuestions()
 
-            QuizSessionContract.Event.OnQuizIsOver ->
-                navigateBack()
-
-            is QuizSessionContract.Event.ShowYouCanNotLeaveDialog ->
+            is Event.ShowYouCanNotLeaveDialog ->
                 showYouCanNotLeaveDialog(event.show)
 
-            is QuizSessionContract.Event.ShowSubmitAnswerDialog ->
+            is Event.ShowSubmitAnswerDialog ->
                 showSubmitAnswerDialog(event.show)
 
-            is QuizSessionContract.Event.ShowTimeoutDialog ->
+            is Event.ShowTimeoutDialog ->
                 showTimeoutDialog(event.show)
 
-            is QuizSessionContract.Event.ShowUnansweredQuestionsDialog ->
+            is Event.ShowUnansweredQuestionsDialog ->
                 showUnansweredQuestionsDialog(event.show)
 
-            is QuizSessionContract.Event.ShowSubmittingAnswersDialog ->
+            is Event.ShowSubmittingAnswersDialog ->
                 showSubmittingAnswersDialog(event.show)
 
-            is QuizSessionContract.Event.OnOptionSelected ->
+            is Event.OnOptionSelected ->
                 onOptionSelected(event.index, event.option)
 
-            QuizSessionContract.Event.OnSubmitAnswers ->
+            Event.OnSubmitAnswers ->
                 submitAnswers()
         }
     }
@@ -85,9 +82,9 @@ class QuizSessionViewModel @Inject constructor(
     private fun fetchQuizQuestions() {
 
         fun onErrorFetchQuizQuestions(message: String) {
-            _state.update {
+            updateState {
                 it.copy(
-                    uiState = QuizSessionContract.UiState.Error(message),
+                    uiState = UiState.Error(message),
                 )
             }
         }
@@ -97,15 +94,15 @@ class QuizSessionViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     result.onLoading {
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = QuizSessionContract.UiState.Loading,
+                                uiState = UiState.Loading,
                             )
                         }
                     }.onSuccess { multipleChoiceQuestions ->
-                        _state.update {
+                        updateState {
                             it.copy(
-                                uiState = QuizSessionContract.UiState.Success,
+                                uiState = UiState.Success,
                                 multipleChoiceQuestions = multipleChoiceQuestions.mapIndexed { index, model ->
                                     model.toMultipleChoiceQuestion(index)
                                 },
@@ -155,7 +152,7 @@ class QuizSessionViewModel @Inject constructor(
         )
 
     private fun showYouCanNotLeaveDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showYouCanNotLeaveDialog = show
@@ -165,7 +162,7 @@ class QuizSessionViewModel @Inject constructor(
     }
 
     private fun showSubmitAnswerDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showSubmitAnswerDialog = show
@@ -175,7 +172,7 @@ class QuizSessionViewModel @Inject constructor(
     }
 
     private fun showTimeoutDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showTimeoutDialog = show
@@ -185,7 +182,7 @@ class QuizSessionViewModel @Inject constructor(
     }
 
     private fun showUnansweredQuestionsDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showUnansweredQuestionsDialog = show
@@ -195,7 +192,7 @@ class QuizSessionViewModel @Inject constructor(
     }
 
     private fun showSubmittingAnswersDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showSubmittingAnswersDialog = show
@@ -205,7 +202,7 @@ class QuizSessionViewModel @Inject constructor(
     }
 
     private fun onOptionSelected(index: Int, option: OptionLetter) {
-        _state.update {
+        updateState {
             it.copy(
                 multipleChoiceAnswers = it.multipleChoiceAnswers.toMutableList().apply {
                     this[index] = option
@@ -233,7 +230,7 @@ class QuizSessionViewModel @Inject constructor(
                     unansweredQuestionsString += ", "
             }
 
-            _state.update {
+            updateState {
                 it.copy(
                     unansweredQuestions = unansweredQuestionsString
                 )
@@ -244,9 +241,9 @@ class QuizSessionViewModel @Inject constructor(
         }
 
         fun onErrorSubmitAnswers(message: String) {
-            _state.update {
+            updateState {
                 it.copy(
-                    submittingAnswersDialogUiState = QuizSessionContract.SubmittingAnswersDialogUiState.Error(message)
+                    submittingAnswersDialogUiState = SubmittingAnswersDialogUiState.Error(message)
                 )
             }
         }
@@ -260,15 +257,15 @@ class QuizSessionViewModel @Inject constructor(
                 }
             ).asResult().collect { result ->
                 result.onLoading {
-                    _state.update {
+                    updateState {
                         it.copy(
-                            submittingAnswersDialogUiState = QuizSessionContract.SubmittingAnswersDialogUiState.Loading
+                            submittingAnswersDialogUiState = SubmittingAnswersDialogUiState.Loading
                         )
                     }
                 }.onSuccess {
-                    _state.update {
+                    updateState {
                         it.copy(
-                            submittingAnswersDialogUiState = QuizSessionContract.SubmittingAnswersDialogUiState.Success
+                            submittingAnswersDialogUiState = SubmittingAnswersDialogUiState.Success
                         )
                     }
                 }.onNoInternet { message ->
@@ -280,12 +277,6 @@ class QuizSessionViewModel @Inject constructor(
                     onErrorSubmitAnswers(message)
                 }
             }
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(QuizSessionContract.Effect.NavigateBack)
         }
     }
 
