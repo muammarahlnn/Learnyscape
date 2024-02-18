@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
@@ -58,11 +58,20 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 @Composable
 internal fun ResourceCreateRoute(
-    navigateBack: () -> Unit,
-    navigateToCamera: () -> Unit,
+    controller: ResourceCreateController,
     modifier: Modifier = Modifier,
     viewModel: ResourceCreateViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            ResourceCreateNavigation.NavigateBack ->
+                controller.navigateBack()
+
+            ResourceCreateNavigation.NavigateToCamera ->
+                controller.navigateToCamera()
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(ResourceCreateContract.Event.OnGetCapturedPhoto)
@@ -84,28 +93,23 @@ internal fun ResourceCreateRoute(
         }
     }
 
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
-            ResourceCreateContract.Effect.NavigateBack ->
-                navigateBack()
-
-            ResourceCreateContract.Effect.NavigateToCamera ->
-                navigateToCamera()
-
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
             ResourceCreateContract.Effect.OpenFiles ->
                 launcher.launch("*/*")
 
             is ResourceCreateContract.Effect.ShowToast ->
-                Toast.makeText(context, it.message,Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, effect.message,Toast.LENGTH_SHORT).show()
 
             is ResourceCreateContract.Effect.OpenAttachment ->
-                openFile(context, it.attachment)
+                openFile(context, effect.attachment)
         }
     }
 
     ResourceCreateScreen(
         state = state,
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier
     )
 }
@@ -114,6 +118,7 @@ internal fun ResourceCreateRoute(
 private fun ResourceCreateScreen(
     state: ResourceCreateContract.State,
     event: (ResourceCreateContract.Event) -> Unit,
+    navigate: (ResourceCreateNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state.overlayComposableVisibility.addAttachmentBottomSheet) {
@@ -122,10 +127,11 @@ private fun ResourceCreateScreen(
                 event(ResourceCreateContract.Event.OnUploadFileClick)
             },
             onCameraClick = {
-                event(ResourceCreateContract.Event.OnCameraClick)
+                event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(false))
+                navigate(ResourceCreateNavigation.NavigateToCamera)
             },
             onDismiss = {
-                event(ResourceCreateContract.Event.OnDismissUploadAttachmentBottomSheet)
+                event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(false))
             },
         )
     }
@@ -183,7 +189,10 @@ private fun ResourceCreateScreen(
     if (state.overlayComposableVisibility.creatingResourceDialog) {
         CreatingResourceDialog(
             state = state.creatingResourceDialogState,
-            onConfirmSuccess = { event(ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog) },
+            onConfirmSuccess = {
+                event(ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog)
+                navigate(ResourceCreateNavigation.NavigateBack)
+            },
             onDismiss = { event(ResourceCreateContract.Event.OnDismissCreatingResourceDialog) }
         )
     }
@@ -217,7 +226,7 @@ private fun ResourceCreateScreen(
                         modifier = Modifier
                             .size(32.dp)
                             .clickable {
-                                event(ResourceCreateContract.Event.OnCloseClick)
+                                navigate(ResourceCreateNavigation.NavigateBack)
                             }
                     )
 
@@ -259,7 +268,7 @@ private fun ResourceCreateScreen(
                             event(ResourceCreateContract.Event.OnDescriptionChange(it))
                         },
                         onAddAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                            event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
                         },
                         onAttachmentClick = { attachment ->
                             event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
@@ -278,7 +287,7 @@ private fun ResourceCreateScreen(
                             event(ResourceCreateContract.Event.OnDescriptionChange(it))
                         },
                         onAddAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                            event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
                         },
                         onAttachmentClick = { attachment ->
                             event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
@@ -297,7 +306,7 @@ private fun ResourceCreateScreen(
                             event(ResourceCreateContract.Event.OnDescriptionChange(it))
                         },
                         onAddAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnAddAttachmentClick)
+                            event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
                         },
                         onAttachmentClick = { attachment ->
                             event(ResourceCreateContract.Event.OnAttachmentClick(attachment))

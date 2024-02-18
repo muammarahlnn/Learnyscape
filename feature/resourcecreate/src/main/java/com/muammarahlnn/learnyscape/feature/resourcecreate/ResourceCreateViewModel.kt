@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -20,20 +22,17 @@ import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateQuizUseCase
 import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract.CreatingResourceDialogUiState
+import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract.Effect
+import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract.Event
+import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract.State
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceOption
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.MultipleChoiceQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.PhotoAnswerQuestion
 import com.muammarahlnn.learnyscape.feature.resourcecreate.navigation.ResourceCreateArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import java.time.LocalDate
@@ -55,112 +54,100 @@ class ResourceCreateViewModel @Inject constructor(
     private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
     private val resetPhotoUseCase: ResetCapturedPhotoUseCase,
     private val saveImageToFileUseCase: SaveImageToFileUseCase,
-) : ViewModel(), ResourceCreateContract {
+) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
 
-    private val _state = MutableStateFlow(
-        ResourceCreateContract.State(
-            classId = resourceCreateArgs.classId,
-            resourceType = ClassResourceType.getClassResourceType(resourceCreateArgs.resourceTypeOrdinal)
-        )
-    )
-    override val state: StateFlow<ResourceCreateContract.State> = _state.asStateFlow()
+    init {
+        updateState {
+            it.copy(
+                classId = resourceCreateArgs.classId,
+                resourceType = ClassResourceType.getClassResourceType(resourceCreateArgs.resourceTypeOrdinal)
+            )
+        }
+    }
 
-    private val _effect = MutableSharedFlow<ResourceCreateContract.Effect>()
-    override val effect: SharedFlow<ResourceCreateContract.Effect> = _effect.asSharedFlow()
-
-    override fun event(event: ResourceCreateContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            ResourceCreateContract.Event.OnCloseClick ->
-                navigateBack()
-
-            ResourceCreateContract.Event.OnCreateResourceClick ->
+            Event.OnCreateResourceClick ->
                 createResource()
 
-            is ResourceCreateContract.Event.OnTitleChange ->
+            is Event.OnTitleChange ->
                 onTitleChange(event.title)
 
-            is ResourceCreateContract.Event.OnDescriptionChange ->
+            is Event.OnDescriptionChange ->
                 onDescriptionChange(event.description)
 
-            ResourceCreateContract.Event.OnAddAttachmentClick ->
-                showAddAttachmentBottomSheet(true)
+            is Event.OnShowAddAttachmentBottomSheet ->
+                showAddAttachmentBottomSheet(event.show)
 
-            ResourceCreateContract.Event.OnCameraClick ->
-                navigateToCamera()
-
-            ResourceCreateContract.Event.OnUploadFileClick ->
+            Event.OnUploadFileClick ->
                 openFiles()
 
-            ResourceCreateContract.Event.OnDismissUploadAttachmentBottomSheet ->
-                showAddAttachmentBottomSheet(false)
-
-            is ResourceCreateContract.Event.OnFileSelected ->
+            is Event.OnFileSelected ->
                 addAttachmentToCurrentAttachments(event.selectedFile)
 
-            ResourceCreateContract.Event.OnGetCapturedPhoto ->
+            Event.OnGetCapturedPhoto ->
                 getCapturedPhoto()
 
-            is ResourceCreateContract.Event.OnAttachmentClick ->
+            is Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
 
-            is ResourceCreateContract.Event.OnMoreVertAttachmentClick ->
+            is Event.OnMoreVertAttachmentClick ->
                 onMoreVertAttachmentClick(event.attachmentIndex)
 
-            ResourceCreateContract.Event.OnDismissRemoveAttachmentBottomSheet ->
+            Event.OnDismissRemoveAttachmentBottomSheet ->
                 dismissRemoveAttachmentBottomSheet()
 
-            is ResourceCreateContract.Event.OnRemoveAttachment ->
+            is Event.OnRemoveAttachment ->
                 removeAttachmentFromCurrentAttachments()
 
-            is ResourceCreateContract.Event.OnDueDateClick -> {
+            is Event.OnDueDateClick -> {
                 showSetDueDateDialog(true)
                 updateDueDateType(event.dueDateType)
             }
 
-            is ResourceCreateContract.Event.OnConfirmSetDueDate ->
+            is Event.OnConfirmSetDueDate ->
                 onConfirmSetDueDateDialog(event.dueDate, event.dueTime)
 
-            ResourceCreateContract.Event.OnDismissSetDueDateDialog ->
+            Event.OnDismissSetDueDateDialog ->
                 showSetDueDateDialog(false)
 
-            ResourceCreateContract.Event.OnQuizTypeClick ->
+            Event.OnQuizTypeClick ->
                 showQuizTypeBottomSheet(true)
 
-            ResourceCreateContract.Event.OnDismissQuizTypeBottomSheet ->
+            Event.OnDismissQuizTypeBottomSheet ->
                 showQuizTypeBottomSheet(false)
 
-            is ResourceCreateContract.Event.OnSelectQuizTypeBottomSheetOption ->
+            is Event.OnSelectQuizTypeBottomSheetOption ->
                 onSelectQuizTypeBottomSheetOption(event.quizType)
 
-            ResourceCreateContract.Event.OnDurationClick ->
+            Event.OnDurationClick ->
                 showDurationDialog(true)
 
-            ResourceCreateContract.Event.OnDismissDurationDialog ->
+            Event.OnDismissDurationDialog ->
                 showDurationDialog(false)
 
-            is ResourceCreateContract.Event.OnConfirmSetDurationDialog ->
+            is Event.OnConfirmSetDurationDialog ->
                 onConfirmSetDuration(event.duration)
 
-            ResourceCreateContract.Event.OnShowQuestionsScreen ->
+            Event.OnShowQuestionsScreen ->
                 showQuestionsScreen()
 
-            ResourceCreateContract.Event.OnCloseQuestionsScreen ->
+            Event.OnCloseQuestionsScreen ->
                 closeQuestionsScreen()
 
-            is ResourceCreateContract.Event.OnSaveQuestions ->
+            is Event.OnSaveQuestions ->
                 onSaveQuestions(event.multipleChoiceQuestions, event.photoAnswerQuestions)
 
-            is ResourceCreateContract.Event.OnUnfilledQuestions ->
+            is Event.OnUnfilledQuestions ->
                 showToast(event.message)
 
-            ResourceCreateContract.Event.OnDismissCreatingResourceDialog ->
+            Event.OnDismissCreatingResourceDialog ->
                 showCreatingResourceDialog(false)
 
-            ResourceCreateContract.Event.OnConfirmSuccessCreatingResourceDialog -> {
+            Event.OnConfirmSuccessCreatingResourceDialog -> {
                 showCreatingResourceDialog(false)
-                navigateBack()
             }
         }
     }
@@ -168,7 +155,7 @@ class ResourceCreateViewModel @Inject constructor(
     private fun createResource() {
         showCreatingResourceDialog(true)
 
-        when (_state.value.resourceType) {
+        when (state.value.resourceType) {
             ClassResourceType.ANNOUNCEMENT -> createAnnouncement()
             ClassResourceType.MODULE -> createModule()
             ClassResourceType.ASSIGNMENT -> createAssignment()
@@ -177,16 +164,16 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun createAnnouncement() {
-        if (_state.value.description.isEmpty()) {
+        if (state.value.description.isEmpty()) {
             onErrorCreatingResource("Announcement caption can't be empty")
             return
         }
 
         viewModelScope.launch {
             createAnnouncementUseCase(
-                classId = _state.value.classId,
-                description = _state.value.description,
-                attachments = _state.value.attachments,
+                classId = state.value.classId,
+                description = state.value.description,
+                attachments = state.value.attachments,
             ).asResult().collect { result ->
                 result.onLoading {
                     onLoadingCreatingResource()
@@ -204,17 +191,17 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun createModule() {
-        if (_state.value.title.isEmpty()) {
+        if (state.value.title.isEmpty()) {
             onErrorCreatingResource("Module title can't be empty")
             return
         }
 
         viewModelScope.launch {
             createModuleUseCase(
-                classId = _state.value.classId,
-                title = _state.value.title,
-                description = _state.value.description,
-                attachments = _state.value.attachments,
+                classId = state.value.classId,
+                title = state.value.title,
+                description = state.value.description,
+                attachments = state.value.attachments,
             ).asResult().collect { result ->
                 result.onLoading {
                     onLoadingCreatingResource()
@@ -232,23 +219,23 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun createAssignment() {
-        if (_state.value.title.isEmpty()) {
+        if (state.value.title.isEmpty()) {
             onErrorCreatingResource("Assignment title can't be empty")
             return
         }
 
-        if (_state.value.dueDate == null) {
+        if (state.value.dueDate == null) {
             onErrorCreatingResource("Due date can't be empty")
             return
         }
 
         viewModelScope.launch {
             createAssignmentUseCase(
-                classId = _state.value.classId,
-                title = _state.value.title,
-                description = _state.value.description,
-                dueDate = _state.value.dueDate!!,
-                attachments = _state.value.attachments,
+                classId = state.value.classId,
+                title = state.value.title,
+                description = state.value.description,
+                dueDate = state.value.dueDate!!,
+                attachments = state.value.attachments,
             ).asResult().collect { result ->
                 result.onLoading {
                     onLoadingCreatingResource()
@@ -368,17 +355,17 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun onLoadingCreatingResource() {
-        _state.update {
+        updateState {
             it.copy(
-                creatingResourceDialogState = CreatingResourceDialogState.Loading
+                creatingResourceDialogState = CreatingResourceDialogUiState.Loading
             )
         }
     }
 
     private fun onSuccessCreatingResource(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                creatingResourceDialogState = CreatingResourceDialogState.Success(
+                creatingResourceDialogState = CreatingResourceDialogUiState.Success(
                     message.lowercase().replaceFirstChar { char -> char.uppercase() }
                 )
             )
@@ -390,39 +377,31 @@ class ResourceCreateViewModel @Inject constructor(
             Log.e(TAG, it.message.toString())
         }
 
-        _state.update {
+        updateState {
             it.copy(
-                creatingResourceDialogState = CreatingResourceDialogState.Error(message)
+                creatingResourceDialogState = CreatingResourceDialogUiState.Error(message)
             )
         }
     }
 
     private fun showToast(message: String) {
-        viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.ShowToast(message))
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.NavigateBack)
-        }
+        viewModelScope.emitEffect(Effect.ShowToast(message))
     }
 
     private fun onTitleChange(title: String) {
-        _state.update {
+        updateState {
             it.copy(title = title)
         }
     }
 
     private fun onDescriptionChange(description: String) {
-        _state.update {
+        updateState {
             it.copy(description = description)
         }
     }
 
     private fun showAddAttachmentBottomSheet(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     addAttachmentBottomSheet = show
@@ -431,22 +410,13 @@ class ResourceCreateViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToCamera() {
-        viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.NavigateToCamera)
-        }
-        showAddAttachmentBottomSheet(false)
-    }
-
     private fun openFiles() {
-        viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.OpenFiles)
-        }
+        viewModelScope.emitEffect(Effect.OpenFiles)
         showAddAttachmentBottomSheet(false)
     }
 
     private fun addAttachmentToCurrentAttachments(file: File) {
-        _state.update {
+        updateState {
             val addedAttachments = it.attachments.toMutableList().apply {
                 add(file)
             }
@@ -477,13 +447,11 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun openAttachment(attachment: File) {
-        viewModelScope.launch {
-            _effect.emit(ResourceCreateContract.Effect.OpenAttachment(attachment))
-        }
+        viewModelScope.emitEffect(Effect.OpenAttachment(attachment))
     }
 
     private fun onMoreVertAttachmentClick(attachmentIndex: Int) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     removeAttachmentBottomSheet = true
@@ -494,7 +462,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun dismissRemoveAttachmentBottomSheet() {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     removeAttachmentBottomSheet = false
@@ -505,7 +473,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun removeAttachmentFromCurrentAttachments() {
-        _state.update {
+        updateState {
             it.copy(
                 attachments = it.attachments.toMutableList().apply {
                     removeAt(it.selectedAttachmentIndex)
@@ -516,7 +484,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun showSetDueDateDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     setDueDateDialog = show
@@ -526,7 +494,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun updateDueDateType(dueDateType: DueDateType) {
-        _state.update {
+        updateState {
             it.copy(
                 dueDateType = dueDateType,
             )
@@ -538,7 +506,7 @@ class ResourceCreateViewModel @Inject constructor(
         dueTime: LocalTime?,
     ) {
         val currentDueDate = LocalDateTime.of(dueDate, dueTime)
-        _state.update {
+        updateState {
             when (it.dueDateType) {
                 DueDateType.DUE_DATE -> it.copy(dueDate = currentDueDate)
                 DueDateType.START_DATE -> it.copy(startDate = currentDueDate)
@@ -550,7 +518,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun showQuizTypeBottomSheet(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     quizTypeBottomSheet = show
@@ -560,7 +528,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun onSelectQuizTypeBottomSheetOption(quizType: QuizType) {
-        _state.update {
+        updateState {
             it.copy(
                 quizType = quizType
             )
@@ -569,7 +537,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun showDurationDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     durationDialog = show
@@ -579,7 +547,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun onConfirmSetDuration(duration: Int) {
-        _state.update {
+        updateState {
             it.copy(
                 duration = duration
             )
@@ -588,10 +556,10 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun showQuestionsScreen() {
-        if (_state.value.quizType == QuizType.NONE) {
+        if (state.value.quizType == QuizType.NONE) {
             showToast("Please select quiz type first")
         } else {
-            _state.update {
+            updateState {
                 it.copy(
                     showQuestionsScreen = true
                 )
@@ -600,7 +568,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun closeQuestionsScreen() {
-        _state.update {
+        updateState {
             it.copy(
                 showQuestionsScreen = false
             )
@@ -611,7 +579,7 @@ class ResourceCreateViewModel @Inject constructor(
         multipleChoiceQuestions: List<MultipleChoiceQuestion>,
         photoAnswerQuestions: List<PhotoAnswerQuestion>,
     ) {
-        _state.update {
+        updateState {
             it.copy(
                 multipleChoiceQuestions = multipleChoiceQuestions,
                 photoAnswerQuestions = photoAnswerQuestions,
@@ -621,7 +589,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun showCreatingResourceDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     creatingResourceDialog = show

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.muammarahlnn.learnyscape.core.ui.ErrorDialog
 import com.muammarahlnn.learnyscape.core.ui.LoadingDialog
 import com.muammarahlnn.learnyscape.core.ui.SuccessDialog
-import com.muammarahlnn.learnyscape.feature.resourcecreate.CreatingResourceDialogState
+import com.muammarahlnn.learnyscape.feature.resourcecreate.ResourceCreateContract.CreatingResourceDialogUiState
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -12,19 +12,19 @@ import com.muammarahlnn.learnyscape.feature.resourcecreate.CreatingResourceDialo
  */
 @Composable
 fun CreatingResourceDialog(
-    state: CreatingResourceDialogState,
+    state: CreatingResourceDialogUiState,
     onConfirmSuccess: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     when (state) {
-        CreatingResourceDialogState.Loading -> LoadingDialog()
+        CreatingResourceDialogUiState.Loading -> LoadingDialog()
 
-        is CreatingResourceDialogState.Success -> SuccessDialog(
+        is CreatingResourceDialogUiState.Success -> SuccessDialog(
             message = state.message,
             onConfirm = onConfirmSuccess,
         )
 
-        is CreatingResourceDialogState.Error -> ErrorDialog(
+        is CreatingResourceDialogUiState.Error -> ErrorDialog(
             message = state.message,
             onDismiss = onDismiss
         )
