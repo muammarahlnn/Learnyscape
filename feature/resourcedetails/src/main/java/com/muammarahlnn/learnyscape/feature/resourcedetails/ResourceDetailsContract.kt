@@ -1,8 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
-import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
@@ -13,11 +10,7 @@ import java.io.File
  * @Author Muammar Ahlan Abimanyu
  * @File ResourceDetailsContract, 19/01/2024 11.51
  */
-interface ResourceDetailsContract :
-    BaseContract<ResourceDetailsContract.State, ResourceDetailsContract.Event>,
-    EffectProvider<ResourceDetailsContract.Effect>,
-    RefreshProvider
-{
+interface ResourceDetailsContract {
 
     data class State(
         val resourceId: String = "",
@@ -75,8 +68,6 @@ interface ResourceDetailsContract :
 
         data object FetchStudentAssignmentSubmission : Event
 
-        data object OnBackClick : Event
-
         data object OnDeleteClick : Event
 
         data object OnConfirmDeleteResourceDialog : Event
@@ -87,9 +78,7 @@ interface ResourceDetailsContract :
 
         data object OnDismissDeletingResourceDialog : Event
 
-        data object OnAddWorkButtonClick : Event
-
-        data object OnCameraActionClick : Event
+        data class OnShowAddWorkBottomSheet(val show: Boolean) : Event
 
         data object OnUploadFileActionClick : Event
 
@@ -99,19 +88,9 @@ interface ResourceDetailsContract :
 
         data class OnAttachmentClick(val attachment: File) : Event
 
-        data object OnDismissAddWorkBottomSheet : Event
-
         data object OnStartQuizButtonClick : Event
 
-        data object OnConfirmStartQuizDialog : Event
-
         data object OnDismissStartQuizDialog : Event
-
-        data class OnSubmissionClick(
-            val submissionId: String,
-            val studentId: String,
-            val studentName: String,
-        ) : Event
 
         data class OnRemoveAssignmentSubmissionAttachment(val index: Int) : Event
 
@@ -126,26 +105,8 @@ interface ResourceDetailsContract :
 
         data class ShowToast(val message: String) : Effect
 
-        data object NavigateBack : Effect
-
-        data object NavigateToCamera : Effect
-
         data object OpenFiles : Effect
 
         data class OpenAttachment(val attachment: File) : Effect
-
-        data class NavigateToQuizSession(
-            val quizId: String,
-            val quizTypeOrdinal: Int,
-            val quizName: String,
-            val quizDuration: Int,
-        ) : Effect
-
-        data class NavigateToSubmissionDetails(
-            val submissionTypeOrdinal: Int,
-            val submissionId: String,
-            val studentId: String,
-            val studentName: String,
-        ) : Effect
     }
 }

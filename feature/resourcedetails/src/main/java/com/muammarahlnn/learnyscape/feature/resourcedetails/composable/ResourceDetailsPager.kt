@@ -96,12 +96,6 @@ internal fun ResourceDetailsPager(
                 .fillMaxWidth()
                 .weight(1f)
         ) { pageIndex ->
-            val studentWorkType = when (state.resourceType) {
-                ClassResourceType.ASSIGNMENT -> StudentWorkType.ASSIGNMENT
-                ClassResourceType.QUIZ -> StudentWorkType.QUIZ
-                else -> throw IllegalAccessException("Only assignment and quiz is expected")
-            }
-
             when (pageIndex) {
                 0 -> InstructionsContent(
                     state = state,
@@ -114,7 +108,7 @@ internal fun ResourceDetailsPager(
 
                 1 -> StudentWorkContent(
                     state = state,
-                    studentWorkType  = studentWorkType,
+                    studentWorkType = getStudentWorkType(state.resourceType),
                     onRefresh = onRefreshStudentWork,
                     onSubmissionClick = onSubmissionClick,
                     modifier = Modifier.fillMaxSize()
@@ -123,3 +117,10 @@ internal fun ResourceDetailsPager(
         }
     }
 }
+
+internal fun getStudentWorkType(resourceType: ClassResourceType): StudentWorkType =
+    when (resourceType) {
+        ClassResourceType.ASSIGNMENT -> StudentWorkType.ASSIGNMENT
+        ClassResourceType.QUIZ -> StudentWorkType.QUIZ
+        else -> throw IllegalArgumentException("Only assignment and quiz is expected")
+    }

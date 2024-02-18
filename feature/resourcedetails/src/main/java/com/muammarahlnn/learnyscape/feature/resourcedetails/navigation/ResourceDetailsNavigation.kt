@@ -1,11 +1,13 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsController
 import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
 
 
@@ -60,10 +62,13 @@ fun NavGraphBuilder.resourceDetailScreen(
         ),
     ) {
         ResourceDetailsRoute(
-            navigateBack = navigateBack,
-            navigateToCamera = navigateToCamera,
-            navigateToQuizSession = navigateToQuizSession,
-            navigateToSubmissionDetails = navigateToSubmissionDetails,
+            controller = ResourceDetailsController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+                navigateToCamera = navigateToCamera,
+                navigateToQuizSession = navigateToQuizSession,
+                navigateToSubmissionDetails = navigateToSubmissionDetails,
+            ),
         )
     }
 }

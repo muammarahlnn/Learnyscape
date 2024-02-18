@@ -5,6 +5,10 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.contract.refresh
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
@@ -31,19 +35,18 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.TurnInAssignment
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UpdateAssignmentAttachmentsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UploadAssignmentAttachmentsUseCase
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
-import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract.Effect
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract.Event
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract.State
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract.StudentSubmissionState
+import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract.UiState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -74,96 +77,79 @@ class ResourceDetailsViewModel @Inject constructor(
     private val updateAssignmentAttachmentsUseCase: UpdateAssignmentAttachmentsUseCase,
     private val turnInAssignmentSubmissionUseCase: TurnInAssignmentSubmissionUseCase,
     private val isQuizTakenUseCase: IsQuizTakenUseCase,
-) : ViewModel(), ResourceDetailsContract {
+) : ViewModel(),
+    ContractProvider<State, Event, Effect> by contract(State()),
+    RefreshProvider by refresh()
+{
 
     private val resourceDetailsArgs = ResourceDetailsArgs(savedStateHandle)
 
-    private val _state = MutableStateFlow(ResourceDetailsContract.State(
-        resourceId = resourceDetailsArgs.resourceId,
-        resourceType = ClassResourceType.getClassResourceType(resourceDetailsArgs.resourceTypeOrdinal)
-    ))
-    override val state: StateFlow<ResourceDetailsContract.State> = _state
+    init {
+        updateState {
+            it.copy(
+                resourceId = resourceDetailsArgs.resourceId,
+                resourceType = ClassResourceType.getClassResourceType(resourceDetailsArgs.resourceTypeOrdinal)
+            )
+        }
+    }
 
-    private val _effect = MutableSharedFlow<ResourceDetailsContract.Effect>()
-    override val effect: SharedFlow<ResourceDetailsContract.Effect> = _effect
-
-    private val _refreshing = MutableStateFlow(false)
-    override val refreshing: StateFlow<Boolean> = _refreshing
-
-    override fun event(event: ResourceDetailsContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            ResourceDetailsContract.Event.FetchResourceDetails ->
+            Event.FetchResourceDetails ->
                 fetchResourceDetails()
 
-            ResourceDetailsContract.Event.FetchStudentWorks ->
+            Event.FetchStudentWorks ->
                 fetchStudentWorks()
 
-            ResourceDetailsContract.Event.FetchStudentAssignmentSubmission ->
+            Event.FetchStudentAssignmentSubmission ->
                 fetchStudentAssignmentSubmission()
 
-            ResourceDetailsContract.Event.OnBackClick ->
-                navigateBack()
-
-            ResourceDetailsContract.Event.OnDeleteClick ->
+            Event.OnDeleteClick ->
                 showDeleteResourceDialog(true)
 
-            ResourceDetailsContract.Event.OnConfirmDeleteResourceDialog ->
+            Event.OnConfirmDeleteResourceDialog ->
                 deleteResource()
 
-            ResourceDetailsContract.Event.OnDismissDeleteResourceDialog ->
+            Event.OnDismissDeleteResourceDialog ->
                 showDeleteResourceDialog(false)
 
-            ResourceDetailsContract.Event.OnConfirmSuccessDeletingResourceDialog -> {
-                showDeletingResourceDialog(false)
-                navigateBack()
-            }
-
-            ResourceDetailsContract.Event.OnDismissDeletingResourceDialog ->
+            Event.OnConfirmSuccessDeletingResourceDialog ->
                 showDeletingResourceDialog(false)
 
-            ResourceDetailsContract.Event.OnAddWorkButtonClick ->
-                showAddWorkBottomSheet(true)
+            Event.OnDismissDeletingResourceDialog ->
+                showDeletingResourceDialog(false)
 
-            ResourceDetailsContract.Event.OnCameraActionClick ->
-                navigateToCamera()
+            is Event.OnShowAddWorkBottomSheet ->
+                showAddWorkBottomSheet(event.show)
 
-            ResourceDetailsContract.Event.OnUploadFileActionClick ->
+            Event.OnUploadFileActionClick ->
                 openFiles()
 
-            is ResourceDetailsContract.Event.OnFileSelected ->
+            is Event.OnFileSelected ->
                 addAssignmentSubmissionAttachment(event.file)
 
-            ResourceDetailsContract.Event.OnGetCapturedPhoto ->
+            Event.OnGetCapturedPhoto ->
                 getCapturedPhoto()
 
-            is ResourceDetailsContract.Event.OnAttachmentClick ->
+            is Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
 
-            ResourceDetailsContract.Event.OnDismissAddWorkBottomSheet ->
-                showAddWorkBottomSheet(false)
-
-            ResourceDetailsContract.Event.OnStartQuizButtonClick ->
+            Event.OnStartQuizButtonClick ->
                 showStartQuizDialog(true)
 
-            is ResourceDetailsContract.Event.OnConfirmStartQuizDialog ->
-                navigateToQuizSession()
-
-            ResourceDetailsContract.Event.OnDismissStartQuizDialog ->
+            Event.OnDismissStartQuizDialog ->
                 showStartQuizDialog(false)
 
-            is ResourceDetailsContract.Event.OnSubmissionClick ->
-                navigateToSubmissionDetails(event.submissionId, event.studentId, event.studentName)
-
-            is ResourceDetailsContract.Event.OnRemoveAssignmentSubmissionAttachment ->
+            is Event.OnRemoveAssignmentSubmissionAttachment ->
                 removeAssignmentSubmissionAttachment(event.index)
 
-            ResourceDetailsContract.Event.OnSaveStudentCurrentWorkClick ->
+            Event.OnSaveStudentCurrentWorkClick ->
                 uploadAssignmentAttachments()
 
-            ResourceDetailsContract.Event.OnTurnInAssignmentSubmission ->
+            Event.OnTurnInAssignmentSubmission ->
                 turnInAssignmentSubmission(true)
 
-            ResourceDetailsContract.Event.OnUnsubmitAssignmentSubmission ->
+            Event.OnUnsubmitAssignmentSubmission ->
                 turnInAssignmentSubmission(false)
         }
     }
@@ -193,13 +179,13 @@ class ResourceDetailsViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     handleFetchResourceDetails(result) { announcementDetails ->
-                        _state.update {
+                        updateState {
                             it.copy(
                                 name = announcementDetails.authorName,
                                 date = announcementDetails.updatedAt,
                                 description =  announcementDetails.description,
                                 attachments = announcementDetails.attachments,
-                                uiState = ResourceDetailsContract.UiState.Success,
+                                uiState = UiState.Success,
                             )
                         }
                     }
@@ -213,13 +199,13 @@ class ResourceDetailsViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     handleFetchResourceDetails(result) { moduleDetails ->
-                        _state.update {
+                        updateState {
                             it.copy(
                                 name = moduleDetails.name,
                                 description = moduleDetails.description,
                                 date = moduleDetails.updatedAt,
                                 attachments = moduleDetails.attachments,
-                                uiState = ResourceDetailsContract.UiState.Success,
+                                uiState = UiState.Success,
                             )
                         }
                     }
@@ -233,13 +219,13 @@ class ResourceDetailsViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     handleFetchResourceDetails(result) { assignmentDetails ->
-                        _state.update {
+                        updateState {
                             it.copy(
                                 name = assignmentDetails.name,
                                 description = assignmentDetails.description,
                                 date = assignmentDetails.dueDate,
                                 attachments = assignmentDetails.attachments,
-                                uiState = ResourceDetailsContract.UiState.Success,
+                                uiState = UiState.Success,
                             )
                         }
                     }
@@ -258,7 +244,7 @@ class ResourceDetailsViewModel @Inject constructor(
                 .collect { result ->
                     handleFetchResourceDetails(result) {
                         val (quizDetails, isQuizTaken) = it
-                        _state.update { updatedState ->
+                        updateState { updatedState ->
                             updatedState.copy(
                                 name = quizDetails.name,
                                 date = quizDetails.updatedAt,
@@ -268,7 +254,7 @@ class ResourceDetailsViewModel @Inject constructor(
                                 quizDuration = quizDetails.duration,
                                 quizType = quizDetails.quizType,
                                 isQuizTaken = isQuizTaken,
-                                uiState = ResourceDetailsContract.UiState.Success,
+                                uiState = UiState.Success,
                             )
                         }
                     }
@@ -295,17 +281,17 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun onLoadingFetchResourceDetails() {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = ResourceDetailsContract.UiState.Loading
+                uiState = UiState.Loading
             )
         }
     }
 
     private fun onErrorFetchResourceDetails(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = ResourceDetailsContract.UiState.Error(message)
+                uiState = UiState.Error(message)
             )
         }
     }
@@ -340,9 +326,9 @@ class ResourceDetailsViewModel @Inject constructor(
 
     private fun handleFetchStudentWorks(result: Result<List<StudentSubmissionModel>>) {
         result.onLoading {
-            _state.update {
+            updateState {
                 it.copy(
-                    studentWorkUiState = ResourceDetailsContract.UiState.Loading,
+                    studentWorkUiState = UiState.Loading,
                 )
             }
         }.onSuccess { submissions ->
@@ -360,7 +346,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun onSuccessFetchStudentWorks(submissions: List<StudentSubmissionModel>) {
 
         fun StudentSubmissionModel.toStudentSubmissionState() =
-            ResourceDetailsContract.StudentSubmissionState(
+            StudentSubmissionState(
                 id = id,
                 userId = userId,
                 name = studentName,
@@ -375,11 +361,11 @@ class ResourceDetailsViewModel @Inject constructor(
             )
         }
 
-        _state.update {
+        updateState {
             it.copy(
                 submittedSubmissions = submittedSubmissions,
                 missingSubmissions = missingSubmissions,
-                studentWorkUiState = ResourceDetailsContract.UiState.Success,
+                studentWorkUiState = UiState.Success,
             )
         }
 
@@ -387,9 +373,9 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun onErrorFetchStudentWorks(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                studentWorkUiState = ResourceDetailsContract.UiState.Error(message),
+                studentWorkUiState = UiState.Error(message),
             )
         }
     }
@@ -419,7 +405,7 @@ class ResourceDetailsViewModel @Inject constructor(
         index: Int,
     ) {
         result.onLoading {
-            _state.update {
+            updateState {
                 it.copy(
                     submittedSubmissions = it.submittedSubmissions.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -429,7 +415,7 @@ class ResourceDetailsViewModel @Inject constructor(
                 )
             }
         }.onSuccess { profilePic ->
-            _state.update {
+            updateState {
                 it.copy(
                     submittedSubmissions = it.submittedSubmissions.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -452,7 +438,7 @@ class ResourceDetailsViewModel @Inject constructor(
         index: Int,
     ) {
         Log.e(TAG, message)
-        _state.update {
+        updateState {
             it.copy(
                 submittedSubmissions = it.submittedSubmissions.toMutableList().apply {
                     this[index] = this[index].copy(
@@ -468,7 +454,7 @@ class ResourceDetailsViewModel @Inject constructor(
         index: Int,
     ) {
         result.onLoading {
-            _state.update {
+            updateState {
                 it.copy(
                     missingSubmissions = it.missingSubmissions.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -478,7 +464,7 @@ class ResourceDetailsViewModel @Inject constructor(
                 )
             }
         }.onSuccess { profilePic ->
-            _state.update {
+            updateState {
                 it.copy(
                     missingSubmissions = it.missingSubmissions.toMutableList().apply {
                         this[index] = this[index].copy(
@@ -501,7 +487,7 @@ class ResourceDetailsViewModel @Inject constructor(
         index: Int,
     ) {
         Log.e(TAG, message)
-        _state.update {
+        updateState {
             it.copy(
                 missingSubmissions = it.missingSubmissions.toMutableList().apply {
                     this[index] = this[index].copy(
@@ -515,9 +501,9 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun fetchStudentAssignmentSubmission() {
 
         fun onErrorFetchStudentAssignmentSubmission(message: String) {
-            _state.update {
+            updateState {
                 it.copy(
-                    studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Error(message)
+                    studentAssignmentBottomSheetUiState = UiState.Error(message)
                 )
             }
         }
@@ -527,16 +513,16 @@ class ResourceDetailsViewModel @Inject constructor(
                 .asResult()
                 .collect { result ->
                     result.onLoading {
-                        _state.update {
+                        updateState {
                             it.copy(
-                                studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Loading
+                                studentAssignmentBottomSheetUiState = UiState.Loading
                             )
                         }
                     }.onSuccess { assignmentSubmission ->
-                        _state.update {
+                        updateState {
                             it.copy(
                                 assignmentSubmission = assignmentSubmission,
-                                studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Success,
+                                studentAssignmentBottomSheetUiState = UiState.Success,
                             )
                         }
                     }.onNoInternet { message ->
@@ -544,9 +530,9 @@ class ResourceDetailsViewModel @Inject constructor(
                     }.onError { code, message ->
                         val notFoundErrorCode = "E444"
                         if (code.equals(notFoundErrorCode, true)) {
-                            _state.update {
+                            updateState {
                                 it.copy(
-                                    studentAssignmentBottomSheetUiState = ResourceDetailsContract.UiState.Success,
+                                    studentAssignmentBottomSheetUiState = UiState.Success,
                                 )
                             }
                         } else {
@@ -561,7 +547,7 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun showDeleteResourceDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showDeleteResourceDialog = show
@@ -622,31 +608,31 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun onLoadingDeletingResource() {
-        _state.update {
+        updateState {
             it.copy(
-                deletingResourceUiState = ResourceDetailsContract.UiState.Loading,
+                deletingResourceUiState = UiState.Loading,
             )
         }
     }
 
     private fun onSuccessDeletingResource() {
-        _state.update {
+        updateState {
             it.copy(
-                deletingResourceUiState = ResourceDetailsContract.UiState.Success,
+                deletingResourceUiState = UiState.Success,
             )
         }
     }
 
     private fun onErrorDeletingResource(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                deletingResourceUiState = ResourceDetailsContract.UiState.Error(message),
+                deletingResourceUiState = UiState.Error(message),
             )
         }
     }
 
     private fun showDeletingResourceDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showDeletingResourceDialog = show
@@ -656,7 +642,7 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun showAddWorkBottomSheet(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showAddWorkBottomSheet = show
@@ -665,22 +651,13 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToCamera() {
-        showAddWorkBottomSheet(false)
-        viewModelScope.launch {
-            _effect.emit(ResourceDetailsContract.Effect.NavigateToCamera)
-        }
-    }
-
     private fun openFiles() {
         showAddWorkBottomSheet(false)
-        viewModelScope.launch {
-            _effect.emit(ResourceDetailsContract.Effect.OpenFiles)
-        }
+        viewModelScope.emitEffect(Effect.OpenFiles)
     }
 
     private fun addAssignmentSubmissionAttachment(attachment: File) {
-        _state.update {
+        updateState {
             it.copy(
                 assignmentSubmission = it.assignmentSubmission.copy(
                     attachments = it.assignmentSubmission.attachments.toMutableList().apply {
@@ -713,19 +690,15 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun showToast(message: String) {
-        viewModelScope.launch {
-            _effect.emit(ResourceDetailsContract.Effect.ShowToast(message))
-        }
+        viewModelScope.emitEffect(Effect.ShowToast(message))
     }
 
     private fun openAttachment(attachment: File) {
-        viewModelScope.launch {
-            _effect.emit(ResourceDetailsContract.Effect.OpenAttachment(attachment))
-        }
+        viewModelScope.emitEffect(Effect.OpenAttachment(attachment))
     }
 
     private fun showStartQuizDialog(show: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 overlayComposableVisibility = it.overlayComposableVisibility.copy(
                     showStartQuizDialog = show
@@ -735,7 +708,7 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun removeAssignmentSubmissionAttachment(index: Int) {
-        _state.update {
+        updateState {
             it.copy(
                 assignmentSubmission = it.assignmentSubmission.copy(
                     attachments = it.assignmentSubmission.attachments.toMutableList().apply {
@@ -771,7 +744,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun handleUploadAssignmentAttachmentResult(result: Result<String>) {
 
         fun updateIsSaveStudentCurrentWorkLoading(loading: Boolean) {
-            _state.update {
+            updateState {
                 it.copy(
                     isSaveStudentCurrentWorkLoading = loading
                 )
@@ -798,7 +771,7 @@ class ResourceDetailsViewModel @Inject constructor(
     }
 
     private fun updateIsStudentCurrentWorkChange(change: Boolean) {
-        _state.update {
+        updateState {
             it.copy(
                 isStudentCurrentWorkChange = change,
             )
@@ -808,7 +781,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun turnInAssignmentSubmission(turnIn: Boolean) {
 
         fun updateIsTurnInAssignmentSubmissionLoading(loading: Boolean) {
-            _state.update {
+            updateState {
                 it.copy(
                     isTurnInAssignmentSubmissionLoading = loading
                 )
@@ -849,7 +822,7 @@ class ResourceDetailsViewModel @Inject constructor(
                             updateIsTurnInAssignmentSubmissionLoading(true)
                         }.onSuccess {
                             showToast(successMessage)
-                            _state.update {
+                            updateState {
                                 it.copy(
                                     assignmentSubmission = it.assignmentSubmission.copy(
                                         turnInStatus = turnIn
@@ -866,54 +839,6 @@ class ResourceDetailsViewModel @Inject constructor(
                         }
                 }
             }
-        }
-    }
-
-    private fun navigateToQuizSession() {
-        viewModelScope.launch {
-            _effect.emit(
-                ResourceDetailsContract.Effect.NavigateToQuizSession(
-                    quizId = state.value.resourceId,
-                    quizTypeOrdinal = state.value.quizType.ordinal,
-                    quizName = state.value.name,
-                    quizDuration = state.value.quizDuration,
-                )
-            )
-        }
-
-        showStartQuizDialog(false)
-    }
-
-    private fun navigateToSubmissionDetails(
-        submissionId: String,
-        studentId: String,
-        studentName: String,
-    ) {
-        viewModelScope.launch {
-            val (submissionTypeOrdinal, resolvedSubmissionId) = when (state.value.resourceType) {
-                ClassResourceType.ASSIGNMENT ->
-                    SubmissionType.ASSIGNMENT.ordinal to submissionId
-
-                ClassResourceType.QUIZ ->
-                    SubmissionType.QUIZ.ordinal to state.value.resourceId
-
-                else -> return@launch
-            }
-
-            _effect.emit(
-                ResourceDetailsContract.Effect.NavigateToSubmissionDetails(
-                    submissionTypeOrdinal = submissionTypeOrdinal,
-                    submissionId = resolvedSubmissionId,
-                    studentId = studentId,
-                    studentName = studentName,
-                )
-            )
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(ResourceDetailsContract.Effect.NavigateBack)
         }
     }
 
