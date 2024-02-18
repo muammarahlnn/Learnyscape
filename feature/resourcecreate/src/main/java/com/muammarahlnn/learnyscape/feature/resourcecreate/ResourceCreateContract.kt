@@ -1,7 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.resourcecreate
 
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
-import com.muammarahlnn.learnyscape.core.common.contract.EffectProvider
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.feature.resourcecreate.composable.DueDateType
@@ -16,9 +14,7 @@ import java.time.LocalTime
  * @Author Muammar Ahlan Abimanyu
  * @File ResourceCreateContract, 18/12/2023 05.48
  */
-interface ResourceCreateContract :
-    BaseContract<ResourceCreateContract.State, ResourceCreateContract.Event>,
-    EffectProvider<ResourceCreateContract.Effect> {
+interface ResourceCreateContract  {
 
     data class State(
         val classId: String = "",
@@ -37,12 +33,30 @@ interface ResourceCreateContract :
         val showQuestionsScreen: Boolean = false,
         val multipleChoiceQuestions: List<MultipleChoiceQuestion> = listOf(),
         val photoAnswerQuestions: List<PhotoAnswerQuestion> = listOf(),
-        val creatingResourceDialogState: CreatingResourceDialogState = CreatingResourceDialogState.Loading,
+        val creatingResourceDialogState: CreatingResourceDialogUiState = CreatingResourceDialogUiState.Loading,
     )
 
-    sealed interface Event {
 
-        data object OnCloseClick : Event
+    sealed interface CreatingResourceDialogUiState {
+
+        data object Loading : CreatingResourceDialogUiState
+
+        data class Success(val message: String) : CreatingResourceDialogUiState
+
+        data class Error(val message: String) : CreatingResourceDialogUiState
+    }
+
+    data class OverlayComposableVisibility(
+        val addAttachmentBottomSheet: Boolean = false,
+        val removeAttachmentBottomSheet: Boolean = false,
+        val setDueDateDialog: Boolean = false,
+        val quizTypeBottomSheet: Boolean = false,
+        val durationDialog: Boolean = false,
+        val creatingResourceDialog: Boolean = false,
+    )
+
+
+    sealed interface Event {
 
         data object OnCreateResourceClick : Event
 
@@ -50,13 +64,9 @@ interface ResourceCreateContract :
 
         data class OnDescriptionChange(val description: String) : Event
 
-        data object OnAddAttachmentClick : Event
+        data class OnShowAddAttachmentBottomSheet(val show: Boolean) : Event
 
         data object OnUploadFileClick : Event
-
-        data object OnCameraClick : Event
-
-        data object OnDismissUploadAttachmentBottomSheet : Event
 
         data class OnFileSelected(val selectedFile: File) : Event
 
@@ -109,32 +119,10 @@ interface ResourceCreateContract :
 
     sealed interface Effect {
 
-        data object NavigateBack : Effect
-
         data object OpenFiles : Effect
 
         data class OpenAttachment(val attachment: File) : Effect
 
-        data object NavigateToCamera : Effect
-
         data class ShowToast(val message: String) : Effect
     }
-}
-
-data class OverlayComposableVisibility(
-    val addAttachmentBottomSheet: Boolean = false,
-    val removeAttachmentBottomSheet: Boolean = false,
-    val setDueDateDialog: Boolean = false,
-    val quizTypeBottomSheet: Boolean = false,
-    val durationDialog: Boolean = false,
-    val creatingResourceDialog: Boolean = false,
-)
-
-sealed interface CreatingResourceDialogState {
-
-    data object Loading : CreatingResourceDialogState
-
-    data class Success(val message: String) : CreatingResourceDialogState
-
-    data class Error(val message: String) : CreatingResourceDialogState
 }
