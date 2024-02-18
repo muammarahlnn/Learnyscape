@@ -1,11 +1,13 @@
 package com.muammarahlnn.submissiondetails.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.muammarahlnn.submissiondetails.SubmissionDetailsController
 import com.muammarahlnn.submissiondetails.SubmissionDetailsRoute
 
 /**
@@ -68,7 +70,10 @@ fun NavGraphBuilder.submissionDetailsScreen(
         )
     ) {
         SubmissionDetailsRoute(
-            navigateBack = navigateBack,
+            controller = SubmissionDetailsController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+            )
         )
     }
 }

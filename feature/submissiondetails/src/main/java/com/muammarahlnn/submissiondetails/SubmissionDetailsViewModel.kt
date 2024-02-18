@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
+import com.muammarahlnn.learnyscape.core.common.contract.contract
 import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
@@ -16,13 +18,12 @@ import com.muammarahlnn.learnyscape.core.domain.submissiondetails.GetAssignmentS
 import com.muammarahlnn.learnyscape.core.domain.submissiondetails.GetStudentQuizAnswersUseCase
 import com.muammarahlnn.learnyscape.core.model.data.SubmissionType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
+import com.muammarahlnn.submissiondetails.SubmissionDetailsContract.Effect
+import com.muammarahlnn.submissiondetails.SubmissionDetailsContract.Event
+import com.muammarahlnn.submissiondetails.SubmissionDetailsContract.State
+import com.muammarahlnn.submissiondetails.SubmissionDetailsContract.UiState
 import com.muammarahlnn.submissiondetails.navigation.SubmissionDetailsArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -37,31 +38,28 @@ class SubmissionDetailsViewModel @Inject constructor(
     private val getAssignmentSubmissionDetailsUseCase: GetAssignmentSubmissionDetailsUseCase,
     private val getStudentQuizAnswersUseCase: GetStudentQuizAnswersUseCase,
     private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
-) : ViewModel(), SubmissionDetailsContract {
+) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
     private val args = SubmissionDetailsArgs(savedStateHandle)
 
-    private val _state = MutableStateFlow(SubmissionDetailsContract.State(
-        submissionType = SubmissionType.getSubmissionType(args.submissionTypeOrdinal),
-        submissionId = args.submissionId.orEmpty(),
-        studentId = args.studentId,
-        studentName = args.studentName,
-    ))
-    override val state: StateFlow<SubmissionDetailsContract.State> = _state
+    init {
+        updateState {
+            it.copy(
+                submissionType = SubmissionType.getSubmissionType(args.submissionTypeOrdinal),
+                submissionId = args.submissionId.orEmpty(),
+                studentId = args.studentId,
+                studentName = args.studentName,
+            )
+        }
+    }
 
-    private val _effect = MutableSharedFlow<SubmissionDetailsContract.Effect>()
-    override val effect: SharedFlow<SubmissionDetailsContract.Effect> = _effect
-
-    override fun event(event: SubmissionDetailsContract.Event) {
+    override fun event(event: Event) {
         when (event) {
-            SubmissionDetailsContract.Event.FetchSubmissionDetails ->
+            Event.FetchSubmissionDetails ->
                 fetchSubmissionDetails()
 
-            is SubmissionDetailsContract.Event.OnAttachmentClick ->
+            is Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
-
-            SubmissionDetailsContract.Event.OnBackClick ->
-                navigateBack()
         }
     }
 
@@ -81,10 +79,10 @@ class SubmissionDetailsViewModel @Inject constructor(
             .asResult()
             .collect { result ->
                 handleFetchSubmissionDetails(result) { assignmentSubmission ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             assignmentSubmission = assignmentSubmission,
-                            uiState = SubmissionDetailsContract.UiState.Success
+                            uiState = UiState.Success
                         )
                     }
                 }
@@ -97,10 +95,10 @@ class SubmissionDetailsViewModel @Inject constructor(
             studentId = state.value.studentId,
         ).asResult().collect { result ->
             handleFetchSubmissionDetails(result) { studentQuizAnswers ->
-                _state.update {
+                updateState {
                     it.copy(
                         quizAnswers = studentQuizAnswers,
-                        uiState = SubmissionDetailsContract.UiState.Success
+                        uiState = UiState.Success
                     )
                 }
             }
@@ -112,9 +110,9 @@ class SubmissionDetailsViewModel @Inject constructor(
         onSuccess: (T) -> Unit,
     ) {
         result.onLoading {
-            _state.update {
+            updateState {
                 it.copy(
-                    uiState = SubmissionDetailsContract.UiState.Loading
+                    uiState = UiState.Loading
                 )
             }
         }.onSuccess {
@@ -130,9 +128,9 @@ class SubmissionDetailsViewModel @Inject constructor(
     }
 
     private fun onErrorFetchSubmissionDetails(message: String) {
-        _state.update {
+        updateState {
             it.copy(
-                uiState = SubmissionDetailsContract.UiState.Error(message)
+                uiState = UiState.Error(message)
             )
         }
     }
@@ -140,7 +138,7 @@ class SubmissionDetailsViewModel @Inject constructor(
     private suspend fun fetchProfilePic() {
         fun onErrorFetchProfilePic(message: String) {
             Log.e(TAG, message)
-            _state.update {
+            updateState {
                 it.copy(
                     profilePicUiState = PhotoProfileImageUiState.Success(null),
                 )
@@ -151,13 +149,13 @@ class SubmissionDetailsViewModel @Inject constructor(
             .asResult()
             .collect { result ->
                 result.onLoading {
-                    _state.update {
+                    updateState {
                         it.copy(
                             profilePicUiState = PhotoProfileImageUiState.Loading,
                         )
                     }
                 }.onSuccess { profilePic ->
-                    _state.update {
+                    updateState {
                         it.copy(
                             profilePicUiState = PhotoProfileImageUiState.Success(profilePic)
                         )
@@ -173,15 +171,7 @@ class SubmissionDetailsViewModel @Inject constructor(
     }
 
     private fun openAttachment(attachment: File) {
-        viewModelScope.launch {
-            _effect.emit(SubmissionDetailsContract.Effect.OpenAttachment(attachment))
-        }
-    }
-
-    private fun navigateBack() {
-        viewModelScope.launch {
-            _effect.emit(SubmissionDetailsContract.Effect.NavigateBack)
-        }
+        viewModelScope.emitEffect(Effect.OpenAttachment(attachment))
     }
 
     companion object {

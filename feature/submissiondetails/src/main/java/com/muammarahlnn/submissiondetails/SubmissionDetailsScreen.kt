@@ -39,7 +39,7 @@ import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImage
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import java.io.File
@@ -51,29 +51,34 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 @Composable
 internal fun SubmissionDetailsRoute(
-    navigateBack: () -> Unit,
+    controller: SubmissionDetailsController,
     modifier: Modifier = Modifier,
     viewModel: SubmissionDetailsViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            SubmissionDetailsNavigation.NavigateBack ->
+                controller.navigateBack()
+        }
+    }
+
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(SubmissionDetailsContract.Event.FetchSubmissionDetails)
     }
 
     val context = LocalContext.current
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
             is SubmissionDetailsContract.Effect.OpenAttachment ->
-                openFile(context, it.attachment)
-
-            SubmissionDetailsContract.Effect.NavigateBack ->
-                navigateBack()
+                openFile(context, effect.attachment)
         }
     }
 
     SubmissionDetailsScreen(
         state = state,
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -82,6 +87,7 @@ internal fun SubmissionDetailsRoute(
 private fun SubmissionDetailsScreen(
     state: SubmissionDetailsContract.State,
     event: (SubmissionDetailsContract.Event) -> Unit,
+    navigate: (SubmissionDetailsNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -99,7 +105,7 @@ private fun SubmissionDetailsScreen(
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.background)
                 .size(32.dp)
-                .clickable { event(SubmissionDetailsContract.Event.OnBackClick) }
+                .clickable { navigate(SubmissionDetailsNavigation.NavigateBack) }
         ) {
             Icon(
                 painter = painterResource(id = designSystemR.drawable.ic_arrow_back),
