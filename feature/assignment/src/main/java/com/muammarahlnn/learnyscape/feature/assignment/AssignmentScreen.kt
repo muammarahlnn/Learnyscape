@@ -43,7 +43,7 @@ internal fun AssignmentRoute(
     CollectEffect(controller.navigation) { navigation ->
         when (navigation) {
             AssignmentNavigation.NavigateBack ->
-                controller.navigateBack
+                controller.navigateBack()
 
             is AssignmentNavigation.NavigateToResourceCreate ->
                 controller.navigateToResourceCreate(

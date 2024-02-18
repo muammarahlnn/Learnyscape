@@ -43,7 +43,7 @@ internal fun QuizRoute(
     CollectEffect(controller.navigation) { navigation ->
         when (navigation) {
             QuizNavigation.NavigateBack ->
-                controller.navigateBack
+                controller.navigateBack()
 
             is QuizNavigation.NavigateToResourceCreate ->
                 controller.navigateToResourceCreate(
