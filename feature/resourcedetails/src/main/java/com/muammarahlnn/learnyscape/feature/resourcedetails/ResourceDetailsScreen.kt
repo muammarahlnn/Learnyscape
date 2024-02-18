@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
-import com.muammarahlnn.learnyscape.core.ui.util.collectInLaunchedEffect
 import com.muammarahlnn.learnyscape.core.ui.util.isLecturer
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
@@ -28,6 +28,7 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceD
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsTopAppBar
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StartQuizDialog
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StudentAssignmentContent
+import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.getStudentWorkType
 
 
 /**
@@ -37,10 +38,7 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StudentAs
 
 @Composable
 internal fun ResourceDetailsRoute(
-    navigateBack: () -> Unit,
-    navigateToCamera: () -> Unit,
-    navigateToQuizSession: (String, Int, String, Int) -> Unit,
-    navigateToSubmissionDetails: (Int, String, String, String) -> Unit,
+    controller: ResourceDetailsController,
     modifier: Modifier = Modifier,
     viewModel: ResourceDetailsViewModel = hiltViewModel(),
 ) {
@@ -48,6 +46,32 @@ internal fun ResourceDetailsRoute(
     LaunchedEffect(Unit) {
         event(ResourceDetailsContract.Event.FetchResourceDetails)
         event(ResourceDetailsContract.Event.OnGetCapturedPhoto)
+    }
+
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            ResourceDetailsNavigation.NavigateBack ->
+                controller.navigateBack()
+
+            ResourceDetailsNavigation.NavigateToCamera ->
+                controller.navigateToCamera()
+
+            is ResourceDetailsNavigation.NavigateToQuizSession ->
+                controller.navigateToQuizSession(
+                    navigation.quizId,
+                    navigation.quizTypeOrdinal,
+                    navigation.quizName,
+                    navigation.quizDuration,
+                )
+
+            is ResourceDetailsNavigation.NavigateToSubmissionDetails ->
+                controller.navigateToSubmissionDetails(
+                    navigation.submissionTypeOrdinal,
+                    navigation.submissionId,
+                    navigation.studentId,
+                    navigation.studentName,
+                )
+        }
     }
 
     val context = LocalContext.current
@@ -66,33 +90,16 @@ internal fun ResourceDetailsRoute(
         }
     }
 
-    viewModel.effect.collectInLaunchedEffect {
-        when (it) {
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
             is ResourceDetailsContract.Effect.ShowToast ->
-                Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
-
-            ResourceDetailsContract.Effect.NavigateBack ->
-                navigateBack()
-
-            ResourceDetailsContract.Effect.NavigateToCamera ->
-                navigateToCamera()
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
 
             ResourceDetailsContract.Effect.OpenFiles ->
                 launcher.launch("*/*")
 
-            is ResourceDetailsContract.Effect.NavigateToQuizSession ->
-                navigateToQuizSession(it.quizId, it.quizTypeOrdinal, it.quizName, it.quizDuration)
-
             is ResourceDetailsContract.Effect.OpenAttachment ->
-                openFile(context, it.attachment)
-
-            is ResourceDetailsContract.Effect.NavigateToSubmissionDetails ->
-                navigateToSubmissionDetails(
-                    it.submissionTypeOrdinal,
-                    it.submissionId,
-                    it.studentId,
-                    it.studentName,
-                )
+                openFile(context, effect.attachment)
         }
     }
 
@@ -104,6 +111,7 @@ internal fun ResourceDetailsRoute(
         state = state,
         refreshState = refreshState,
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -113,20 +121,33 @@ private fun ResourceDetailsScreen(
     state: ResourceDetailsContract.State,
     refreshState: RefreshState,
     event: (ResourceDetailsContract.Event) -> Unit,
+    navigate: (ResourceDetailsNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     if (state.overlayComposableVisibility.showAddWorkBottomSheet) {
         AddWorkBottomSheet(
-            onCameraActionClick = { event(ResourceDetailsContract.Event.OnCameraActionClick) },
+            onCameraActionClick = {
+                event(ResourceDetailsContract.Event.OnShowAddWorkBottomSheet(false))
+                navigate(ResourceDetailsNavigation.NavigateToCamera)
+            },
             onUploadFileActionClick = { event(ResourceDetailsContract.Event.OnUploadFileActionClick) },
-            onDismiss = { event(ResourceDetailsContract.Event.OnDismissAddWorkBottomSheet) },
+            onDismiss = { event(ResourceDetailsContract.Event.OnShowAddWorkBottomSheet(false)) },
         )
     }
 
     if (state.overlayComposableVisibility.showStartQuizDialog) {
         StartQuizDialog(
             quizName = state.name,
-            onConfirm = { event(ResourceDetailsContract.Event.OnConfirmStartQuizDialog) },
+            onConfirm = {
+                event(ResourceDetailsContract.Event.OnDismissStartQuizDialog)
+
+                navigate(ResourceDetailsNavigation.NavigateToQuizSession(
+                    quizId = state.resourceId,
+                    quizTypeOrdinal = state.quizType.ordinal,
+                    quizName = state.name,
+                    quizDuration = state.quizDuration,
+                ))
+            },
             onDismiss = { event(ResourceDetailsContract.Event.OnDismissStartQuizDialog) },
         )
     }
@@ -134,7 +155,10 @@ private fun ResourceDetailsScreen(
     if (state.overlayComposableVisibility.showDeleteResourceDialog) {
         DeleteResourceDialog(
             classResourceType = state.resourceType,
-            onDelete = { event(ResourceDetailsContract.Event.OnConfirmDeleteResourceDialog) },
+            onDelete = {
+                navigate(ResourceDetailsNavigation.NavigateBack)
+                event(ResourceDetailsContract.Event.OnConfirmDeleteResourceDialog)
+            },
             onDismiss = { event(ResourceDetailsContract.Event.OnDismissDeleteResourceDialog) },
         )
     }
@@ -157,7 +181,7 @@ private fun ResourceDetailsScreen(
     val resourceDetailsTopAppBar = @Composable {
         ResourceDetailsTopAppBar(
             titleRes = state.resourceType.nameRes,
-            onBackClick = { event(ResourceDetailsContract.Event.OnBackClick) },
+            onBackClick = { navigate(ResourceDetailsNavigation.NavigateBack) },
             onDeleteClick = { event(ResourceDetailsContract.Event.OnDeleteClick) }
         )
     }
@@ -192,7 +216,18 @@ private fun ResourceDetailsScreen(
                     onRefreshInstructions = instructionsContentEvent.onRefresh,
                     onRefreshStudentWork = { event(ResourceDetailsContract.Event.FetchStudentWorks) },
                     onSubmissionClick = { submissionId, studentId, studentName ->
-                        event(ResourceDetailsContract.Event.OnSubmissionClick(submissionId, studentId, studentName))
+                        val resolvedSubmissionId = when (state.resourceType) {
+                            ClassResourceType.ASSIGNMENT -> submissionId
+                            ClassResourceType.QUIZ -> state.resourceId
+                            else -> throw IllegalArgumentException("Only assignment and quiz is expected")
+                        }
+
+                        navigate(ResourceDetailsNavigation.NavigateToSubmissionDetails(
+                            submissionTypeOrdinal = getStudentWorkType(state.resourceType).ordinal,
+                            submissionId = resolvedSubmissionId,
+                            studentId = studentId,
+                            studentName = studentName,
+                        ))
                     },
                     modifier = contentModifier
                 )

@@ -24,8 +24,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -128,7 +128,7 @@ internal fun StudentAssignmentContent(
                     onRemoveAttachmentClick = { index ->
                         event(ResourceDetailsContract.Event.OnRemoveAssignmentSubmissionAttachment(index))
                     },
-                    onAddWorkClick = { event(ResourceDetailsContract.Event.OnAddWorkButtonClick) },
+                    onAddWorkClick = { event(ResourceDetailsContract.Event.OnShowAddWorkBottomSheet(true)) },
                     onSaveClick = { event(ResourceDetailsContract.Event.OnSaveStudentCurrentWorkClick) },
                     onRefresh = { event(ResourceDetailsContract.Event.FetchStudentAssignmentSubmission) },
                     onUnsubmitClick = { event(ResourceDetailsContract.Event.OnUnsubmitAssignmentSubmission) },
@@ -175,7 +175,7 @@ internal fun StudentAssignmentContent(
                 val (actionTextResId, actionEvent) = when {
                     state.assignmentSubmission.attachments.isEmpty() ->
                         Pair(R.string.add_work) {
-                            event(ResourceDetailsContract.Event.OnAddWorkButtonClick)
+                            event(ResourceDetailsContract.Event.OnShowAddWorkBottomSheet(true))
                         }
 
                     else -> Pair(R.string.turn_in) { showTurnInDialog = true }
@@ -401,7 +401,7 @@ private fun ExpandedSheetContent(
                         modifier = Modifier.fillMaxWidth()
                     )
                 } else {
-                    Divider(
+                    HorizontalDivider(
                         color = MaterialTheme.colorScheme.surfaceVariant
                     )
                 }
