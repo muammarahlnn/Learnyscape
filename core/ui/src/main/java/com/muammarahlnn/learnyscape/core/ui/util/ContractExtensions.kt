@@ -11,14 +11,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
-import com.muammarahlnn.learnyscape.core.common.contract.BaseContract
 import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
 import com.muammarahlnn.learnyscape.core.common.contract.RefreshProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -39,20 +36,6 @@ data class RefreshState(
     val refreshing: Boolean,
     val pullRefreshState: PullRefreshState,
 )
-
-@Composable
-inline fun <STATE, reified EVENT> use(
-    contract: BaseContract<STATE, EVENT>
-): StateDispatch<STATE, EVENT> {
-    val state by contract.state.collectAsStateWithLifecycle()
-    val dispatch: (EVENT) -> Unit = { event ->
-        contract.event(event)
-    }
-    return StateDispatch(
-        state = state,
-        dispatch = dispatch
-    )
-}
 
 @Composable
 inline fun <STATE, reified EVENT, EFFECT> use(
@@ -78,16 +61,6 @@ fun use(
         refreshing = refreshing,
         pullRefreshState = pullRefreshState,
     )
-}
-
-@Suppress("ComposableNaming")
-@Composable
-fun <T> SharedFlow<T>.collectInLaunchedEffect(
-    callback: suspend (value: T) -> Unit
-) {
-   LaunchedEffect(this) {
-       collectLatest(callback)
-   }
 }
 
 @Composable

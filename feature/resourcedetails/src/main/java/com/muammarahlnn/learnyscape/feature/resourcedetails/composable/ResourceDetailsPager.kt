@@ -10,7 +10,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,11 +56,10 @@ internal fun ResourceDetailsPager(
             containerColor = Color.Transparent,
             divider = {}, // remove default divider
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
-                    color = MaterialTheme.colorScheme.onSecondary,
+                SecondaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(tabPositions[pagerState.currentPage]),
                     height = 2.dp,
-                    modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
             },
             modifier = Modifier
