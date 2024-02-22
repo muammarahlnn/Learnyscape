@@ -35,7 +35,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.feature.assignmentsubmission.composable.OverlayDialogs
 import com.muammarahlnn.learnyscape.feature.assignmentsubmission.composable.SheetContent
-import com.muammarahlnn.learnyscape.feature.assignmentsubmission.composable.SubmissionActionButton
+import com.muammarahlnn.learnyscape.feature.assignmentsubmission.composable.TurnInButton
 import kotlinx.coroutines.launch
 
 /**
@@ -185,7 +185,7 @@ private fun AssignmentSubmissionSheet(
                     state.uiState is AssignmentSubmissionContract.UiState.Loading
                 val loading = state.isTurnInSubmissionLoading || isFetchAssignmentSubmissionLoading
 
-                SubmissionActionButton(
+                TurnInButton(
                     actionText = stringResource(id = actionTextResId),
                     loading = loading,
                     onClick = actionEvent,
