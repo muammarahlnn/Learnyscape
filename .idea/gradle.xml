@@ -56,6 +56,7 @@
             <option value="$PROJECT_DIR$/feature/resourcedetails" />
             <option value="$PROJECT_DIR$/feature/schedule" />
             <option value="$PROJECT_DIR$/feature/search" />
+            <option value="$PROJECT_DIR$/feature/studentwork" />
             <option value="$PROJECT_DIR$/feature/submissiondetails" />
           </set>
         </option>
