@@ -36,6 +36,7 @@
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />
             <option value="$PROJECT_DIR$/feature/assignment" />
+            <option value="$PROJECT_DIR$/feature/assignmentsubmission" />
             <option value="$PROJECT_DIR$/feature/camera" />
             <option value="$PROJECT_DIR$/feature/changepassword" />
             <option value="$PROJECT_DIR$/feature/class" />

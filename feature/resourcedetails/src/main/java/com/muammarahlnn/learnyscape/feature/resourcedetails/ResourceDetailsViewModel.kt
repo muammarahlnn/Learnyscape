@@ -16,9 +16,6 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
-import com.muammarahlnn.learnyscape.core.domain.capturedphoto.GetCapturedPhotoUseCase
-import com.muammarahlnn.learnyscape.core.domain.capturedphoto.ResetCapturedPhotoUseCase
-import com.muammarahlnn.learnyscape.core.domain.file.SaveImageToFileUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByIdUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
@@ -30,10 +27,6 @@ import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUs
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizSubmissionsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.IsQuizTakenUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.LecturerGetAssignmentSubmissionsUseCase
-import com.muammarahlnn.learnyscape.core.domain.resourcedetails.StudentGetAssignmentSubmissionUseCase
-import com.muammarahlnn.learnyscape.core.domain.resourcedetails.TurnInAssignmentSubmissionUseCase
-import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UpdateAssignmentAttachmentsUseCase
-import com.muammarahlnn.learnyscape.core.domain.resourcedetails.UploadAssignmentAttachmentsUseCase
 import com.muammarahlnn.learnyscape.core.model.data.StudentSubmissionModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
@@ -45,8 +38,6 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContr
 import com.muammarahlnn.learnyscape.feature.resourcedetails.navigation.ResourceDetailsArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -69,13 +60,6 @@ class ResourceDetailsViewModel @Inject constructor(
     private val lecturerGetAssignmentSubmissionsUseCase: LecturerGetAssignmentSubmissionsUseCase,
     private val getProfilePicByIdUseCase: GetProfilePicByIdUseCase,
     private val getQuizSubmissionsUseCase: GetQuizSubmissionsUseCase,
-    private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
-    private val resetPhotoUseCase: ResetCapturedPhotoUseCase,
-    private val saveImageToFileUseCase: SaveImageToFileUseCase,
-    private val uploadAssignmentAttachmentsUseCase: UploadAssignmentAttachmentsUseCase,
-    private val studentGetAssignmentSubmissionUseCase: StudentGetAssignmentSubmissionUseCase,
-    private val updateAssignmentAttachmentsUseCase: UpdateAssignmentAttachmentsUseCase,
-    private val turnInAssignmentSubmissionUseCase: TurnInAssignmentSubmissionUseCase,
     private val isQuizTakenUseCase: IsQuizTakenUseCase,
 ) : ViewModel(),
     ContractProvider<State, Event, Effect> by contract(State()),
@@ -101,9 +85,6 @@ class ResourceDetailsViewModel @Inject constructor(
             Event.FetchStudentWorks ->
                 fetchStudentWorks()
 
-            Event.FetchStudentAssignmentSubmission ->
-                fetchStudentAssignmentSubmission()
-
             Event.OnDeleteClick ->
                 showDeleteResourceDialog(true)
 
@@ -119,18 +100,6 @@ class ResourceDetailsViewModel @Inject constructor(
             Event.OnDismissDeletingResourceDialog ->
                 showDeletingResourceDialog(false)
 
-            is Event.OnShowAddWorkBottomSheet ->
-                showAddWorkBottomSheet(event.show)
-
-            Event.OnUploadFileActionClick ->
-                openFiles()
-
-            is Event.OnFileSelected ->
-                addAssignmentSubmissionAttachment(event.file)
-
-            Event.OnGetCapturedPhoto ->
-                getCapturedPhoto()
-
             is Event.OnAttachmentClick ->
                 openAttachment(event.attachment)
 
@@ -139,18 +108,6 @@ class ResourceDetailsViewModel @Inject constructor(
 
             Event.OnDismissStartQuizDialog ->
                 showStartQuizDialog(false)
-
-            is Event.OnRemoveAssignmentSubmissionAttachment ->
-                removeAssignmentSubmissionAttachment(event.index)
-
-            Event.OnSaveStudentCurrentWorkClick ->
-                uploadAssignmentAttachments()
-
-            Event.OnTurnInAssignmentSubmission ->
-                turnInAssignmentSubmission(true)
-
-            Event.OnUnsubmitAssignmentSubmission ->
-                turnInAssignmentSubmission(false)
         }
     }
 
@@ -163,7 +120,6 @@ class ResourceDetailsViewModel @Inject constructor(
             ClassResourceType.ASSIGNMENT -> {
                 fetchAssignmentDetails()
                 fetchStudentWorks()
-                fetchStudentAssignmentSubmission()
             }
 
             ClassResourceType.QUIZ -> {
@@ -498,54 +454,6 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun fetchStudentAssignmentSubmission() {
-
-        fun onErrorFetchStudentAssignmentSubmission(message: String) {
-            updateState {
-                it.copy(
-                    studentAssignmentBottomSheetUiState = UiState.Error(message)
-                )
-            }
-        }
-
-        viewModelScope.launch {
-            studentGetAssignmentSubmissionUseCase(state.value.resourceId)
-                .asResult()
-                .collect { result ->
-                    result.onLoading {
-                        updateState {
-                            it.copy(
-                                studentAssignmentBottomSheetUiState = UiState.Loading
-                            )
-                        }
-                    }.onSuccess { assignmentSubmission ->
-                        updateState {
-                            it.copy(
-                                assignmentSubmission = assignmentSubmission,
-                                studentAssignmentBottomSheetUiState = UiState.Success,
-                            )
-                        }
-                    }.onNoInternet { message ->
-                        onErrorFetchStudentAssignmentSubmission(message)
-                    }.onError { code, message ->
-                        val notFoundErrorCode = "E444"
-                        if (code.equals(notFoundErrorCode, true)) {
-                            updateState {
-                                it.copy(
-                                    studentAssignmentBottomSheetUiState = UiState.Success,
-                                )
-                            }
-                        } else {
-                            onErrorFetchStudentAssignmentSubmission(message)
-                        }
-                    }.onException { exception, message ->
-                        Log.e(TAG, exception?.message.toString())
-                        onErrorFetchStudentAssignmentSubmission(message)
-                    }
-                }
-        }
-    }
-
     private fun showDeleteResourceDialog(show: Boolean) {
         updateState {
             it.copy(
@@ -641,58 +549,6 @@ class ResourceDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun showAddWorkBottomSheet(show: Boolean) {
-        updateState {
-            it.copy(
-                overlayComposableVisibility = it.overlayComposableVisibility.copy(
-                    showAddWorkBottomSheet = show
-                )
-            )
-        }
-    }
-
-    private fun openFiles() {
-        showAddWorkBottomSheet(false)
-        viewModelScope.emitEffect(Effect.OpenFiles)
-    }
-
-    private fun addAssignmentSubmissionAttachment(attachment: File) {
-        updateState {
-            it.copy(
-                assignmentSubmission = it.assignmentSubmission.copy(
-                    attachments = it.assignmentSubmission.attachments.toMutableList().apply {
-                        add(attachment)
-                    }.toList()
-                ),
-            )
-        }
-        updateIsStudentCurrentWorkChange(true)
-    }
-
-    private fun getCapturedPhoto() {
-        viewModelScope.launch {
-            launch {
-                getCapturedPhotoUseCase().first()?.let { capturedPhoto ->
-                    saveImageToFileUseCase(capturedPhoto).collect { imageFile ->
-                        if (imageFile != null) {
-                            addAssignmentSubmissionAttachment(imageFile)
-                        } else {
-                            showToast("Error capturing photo")
-                        }
-                    }
-                }
-            }.join()
-
-            launch {
-                resetPhotoUseCase
-            }
-        }
-    }
-
-    private fun showToast(message: String) {
-        viewModelScope.emitEffect(Effect.ShowToast(message))
-    }
-
     private fun openAttachment(attachment: File) {
         viewModelScope.emitEffect(Effect.OpenAttachment(attachment))
     }
@@ -704,141 +560,6 @@ class ResourceDetailsViewModel @Inject constructor(
                     showStartQuizDialog = show
                 )
             )
-        }
-    }
-
-    private fun removeAssignmentSubmissionAttachment(index: Int) {
-        updateState {
-            it.copy(
-                assignmentSubmission = it.assignmentSubmission.copy(
-                    attachments = it.assignmentSubmission.attachments.toMutableList().apply {
-                        removeAt(index)
-                    }.toList()
-                ),
-            )
-        }
-        updateIsStudentCurrentWorkChange(true)
-    }
-
-    private fun uploadAssignmentAttachments() {
-        val uploadAssignmentAttachmentsStream =
-            if (state.value.assignmentSubmission.assignmentSubmissionId.isEmpty()) {
-                uploadAssignmentAttachmentsUseCase(
-                    assignmentId = state.value.resourceId,
-                    attachments = state.value.assignmentSubmission.attachments,
-                )
-            } else {
-                updateAssignmentAttachmentsUseCase(
-                    submissionId = state.value.assignmentSubmission.assignmentSubmissionId,
-                    attachments = state.value.assignmentSubmission.attachments,
-                )
-            }
-
-        viewModelScope.launch {
-            uploadAssignmentAttachmentsStream.asResult().collect { result ->
-                handleUploadAssignmentAttachmentResult(result)
-            }
-        }
-    }
-
-    private fun handleUploadAssignmentAttachmentResult(result: Result<String>) {
-
-        fun updateIsSaveStudentCurrentWorkLoading(loading: Boolean) {
-            updateState {
-                it.copy(
-                    isSaveStudentCurrentWorkLoading = loading
-                )
-            }
-        }
-
-        result.onLoading {
-            updateIsSaveStudentCurrentWorkLoading(true)
-        }.onSuccess {
-            showToast("Your current work successfully saved")
-            updateIsSaveStudentCurrentWorkLoading(false)
-            updateIsStudentCurrentWorkChange(false)
-        }.onNoInternet { message ->
-            showToast(message)
-            updateIsSaveStudentCurrentWorkLoading(false)
-        }.onError { _, message ->
-            showToast(message)
-            updateIsSaveStudentCurrentWorkLoading(false)
-        }.onException { exception, message ->
-            Log.e(TAG, exception?.message.toString())
-            showToast(message)
-            updateIsSaveStudentCurrentWorkLoading(false)
-        }
-    }
-
-    private fun updateIsStudentCurrentWorkChange(change: Boolean) {
-        updateState {
-            it.copy(
-                isStudentCurrentWorkChange = change,
-            )
-        }
-    }
-
-    private fun turnInAssignmentSubmission(turnIn: Boolean) {
-
-        fun updateIsTurnInAssignmentSubmissionLoading(loading: Boolean) {
-            updateState {
-                it.copy(
-                    isTurnInAssignmentSubmissionLoading = loading
-                )
-            }
-        }
-
-        val successMessage = if (turnIn) {
-            "Assignment turned in"
-        } else {
-            "Assignment has been unsubmitted"
-        }
-
-        viewModelScope.launch {
-            updateIsTurnInAssignmentSubmissionLoading(true)
-
-            if (turnIn && state.value.isStudentCurrentWorkChange) {
-                launch {
-                    updateAssignmentAttachmentsUseCase(
-                        submissionId = state.value.assignmentSubmission.assignmentSubmissionId,
-                        attachments = state.value.assignmentSubmission.attachments,
-                    ).asResult().collect { result ->
-                        handleUploadAssignmentAttachmentResult(result)
-                    }
-                }.join()
-            }
-
-            launch {
-                turnInAssignmentSubmissionUseCase(
-                    submissionId = state.value.assignmentSubmission.assignmentSubmissionId,
-                    turnIn = turnIn,
-                )
-                    .asResult()
-                    .onCompletion {
-                        updateIsTurnInAssignmentSubmissionLoading(false)
-                    }
-                    .collect { result ->
-                        result.onLoading {
-                            updateIsTurnInAssignmentSubmissionLoading(true)
-                        }.onSuccess {
-                            showToast(successMessage)
-                            updateState {
-                                it.copy(
-                                    assignmentSubmission = it.assignmentSubmission.copy(
-                                        turnInStatus = turnIn
-                                    )
-                                )
-                            }
-                        }.onNoInternet { message ->
-                            showToast(message)
-                        }.onError { _, message ->
-                            showToast(message)
-                        }.onException { exception, message ->
-                            Log.e(TAG, exception?.message.toString())
-                            showToast(message)
-                        }
-                }
-            }
         }
     }
 

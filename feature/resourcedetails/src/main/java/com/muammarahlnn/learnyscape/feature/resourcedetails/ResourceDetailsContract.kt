@@ -1,6 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
-import com.muammarahlnn.learnyscape.core.model.data.AssignmentSubmissionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
@@ -19,7 +18,6 @@ interface ResourceDetailsContract {
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
         val studentWorkUiState: UiState = UiState.Loading,
         val deletingResourceUiState: UiState = UiState.Loading,
-        val studentAssignmentBottomSheetUiState: UiState = UiState.Loading,
         val name: String = "",
         val date: String = "",
         val description: String = "",
@@ -30,10 +28,6 @@ interface ResourceDetailsContract {
         val quizType: QuizType = QuizType.NONE,
         val submittedSubmissions: List<StudentSubmissionState> = listOf(),
         val missingSubmissions: List<StudentSubmissionState> = listOf(),
-        val assignmentSubmission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
-        val isSaveStudentCurrentWorkLoading: Boolean = false,
-        val isStudentCurrentWorkChange: Boolean = false,
-        val isTurnInAssignmentSubmissionLoading: Boolean = false,
         val isQuizTaken: Boolean = false,
     )
 
@@ -66,8 +60,6 @@ interface ResourceDetailsContract {
 
         data object FetchStudentWorks : Event
 
-        data object FetchStudentAssignmentSubmission : Event
-
         data object OnDeleteClick : Event
 
         data object OnConfirmDeleteResourceDialog : Event
@@ -78,34 +70,14 @@ interface ResourceDetailsContract {
 
         data object OnDismissDeletingResourceDialog : Event
 
-        data class OnShowAddWorkBottomSheet(val show: Boolean) : Event
-
-        data object OnUploadFileActionClick : Event
-
-        data class OnFileSelected(val file: File) : Event
-
-        data object OnGetCapturedPhoto : Event
-
         data class OnAttachmentClick(val attachment: File) : Event
 
         data object OnStartQuizButtonClick : Event
 
         data object OnDismissStartQuizDialog : Event
-
-        data class OnRemoveAssignmentSubmissionAttachment(val index: Int) : Event
-
-        data object OnSaveStudentCurrentWorkClick : Event
-
-        data object OnTurnInAssignmentSubmission : Event
-
-        data object OnUnsubmitAssignmentSubmission : Event
     }
 
     sealed interface Effect {
-
-        data class ShowToast(val message: String) : Effect
-
-        data object OpenFiles : Effect
 
         data class OpenAttachment(val attachment: File) : Effect
     }

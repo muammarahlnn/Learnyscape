@@ -1,8 +1,5 @@
 package com.muammarahlnn.learnyscape.feature.resourcedetails
 
-import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -17,9 +14,8 @@ import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.core.ui.util.isLecturer
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
-import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
 import com.muammarahlnn.learnyscape.core.ui.util.use
-import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.AddWorkBottomSheet
+import com.muammarahlnn.learnyscape.feature.assignmentsubmission.AssignmentSubmissionSheet
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeleteResourceDialog
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.DeletingResourceDialog
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.InstructionsContent
@@ -27,7 +23,6 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.Instructi
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsPager
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.ResourceDetailsTopAppBar
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StartQuizDialog
-import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.StudentAssignmentContent
 import com.muammarahlnn.learnyscape.feature.resourcedetails.composable.getStudentWorkType
 
 
@@ -45,7 +40,6 @@ internal fun ResourceDetailsRoute(
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(ResourceDetailsContract.Event.FetchResourceDetails)
-        event(ResourceDetailsContract.Event.OnGetCapturedPhoto)
     }
 
     CollectEffect(controller.navigation) { navigation ->
@@ -75,29 +69,8 @@ internal fun ResourceDetailsRoute(
     }
 
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) {
-        if (it != null) {
-            event(
-                ResourceDetailsContract.Event.OnFileSelected(
-                    uriToFile(
-                        context = context,
-                        selectedFileUri = it
-                    )
-                )
-            )
-        }
-    }
-
     CollectEffect(viewModel.effect) { effect ->
         when (effect) {
-            is ResourceDetailsContract.Effect.ShowToast ->
-                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
-
-            ResourceDetailsContract.Effect.OpenFiles ->
-                launcher.launch("*/*")
-
             is ResourceDetailsContract.Effect.OpenAttachment ->
                 openFile(context, effect.attachment)
         }
@@ -124,17 +97,6 @@ private fun ResourceDetailsScreen(
     navigate: (ResourceDetailsNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    if (state.overlayComposableVisibility.showAddWorkBottomSheet) {
-        AddWorkBottomSheet(
-            onCameraActionClick = {
-                event(ResourceDetailsContract.Event.OnShowAddWorkBottomSheet(false))
-                navigate(ResourceDetailsNavigation.NavigateToCamera)
-            },
-            onUploadFileActionClick = { event(ResourceDetailsContract.Event.OnUploadFileActionClick) },
-            onDismiss = { event(ResourceDetailsContract.Event.OnShowAddWorkBottomSheet(false)) },
-        )
-    }
-
     if (state.overlayComposableVisibility.showStartQuizDialog) {
         StartQuizDialog(
             quizName = state.name,
@@ -235,13 +197,23 @@ private fun ResourceDetailsScreen(
         }
     } else {
         when (state.resourceType) {
-            ClassResourceType.ASSIGNMENT -> StudentAssignmentContent(
-                state = state,
-                refreshState = refreshState,
-                event = event,
+            ClassResourceType.ASSIGNMENT -> AssignmentSubmissionSheet(
+                assignmentId = state.resourceId,
                 topAppBar = resourceDetailsTopAppBar,
-                modifier = Modifier.fillMaxSize()
-            )
+                navigateToCamera = { navigate(ResourceDetailsNavigation.NavigateToCamera) },
+                modifier = Modifier.fillMaxSize(),
+            ) { paddingValues ->
+                InstructionsContent(
+                    state = state,
+                    refreshState = refreshState,
+                    onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
+                    onAttachmentClick = instructionsContentEvent.onAttachmentClick,
+                    onRefresh = instructionsContentEvent.onRefresh,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            }
 
             else -> Scaffold(
                 topBar = resourceDetailsTopAppBar,

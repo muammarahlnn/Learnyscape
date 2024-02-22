@@ -4,11 +4,10 @@ plugins {
 }
 
 android {
-    namespace = "com.muammarahlnn.learnyscape.feature.resourcedetails"
+    namespace = "com.muammarahlnn.learnyscape.feature.assignmentsubmission"
 }
 
 dependencies {
-    implementation(project(":feature:assignmentsubmission"))
 
     implementation(libs.androidx.activity.compose)
 }

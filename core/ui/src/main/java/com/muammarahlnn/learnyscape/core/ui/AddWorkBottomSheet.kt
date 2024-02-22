@@ -1,4 +1,4 @@
-package com.muammarahlnn.learnyscape.feature.resourcedetails.composable
+package com.muammarahlnn.learnyscape.core.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,41 +7,34 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.muammarahlnn.learnyscape.core.designsystem.R
 import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
+import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 /**
  * @Author Muammar Ahlan Abimanyu
- * @File AddWorkBottomSheet, 28/01/2024 15.33
+ * @File AddWorkBottomSheet, 22/02/2024 17.36
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun AddWorkBottomSheet(
+fun AddWorkBottomSheet(
     onCameraActionClick: () -> Unit,
     onUploadFileActionClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val bottomSheetState = rememberModalBottomSheetState()
     ModalBottomSheet(
-        sheetState = bottomSheetState,
         containerColor = MaterialTheme.colorScheme.onPrimary,
         onDismissRequest = onDismiss,
-        dragHandle = {
-            BottomSheetDefaults.DragHandle()
-        }
     ) {
         Row(
             modifier = Modifier
@@ -61,14 +54,14 @@ internal fun AddWorkBottomSheet(
                     },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_photo_camera_border),
-                    contentDescription = stringResource(id = com.muammarahlnn.learnyscape.feature.resourcedetails.R.string.camera),
+                    painter = painterResource(id = designSystemR.drawable.ic_photo_camera_border),
+                    contentDescription = stringResource(id = R.string.camera),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(id = com.muammarahlnn.learnyscape.feature.resourcedetails.R.string.camera),
+                    text = stringResource(id = R.string.camera),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -82,14 +75,14 @@ internal fun AddWorkBottomSheet(
                     },
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_upload),
-                    contentDescription = stringResource(id = com.muammarahlnn.learnyscape.feature.resourcedetails.R.string.upload_file),
+                    painter = painterResource(id = designSystemR.drawable.ic_upload),
+                    contentDescription = stringResource(id = R.string.upload_file),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(48.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(id = com.muammarahlnn.learnyscape.feature.resourcedetails.R.string.upload_file),
+                    text = stringResource(id = R.string.upload_file),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )

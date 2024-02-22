@@ -20,7 +20,7 @@ fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
     this.navigate(PROFILE_ROUTE, navOptions)
 }
 
-fun NavGraphBuilder.profileScreen(
+fun NavGraphBuilder.profileScreenn(
     navigateToCamera: () -> Unit,
     navigateToChangePassword: () -> Unit,
 ) {

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="attachments">Attachments</string>
+    <string name="singular_attachment">See 1 attachment</string>
+    <string name="plural_attachment">See %1$d attachments</string>
+    <string name="turn_in">Turn in</string>
+    <string name="turn_in_dialog_title">Turn in your work?</string>
+    <string name="turn_in_singular_dialog_text">1 attachment will be submitted</string>
+    <string name="turn_in_plural_dialog_text">%1$d attachments will be submitted</string>
+    <string name="unsubmit">Unsubmit</string>
+    <string name="unsubmit_dialog_title">Unsubmit?</string>
+    <string name="unsubmit_dialog_text">Unsubmit to make changes for your work. Don\'t forget to resubmit once you\'re done.</string>
+    <string name="remove_attachment">Remove attachment</string>
+    <string name="save_your_work_dialog_title">Save your work</string>
+    <string name="save_your_work_dialog_text">Save your work and come back anytime to complete it. Turn in your work when you\'re really sure.</string>
+    <string name="save_your_work_dialog_confirm_text">Got it</string>
+    <string name="your_work">Your work</string>
+    <string name="no_attachments_uploaded_desc">You have no attachments uploaded.\nLet\'s add it right away.</string>
+    <string name="save">Save</string>
+    <string name="saved">Saved</string>
+    <string name="add_work">Add work</string>
+</resources>
