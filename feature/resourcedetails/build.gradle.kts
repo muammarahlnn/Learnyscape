@@ -9,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":feature:assignmentsubmission"))
+    implementation(project(":feature:studentwork"))
 
     implementation(libs.androidx.activity.compose)
 }

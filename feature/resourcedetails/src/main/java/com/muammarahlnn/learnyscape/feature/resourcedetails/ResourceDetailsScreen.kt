@@ -176,7 +176,6 @@ private fun ResourceDetailsScreen(
                     onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
                     onAttachmentClick = instructionsContentEvent.onAttachmentClick,
                     onRefreshInstructions = instructionsContentEvent.onRefresh,
-                    onRefreshStudentWork = { event(ResourceDetailsContract.Event.FetchStudentWorks) },
                     onSubmissionClick = { submissionId, studentId, studentName ->
                         val resolvedSubmissionId = when (state.resourceType) {
                             ClassResourceType.ASSIGNMENT -> submissionId

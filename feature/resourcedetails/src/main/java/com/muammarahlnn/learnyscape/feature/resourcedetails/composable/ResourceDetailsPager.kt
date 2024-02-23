@@ -24,6 +24,8 @@ import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
 import com.muammarahlnn.learnyscape.feature.resourcedetails.R
 import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsContract
+import com.muammarahlnn.learnyscape.feature.studentwork.StudentWorkContent
+import com.muammarahlnn.learnyscape.feature.studentwork.StudentWorkType
 import kotlinx.coroutines.launch
 import java.io.File
 
@@ -39,7 +41,6 @@ internal fun ResourceDetailsPager(
     onStartQuizButtonClick: () -> Unit,
     onAttachmentClick: (File) -> Unit,
     onRefreshInstructions: () -> Unit,
-    onRefreshStudentWork: () -> Unit,
     onSubmissionClick: (String, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -106,9 +107,8 @@ internal fun ResourceDetailsPager(
                 )
 
                 1 -> StudentWorkContent(
-                    state = state,
                     studentWorkType = getStudentWorkType(state.resourceType),
-                    onRefresh = onRefreshStudentWork,
+                    resourceId = state.resourceId,
                     onSubmissionClick = onSubmissionClick,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -116,6 +116,7 @@ internal fun ResourceDetailsPager(
         }
     }
 }
+
 
 internal fun getStudentWorkType(resourceType: ClassResourceType): StudentWorkType =
     when (resourceType) {

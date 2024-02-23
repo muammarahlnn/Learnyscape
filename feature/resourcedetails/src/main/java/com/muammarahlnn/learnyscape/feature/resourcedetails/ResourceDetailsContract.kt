@@ -16,7 +16,6 @@ interface ResourceDetailsContract {
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
         val uiState: UiState = UiState.Loading,
         val overlayComposableVisibility: OverlayComposableVisibility = OverlayComposableVisibility(),
-        val studentWorkUiState: UiState = UiState.Loading,
         val deletingResourceUiState: UiState = UiState.Loading,
         val name: String = "",
         val date: String = "",
@@ -26,8 +25,6 @@ interface ResourceDetailsContract {
         val endQuizDate: String = "",
         val quizDuration: Int = 0,
         val quizType: QuizType = QuizType.NONE,
-        val submittedSubmissions: List<StudentSubmissionState> = listOf(),
-        val missingSubmissions: List<StudentSubmissionState> = listOf(),
         val isQuizTaken: Boolean = false,
     )
 
@@ -57,8 +54,6 @@ interface ResourceDetailsContract {
     sealed interface Event {
 
         data object FetchResourceDetails : Event
-
-        data object FetchStudentWorks : Event
 
         data object OnDeleteClick : Event
 
