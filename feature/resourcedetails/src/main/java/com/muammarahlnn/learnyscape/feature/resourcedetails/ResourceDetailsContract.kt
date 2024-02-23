@@ -2,7 +2,6 @@ package com.muammarahlnn.learnyscape.feature.resourcedetails
 
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
-import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import java.io.File
 
 /**
@@ -36,13 +35,6 @@ interface ResourceDetailsContract {
 
         data class Error(val message: String) : UiState
     }
-
-    data class StudentSubmissionState(
-        val id: String = "",
-        val userId: String = "",
-        val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
-        val name: String = "",
-    )
 
     data class OverlayComposableVisibility(
         val showDeleteResourceDialog: Boolean = false,
