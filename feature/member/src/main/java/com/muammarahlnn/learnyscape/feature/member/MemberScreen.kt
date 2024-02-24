@@ -142,8 +142,10 @@ private fun MemberScreen(
                         TeachersCard(state.lecturers)
                     }
 
-                    item {
-                        StudentsCard(state.students)
+                    if (state.students.isNotEmpty()) {
+                        item {
+                            StudentsCard(state.students)
+                        }
                     }
                 }
 
