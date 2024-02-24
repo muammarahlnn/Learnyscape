@@ -133,7 +133,8 @@ private fun QuizScreen(
                 }
                 
                 QuizContract.UiState.SuccessEmpty -> NoDataScreen(
-                    text = stringResource(id = R.string.empty_quizzes) 
+                    text = stringResource(id = R.string.empty_quizzes),
+                    modifier = Modifier.fillMaxSize()
                 )
                 
                 is QuizContract.UiState.Error -> ErrorScreen(
