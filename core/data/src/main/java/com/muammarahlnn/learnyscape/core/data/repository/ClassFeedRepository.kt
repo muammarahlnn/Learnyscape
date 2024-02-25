@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.data.repository
 
+import com.muammarahlnn.learnyscape.core.model.data.ClassDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ClassFeedModel
 import kotlinx.coroutines.flow.Flow
 
@@ -10,4 +11,6 @@ import kotlinx.coroutines.flow.Flow
 interface ClassFeedRepository {
 
     fun getClassFeeds(classId: String): Flow<List<ClassFeedModel>>
+
+    fun getClassDetails(classId: String): Flow<ClassDetailsModel>
 }

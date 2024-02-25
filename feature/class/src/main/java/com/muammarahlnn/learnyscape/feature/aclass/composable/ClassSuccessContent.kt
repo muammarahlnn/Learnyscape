@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.muammarahlnn.learnyscape.core.model.data.ClassDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ClassFeedModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
@@ -41,6 +42,7 @@ import com.muammarahlnn.learnyscape.feature.aclass.R
 fun ClassSuccessContent(
     refreshState: RefreshState,
     profilePicUiState: PhotoProfileImageUiState,
+    classDetails: ClassDetailsModel,
     classFeeds: List<ClassFeedModel>,
     announcementAuthorProfilePicUiStateMap: Map<Int, PhotoProfileImageUiState>,
     onBackClick: () -> Unit,
@@ -92,11 +94,8 @@ fun ClassSuccessContent(
                             modifier = Modifier.size(120.dp)
                         )
 
-                        // TODO: (integrate when API is ready)
                         ClassDetailsCard(
-                            className = "Pemrograman Mobile A",
-                            lecturers = listOf("Andi Muh. Amil Siddik, S.Si., M.Si."),
-                            classSchedule = "Tuesday, 13:00 - 15:40",
+                            classDetails = classDetails,
                             modifier = cardPaddingModifier
                         )
                     }

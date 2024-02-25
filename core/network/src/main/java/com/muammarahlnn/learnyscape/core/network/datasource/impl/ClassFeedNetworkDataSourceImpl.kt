@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.datasource.impl
 
 import com.muammarahlnn.learnyscape.core.network.api.ClassesApi
 import com.muammarahlnn.learnyscape.core.network.datasource.ClassFeedNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.model.response.ClassDetailsResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ClassFeedResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -19,5 +20,9 @@ class ClassFeedNetworkDataSourceImpl @Inject constructor(
 
     override fun getClassFeeds(classId: String): Flow<List<ClassFeedResponse>> = flow {
         emit(classesApi.getClassHistories(classId).data)
+    }
+
+    override fun getClassDetails(classId: String): Flow<ClassDetailsResponse> = flow {
+        emit(classesApi.getClassDetails(classId).data)
     }
 }

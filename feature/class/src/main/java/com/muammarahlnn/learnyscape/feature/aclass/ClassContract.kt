@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.aclass
 
+import com.muammarahlnn.learnyscape.core.model.data.ClassDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ClassFeedModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
@@ -22,7 +23,10 @@ interface ClassContract {
 
         data object Loading : UiState
 
-        data class Success(val classFeeds: List<ClassFeedModel>) : UiState
+        data class Success(
+            val classDetails: ClassDetailsModel,
+            val classFeeds: List<ClassFeedModel>,
+        ) : UiState
 
         data class Error(val message: String) : UiState
     }

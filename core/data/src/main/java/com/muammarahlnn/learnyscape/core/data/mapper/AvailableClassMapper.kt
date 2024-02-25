@@ -5,7 +5,6 @@ import com.muammarahlnn.learnyscape.core.model.data.ClassMemberModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
 import com.muammarahlnn.learnyscape.core.network.model.response.AvailableClassResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ClassMemberResponse
-import kotlinx.datetime.LocalTime
 
 
 /**
@@ -20,8 +19,8 @@ fun AvailableClassResponse.toAvailableClassModel() = AvailableClassModel(
     id = id,
     name = name,
     day = DayModel.getDayModel(day),
-    startTime = convertTimeInMinutesToLocalTime(time),
-    endTime = convertTimeInMinutesToLocalTime(endTime),
+    startTime = time.toLocalTime(),
+    endTime = endTime.toLocalTime(),
     lecturers = lecturers.map { it.toClassMemberModel() },
     students = students.map { it.toClassMemberModel() }
 )
@@ -31,12 +30,3 @@ fun ClassMemberResponse.toClassMemberModel() = ClassMemberModel(
     fullName = fullName,
     username = username,
 )
-
-fun convertTimeInMinutesToLocalTime(time: Int): LocalTime {
-    val hour = time / 60
-    val minute = time % 60
-    return LocalTime(
-        hour = hour,
-        minute = minute,
-    )
-}

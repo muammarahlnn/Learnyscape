@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
+import com.muammarahlnn.learnyscape.core.model.data.ClassDetailsModel
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -18,9 +19,7 @@ import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
  */
 @Composable
 internal fun ClassDetailsCard(
-    className: String,
-    lecturers: List<String>,
-    classSchedule: String,
+    classDetails: ClassDetailsModel,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(modifier = modifier.fillMaxWidth()) {
@@ -28,14 +27,14 @@ internal fun ClassDetailsCard(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = className,
+                text = classDetails.name,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
             )
 
-            lecturers.forEach { lecturer ->
+            classDetails.lecturers.forEach { lecturer ->
                 Text(
-                    text = lecturer,
+                    text = lecturer.fullName,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -43,8 +42,14 @@ internal fun ClassDetailsCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            val scheduleText = String.format(
+                "%s, %02d:%02d - %02d:%02d",
+                classDetails.day.displayedText,
+                classDetails.startTime.hour, classDetails.startTime.minute,
+                classDetails.endTime.hour, classDetails.endTime.minute,
+            )
             Text(
-                text = classSchedule,
+                text = scheduleText,
                 style = MaterialTheme.typography.bodySmall,
                 color =  MaterialTheme.colorScheme.onSurface,
             )

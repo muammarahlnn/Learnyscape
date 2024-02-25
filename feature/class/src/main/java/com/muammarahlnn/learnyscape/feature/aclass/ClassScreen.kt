@@ -100,6 +100,7 @@ private fun ClassScreen(
         is ClassContract.UiState.Success -> ClassSuccessContent(
             refreshState = refreshState,
             profilePicUiState = state.profilePicUiState,
+            classDetails = state.uiState.classDetails,
             classFeeds = state.uiState.classFeeds,
             announcementAuthorProfilePicUiStateMap = state.announcementAuthorProfilePicUiStateMap,
             onBackClick = { navigate(ClassNavigation.NavigateBack) },

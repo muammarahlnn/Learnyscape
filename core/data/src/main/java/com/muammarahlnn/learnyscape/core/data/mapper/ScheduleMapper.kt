@@ -3,6 +3,7 @@ package com.muammarahlnn.learnyscape.core.data.mapper
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
 import com.muammarahlnn.learnyscape.core.model.data.ScheduleModel
 import com.muammarahlnn.learnyscape.core.network.model.response.ScheduleResponse
+import kotlinx.datetime.LocalTime
 
 /**
  * @Author Muammar Ahlan Abimanyu
@@ -16,7 +17,12 @@ fun List<ScheduleResponse>.toScheduleModels() = map {
 fun ScheduleResponse.toScheduleModel() = ScheduleModel(
     id = id,
     className = className,
-    startTime = convertTimeInMinutesToLocalTime(startTime),
-    endTime = convertTimeInMinutesToLocalTime(endTime),
+    startTime = startTime.toLocalTime(),
+    endTime = endTime.toLocalTime(),
     day = DayModel.getDayModel(day),
+)
+
+fun Int.toLocalTime(): LocalTime = LocalTime(
+    hour = this / 60,
+    minute = this % 60,
 )

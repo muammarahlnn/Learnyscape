@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.ClassFeedRepository
+import com.muammarahlnn.learnyscape.core.domain.classfeed.GetClassDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.classfeed.GetClassFeedsUseCase
 import dagger.Module
 import dagger.Provides
@@ -22,5 +23,13 @@ object ClassFeedInteractorModule {
         classFeedRepository: ClassFeedRepository
     ): GetClassFeedsUseCase = GetClassFeedsUseCase(
         classFeedRepository::getClassFeeds
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesGetClassDetailsUseCase(
+        classFeedRepository: ClassFeedRepository
+    ): GetClassDetailsUseCase = GetClassDetailsUseCase(
+        classFeedRepository::getClassDetails
     )
 }

@@ -15,6 +15,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.classfeed.GetClassDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.classfeed.GetClassFeedsUseCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicByUrlUeCase
 import com.muammarahlnn.learnyscape.core.domain.profile.GetProfilePicUseCase
@@ -25,6 +26,7 @@ import com.muammarahlnn.learnyscape.feature.aclass.ClassContract.Event
 import com.muammarahlnn.learnyscape.feature.aclass.ClassContract.State
 import com.muammarahlnn.learnyscape.feature.aclass.ClassContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -37,6 +39,7 @@ class ClassViewModel @Inject constructor(
     private val getProfilePicUseCase: GetProfilePicUseCase,
     private val getClassFeedsUseCase: GetClassFeedsUseCase,
     private val getProfilePicByUrlUeCase: GetProfilePicByUrlUeCase,
+    private val getClassDetailsUseCase: GetClassDetailsUseCase,
 ) : ViewModel(),
     ContractProvider<State, Event, Effect> by contract(State()),
     RefreshProvider by refresh()
@@ -57,6 +60,7 @@ class ClassViewModel @Inject constructor(
     }
 
     private fun fetchClassFeeds() {
+
         fun onErrorFetchClassFeeds(message: String) {
             updateState {
                 it.copy(
@@ -66,17 +70,25 @@ class ClassViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            getClassFeedsUseCase(state.value.classId).asResult().collect { result ->
+            combine(
+                getClassDetailsUseCase(state.value.classId),
+                getClassFeedsUseCase(state.value.classId),
+                ::Pair
+            ).asResult().collect { result ->
                 result.onLoading {
                     updateState {
                         it.copy(
                             uiState = UiState.Loading
                         )
                     }
-                }.onSuccess { classFeeds ->
+                }.onSuccess { resultPair ->
+                    val (classDetails, classFeeds) = resultPair
                     updateState {
                         it.copy(
-                            uiState = UiState.Success(classFeeds)
+                            uiState = UiState.Success(
+                                classDetails = classDetails,
+                                classFeeds = classFeeds,
+                            )
                         )
                     }
                     fetchAnnouncementAuthorProfilePics(classFeeds)
