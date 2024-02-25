@@ -133,7 +133,7 @@ fun ClassSuccessContent(
                             ClassFeedModel.FeedType.QUIZ -> ClassResourceType.QUIZ
                         },
                         profilePicUiState = authorProfilePicUiState,
-                        title = "TODO: need title from BE",
+                        title = feed.name,
                         timePosted = feed.updatedAt,
                         caption = feed.description,
                         isCaptionOverflowed = true,

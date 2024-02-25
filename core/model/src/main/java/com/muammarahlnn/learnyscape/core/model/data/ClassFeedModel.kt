@@ -6,6 +6,7 @@ package com.muammarahlnn.learnyscape.core.model.data
  */
 data class ClassFeedModel(
     val id: String,
+    val name: String,
     val createdAt: String,
     val updatedAt: String,
     val type: FeedType,

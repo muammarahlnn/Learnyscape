@@ -10,11 +10,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ClassFeedResponse(
     val id: String,
+    val name: String? = null,
+    val description: String? = null,
     val createdAt: String,
     val updatedAt: String,
     val type: FeedType,
     val uri: String,
-    val description: String? = null,
     @SerialName("thumbnail") val profilePicUrl: String? = null,
 ) {
 

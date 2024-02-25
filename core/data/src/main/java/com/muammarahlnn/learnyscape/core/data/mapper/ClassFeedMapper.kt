@@ -18,6 +18,7 @@ fun List<ClassFeedResponse>.toClassFeedModels() = map {
 
 fun ClassFeedResponse.toClassFeedModel() = ClassFeedModel(
     id = id,
+    name = name.orEmpty(),
     createdAt = formatIsoDate(createdAt),
     updatedAt = formatIsoDate(updatedAt),
     type = when (type) {
