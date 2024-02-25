@@ -194,13 +194,13 @@ private fun ChangePasswordTextField(
                     Icon(
                         painter = painterResource(id = designSystemR.drawable.ic_visibility),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.surfaceVariant,
                     )
                 } else {
                     Icon(
                         painter = painterResource(id = designSystemR.drawable.ic_visibility_off),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.surfaceVariant,
                     )
                 }
             }
