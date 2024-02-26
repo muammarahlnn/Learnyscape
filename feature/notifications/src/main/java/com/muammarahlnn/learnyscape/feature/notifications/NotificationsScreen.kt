@@ -76,6 +76,13 @@ private fun NotificationsScreen(
     }
 }
 
+data class Notif(
+    val type: ClassResourceType,
+    val title: String,
+    val description: String,
+    val time: String,
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotificationContent(
@@ -85,27 +92,36 @@ private fun NotificationContent(
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     ) {
         // dummy list only for test ui purpose
         listOf(
-            ClassResourceType.MODULE,
-            ClassResourceType.ASSIGNMENT,
-            ClassResourceType.QUIZ,
-            ClassResourceType.MODULE,
-            ClassResourceType.ASSIGNMENT,
-            ClassResourceType.QUIZ,
-            ClassResourceType.MODULE,
-            ClassResourceType.ASSIGNMENT,
-            ClassResourceType.QUIZ,
-            ClassResourceType.MODULE,
-            ClassResourceType.ASSIGNMENT,
-            ClassResourceType.QUIZ,
+            Notif(
+                type = ClassResourceType.MODULE,
+                title = "There is a new module, check it out!",
+                description = "Lorem Ipsum Dolor S.Kom., M.Kom. post a new module",
+                time = "10.45",
+            ),
+            Notif(
+                type = ClassResourceType.ASSIGNMENT,
+                title = "There is a new assignment, check it out!",
+                description = "Lorem Ipsum Dolor S.Kom., M.Kom. assign a new assignment",
+                time = "14.21",
+            ),
+            Notif(
+                type = ClassResourceType.QUIZ,
+                title = "There is a new quiz, check it out!",
+                description = "Lorem Ipsum Dolor S.Kom., M.Kom. create a new quiz",
+                time = "08.32",
+            ),
         ).forEach {
             item {
                 NotificationItem(
-                    type = it,
+                    type = it.type,
+                    title = it.title,
+                    description = it.description,
+                    time = it.time,
                     onNotificationClick = onNotificationClick,
                 )
             }
@@ -140,6 +156,9 @@ private fun NotificationsTopAppBar(
 @Composable
 private fun NotificationItem(
     type: ClassResourceType,
+    title: String,
+    description: String,
+    time: String,
     onNotificationClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -175,14 +194,14 @@ private fun NotificationItem(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet",
+                    text = title,
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.onBackground,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
                 )
                 Text(
-                    text = "Lorem ipsum dolor sit",
+                    text = description,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
@@ -191,7 +210,7 @@ private fun NotificationItem(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = "11.45",
+                text = time,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurface,
             )
