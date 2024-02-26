@@ -118,7 +118,6 @@ private fun ResourceDetailsScreen(
         DeleteResourceDialog(
             classResourceType = state.resourceType,
             onDelete = {
-                navigate(ResourceDetailsNavigation.NavigateBack)
                 event(ResourceDetailsContract.Event.OnConfirmDeleteResourceDialog)
             },
             onDismiss = { event(ResourceDetailsContract.Event.OnDismissDeleteResourceDialog) },
@@ -129,7 +128,10 @@ private fun ResourceDetailsScreen(
         DeletingResourceDialog(
             state = state.deletingResourceUiState,
             resourceType = state.resourceType,
-            onConfirmSuccess = { event(ResourceDetailsContract.Event.OnConfirmSuccessDeletingResourceDialog) },
+            onConfirmSuccess = {
+                event(ResourceDetailsContract.Event.OnConfirmSuccessDeletingResourceDialog)
+                navigate(ResourceDetailsNavigation.NavigateBack)
+            },
             onDismiss = { event(ResourceDetailsContract.Event.OnDismissDeletingResourceDialog) },
         )
     }
