@@ -30,7 +30,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.noRippleClickable
 import com.muammarahlnn.learnyscape.feature.resourcedetails.R
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -158,7 +158,7 @@ private fun isCurrentTimeInIntervalTime(
     fun getEpochSeconds(date: String): Long {
         val formatter = DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm")
         val localDateTime = LocalDateTime.parse(date, formatter)
-        return localDateTime.toEpochSecond(ZoneOffset.UTC)
+        return localDateTime.toEpochSecond(ZoneId.systemDefault().rules.getOffset(Instant.now()))
     }
 
     val startEpochSeconds = getEpochSeconds(startDateTime)
