@@ -19,6 +19,7 @@ import com.muammarahlnn.learnyscape.feature.home.HomeContract.Event
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.State
 import com.muammarahlnn.learnyscape.feature.home.HomeContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,11 +53,11 @@ class HomeViewModel @Inject constructor(
                 }.onSuccess { enrolledClasses ->
                     updateState {
                         it.copy(
-                            uiState = if (enrolledClasses.isNotEmpty()) {
-                                UiState.Success(enrolledClasses)
-                            } else {
-                                UiState.SuccessEmptyClasses
-                            }
+                            classes = enrolledClasses,
+                            searchedClasses = enrolledClasses,
+                            uiState =
+                                if (enrolledClasses.isNotEmpty()) UiState.Success
+                                else UiState.SuccessEmpty,
                         )
                     }
                 }.onNoInternet { message ->
@@ -79,8 +80,29 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun onSearchQueryChanged(query: String) {
-        updateState {
-            it.copy(searchQuery = query)
+        viewModelScope.launch {
+            updateState {
+                it.copy(
+                    searchQuery = query,
+                    isSearching = true,
+                )
+            }
+            delay(500)
+
+            val searchedClass = state.value.classes
+                .filter {
+                    it.className.startsWith(query, true)
+                    || it.lecturerNames.any { lecturerName ->
+                        lecturerName.startsWith(query, true)
+                    }
+                }
+
+            updateState {
+                it.copy(
+                    isSearching = false,
+                    searchedClasses = searchedClass,
+                )
+            }
         }
     }
 

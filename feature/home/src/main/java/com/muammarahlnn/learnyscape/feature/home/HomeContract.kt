@@ -9,17 +9,20 @@ import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 interface HomeContract {
 
     data class State(
-        val searchQuery: String = "",
         val uiState: UiState = UiState.Loading,
+        val searchQuery: String = "",
+        val isSearching: Boolean = false,
+        val classes: List<EnrolledClassInfoModel> = emptyList(),
+        val searchedClasses: List<EnrolledClassInfoModel> = emptyList(),
     )
 
     sealed interface UiState {
 
         data object Loading : UiState
 
-        data class Success(val classes: List<EnrolledClassInfoModel>) : UiState
+        data object Success : UiState
 
-        data object SuccessEmptyClasses : UiState
+        data object SuccessEmpty : UiState
 
         data class NoInternet(val message: String) : UiState
 

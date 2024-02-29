@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +39,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,6 +49,7 @@ import com.muammarahlnn.learnyscape.core.model.data.EnrolledClassInfoModel
 import com.muammarahlnn.learnyscape.core.model.data.UserRole
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
@@ -140,13 +140,14 @@ private fun HomeScreen(
                     modifier = Modifier.fillMaxSize()
                 )
 
-                UiState.SuccessEmptyClasses -> EmptyClassesContent(
-                    modifier = Modifier,
+                UiState.SuccessEmpty -> EmptyClassesContent(
+                    modifier = Modifier.fillMaxSize(),
                 )
 
                 is UiState.Success -> HomeContent(
                     searchQuery = state.searchQuery,
-                    classes = state.uiState.classes,
+                    isSearching = state.isSearching,
+                    classes = state.searchedClasses,
                     onSearchQueryChanged = { event(Event.OnSearchQueryChanged(it)) },
                     onClassClick = { navigate(Navigation.NavigateToClass(it)) },
                     modifier = Modifier
@@ -161,6 +162,7 @@ private fun HomeScreen(
 @Composable
 private fun HomeContent(
     searchQuery: String,
+    isSearching: Boolean,
     classes: List<EnrolledClassInfoModel>,
     onSearchQueryChanged: (String) -> Unit,
     onClassClick: (String) -> Unit,
@@ -179,25 +181,74 @@ private fun HomeContent(
                 )
         )
 
-        LazyColumn(
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            items(
-                items = classes,
-                key = {
-                    it.id
-                }
-            ) { classInfo ->
-                ClassCard(
-                    classId = classInfo.id,
-                    className = classInfo.className,
-                    lecturerName = classInfo.lecturerNames.first(),
-                    onClassClick = onClassClick,
+        val contentModifier = Modifier.weight(1f)
+        if (isSearching) {
+            LoadingScreen(modifier = contentModifier)
+        } else {
+            if (classes.isEmpty()) {
+                SearchNotFoundContent(
+                    searchedClass = searchQuery,
+                    modifier = contentModifier.then(
+                        Modifier.fillMaxWidth()
+                    ),
                 )
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = contentModifier
+                ) {
+                    items(
+                        items = classes,
+                        key = { it.id },
+                    ) { enrolledClass ->
+                        ClassCard(
+                            classId = enrolledClass.id,
+                            className = enrolledClass.className,
+                            lecturerName = enrolledClass.lecturerNames.first(),
+                            onClassClick = onClassClick,
+                        )
+                    }
+                }
             }
         }
+
+//        LazyColumn(
+//            contentPadding = PaddingValues(16.dp),
+//            verticalArrangement = Arrangement.spacedBy(12.dp),
+//            modifier = Modifier.weight(1f)
+//        ) {
+//            if (!isSearching) {
+//                if (classes.isNotEmpty()) {
+//                    items(
+//                        items = classes,
+//                        key = {
+//                            it.id
+//                        }
+//                    ) { classInfo ->
+//                        ClassCard(
+//                            classId = classInfo.id,
+//                            className = classInfo.className,
+//                            lecturerName = classInfo.lecturerNames.first(),
+//                            onClassClick = onClassClick,
+//                        )
+//                    }
+//                } else {
+//                    item {
+//                        SearchNotFoundContent(
+//                            searchedClass = searchQuery,
+//                            modifier = Modifier.fillMaxSize()
+//                        )
+//                    }
+//                }
+//            } else {
+//                item {
+//                    LoadingScreen(
+//                        modifier = Modifier.fillMaxSize()
+//                    )
+//                }
+//            }
+//        }
     }
 }
 
@@ -298,10 +349,7 @@ private fun EmptyClassesContent(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+        modifier = modifier,
     ) {
         Image(
             painter = painterResource(id = designSystemR.drawable.no_data_illustration),
@@ -313,7 +361,37 @@ private fun EmptyClassesContent(
 
         Text(
             text = stringResource(id = R.string.empty_class_illustration_desc),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+    }
+}
+
+@Composable
+private fun SearchNotFoundContent(
+    searchedClass: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier,
+    ) {
+        Image(
+            painter = painterResource(id = designSystemR.drawable.no_data_illustration),
+            contentDescription = null,
+            modifier = Modifier.size(128.dp),
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = stringResource(
+                id = R.string.search_not_found_desc,
+                searchedClass,
+            ),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )
     }

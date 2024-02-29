@@ -12,18 +12,11 @@ import retrofit2.http.Path
  */
 interface WaitingListApi {
 
-    @PUT(WAITING_LIST_STUDENT_END_POINT)
+    @PUT("waiting-lists/{studentId}")
     suspend fun putStudentAcceptance(
-        @Path(STUDENT_ID_PATH) studentId: String,
+        @Path("studentId") studentId: String,
         @Body studentAcceptanceRequest: StudentAcceptanceRequest,
     ): BaseResponse<String>
 
-    companion object {
-
-        private const val WAITING_LIST_END_POINT = "waiting-lists"
-
-        private const val STUDENT_ID_PATH = "studentId"
-
-        private const val WAITING_LIST_STUDENT_END_POINT = "$WAITING_LIST_END_POINT/{$STUDENT_ID_PATH}"
-    }
+    suspend fun getStudentPendingRequestClasses()
 }

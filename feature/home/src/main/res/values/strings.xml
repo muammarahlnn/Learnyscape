@@ -5,4 +5,5 @@
     <string name="notifications">Notifications</string>
     <string name="empty_class_illustration_desc">You haven\'t join any class yet</string>
     <string name="search_placeholder_text">Search your class…</string>
+    <string name="search_not_found_desc">Sorry, the \"%1$s\" class you looking for is not found</string>
 </resources>

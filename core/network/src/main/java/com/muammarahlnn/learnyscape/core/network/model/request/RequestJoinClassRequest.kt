@@ -9,5 +9,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class RequestJoinClassRequest(
-    val classId: String
+    val classId: String,
+    val isCancelled: Boolean = false,
 )
