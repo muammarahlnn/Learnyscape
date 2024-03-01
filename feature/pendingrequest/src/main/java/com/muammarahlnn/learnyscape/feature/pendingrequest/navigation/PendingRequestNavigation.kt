@@ -1,9 +1,11 @@
 package com.muammarahlnn.learnyscape.feature.pendingrequest.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.pendingrequest.PendingRequestController
 import com.muammarahlnn.learnyscape.feature.pendingrequest.PendingRequestRoute
 
 
@@ -19,11 +21,14 @@ fun NavController.navigateToPendingRequest(navOptions: NavOptions? = null) {
 }
 
 fun NavGraphBuilder.pendingRequestScreen(
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     composable(route = PENDING_REQUEST_ROUTE) {
         PendingRequestRoute(
-            onBackClick = onBackClick,
+            controller = PendingRequestController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+            )
         )
     }
 }

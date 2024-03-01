@@ -2,7 +2,9 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.model.request.StudentAcceptanceRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
+import com.muammarahlnn.learnyscape.core.network.model.response.PendingRequestResponse
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
@@ -18,5 +20,6 @@ interface WaitingListApi {
         @Body studentAcceptanceRequest: StudentAcceptanceRequest,
     ): BaseResponse<String>
 
-    suspend fun getStudentPendingRequestClasses()
+    @GET("waiting-lists")
+    suspend fun getStudentPendingRequestClasses(): BaseResponse<List<PendingRequestResponse>>
 }

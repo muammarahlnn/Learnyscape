@@ -8,6 +8,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.FileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.HomeRepository
 import com.muammarahlnn.learnyscape.core.data.repository.JoinRequestRepository
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
+import com.muammarahlnn.learnyscape.core.data.repository.PendingRequestRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ProfileRepository
 import com.muammarahlnn.learnyscape.core.data.repository.QuizSessionRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ResourceCreateRepository
@@ -23,6 +24,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.impl.FileRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.HomeRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.JoinRequestRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.LoginRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.PendingRequestRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ProfileRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.QuizSessionRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ResourceCreateRepositoryImpl
@@ -121,4 +123,9 @@ interface DataModule {
     fun bindsSubmissionDetailsRepository(
         submissionDetailsRepository: SubmissionDetailsRepositoryImpl
     ): SubmissionDetailsRepository
+
+    @Binds
+    fun bindsPendingRequestRepository(
+        pendingRequestRepository: PendingRequestRepositoryImpl
+    ): PendingRequestRepository
 }

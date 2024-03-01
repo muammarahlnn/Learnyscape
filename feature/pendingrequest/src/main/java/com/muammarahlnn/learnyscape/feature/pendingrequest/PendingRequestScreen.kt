@@ -13,17 +13,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -32,9 +36,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
-import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppBar
+import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
+import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
+import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
+import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
+import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
+import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -45,47 +56,87 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun PendingRequestRoute(
-    onBackClick: () -> Unit,
+    controller: PendingRequestController,
     modifier: Modifier = Modifier,
+    viewModel: PendingRequestViewModel = hiltViewModel(),
 ) {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            PendingRequestNavigation.NavigateBack ->
+                controller.navigateBack()
+        }
+    }
+
+    val (state, event) = use(viewModel)
+    LaunchedEffect(Unit) {
+        event(PendingRequestContract.Event.FetchPendingRequestClasses)
+    }
+    
+    
     PendingRequestScreen(
-        onBackClick = onBackClick,
+        state = state,
+        refreshState = use(viewModel) { event(PendingRequestContract.Event.FetchPendingRequestClasses) },
+        event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun PendingRequestScreen(
-    onBackClick: () -> Unit,
+    state: PendingRequestContract.UiState,
+    refreshState: RefreshState,
+    event: (PendingRequestContract.Event) -> Unit,
+    navigate: (PendingRequestNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    Column(modifier = modifier.fillMaxSize()) {
-        PendingRequestTopAppBar(
-            scrollBehavior = scrollBehavior,
-            onBackClick = onBackClick,
-        )
-        PendingRequestContent(
-            scrollBehavior = scrollBehavior,
-        )
-    }
-}
+    Scaffold(
+        topBar = {
+            PendingRequestTopAppBar(
+                onBackClick = { navigate(PendingRequestNavigation.NavigateBack) },
+            )
+        }
+    ) { paddingValues ->
+        val contentModifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun PendingRequestContent(
-    scrollBehavior: TopAppBarScrollBehavior,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) {
-        repeat(10) {
-            item {
-                PendingClassRequestCard()
+        when (state) {
+            PendingRequestContract.UiState.Loading -> Unit
+            
+            is PendingRequestContract.UiState.Error -> ErrorScreen(
+                text = state.message,
+                onRefresh = { event(PendingRequestContract.Event.FetchPendingRequestClasses) },
+                modifier = contentModifier,
+            )
+            
+            PendingRequestContract.UiState.SuccessEmpty -> NoDataScreen(
+                text = stringResource(id = R.string.empty_pending_request_desc),
+                modifier = contentModifier,
+            )
+
+            is PendingRequestContract.UiState.Success -> PullRefreshScreen(
+                pullRefreshState = refreshState.pullRefreshState,
+                refreshing = refreshState.refreshing,
+                modifier = contentModifier,
+            ) {
+                LazyColumn(
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                ) {
+                    items(
+                        items = state.pendingRequestClasses,
+                        key = { it.id },
+                    ) { pendingRequestClass ->
+                        PendingClassRequestCard(
+                            className = pendingRequestClass.className,
+                            lecturerNames = pendingRequestClass.lecturerNames,
+                        )
+                    }
+                }
             }
         }
     }
@@ -93,6 +144,8 @@ private fun PendingRequestContent(
 
 @Composable
 private fun PendingClassRequestCard(
+    className: String,
+    lecturerNames: List<String>,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
@@ -127,19 +180,22 @@ private fun PendingClassRequestCard(
             ) {
                 // this is a hardcoded text just for dummy purpose
                 Text(
-                    text = "Pemrograman Mobile B",
+                    text = className,
                     color = MaterialTheme.colorScheme.onBackground,
                     style = MaterialTheme.typography.titleSmall.copy(
                         fontWeight = FontWeight.SemiBold
                     )
                 )
-                Text(
-                    text = "Lorem ipsum dolor sit amet lorem ipsum dolor sit amet",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodySmall,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1,
-                )
+
+                lecturerNames.forEach {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.bodySmall,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -165,15 +221,20 @@ private fun PendingRequestTopAppBar(
     modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    LearnyscapeTopAppBar(
-        titleRes = R.string.pending_class_request,
-        navigationIconRes = designSystemR.drawable.ic_arrow_back_bold,
-        navigationIconContentDescription = stringResource(
-            id = designSystemR.string.navigation_back_icon_description
-        ),
+    LearnyscapeCenterTopAppBar(
+        title = stringResource(id = R.string.pending_class_request),
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = designSystemR.drawable.ic_arrow_back_bold),
+                    contentDescription = stringResource(
+                        id = designSystemR.string.navigation_back_icon_description
+                    ),
+                )
+            }
+        },
         colors = LearnyscapeTopAppbarDefaults.defaultTopAppBarColors(),
         scrollBehavior = scrollBehavior,
-        onNavigationClick = onBackClick,
         modifier = modifier,
     )
 }

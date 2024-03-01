@@ -104,7 +104,7 @@ fun LearnyscapeNavHost(
             onCameraClosed = navController::navigateUp
         )
         pendingRequestScreen(
-            onBackClick = navController::popBackStack
+            navigateBack = navController::popBackStack
         )
         changePasswordScreen(
             onBackClick = navController::popBackStack
