@@ -1,6 +1,7 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.PendingRequestRepository
+import com.muammarahlnn.learnyscape.core.domain.pendingrequest.CancelStudentRequestClassUseCase
 import com.muammarahlnn.learnyscape.core.domain.pendingrequest.GetStudentPendingRequestClassesUseCase
 import dagger.Module
 import dagger.Provides
@@ -22,5 +23,13 @@ object PendingRequestInteractorModule {
         pendingRequestRepository: PendingRequestRepository
     ): GetStudentPendingRequestClassesUseCase = GetStudentPendingRequestClassesUseCase(
         pendingRequestRepository::getStudentPendingRequestClasses
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesCancelStudentRequestClassUseCase(
+        pendingRequestRepository: PendingRequestRepository
+    ): CancelStudentRequestClassUseCase = CancelStudentRequestClassUseCase(
+        pendingRequestRepository::cancelStudentRequestClass
     )
 }

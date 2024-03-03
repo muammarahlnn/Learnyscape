@@ -10,4 +10,6 @@ import kotlinx.coroutines.flow.Flow
 interface PendingRequestNetworkDataSource {
 
     fun getStudentPendingRequestClasses(): Flow<List<PendingRequestResponse>>
+
+    fun cancelStudentRequestClass(classId: String): Flow<String>
 }

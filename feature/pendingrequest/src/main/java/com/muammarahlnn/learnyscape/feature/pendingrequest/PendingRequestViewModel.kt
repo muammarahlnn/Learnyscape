@@ -13,11 +13,15 @@ import com.muammarahlnn.learnyscape.core.common.result.onException
 import com.muammarahlnn.learnyscape.core.common.result.onLoading
 import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
+import com.muammarahlnn.learnyscape.core.domain.pendingrequest.CancelStudentRequestClassUseCase
 import com.muammarahlnn.learnyscape.core.domain.pendingrequest.GetStudentPendingRequestClassesUseCase
+import com.muammarahlnn.learnyscape.core.model.data.PendingRequestModel
 import com.muammarahlnn.learnyscape.feature.pendingrequest.PendingRequestContract.Effect
 import com.muammarahlnn.learnyscape.feature.pendingrequest.PendingRequestContract.Event
+import com.muammarahlnn.learnyscape.feature.pendingrequest.PendingRequestContract.State
 import com.muammarahlnn.learnyscape.feature.pendingrequest.PendingRequestContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,14 +32,18 @@ import javax.inject.Inject
 @HiltViewModel
 class PendingRequestViewModel @Inject constructor(
     private val getStudentPendingRequestClassesUseCase: GetStudentPendingRequestClassesUseCase,
+    private val cancelStudentRequestClassUseCase: CancelStudentRequestClassUseCase,
 ) : ViewModel(),
-    ContractProvider<UiState, Event, Effect> by contract(UiState.Loading),
+    ContractProvider<State, Event, Effect> by contract(State()),
     RefreshProvider by refresh()
 {
 
     override fun event(event: Event) {
         when (event) {
             Event.FetchPendingRequestClasses -> fetchPendingRequestClasses()
+            is Event.OnSelectCancelRequestClass -> onSelectCancelRequestClass(event.pendingRequest)
+            Event.OnDismissCancelRequestClass -> onDismissCancelRequestClass()
+            Event.OnCancelPendingRequestClass -> cancelStudentRequestClass()
         }
     }
 
@@ -43,7 +51,9 @@ class PendingRequestViewModel @Inject constructor(
 
         fun onErrorFetchPendingRequestClasses(message: String) {
             updateState {
-                UiState.Error(message)
+                it.copy(
+                    uiState = UiState.Error(message)
+                )
             }
         }
 
@@ -51,15 +61,20 @@ class PendingRequestViewModel @Inject constructor(
             getStudentPendingRequestClassesUseCase().asResult().collect { result ->
                 result.onLoading {
                     updateState {
-                        UiState.Loading
+                        it.copy(
+                            uiState = UiState.Loading
+                        )
                     }
                 }.onSuccess { pendingRequestClasses ->
                     updateState {
-                        if (pendingRequestClasses.isNotEmpty()) {
-                            UiState.Success(pendingRequestClasses)
-                        } else {
-                            UiState.SuccessEmpty
-                        }
+                        it.copy(
+                            pendingRequestClasses = pendingRequestClasses,
+                            uiState = if (pendingRequestClasses.isNotEmpty()) {
+                                UiState.Success
+                            } else {
+                                UiState.SuccessEmpty
+                            }
+                        )
                     }
                 }.onNoInternet { message ->
                     onErrorFetchPendingRequestClasses(message)
@@ -71,6 +86,68 @@ class PendingRequestViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun onSelectCancelRequestClass(pendingRequest: PendingRequestModel) {
+        showCancelRequestClassDialog(true)
+        updateState {
+            it.copy(
+                selectedPendingRequest = pendingRequest
+            )
+        }
+    }
+
+    private fun onDismissCancelRequestClass() {
+        showCancelRequestClassDialog(false)
+        updateState {
+            it.copy(
+                selectedPendingRequest = null
+            )
+        }
+    }
+
+    private fun cancelStudentRequestClass() {
+        showCancelRequestClassDialog(false)
+
+        state.value.selectedPendingRequest?.let { pendingRequest ->
+            viewModelScope.launch {
+                cancelStudentRequestClassUseCase(pendingRequest.classId)
+                    .asResult()
+                    .onCompletion {
+                        fetchPendingRequestClasses()
+                    }
+                    .collect { result ->
+                        result.onLoading {
+                            updateState {
+                                it.copy(
+                                    uiState = UiState.Loading
+                                )
+                            }
+                        }.onSuccess {
+                            showToast("Class successfully canceled")
+                        }.onNoInternet { message ->
+                            showToast(message)
+                        }.onError { _, message ->
+                            showToast(message)
+                        }.onException { exception, message ->
+                            Log.e(TAG, exception?.message.toString())
+                            showToast(message)
+                        }
+                    }
+            }
+        }
+    }
+
+    private fun showCancelRequestClassDialog(show: Boolean) {
+        updateState {
+            it.copy(
+                showCancelRequestClassDialog = show
+            )
+        }
+    }
+
+    private fun showToast(message: String) {
+        viewModelScope.emitEffect(Effect.ShowToast(message))
     }
 
     private companion object {

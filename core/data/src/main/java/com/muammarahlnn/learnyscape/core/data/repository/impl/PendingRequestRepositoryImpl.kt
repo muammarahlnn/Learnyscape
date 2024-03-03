@@ -20,4 +20,7 @@ class PendingRequestRepositoryImpl @Inject constructor(
         pendingRequestNetworkDataSource.getStudentPendingRequestClasses().map { pendingRequestRepsonses ->
             pendingRequestRepsonses.toPendingRequestModels()
         }
+
+    override fun cancelStudentRequestClass(classId: String): Flow<String> =
+        pendingRequestNetworkDataSource.cancelStudentRequestClass(classId)
 }

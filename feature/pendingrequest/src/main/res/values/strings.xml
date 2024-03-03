@@ -3,4 +3,6 @@
     <string name="pending_class_request">Pending Class Request</string>
     <string name="cancel_icon_description">Cancel request class</string>
     <string name="empty_pending_request_desc">You have no pending request classes yet</string>
+    <string name="cancel_request_dialog_title">Cancel Request</string>
+    <string name="cancel_request_dialog_text">Are you sure want to cancel your request for %1$s class?</string>
 </resources>

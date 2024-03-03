@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.pendingrequest
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,13 +32,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.muammarahlnn.learnyscape.core.designsystem.component.BaseAlertDialog
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeTopAppbarDefaults
@@ -45,6 +50,7 @@ import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
 import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
+import com.muammarahlnn.learnyscape.core.ui.util.shimmerEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
@@ -72,7 +78,15 @@ internal fun PendingRequestRoute(
         event(PendingRequestContract.Event.FetchPendingRequestClasses)
     }
     
-    
+
+    val context = LocalContext.current
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
+            is PendingRequestContract.Effect.ShowToast ->
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     PendingRequestScreen(
         state = state,
         refreshState = use(viewModel) { event(PendingRequestContract.Event.FetchPendingRequestClasses) },
@@ -85,29 +99,40 @@ internal fun PendingRequestRoute(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 private fun PendingRequestScreen(
-    state: PendingRequestContract.UiState,
+    state: PendingRequestContract.State,
     refreshState: RefreshState,
     event: (PendingRequestContract.Event) -> Unit,
     navigate: (PendingRequestNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    if (state.showCancelRequestClassDialog) {
+        state.selectedPendingRequest?.let {
+            CancelPendingRequestDialog(
+                className = it.className,
+                onConfirm = { event(PendingRequestContract.Event.OnCancelPendingRequestClass)},
+                onDismiss = { event(PendingRequestContract.Event.OnDismissCancelRequestClass) },
+            )
+        }
+    }
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     Scaffold(
         topBar = {
             PendingRequestTopAppBar(
                 onBackClick = { navigate(PendingRequestNavigation.NavigateBack) },
             )
-        }
+        },
+        modifier = modifier.fillMaxSize()
     ) { paddingValues ->
         val contentModifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
 
-        when (state) {
-            PendingRequestContract.UiState.Loading -> Unit
+        when (state.uiState) {
+            PendingRequestContract.UiState.Loading -> PendingRequestLoadingContent()
             
             is PendingRequestContract.UiState.Error -> ErrorScreen(
-                text = state.message,
+                text = state.uiState.message,
                 onRefresh = { event(PendingRequestContract.Event.FetchPendingRequestClasses) },
                 modifier = contentModifier,
             )
@@ -134,6 +159,7 @@ private fun PendingRequestScreen(
                         PendingClassRequestCard(
                             className = pendingRequestClass.className,
                             lecturerNames = pendingRequestClass.lecturerNames,
+                            onClassClick = { event(PendingRequestContract.Event.OnSelectCancelRequestClass(pendingRequestClass)) },
                         )
                     }
                 }
@@ -146,6 +172,7 @@ private fun PendingRequestScreen(
 private fun PendingClassRequestCard(
     className: String,
     lecturerNames: List<String>,
+    onClassClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BaseCard(
@@ -200,11 +227,7 @@ private fun PendingClassRequestCard(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            IconButton(
-                onClick = {
-
-                }
-            ) {
+            IconButton(onClick = onClassClick) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_cancel),
                     contentDescription = stringResource(id = R.string.cancel_icon_description)
@@ -212,6 +235,41 @@ private fun PendingClassRequestCard(
             }
         }
     }
+}
+
+@Composable
+private fun PendingRequestLoadingContent() {
+    Column(
+        modifier = Modifier.padding(16.dp),
+    ) {
+        repeat(8) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .shimmerEffect()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+private fun CancelPendingRequestDialog(
+    className: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BaseAlertDialog(
+        title = stringResource(id = R.string.cancel_request_dialog_title),
+        dialogText = stringResource(id = R.string.cancel_request_dialog_text, className),
+        onConfirm = onConfirm,
+        onDismiss = onDismiss,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
