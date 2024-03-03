@@ -9,4 +9,5 @@
     <string name="pending_request_icon_description">Pending class request</string>
     <string name="empty_classes_text">Currently there are no available classes yet</string>
     <string name="success_request_join_class">Successfully requested to join %1$s class</string>
+    <string name="requested">Requested</string>
 </resources>

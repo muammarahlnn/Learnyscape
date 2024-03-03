@@ -15,4 +15,10 @@ data class AvailableClassModel(
     val endTime: LocalTime,
     val lecturers: List<ClassMemberModel>,
     val students: List<ClassMemberModel>,
-)
+    val requestStatus: RequestStatus,
+) {
+
+    enum class RequestStatus {
+        UNREQUESTED, PENDING, ACCEPTED,
+    }
+}

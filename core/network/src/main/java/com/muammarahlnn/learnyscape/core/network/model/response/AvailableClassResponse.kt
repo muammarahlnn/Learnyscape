@@ -16,4 +16,10 @@ data class AvailableClassResponse(
     val endTime: Int,
     val lecturers: List<ClassMemberResponse>,
     val students: List<ClassMemberResponse>,
-)
+    val status: Status? = null,
+) {
+
+    enum class Status {
+        PENDING,
+    }
+}

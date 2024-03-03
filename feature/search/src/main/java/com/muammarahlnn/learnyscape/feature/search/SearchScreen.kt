@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -286,7 +288,7 @@ private fun SearchedClassCard(
             onClassClick(availableClass)
         }
     ) {
-        Column{
+        Column {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -300,6 +302,28 @@ private fun SearchedClassCard(
                     tint = MaterialTheme.colorScheme.background,
                     modifier = Modifier.size(64.dp)
                 )
+
+                if (availableClass.requestStatus == AvailableClassModel.RequestStatus.PENDING) {
+                    Card(
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.background
+                        ),
+                        shape = RoundedCornerShape(bottomStart = 8.dp),
+                        modifier = Modifier.align(Alignment.TopEnd)
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.requested),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 11.sp,
+                            ),
+                            color = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.padding(
+                                horizontal = 8.dp,
+                                vertical = 4.dp,
+                            )
+                        )
+                    }
+                }
             }
 
             Column(

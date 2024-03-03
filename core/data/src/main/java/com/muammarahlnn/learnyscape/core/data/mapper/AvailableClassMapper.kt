@@ -22,7 +22,11 @@ fun AvailableClassResponse.toAvailableClassModel() = AvailableClassModel(
     startTime = time.toLocalTime(),
     endTime = endTime.toLocalTime(),
     lecturers = lecturers.map { it.toClassMemberModel() },
-    students = students.map { it.toClassMemberModel() }
+    students = students.map { it.toClassMemberModel() },
+    requestStatus = when (status) {
+        AvailableClassResponse.Status.PENDING -> AvailableClassModel.RequestStatus.PENDING
+        null -> AvailableClassModel.RequestStatus.UNREQUESTED
+    },
 )
 
 fun ClassMemberResponse.toClassMemberModel() = ClassMemberModel(
