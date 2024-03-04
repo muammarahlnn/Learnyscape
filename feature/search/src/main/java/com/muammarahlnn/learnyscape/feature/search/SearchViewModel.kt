@@ -124,6 +124,7 @@ class SearchViewModel @Inject constructor(
                     }.onSuccess {
                         showToast("Successfully requested to join ${selectedAvailableClass.name} class")
                         onDismissJoinRequestDialog()
+                        fetchAvailableClasses()
                     }.onNoInternet { message ->
                         onErrorRequestJoinClass(message)
                     }.onError { _, message ->
