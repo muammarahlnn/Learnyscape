@@ -20,11 +20,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -283,8 +283,11 @@ private fun SearchedClassCard(
     onClassClick: (AvailableClassModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val isRequested = availableClass.requestStatus == AvailableClassModel.RequestStatus.PENDING
     BaseCard(
-        modifier = modifier.clickable {
+        modifier = modifier.clickable(
+            enabled = !isRequested
+        ) {
             onClassClick(availableClass)
         }
     ) {
@@ -303,7 +306,7 @@ private fun SearchedClassCard(
                     modifier = Modifier.size(64.dp)
                 )
 
-                if (availableClass.requestStatus == AvailableClassModel.RequestStatus.PENDING) {
+                if (isRequested) {
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.background
