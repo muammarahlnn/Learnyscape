@@ -15,6 +15,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onNoInternet
 import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.availableclass.GetAvailableClassesUseCase
 import com.muammarahlnn.learnyscape.core.domain.availableclass.RequestJoinClassUseCase
+import com.muammarahlnn.learnyscape.core.domain.pendingrequest.CancelStudentRequestClassUseCase
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.feature.search.SearchContract.Effect
 import com.muammarahlnn.learnyscape.feature.search.SearchContract.Event
@@ -33,6 +34,7 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val getAvailableClassesUseCase: GetAvailableClassesUseCase,
     private val requestJoinClassUseCase: RequestJoinClassUseCase,
+    private val cancelStudentRequestClassUseCase: CancelStudentRequestClassUseCase,
 ) : ViewModel(),
     ContractProvider<State, Event, Effect> by contract(State()),
     RefreshProvider by refresh()
@@ -45,6 +47,8 @@ class SearchViewModel @Inject constructor(
             is Event.OnAvailableClassClick -> onAvailableClassClick(event.availableClass)
             Event.OnDismissJoinClass -> onDismissJoinRequestDialog()
             Event.OnRequestJoinClass -> requestJoinClass()
+            Event.OnCancelRequestClass -> cancelStudentRequestClass()
+            Event.OnDismissCancelRequestClass -> onDismissCancelRequestDialog()
         }
     }
 
@@ -100,10 +104,17 @@ class SearchViewModel @Inject constructor(
 
     private fun onAvailableClassClick(availableClass: AvailableClassModel) {
         updateState {
-            it.copy(
-                selectedAvailableClass = availableClass,
-                showJoinRequestDialog = true,
-            )
+            if (availableClass.requestStatus == AvailableClassModel.RequestStatus.PENDING) {
+                it.copy(
+                    selectedAvailableClass = availableClass,
+                    showCancelRequestDialog = true,
+                )
+            } else {
+                it.copy(
+                    selectedAvailableClass = availableClass,
+                    showJoinRequestDialog = true,
+                )
+            }
         }
     }
 
@@ -139,12 +150,54 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun cancelStudentRequestClass() {
+        state.value.selectedAvailableClass?.let { selectedAvailableClass ->
+            viewModelScope.launch {
+
+                fun onErrorCancelRequestClass(message: String) {
+                    showToast(message)
+                    onDismissCancelRequestDialog()
+                }
+
+                cancelStudentRequestClassUseCase(selectedAvailableClass.id).asResult().collect { result ->
+                    result.onLoading {
+                        updateState {
+                            it.copy(cancelRequestClassDialogLoading = true)
+                        }
+                    }.onSuccess {
+                        showToast("Successfully canceled request ${selectedAvailableClass.name} class")
+                        onDismissCancelRequestDialog()
+                        fetchAvailableClasses()
+                    }.onNoInternet { message ->
+                        onErrorCancelRequestClass(message)
+                    }.onError { _, message ->
+                        onErrorCancelRequestClass(message)
+                    }.onException { exception, message ->
+                        Log.e(TAG, exception?.message.toString())
+                        onErrorCancelRequestClass(message)
+                    }
+                }
+            }
+        }
+    }
+
+
     private fun onDismissJoinRequestDialog() {
         updateState {
             it.copy(
                 selectedAvailableClass = null,
                 showJoinRequestDialog = false,
                 joinRequestClassDialogLoading = false,
+            )
+        }
+    }
+
+    private fun onDismissCancelRequestDialog() {
+        updateState {
+            it.copy(
+                selectedAvailableClass = null,
+                showCancelRequestDialog = false,
+                cancelRequestClassDialogLoading = false,
             )
         }
     }

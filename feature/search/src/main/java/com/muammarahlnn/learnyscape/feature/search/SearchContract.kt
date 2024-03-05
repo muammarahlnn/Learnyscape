@@ -14,6 +14,8 @@ interface SearchContract {
         val selectedAvailableClass: AvailableClassModel? = null,
         val showJoinRequestDialog: Boolean = false,
         val joinRequestClassDialogLoading: Boolean = false,
+        val showCancelRequestDialog: Boolean = false,
+        val cancelRequestClassDialogLoading: Boolean = false,
     )
 
     sealed interface UiState {
@@ -40,6 +42,10 @@ interface SearchContract {
         data object OnRequestJoinClass : Event
 
         data object OnDismissJoinClass : Event
+
+        data object OnCancelRequestClass : Event
+
+        data object OnDismissCancelRequestClass : Event
     }
 
     sealed interface Effect {

@@ -117,12 +117,30 @@ private fun SearchScreen(
     modifier: Modifier = Modifier,
 ) {
     if (state.showJoinRequestDialog) {
-        JoinRequestClassDialog(
-            loading = state.joinRequestClassDialogLoading,
-            className = state.selectedAvailableClass?.name.orEmpty(),
-            onRequest = { event(Event.OnRequestJoinClass) },
-            onDismiss = { event(Event.OnDismissJoinClass) },
-        )
+        state.selectedAvailableClass?.let {
+            ActionDialog(
+                title = stringResource(id = R.string.join_request_dialog_title),
+                text = stringResource(id = R.string.join_request_dialog_text, it.name),
+                confirmText = stringResource(id = R.string.join_request_dialog_confirm_button_text),
+                loading = state.joinRequestClassDialogLoading,
+                onConfirm = { event(Event.OnRequestJoinClass) },
+                onDismiss = { event(Event.OnDismissJoinClass) },
+            )
+        }
+    }
+
+    if (state.showCancelRequestDialog) {
+        state.selectedAvailableClass?.let {
+            ActionDialog(
+                title = stringResource(id = R.string.cancel_request_dialog_title),
+                text = stringResource(id = R.string.cancel_request_dialog_text, it.name),
+                confirmText = stringResource(id = R.string.cancel_request_dialog_confirm_button_text),
+                dismissText = stringResource(id = R.string.cancel_request_dialog_dismiss_button_text),
+                loading = state.cancelRequestClassDialogLoading,
+                onConfirm = { event(Event.OnCancelRequestClass) },
+                onDismiss = { event(Event.OnDismissCancelRequestClass) },
+            )
+        }
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -285,9 +303,7 @@ private fun SearchedClassCard(
 ) {
     val isRequested = availableClass.requestStatus == AvailableClassModel.RequestStatus.PENDING
     BaseCard(
-        modifier = modifier.clickable(
-            enabled = !isRequested
-        ) {
+        modifier = modifier.clickable {
             onClassClick(availableClass)
         }
     ) {
@@ -382,25 +398,24 @@ private fun SearchedClassCard(
 }
 
 @Composable
-private fun JoinRequestClassDialog(
+private fun ActionDialog(
+    title: String,
+    text: String,
+    confirmText: String,
     loading: Boolean,
-    className: String,
-    onRequest: () -> Unit,
+    onConfirm: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    dismissText: String? = null,
 ) {
     if (!loading) {
         BaseAlertDialog(
-            title = stringResource(id = R.string.join_request_dialog_title),
-            dialogText = stringResource(
-                R.string.join_request_dialog_text,
-                className
-            ),
-            onConfirm = onRequest,
+            title = title,
+            dialogText = text,
+            onConfirm = onConfirm,
             onDismiss = onDismiss,
-            confirmText = stringResource(
-                id = R.string.join_request_dialog_confirm_button_text
-            ),
+            confirmText = confirmText,
+            dismissText = dismissText,
             modifier = modifier,
         )
     } else {

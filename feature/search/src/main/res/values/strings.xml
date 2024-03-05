@@ -6,6 +6,10 @@
     <string name="join_request_dialog_title">Join request</string>
     <string name="join_request_dialog_text">Request to join %1$s class?</string>
     <string name="join_request_dialog_confirm_button_text">Request</string>
+    <string name="cancel_request_dialog_title">Cancel request</string>
+    <string name="cancel_request_dialog_text">Cancel request to join %1$s class?</string>
+    <string name="cancel_request_dialog_confirm_button_text">Yes, Cancel</string>
+    <string name="cancel_request_dialog_dismiss_button_text">Dismiss</string>
     <string name="pending_request_icon_description">Pending class request</string>
     <string name="empty_classes_text">Currently there are no available classes yet</string>
     <string name="success_request_join_class">Successfully requested to join %1$s class</string>
