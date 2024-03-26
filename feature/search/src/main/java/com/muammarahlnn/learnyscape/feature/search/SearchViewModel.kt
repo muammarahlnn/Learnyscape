@@ -19,6 +19,7 @@ import com.muammarahlnn.learnyscape.core.domain.pendingrequest.CancelStudentRequ
 import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.feature.search.SearchContract.Effect
 import com.muammarahlnn.learnyscape.feature.search.SearchContract.Event
+import com.muammarahlnn.learnyscape.feature.search.SearchContract.SearchUiState
 import com.muammarahlnn.learnyscape.feature.search.SearchContract.State
 import com.muammarahlnn.learnyscape.feature.search.SearchContract.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,8 +54,9 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun fetchAvailableClasses() {
+        val fetchAllClassesQuery = ""
         viewModelScope.launch {
-            getAvailableClassesUseCase().asResult().collect { result ->
+            getAvailableClassesUseCase(searchQuery = fetchAllClassesQuery).asResult().collect { result ->
                 result.onLoading {
                     updateState {
                         it.copy(
@@ -63,13 +65,16 @@ class SearchViewModel @Inject constructor(
                     }
                 }.onSuccess { availableClasses ->
                     updateState {
-                        it.copy(
-                            uiState = if (availableClasses.isNotEmpty()) {
-                                UiState.Success(availableClasses)
-                            } else {
-                                UiState.SuccessEmpty
-                            }
-                        )
+                        if (availableClasses.isNotEmpty()) {
+                            it.copy(
+                                uiState = UiState.Success,
+                                searchUiState = SearchUiState.Success(availableClasses)
+                            )
+                        } else {
+                            it.copy(
+                                uiState = UiState.SuccessEmpty
+                            )
+                        }
                     }
                 }.onNoInternet { message ->
                     updateState {
@@ -99,6 +104,48 @@ class SearchViewModel @Inject constructor(
     private fun onSearchQueryChanged(query: String) {
         updateState {
             it.copy(searchQuery = query)
+        }
+
+        searchAvailableClasses(query)
+    }
+
+    private fun searchAvailableClasses(query: String) {
+
+        fun onErrorSearchAvailableClass(message: String) {
+            updateState {
+                it.copy(
+                    searchUiState = SearchUiState.Error(message)
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            getAvailableClassesUseCase(searchQuery = query).asResult().collect { result ->
+                result.onLoading {
+                    updateState {
+                        it.copy(
+                            searchUiState = SearchUiState.Loading
+                        )
+                    }
+                }.onSuccess { availableClasses ->
+                    updateState {
+                        it.copy(
+                            searchUiState = if (availableClasses.isNotEmpty()) {
+                                SearchUiState.Success(availableClasses)
+                            } else {
+                                SearchUiState.SuccessEmpty
+                            }
+                        )
+                    }
+                }.onNoInternet { message ->
+                    onErrorSearchAvailableClass(message)
+                }.onError { _, message ->
+                    onErrorSearchAvailableClass(message)
+                }.onException { exception, message ->
+                    Log.e(TAG, exception?.message.toString())
+                    onErrorSearchAvailableClass(message)
+                }
+            }
         }
     }
 

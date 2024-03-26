@@ -17,8 +17,8 @@ class AvailableClassRepositoryImpl @Inject constructor(
     private val availableClassNetworkDataSource: AvailableClassNetworkDataSource,
 ) : AvailableClassRepository {
 
-    override fun getAvailableClasses(): Flow<List<AvailableClassModel>> =
-        availableClassNetworkDataSource.getAvailableClasses().map { availableClassResponses ->
+    override fun getAvailableClasses(searchQuery: String): Flow<List<AvailableClassModel>> =
+        availableClassNetworkDataSource.getAvailableClasses(searchQuery).map { availableClassResponses ->
             availableClassResponses.toAvailableClassModels()
         }
 

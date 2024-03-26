@@ -10,6 +10,7 @@ interface SearchContract {
 
     data class State(
         val uiState: UiState = UiState.Loading,
+        val searchUiState: SearchUiState = SearchUiState.Success(emptyList()),
         val searchQuery: String = "",
         val selectedAvailableClass: AvailableClassModel? = null,
         val showJoinRequestDialog: Boolean = false,
@@ -22,13 +23,24 @@ interface SearchContract {
 
         data object Loading : UiState
 
-        data class Success(val availableClasses: List<AvailableClassModel>) : UiState
+        data object Success : UiState
 
         data object SuccessEmpty : UiState
 
         data class NoInternet(val message: String) : UiState
 
         data class Error(val message: String) : UiState
+    }
+
+    sealed interface SearchUiState {
+
+        data object Loading : SearchUiState
+
+        data class Success(val availableClasses: List<AvailableClassModel>) : SearchUiState
+
+        data object SuccessEmpty : SearchUiState
+
+        data class Error(val message: String) : SearchUiState
     }
 
     sealed interface Event {

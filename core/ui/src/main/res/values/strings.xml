@@ -15,4 +15,5 @@
     <string name="ok">OK</string>
     <string name="camera">Camera</string>
     <string name="upload_file">Camera</string>
+    <string name="search_not_found_desc">Sorry, the \"%1$s\" class you looking for is not found</string>
 </resources>

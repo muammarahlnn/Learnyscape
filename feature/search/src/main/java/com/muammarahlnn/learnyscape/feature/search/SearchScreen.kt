@@ -51,9 +51,11 @@ import com.muammarahlnn.learnyscape.core.model.data.AvailableClassModel
 import com.muammarahlnn.learnyscape.core.model.data.DayModel
 import com.muammarahlnn.learnyscape.core.ui.ErrorScreen
 import com.muammarahlnn.learnyscape.core.ui.LoadingDialog
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.NoDataScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.SearchNotFoundScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.RefreshState
@@ -165,7 +167,7 @@ private fun SearchScreen(
 
                 is UiState.Success -> {
                     SearchContent(
-                        availableClasses = state.uiState.availableClasses,
+                        searchUiState = state.searchUiState,
                         searchQuery = state.searchQuery,
                         onSearchQueryChanged = { event(Event.OnSearchQueryChanged(it)) },
                         onClassItemClick = { event(Event.OnAvailableClassClick(it)) },
@@ -252,7 +254,7 @@ private fun SearchContentLoading(
 
 @Composable
 private fun SearchContent(
-    availableClasses: List<AvailableClassModel>,
+    searchUiState: SearchContract.SearchUiState,
     searchQuery: String,
     onSearchQueryChanged: (String) -> Unit,
     onClassItemClick: (AvailableClassModel) -> Unit,
@@ -275,21 +277,43 @@ private fun SearchContent(
             )
         )
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.weight(1f)
-        ) {
-            items(
-                items = availableClasses,
-                key = { it.id },
-            ) { availableClass ->
-                SearchedClassCard(
-                    onClassClick = onClassItemClick,
-                    availableClass = availableClass,
-                )
+        val contentModifier = Modifier
+            .fillMaxWidth()
+            .weight(1f)
+        when (searchUiState) {
+            SearchContract.SearchUiState.Loading -> LoadingScreen(
+                modifier = contentModifier
+            )
+
+            is SearchContract.SearchUiState.Error -> ErrorScreen(
+                text = searchUiState.message,
+                onRefresh = {
+                    onSearchQueryChanged(searchQuery)
+                },
+                modifier = contentModifier,
+            )
+
+            SearchContract.SearchUiState.SuccessEmpty -> SearchNotFoundScreen(
+                searchedClass = searchQuery,
+                modifier = contentModifier,
+            )
+
+            is SearchContract.SearchUiState.Success -> LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = contentModifier,
+            ) {
+                items(
+                    items = searchUiState.availableClasses,
+                    key = { it.id },
+                ) { availableClass ->
+                    SearchedClassCard(
+                        onClassClick = onClassItemClick,
+                        availableClass = availableClass,
+                    )
+                }
             }
         }
     }

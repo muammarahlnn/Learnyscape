@@ -39,7 +39,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,6 +51,7 @@ import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
 import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.NoInternetScreen
 import com.muammarahlnn.learnyscape.core.ui.PullRefreshScreen
+import com.muammarahlnn.learnyscape.core.ui.SearchNotFoundScreen
 import com.muammarahlnn.learnyscape.core.ui.SearchTextField
 import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.LocalUserModel
@@ -186,7 +186,7 @@ private fun HomeContent(
             LoadingScreen(modifier = contentModifier)
         } else {
             if (classes.isEmpty()) {
-                SearchNotFoundContent(
+                SearchNotFoundScreen(
                     searchedClass = searchQuery,
                     modifier = contentModifier.then(
                         Modifier.fillMaxWidth()
@@ -212,43 +212,6 @@ private fun HomeContent(
                 }
             }
         }
-
-//        LazyColumn(
-//            contentPadding = PaddingValues(16.dp),
-//            verticalArrangement = Arrangement.spacedBy(12.dp),
-//            modifier = Modifier.weight(1f)
-//        ) {
-//            if (!isSearching) {
-//                if (classes.isNotEmpty()) {
-//                    items(
-//                        items = classes,
-//                        key = {
-//                            it.id
-//                        }
-//                    ) { classInfo ->
-//                        ClassCard(
-//                            classId = classInfo.id,
-//                            className = classInfo.className,
-//                            lecturerName = classInfo.lecturerNames.first(),
-//                            onClassClick = onClassClick,
-//                        )
-//                    }
-//                } else {
-//                    item {
-//                        SearchNotFoundContent(
-//                            searchedClass = searchQuery,
-//                            modifier = Modifier.fillMaxSize()
-//                        )
-//                    }
-//                }
-//            } else {
-//                item {
-//                    LoadingScreen(
-//                        modifier = Modifier.fillMaxSize()
-//                    )
-//                }
-//            }
-//        }
     }
 }
 
@@ -361,36 +324,6 @@ private fun EmptyClassesContent(
 
         Text(
             text = stringResource(id = R.string.empty_class_illustration_desc),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-@Composable
-private fun SearchNotFoundContent(
-    searchedClass: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = modifier,
-    ) {
-        Image(
-            painter = painterResource(id = designSystemR.drawable.no_data_illustration),
-            contentDescription = null,
-            modifier = Modifier.size(128.dp),
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = stringResource(
-                id = R.string.search_not_found_desc,
-                searchedClass,
-            ),
-            textAlign = TextAlign.Center,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
         )

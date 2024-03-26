@@ -6,6 +6,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.ClassDetailsResp
 import com.muammarahlnn.learnyscape.core.network.model.response.ClassFeedResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 
 /**
@@ -15,7 +16,9 @@ import retrofit2.http.Path
 interface ClassesApi {
 
     @GET("classes")
-    suspend fun getAvailableClasses(): BaseResponse<List<AvailableClassResponse>>
+    suspend fun getAvailableClasses(
+        @Query("search") searchQuery: String,
+    ): BaseResponse<List<AvailableClassResponse>>
 
     @GET("classes/{classId}/histories")
     suspend fun getClassHistories(

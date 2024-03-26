@@ -23,9 +23,10 @@ class AvailableClassNetworkDataSourceImpl @Inject constructor(
     @Named(BEARER_TOKEN_AUTH) private val usersApi: UsersApi,
 ) : AvailableClassNetworkDataSource {
 
-    override fun getAvailableClasses(): Flow<List<AvailableClassResponse>> = flow {
-        emit(classesApi.getAvailableClasses().data)
-    }
+    override fun getAvailableClasses(searchQuery: String): Flow<List<AvailableClassResponse>> =
+        flow {
+            emit(classesApi.getAvailableClasses(searchQuery).data)
+        }
 
     override fun requestJoinClass(classId: String): Flow<String> = flow {
         emit(

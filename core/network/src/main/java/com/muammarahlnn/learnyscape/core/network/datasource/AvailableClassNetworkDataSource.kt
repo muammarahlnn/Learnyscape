@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
  */
 interface AvailableClassNetworkDataSource {
 
-    fun getAvailableClasses(): Flow<List<AvailableClassResponse>>
+    fun getAvailableClasses(searchQuery: String): Flow<List<AvailableClassResponse>>
 
     fun requestJoinClass(classId: String): Flow<String>
 }
