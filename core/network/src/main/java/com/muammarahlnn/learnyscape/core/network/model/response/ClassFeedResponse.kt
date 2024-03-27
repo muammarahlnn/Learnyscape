@@ -14,15 +14,14 @@ data class ClassFeedResponse(
     val description: String? = null,
     val createdAt: String,
     val updatedAt: String,
-    val type: FeedType,
+    val type: ClassFeedTypeResponse,
     val uri: String,
     @SerialName("thumbnail") val profilePicUrl: String? = null,
-) {
+)
 
-    enum class FeedType {
-        ANNOUNCEMENT,
-        REFERENCE,
-        TASK,
-        QUIZ,
-    }
+enum class ClassFeedTypeResponse {
+    ANNOUNCEMENT,
+    REFERENCE,
+    TASK,
+    QUIZ,
 }

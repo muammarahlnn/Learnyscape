@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.muammarahlnn.learnyscape.feature.camera.navigation.cameraScreen
 import com.muammarahlnn.learnyscape.feature.camera.navigation.navigateToCamera
@@ -85,11 +84,11 @@ fun LearnyscapeNavHost(
             navigateBack = navController::popBackStack,
             navigateToJoinRequests = navController::navigateToJoinRequest,
             navigateToResourceCreate = navController::navigateToResourceCreate,
-            navigateToResourceDetails = navigateToResourceDetails(navController),
+            navigateToResourceDetails = navController::navigateToResourceDetails,
         )
         notificationsScreen(
-            onNotificationClick = {}, // TODO: implement it later
-            onBackClick = navController::popBackStack
+            navigateBack = navController::popBackStack,
+            navigateToResourceDetails = navController::navigateToResourceDetails,
         )
         resourceDetailScreen(
             navigateBack = navController::popBackStack,
@@ -120,13 +119,4 @@ fun LearnyscapeNavHost(
             navigateBack = navController::popBackStack
         )
     }
-}
-
-private fun navigateToResourceDetails(
-    navController: NavHostController
-): (String, Int) -> Unit = { resourceId, resourceTypeOrdinal ->
-    navController.navigateToResourceDetails(
-        resourceId = resourceId,
-        resourceTypeOrdinal = resourceTypeOrdinal,
-    )
 }

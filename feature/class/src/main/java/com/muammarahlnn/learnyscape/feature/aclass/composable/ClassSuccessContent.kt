@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.muammarahlnn.learnyscape.core.model.data.ClassDetailsModel
 import com.muammarahlnn.learnyscape.core.model.data.ClassFeedModel
+import com.muammarahlnn.learnyscape.core.model.data.ClassFeedTypeModel
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
 import com.muammarahlnn.learnyscape.core.ui.PhotoProfileImageUiState
 import com.muammarahlnn.learnyscape.core.ui.PostCard
@@ -118,7 +119,7 @@ fun ClassSuccessContent(
                     items = classFeeds,
                     key = { _, feed -> feed.id },
                 ) { index, feed ->
-                    val authorProfilePicUiState = if (feed.type == ClassFeedModel.FeedType.ANNOUNCEMENT) {
+                    val authorProfilePicUiState = if (feed.type == ClassFeedTypeModel.ANNOUNCEMENT) {
                         announcementAuthorProfilePicUiStateMap[index]
                             ?: PhotoProfileImageUiState.Success(null)
                     } else {
@@ -127,10 +128,10 @@ fun ClassSuccessContent(
 
                     PostCard(
                         classResourceType = when (feed.type) {
-                            ClassFeedModel.FeedType.ANNOUNCEMENT -> ClassResourceType.ANNOUNCEMENT
-                            ClassFeedModel.FeedType.MODULE -> ClassResourceType.MODULE
-                            ClassFeedModel.FeedType.ASSIGNMENT -> ClassResourceType.ASSIGNMENT
-                            ClassFeedModel.FeedType.QUIZ -> ClassResourceType.QUIZ
+                            ClassFeedTypeModel.ANNOUNCEMENT -> ClassResourceType.ANNOUNCEMENT
+                            ClassFeedTypeModel.MODULE -> ClassResourceType.MODULE
+                            ClassFeedTypeModel.ASSIGNMENT -> ClassResourceType.ASSIGNMENT
+                            ClassFeedTypeModel.QUIZ -> ClassResourceType.QUIZ
                         },
                         profilePicUiState = authorProfilePicUiState,
                         title = feed.name,

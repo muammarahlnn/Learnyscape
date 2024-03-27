@@ -2,15 +2,13 @@ package com.muammarahlnn.learnyscape.core.model.data
 
 /**
  * @Author Muammar Ahlan Abimanyu
- * @File ClassFeedModel, 27/01/2024 12.24
+ * @File NotificationModel, 26/03/2024 23.25
  */
-data class ClassFeedModel(
+data class NotificationModel(
     val id: String,
-    val name: String,
     val createdAt: String,
-    val updatedAt: String,
     val type: ClassFeedTypeModel,
     val uri: String,
+    val title: String,
     val description: String,
-    val profilePicUrl: String,
 )

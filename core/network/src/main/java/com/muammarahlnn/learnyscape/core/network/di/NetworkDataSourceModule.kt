@@ -7,6 +7,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.ClassMembersNetworkD
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.JoinRequestNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.LoginNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.NotificationsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.PendingRequestNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ProfileNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.QuizSessionNetworkDataSource
@@ -22,6 +23,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.impl.ClassMembersNet
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.JoinRequestNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.LoginNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.NotificationsNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.PendingRequestNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ProfileNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.QuizSessionNetworkDataSourceImpl
@@ -119,4 +121,9 @@ interface NetworkDataSourceModule {
     fun bindsPendingRequestNetworkDataSource(
         pendingRequestNetworkDataSource: PendingRequestNetworkDataSourceImpl
     ): PendingRequestNetworkDataSource
+
+    @Binds
+    fun bindsNotificationsNetworkDataSource(
+        notificationsNetworkDataSource: NotificationsNetworkDataSourceImpl
+    ): NotificationsNetworkDataSource
 }
