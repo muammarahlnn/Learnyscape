@@ -98,6 +98,9 @@ class ResourceDetailsRepositoryImpl @Inject constructor(
     override fun isQuizTaken(quizId: String): Flow<Boolean> =
         resourceDetailsNetworkDataSource.isQuizTaken(quizId)
 
+    override fun deleteQuiz(quizId: String): Flow<String> =
+        resourceDetailsNetworkDataSource.deleteQuiz(quizId)
+
     private fun getAttachments(attachmentUrls: List<String>): Flow<List<File>> =
         attachmentNetworkDataSource.getAttachments(attachmentUrls).map { it.filterNotNull() }
 }

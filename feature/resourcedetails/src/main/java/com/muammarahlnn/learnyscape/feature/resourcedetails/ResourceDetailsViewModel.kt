@@ -18,6 +18,7 @@ import com.muammarahlnn.learnyscape.core.common.result.onSuccess
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteQuizUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
@@ -51,6 +52,7 @@ class ResourceDetailsViewModel @Inject constructor(
     private val deleteAssignmentUseCase: DeleteAssignmentUseCase,
     private val getQuizDetailsUseCase: GetQuizDetailsUseCase,
     private val isQuizTakenUseCase: IsQuizTakenUseCase,
+    private val deleteQuizUseCase: DeleteQuizUseCase,
 ) : ViewModel(),
     ContractProvider<State, Event, Effect> by contract(State()),
     RefreshProvider by refresh()
@@ -248,7 +250,7 @@ class ResourceDetailsViewModel @Inject constructor(
             ClassResourceType.ANNOUNCEMENT -> deleteAnnouncement()
             ClassResourceType.MODULE -> deleteModule()
             ClassResourceType.ASSIGNMENT -> deleteAssignment()
-            ClassResourceType.QUIZ -> TODO()
+            ClassResourceType.QUIZ -> deleteQuiz()
         }
     }
 
@@ -271,6 +273,14 @@ class ResourceDetailsViewModel @Inject constructor(
     private fun deleteAssignment() {
         viewModelScope.launch {
             deleteAssignmentUseCase(state.value.resourceId).asResult().collect { result ->
+                handleDeleteResourceResult(result)
+            }
+        }
+    }
+
+    private fun deleteQuiz() {
+        viewModelScope.launch {
+            deleteQuizUseCase(state.value.resourceId).asResult().collect { result ->
                 handleDeleteResourceResult(result)
             }
         }

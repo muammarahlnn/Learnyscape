@@ -51,4 +51,6 @@ interface ResourceDetailsRepository {
     ): Flow<String>
 
     fun isQuizTaken(quizId: String): Flow<Boolean>
+
+    fun deleteQuiz(quizId: String): Flow<String>
 }

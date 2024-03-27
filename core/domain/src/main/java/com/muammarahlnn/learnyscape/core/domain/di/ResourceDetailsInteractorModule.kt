@@ -4,6 +4,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.ResourceDetailsReposito
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAnnouncementUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteModuleUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.DeleteQuizUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
@@ -139,5 +140,13 @@ object ResourceDetailsInteractorModule {
         resourceDetailsRepository: ResourceDetailsRepository
     ): IsQuizTakenUseCase = IsQuizTakenUseCase(
         resourceDetailsRepository::isQuizTaken
+    )
+
+    @Provides
+    @ViewModelScoped
+    fun providesDeleteQuizUseCase(
+        resourceDetailsRepository: ResourceDetailsRepository
+    ): DeleteQuizUseCase = DeleteQuizUseCase(
+        resourceDetailsRepository::deleteQuiz
     )
 }

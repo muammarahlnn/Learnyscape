@@ -106,4 +106,8 @@ class ResourceDetailsNetworkDataSourceImpl @Inject constructor(
             quizzesApi.getQuizSolutions(quizId).data.problems[0].solution != null
         )
     }
+
+    override fun deleteQuiz(quizId: String): Flow<String> = flow {
+        emit(quizzesApi.deleteQuiz(quizId).data)
+    }
 }

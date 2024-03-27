@@ -12,6 +12,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.QuizOverviewResp
 import com.muammarahlnn.learnyscape.core.network.model.response.QuizSubmissionResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.StudentQuizAnswerResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -70,4 +71,9 @@ interface QuizzesApi {
         @Path("quizId") quizId: String,
         @Path("studentId") studentId: String,
     ): BaseResponse<List<StudentQuizAnswerResponse>>
+
+    @DELETE("quizzes/{quizId}")
+    suspend fun deleteQuiz(
+        @Path("quizId") quizId: String,
+    ): BaseResponse<String>
 }
