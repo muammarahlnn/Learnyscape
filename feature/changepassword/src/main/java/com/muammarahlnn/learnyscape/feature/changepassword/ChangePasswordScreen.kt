@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.changepassword
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -7,12 +8,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -37,6 +41,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseCard
 import com.muammarahlnn.learnyscape.core.designsystem.component.BaseEditableBasicTextField
 import com.muammarahlnn.learnyscape.core.designsystem.component.LearnyscapeCenterTopAppBar
+import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
+import com.muammarahlnn.learnyscape.core.ui.util.use
+import com.muammarahlnn.learnyscape.feature.changepassword.ChangePasswordContract.Event
+import com.muammarahlnn.learnyscape.feature.changepassword.ChangePasswordContract.State
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 
@@ -47,41 +55,48 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
 
 @Composable
 internal fun ChangePasswordRoute(
-    onBackClick: () -> Unit,
+    controller: ChangePasswordController,
     modifier: Modifier = Modifier,
     viewModel: ChangePasswordViewModel = hiltViewModel(),
 ) {
-    ChangePasswordScreen(
-        oldPassword = viewModel.oldPassword,
-        newPassword = viewModel.newPassword,
-        confirmNewPassword = viewModel.confirmNewPassword,
-        onBackClick = onBackClick,
-        onOldPasswordChange = viewModel::setOldPasswordValue,
-        onNewPasswordChange = viewModel::setNewPasswordValue,
-        onConfirmNewPasswordChange = viewModel::setConfirmNewPasswordValue,
-        onSaveButtonClick = {
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            ChangePasswordNavigation.NavigateBack -> controller.navigateBack()
+        }
+    }
 
-        },
+    val context = LocalContext.current
+    CollectEffect(viewModel.effect) { effect ->
+        when (effect) {
+            is ChangePasswordContract.Effect.ShowToast ->
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+
+            ChangePasswordContract.Effect.OnSuccessChangePassword ->
+                controller.navigateBack()
+        }
+    }
+
+    val (state, event) = use(contract = viewModel)
+
+    ChangePasswordScreen(
+        state = state,
+        event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
 
 @Composable
 private fun ChangePasswordScreen(
-    oldPassword: String,
-    newPassword: String,
-    confirmNewPassword: String,
-    onBackClick: () -> Unit,
-    onOldPasswordChange: (String) -> Unit,
-    onNewPasswordChange: (String) -> Unit,
-    onConfirmNewPasswordChange: (String) -> Unit,
-    onSaveButtonClick: () -> Unit,
+    state: State,
+    event: (Event) -> Unit,
+    navigate: (ChangePasswordNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
             ChangePasswordTopAppBar(
-                onNavigationClick = onBackClick
+                onNavigationClick = { navigate(ChangePasswordNavigation.NavigateBack) }
             )
         },
         modifier = modifier.fillMaxSize(),
@@ -107,37 +122,45 @@ private fun ChangePasswordScreen(
 
                     ChangePasswordTextField(
                         title = stringResource(id = R.string.old_password),
-                        value = oldPassword,
+                        value = state.oldPassword,
                         imeAction = ImeAction.Next,
-                        onValueChange = onOldPasswordChange
+                        onValueChange = { event(Event.OnOldPasswordChange(it)) },
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     ChangePasswordTextField(
                         title = stringResource(id = R.string.new_password),
-                        value = newPassword,
+                        value = state.newPassword,
                         imeAction = ImeAction.Next,
-                        onValueChange = onNewPasswordChange
+                        onValueChange = { event(Event.OnNewPasswordChange(it)) },
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     ChangePasswordTextField(
                         title = stringResource(id = R.string.confirm_new_password),
-                        value = confirmNewPassword,
+                        value = state.confirmNewPassword,
                         imeAction = ImeAction.Done,
-                        onValueChange = onConfirmNewPasswordChange
+                        onValueChange = { event(Event.OnConfirmNewPasswordChange(it)) },
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
-                        onClick = onSaveButtonClick,
+                        onClick = { event(Event.OnChangePasswordButtonClick) },
                         shape = RoundedCornerShape(8.dp),
+                        enabled = !state.isLoading,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = stringResource(id = R.string.save),
-                            style = MaterialTheme.typography.titleSmall
-                        )
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(24.dp),
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(id = R.string.save),
+                                style = MaterialTheme.typography.titleSmall,
+                            )
+                        }
                     }
                 }
             }

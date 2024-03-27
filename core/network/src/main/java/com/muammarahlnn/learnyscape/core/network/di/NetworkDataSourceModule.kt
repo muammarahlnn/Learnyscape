@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.di
 
 import com.muammarahlnn.learnyscape.core.network.datasource.AttachmentNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.AvailableClassNetworkDataSource
+import com.muammarahlnn.learnyscape.core.network.datasource.ChangePasswordNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ClassFeedNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.ClassMembersNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.HomeNetworkDataSource
@@ -18,6 +19,7 @@ import com.muammarahlnn.learnyscape.core.network.datasource.SchedulesNetworkData
 import com.muammarahlnn.learnyscape.core.network.datasource.SubmissionDetailsNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.AttachmentNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.AvailableClassNetworkDataSourceImpl
+import com.muammarahlnn.learnyscape.core.network.datasource.impl.ChangePasswordNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ClassFeedNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.ClassMembersNetworkDataSourceImpl
 import com.muammarahlnn.learnyscape.core.network.datasource.impl.HomeNetworkDataSourceImpl
@@ -126,4 +128,9 @@ interface NetworkDataSourceModule {
     fun bindsNotificationsNetworkDataSource(
         notificationsNetworkDataSource: NotificationsNetworkDataSourceImpl
     ): NotificationsNetworkDataSource
+
+    @Binds
+    fun bindsChangePasswordNetworkDataSource(
+        changePasswordNetworkDataSource: ChangePasswordNetworkDataSourceImpl
+    ): ChangePasswordNetworkDataSource
 }

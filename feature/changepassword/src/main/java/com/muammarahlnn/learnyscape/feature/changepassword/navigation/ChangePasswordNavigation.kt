@@ -1,8 +1,10 @@
 package com.muammarahlnn.learnyscape.feature.changepassword.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.muammarahlnn.learnyscape.feature.changepassword.ChangePasswordController
 import com.muammarahlnn.learnyscape.feature.changepassword.ChangePasswordRoute
 
 
@@ -19,11 +21,14 @@ fun NavController.navigateToChangePassword() {
 }
 
 fun NavGraphBuilder.changePasswordScreen(
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
 ) {
     composable(CHANGE_PASSWORD_ROUTE) {
         ChangePasswordRoute(
-            onBackClick = onBackClick,
+            controller = ChangePasswordController(
+                scope = rememberCoroutineScope(),
+                navigateBack = navigateBack,
+            )
         )
     }
 }

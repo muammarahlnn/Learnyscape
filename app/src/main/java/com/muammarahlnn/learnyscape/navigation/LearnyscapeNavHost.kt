@@ -72,9 +72,7 @@ fun LearnyscapeNavHost(
         }
     ) {
         homeNavigator(
-            navigateToNotifications = {
-                navController.navigateToNotifications()
-            },
+            navigateToNotifications = navController::navigateToNotifications,
             navigateToClass = navController::navigateToClassNavigator,
             navigateToCamera = navController::navigateToCamera,
             navigateToPendingRequestClass = navController::navigateToPendingRequest,
@@ -106,7 +104,7 @@ fun LearnyscapeNavHost(
             navigateBack = navController::popBackStack
         )
         changePasswordScreen(
-            onBackClick = navController::popBackStack
+            navigateBack = navController::popBackStack
         )
         joinRequestScreen(
             navigateBack = navController::popBackStack,

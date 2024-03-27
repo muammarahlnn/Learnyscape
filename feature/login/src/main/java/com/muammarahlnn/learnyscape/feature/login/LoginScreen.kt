@@ -3,7 +3,6 @@ package com.muammarahlnn.learnyscape.feature.login
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -83,7 +82,6 @@ fun LoginRoute(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LoginScreen(
     state: LoginContract.State,
@@ -346,7 +344,6 @@ private fun LoginButton(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // TODO : fix loading state after logged out
     Button(
         onClick = onButtonClick,
         shape = RoundedCornerShape(8.dp),

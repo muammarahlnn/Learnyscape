@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.data.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.AvailableClassRepository
 import com.muammarahlnn.learnyscape.core.data.repository.CapturedPhotoRepository
+import com.muammarahlnn.learnyscape.core.data.repository.ChangePasswordRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ClassFeedRepository
 import com.muammarahlnn.learnyscape.core.data.repository.ClassMembersRepository
 import com.muammarahlnn.learnyscape.core.data.repository.FileRepository
@@ -19,6 +20,7 @@ import com.muammarahlnn.learnyscape.core.data.repository.SchedulesRepository
 import com.muammarahlnn.learnyscape.core.data.repository.SubmissionDetailsRepository
 import com.muammarahlnn.learnyscape.core.data.repository.impl.AvailableClassRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.CapturedPhotoRepositoryImpl
+import com.muammarahlnn.learnyscape.core.data.repository.impl.ChangePasswordRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ClassFeedRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.ClassMembersRepositoryImpl
 import com.muammarahlnn.learnyscape.core.data.repository.impl.FileRepositoryImpl
@@ -135,4 +137,9 @@ interface DataModule {
     fun bindsNotificationsRepository(
         notificationsRepository: NotificationsRepositoryImpl
     ): NotificationsRepository
+
+    @Binds
+    fun bindsChangePasswordRepository(
+        changePasswordRepository: ChangePasswordRepositoryImpl
+    ): ChangePasswordRepository
 }

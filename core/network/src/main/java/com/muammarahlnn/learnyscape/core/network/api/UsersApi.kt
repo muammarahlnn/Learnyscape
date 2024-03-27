@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.core.network.api
 
+import com.muammarahlnn.learnyscape.core.network.model.request.ChangePasswordRequest
 import com.muammarahlnn.learnyscape.core.network.model.request.RequestJoinClassRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
 import com.muammarahlnn.learnyscape.core.network.model.response.ClassMembersResponse
@@ -81,4 +82,9 @@ interface UsersApi {
     suspend fun getProfilePicById(
         @Path("userId") userId: String,
     ): Response<ResponseBody>
+
+    @PUT("users")
+    suspend fun putChangePassword(
+        @Body changePasswordRequest: ChangePasswordRequest,
+    ): BaseResponse<String>
 }
