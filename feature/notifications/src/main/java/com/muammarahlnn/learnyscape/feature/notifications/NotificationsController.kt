@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 class NotificationsController(
     scope: CoroutineScope,
     val navigateBack: () -> Unit,
-    val navigateToResourceDetails: (String, Int) -> Unit,
+    val navigateToResourceDetails: (String, String, Int) -> Unit,
 ) : NavigationProvider<NotificationsNavigation> by navigation(scope)
 
 sealed interface NotificationsNavigation {
@@ -19,7 +19,13 @@ sealed interface NotificationsNavigation {
     data object NavigateBack : NotificationsNavigation
 
     data class NavigateToResourceDetails(
+        val classId: String = EMPTY_CLASS_ID,
         val resourceId: String,
         val resourceTypeOrdinal: Int,
     ) : NotificationsNavigation
 }
+
+// notifications screen is for student only, so we just need
+// to pass empty class id because class id is only needed for lecturer
+// to edit the resource
+private const val EMPTY_CLASS_ID = ""

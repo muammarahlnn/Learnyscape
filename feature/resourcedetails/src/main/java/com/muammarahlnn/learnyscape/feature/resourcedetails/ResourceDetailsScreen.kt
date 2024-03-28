@@ -65,6 +65,13 @@ internal fun ResourceDetailsRoute(
                     navigation.studentId,
                     navigation.studentName,
                 )
+
+            is ResourceDetailsNavigation.NavigateToResourceCreate ->
+                controller.navigateToResourceCreate(
+                    navigation.classId,
+                    navigation.resourceTypeOrdinal,
+                    navigation.resourceId,
+                )
         }
     }
 
@@ -146,6 +153,13 @@ private fun ResourceDetailsScreen(
         ResourceDetailsTopAppBar(
             titleRes = state.resourceType.nameRes,
             onBackClick = { navigate(ResourceDetailsNavigation.NavigateBack) },
+            onEditClick = {
+                navigate(ResourceDetailsNavigation.NavigateToResourceCreate(
+                    classId = state.classId,
+                    resourceTypeOrdinal = state.resourceType.ordinal,
+                    resourceId = state.resourceId,
+                ))
+            },
             onDeleteClick = { event(ResourceDetailsContract.Event.OnDeleteClick) }
         )
     }

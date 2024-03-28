@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 class AssignmentController(
     scope: CoroutineScope,
     val navigateBack: () -> Unit,
-    val navigateToResourceDetails: (String, Int) -> Unit,
+    val navigateToResourceDetails: (String, String, Int) -> Unit,
     val navigateToResourceCreate: (String, Int) -> Unit,
 ) : NavigationProvider<AssignmentNavigation> by navigation(scope)
 
@@ -20,6 +20,7 @@ sealed interface AssignmentNavigation {
     data object NavigateBack : AssignmentNavigation
 
     data class NavigateToResourceDetails(
+        val classId: String,
         val resourceId: String,
         val resourceTypeOrdinal: Int,
     ) : AssignmentNavigation

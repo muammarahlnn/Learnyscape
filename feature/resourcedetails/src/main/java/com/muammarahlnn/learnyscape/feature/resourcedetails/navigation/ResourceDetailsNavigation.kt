@@ -17,12 +17,14 @@ import com.muammarahlnn.learnyscape.feature.resourcedetails.ResourceDetailsRoute
  */
 
 private const val RESOURCE_DETAILS_ROUTE = "resource_details_route"
+private const val CLASS_ID_ARG = "class_id"
 private const val RESOURCE_ID_ARG = "resource_id"
 private const val RESOURCE_TYPE_ORDINAL_ARG = "resource_type_ordinal"
 private const val RESOURCE_DETAILS_ROUTE_WITH_ARGS =
-    "$RESOURCE_DETAILS_ROUTE/{$RESOURCE_ID_ARG}/{$RESOURCE_TYPE_ORDINAL_ARG}"
+    "$RESOURCE_DETAILS_ROUTE?$CLASS_ID_ARG={$CLASS_ID_ARG}/{$RESOURCE_ID_ARG}/{$RESOURCE_TYPE_ORDINAL_ARG}"
 
 internal class ResourceDetailsArgs(
+    val classId: String,
     val resourceId: String,
     val resourceTypeOrdinal: Int,
 ) {
@@ -30,16 +32,18 @@ internal class ResourceDetailsArgs(
     constructor(
         savedStateHandle: SavedStateHandle
     ) : this(
+        classId = checkNotNull(savedStateHandle[CLASS_ID_ARG]),
         resourceId = checkNotNull(savedStateHandle[RESOURCE_ID_ARG]),
         resourceTypeOrdinal = checkNotNull(savedStateHandle[RESOURCE_TYPE_ORDINAL_ARG]),
     )
 }
 
 fun NavController.navigateToResourceDetails(
+    classId: String?,
     resourceId: String,
     resourceTypeOrdinal: Int,
 ) {
-    this.navigate("$RESOURCE_DETAILS_ROUTE/$resourceId/$resourceTypeOrdinal") {
+    this.navigate("$RESOURCE_DETAILS_ROUTE?$CLASS_ID_ARG=$classId/$resourceId/$resourceTypeOrdinal") {
         launchSingleTop = true
     }
 }
@@ -49,10 +53,15 @@ fun NavGraphBuilder.resourceDetailScreen(
     navigateToCamera: () -> Unit,
     navigateToQuizSession: (String, Int, String, Int) -> Unit,
     navigateToSubmissionDetails: (Int, String, String, String) -> Unit,
+    navigateToResourceCreate: (String, Int, String) -> Unit,
 ) {
     composable(
         route = RESOURCE_DETAILS_ROUTE_WITH_ARGS,
         arguments = listOf(
+            navArgument(CLASS_ID_ARG) {
+                type = NavType.StringType
+                defaultValue = ""
+            },
             navArgument(RESOURCE_ID_ARG) {
                 type = NavType.StringType
             },
@@ -68,6 +77,7 @@ fun NavGraphBuilder.resourceDetailScreen(
                 navigateToCamera = navigateToCamera,
                 navigateToQuizSession = navigateToQuizSession,
                 navigateToSubmissionDetails = navigateToSubmissionDetails,
+                navigateToResourceCreate = navigateToResourceCreate,
             ),
         )
     }

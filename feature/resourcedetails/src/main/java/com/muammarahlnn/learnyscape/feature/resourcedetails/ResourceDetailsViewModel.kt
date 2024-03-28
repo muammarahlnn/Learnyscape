@@ -63,6 +63,7 @@ class ResourceDetailsViewModel @Inject constructor(
     init {
         updateState {
             it.copy(
+                classId = resourceDetailsArgs.classId,
                 resourceId = resourceDetailsArgs.resourceId,
                 resourceType = ClassResourceType.getClassResourceType(resourceDetailsArgs.resourceTypeOrdinal)
             )

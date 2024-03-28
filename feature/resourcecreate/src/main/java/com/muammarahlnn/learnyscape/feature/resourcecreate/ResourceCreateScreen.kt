@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
+import com.muammarahlnn.learnyscape.core.ui.LoadingScreen
 import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.openFile
 import com.muammarahlnn.learnyscape.core.ui.util.uriToFile
@@ -75,6 +76,9 @@ internal fun ResourceCreateRoute(
     val (state, event) = use(contract = viewModel)
     LaunchedEffect(Unit) {
         event(ResourceCreateContract.Event.OnGetCapturedPhoto)
+        if (state.isEdit) {
+            event(ResourceCreateContract.Event.FetchResourceDetails)
+        }
     }
 
     val context = LocalContext.current
@@ -261,88 +265,96 @@ private fun ResourceCreateScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                when (state.resourceType) {
-                    ClassResourceType.ANNOUNCEMENT -> AnnouncementResourceContent(
-                        state = state,
-                        onDescriptionChange = {
-                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                        },
-                        onAddAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
-                        },
-                        onAttachmentClick = { attachment ->
-                            event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
-                        },
-                        onMoreVertAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
-                        },
+                if (state.isLoading) {
+                    LoadingScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     )
+                } else {
+                    when (state.resourceType) {
+                        ClassResourceType.ANNOUNCEMENT -> AnnouncementResourceContent(
+                            state = state,
+                            onDescriptionChange = {
+                                event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                            },
+                            onAddAttachmentClick = {
+                                event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
+                            },
+                            onAttachmentClick = { attachment ->
+                                event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
+                            },
+                            onMoreVertAttachmentClick = {
+                                event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                            },
+                        )
 
-                    ClassResourceType.MODULE -> ModuleResourceContent(
-                        state = state,
-                        onTitleChange = {
-                            event(ResourceCreateContract.Event.OnTitleChange(it))
-                        },
-                        onDescriptionChange = {
-                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                        },
-                        onAddAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
-                        },
-                        onAttachmentClick = { attachment ->
-                            event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
-                        },
-                        onMoreVertAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
-                        },
-                    )
+                        ClassResourceType.MODULE -> ModuleResourceContent(
+                            state = state,
+                            onTitleChange = {
+                                event(ResourceCreateContract.Event.OnTitleChange(it))
+                            },
+                            onDescriptionChange = {
+                                event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                            },
+                            onAddAttachmentClick = {
+                                event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
+                            },
+                            onAttachmentClick = { attachment ->
+                                event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
+                            },
+                            onMoreVertAttachmentClick = {
+                                event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                            },
+                        )
 
-                    ClassResourceType.ASSIGNMENT -> AssignmentResourceContent(
-                        state = state,
-                        onTitleChange = {
-                            event(ResourceCreateContract.Event.OnTitleChange(it))
-                        },
-                        onDescriptionChange = {
-                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                        },
-                        onAddAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
-                        },
-                        onAttachmentClick = { attachment ->
-                            event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
-                        },
-                        onMoreVertAttachmentClick = {
-                            event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
-                        },
-                        onDueDateClick = {
-                            event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.DUE_DATE))
-                        }
-                    )
+                        ClassResourceType.ASSIGNMENT -> AssignmentResourceContent(
+                            state = state,
+                            onTitleChange = {
+                                event(ResourceCreateContract.Event.OnTitleChange(it))
+                            },
+                            onDescriptionChange = {
+                                event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                            },
+                            onAddAttachmentClick = {
+                                event(ResourceCreateContract.Event.OnShowAddAttachmentBottomSheet(true))
+                            },
+                            onAttachmentClick = { attachment ->
+                                event(ResourceCreateContract.Event.OnAttachmentClick(attachment))
+                            },
+                            onMoreVertAttachmentClick = {
+                                event(ResourceCreateContract.Event.OnMoreVertAttachmentClick(it))
+                            },
+                            onDueDateClick = {
+                                event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.DUE_DATE))
+                            }
+                        )
 
-                    ClassResourceType.QUIZ -> QuizResourceContent(
-                        state = state,
-                        onTitleChange = {
-                            event(ResourceCreateContract.Event.OnTitleChange(it))
-                        },
-                        onDescriptionChange = {
-                            event(ResourceCreateContract.Event.OnDescriptionChange(it))
-                        },
-                        onQuizTypeClick = {
-                            event(ResourceCreateContract.Event.OnQuizTypeClick)
-                        },
-                        onQuestionsClick = {
-                            event(ResourceCreateContract.Event.OnShowQuestionsScreen)
-                        },
-                        onStartDateClick = {
-                            event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.START_DATE))
-                        },
-                        onEndDateClick = {
-                            event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.END_DATE))
-                        },
-                        onDurationClick = {
-                            event(ResourceCreateContract.Event.OnDurationClick)
-                        }
-                    )
+                        ClassResourceType.QUIZ -> QuizResourceContent(
+                            state = state,
+                            onTitleChange = {
+                                event(ResourceCreateContract.Event.OnTitleChange(it))
+                            },
+                            onDescriptionChange = {
+                                event(ResourceCreateContract.Event.OnDescriptionChange(it))
+                            },
+                            onQuizTypeClick = {
+                                event(ResourceCreateContract.Event.OnQuizTypeClick)
+                            },
+                            onQuestionsClick = {
+                                event(ResourceCreateContract.Event.OnShowQuestionsScreen)
+                            },
+                            onStartDateClick = {
+                                event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.START_DATE))
+                            },
+                            onEndDateClick = {
+                                event(ResourceCreateContract.Event.OnDueDateClick(DueDateType.END_DATE))
+                            },
+                            onDurationClick = {
+                                event(ResourceCreateContract.Event.OnDurationClick)
+                            }
+                        )
+                    }
                 }
             }
         } else {

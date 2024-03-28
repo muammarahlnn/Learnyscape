@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 class QuizController(
     scope: CoroutineScope,
     val navigateBack: () -> Unit,
-    val navigateToResourceDetails: (String, Int) -> Unit,
+    val navigateToResourceDetails: (String, String, Int) -> Unit,
     val navigateToResourceCreate: (String, Int) -> Unit,
 ) : NavigationProvider<QuizNavigation> by navigation(scope)
 
@@ -20,6 +20,7 @@ sealed interface QuizNavigation {
     data object NavigateBack : QuizNavigation
 
     data class NavigateToResourceDetails(
+        val classId: String,
         val resourceId: String,
         val resourceTypeOrdinal: Int,
     ) : QuizNavigation

@@ -22,6 +22,7 @@ import com.muammarahlnn.learnyscape.core.ui.util.LecturerOnlyComposable
 internal fun ResourceDetailsTopAppBar(
     titleRes: Int,
     onBackClick: () -> Unit,
+    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -45,7 +46,7 @@ internal fun ResourceDetailsTopAppBar(
         actionsIcon = {
             LecturerOnlyComposable {
                 Row {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = onEditClick) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_edit),
                             contentDescription = stringResource(id = com.muammarahlnn.learnyscape.feature.resourcedetails.R.string.edit_resource)

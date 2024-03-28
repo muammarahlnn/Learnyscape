@@ -92,7 +92,8 @@ fun LearnyscapeNavHost(
             navigateBack = navController::popBackStack,
             navigateToCamera = navController::navigateToCamera,
             navigateToQuizSession = navController::navigateToQuizSession,
-            navigateToSubmissionDetails = navController::navigateToSubmissionDetails
+            navigateToSubmissionDetails = navController::navigateToSubmissionDetails,
+            navigateToResourceCreate = navController::navigateToResourceCreate
         )
         quizSessionScreen(
             navigateBack = navController::popBackStack

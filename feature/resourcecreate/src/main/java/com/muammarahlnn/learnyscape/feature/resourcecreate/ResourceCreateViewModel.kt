@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.muammarahlnn.learnyscape.core.common.contract.ContractProvider
 import com.muammarahlnn.learnyscape.core.common.contract.contract
+import com.muammarahlnn.learnyscape.core.common.result.Result
 import com.muammarahlnn.learnyscape.core.common.result.asResult
 import com.muammarahlnn.learnyscape.core.common.result.onError
 import com.muammarahlnn.learnyscape.core.common.result.onException
@@ -19,6 +20,10 @@ import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncemen
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateQuizUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetQuizDetailsUseCase
 import com.muammarahlnn.learnyscape.core.model.data.MultipleChoiceQuestionModel
 import com.muammarahlnn.learnyscape.core.model.data.QuizType
 import com.muammarahlnn.learnyscape.core.ui.ClassResourceType
@@ -38,6 +43,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 /**
@@ -54,6 +60,10 @@ class ResourceCreateViewModel @Inject constructor(
     private val getCapturedPhotoUseCase: GetCapturedPhotoUseCase,
     private val resetPhotoUseCase: ResetCapturedPhotoUseCase,
     private val saveImageToFileUseCase: SaveImageToFileUseCase,
+    private val getAnnouncementDetailsUseCase: GetAnnouncementDetailsUseCase,
+    private val getModuleDetailsUseCase: GetModuleDetailsUseCase,
+    private val getAssignmentDetailsUseCase: GetAssignmentDetailsUseCase,
+    private val getQuizDetailsUseCase: GetQuizDetailsUseCase,
 ) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
@@ -62,13 +72,18 @@ class ResourceCreateViewModel @Inject constructor(
         updateState {
             it.copy(
                 classId = resourceCreateArgs.classId,
-                resourceType = ClassResourceType.getClassResourceType(resourceCreateArgs.resourceTypeOrdinal)
+                resourceId = resourceCreateArgs.resourceId.orEmpty(),
+                resourceType = ClassResourceType.getClassResourceType(resourceCreateArgs.resourceTypeOrdinal),
+                isEdit = !resourceCreateArgs.resourceId.isNullOrEmpty(),
             )
         }
     }
 
     override fun event(event: Event) {
         when (event) {
+            Event.FetchResourceDetails ->
+                fetchResourceDetails()
+
             Event.OnCreateResourceClick ->
                 createResource()
 
@@ -149,6 +164,125 @@ class ResourceCreateViewModel @Inject constructor(
             Event.OnConfirmSuccessCreatingResourceDialog -> {
                 showCreatingResourceDialog(false)
             }
+        }
+    }
+
+    private fun fetchResourceDetails() {
+        when (state.value.resourceType) {
+            ClassResourceType.ANNOUNCEMENT -> fetchAnnouncementDetails()
+            ClassResourceType.MODULE -> fetchModuleDetails()
+            ClassResourceType.ASSIGNMENT -> fetchAssignmentDetails()
+            ClassResourceType.QUIZ -> fetchQuizDetails()
+        }
+    }
+
+    private fun fetchAnnouncementDetails() {
+        viewModelScope.launch {
+            getAnnouncementDetailsUseCase(announcementId = state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    handleFetchResourceDetails(result) { announcementDetails ->
+                        updateState {
+                            it.copy(
+                                description = announcementDetails.description,
+                                attachments = announcementDetails.attachments,
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun fetchModuleDetails() {
+        viewModelScope.launch {
+            getModuleDetailsUseCase(moduleId = state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    handleFetchResourceDetails(result) { moduleDetails ->
+                        updateState {
+                            it.copy(
+                                title = moduleDetails.name,
+                                description = moduleDetails.description,
+                                attachments = moduleDetails.attachments,
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun fetchAssignmentDetails() {
+        viewModelScope.launch {
+            getAssignmentDetailsUseCase(assignmentId = state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    handleFetchResourceDetails(result) { assignmentDetails ->
+                        updateState {
+                            it.copy(
+                                title = assignmentDetails.name,
+                                description = assignmentDetails.description,
+                                attachments = assignmentDetails.attachments,
+                                dueDate = assignmentDetails.dueDate.toLocalDateTime(),
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun fetchQuizDetails() {
+        viewModelScope.launch {
+            getQuizDetailsUseCase(quizId = state.value.resourceId)
+                .asResult()
+                .collect { result ->
+                    handleFetchResourceDetails(result) { quizDetails ->
+                        // TODO: also update the questions
+                        updateState {
+                            it.copy(
+                                title = quizDetails.name,
+                                description = quizDetails.description,
+                                quizType = quizDetails.quizType,
+                                startDate = quizDetails.startDate.toLocalDateTime(),
+                                endDate = quizDetails.endDate.toLocalDateTime(),
+                                duration = quizDetails.duration,
+                            )
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun String.toLocalDateTime(): LocalDateTime =
+        LocalDateTime.parse(
+            this,
+            DateTimeFormatter.ofPattern("d MMM yyyy, HH:mm")
+        )
+
+    private inline fun <reified T> handleFetchResourceDetails(
+        result: Result<T>,
+        onSuccess: (T) -> Unit,
+    ) {
+        result.onLoading {
+            updateLoading(true)
+        }.onSuccess { data ->
+            onSuccess(data)
+            updateLoading(false)
+        }.onNoInternet { message ->
+            showToast(message)
+            updateLoading(false)
+        }.onError { _, message ->
+            showToast(message)
+            updateLoading(false)
+        }.onException { exception, message ->
+            Log.e(TAG, exception?.message.toString())
+            showToast(message)
+            updateLoading(false)
+        }
+    }
+
+    private fun updateLoading(loading: Boolean) {
+        updateState {
+            it.copy(isLoading = loading)
         }
     }
 

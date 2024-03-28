@@ -53,6 +53,7 @@ internal fun QuizRoute(
 
             is QuizNavigation.NavigateToResourceDetails ->
                 controller.navigateToResourceDetails(
+                    navigation.classId,
                     navigation.resourceId,
                     navigation.resourceTypeOrdinal,
                 )
@@ -124,6 +125,7 @@ private fun QuizScreen(
                             timeLabel = quiz.startDate,
                             onItemClick = {
                                 navigate(QuizNavigation.NavigateToResourceDetails(
+                                    classId = state.classId,
                                     resourceId = quiz.id,
                                     resourceTypeOrdinal = it,
                                 ))

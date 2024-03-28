@@ -22,7 +22,7 @@ fun NavController.navigateToAssignment(navOptions: NavOptions? = null) {
 fun NavGraphBuilder.assignmentScreen(
     classId: String,
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
+    navigateToResourceDetails: (String, String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
 ) {
     composable(route = ASSIGNMENT_ROUTE) {

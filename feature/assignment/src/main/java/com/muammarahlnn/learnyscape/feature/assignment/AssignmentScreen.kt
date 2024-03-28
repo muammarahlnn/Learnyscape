@@ -53,6 +53,7 @@ internal fun AssignmentRoute(
 
             is AssignmentNavigation.NavigateToResourceDetails ->
                 controller.navigateToResourceDetails(
+                    navigation.classId,
                     navigation.resourceId,
                     navigation.resourceTypeOrdinal,
                 )
@@ -125,6 +126,7 @@ private fun AssignmentScreen(
                                 timeLabel = assignment.dueDate,
                                 onItemClick = {
                                     navigate(AssignmentNavigation.NavigateToResourceDetails(
+                                        classId = state.classId,
                                         resourceId = assignment.id,
                                         resourceTypeOrdinal = it,
                                     ))

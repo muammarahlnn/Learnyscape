@@ -79,6 +79,7 @@ internal fun NotificationsRoute(
 
             is NotificationsNavigation.NavigateToResourceDetails ->
                 controller.navigateToResourceDetails(
+                    navigation.classId,
                     navigation.resourceId,
                     navigation.resourceTypeOrdinal
                 )

@@ -53,6 +53,7 @@ internal fun ClassRoute(
 
             is ClassNavigation.NavigateToResourceDetails ->
                 controller.navigateToResourceDetails(
+                    navigation.classId,
                     navigation.resourceId,
                     navigation.resourceTypeOrdinal,
                 )
@@ -113,6 +114,7 @@ private fun ClassScreen(
             },
             onFeedClick = { feedId, resourceTypeOrdinal ->
                 navigate(ClassNavigation.NavigateToResourceDetails(
+                    classId = state.classId,
                     resourceId = feedId,
                     resourceTypeOrdinal = resourceTypeOrdinal,
                 ))

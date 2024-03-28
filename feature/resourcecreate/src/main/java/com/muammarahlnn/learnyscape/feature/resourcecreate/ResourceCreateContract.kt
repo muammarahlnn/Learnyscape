@@ -18,7 +18,10 @@ interface ResourceCreateContract  {
 
     data class State(
         val classId: String = "",
+        val resourceId: String = "",
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
+        val isEdit: Boolean = false,
+        val isLoading: Boolean = false,
         val title: String = "",
         val description: String = "",
         val attachments: List<File> = listOf(),
@@ -57,6 +60,8 @@ interface ResourceCreateContract  {
 
 
     sealed interface Event {
+
+        data object FetchResourceDetails : Event
 
         data object OnCreateResourceClick : Event
 

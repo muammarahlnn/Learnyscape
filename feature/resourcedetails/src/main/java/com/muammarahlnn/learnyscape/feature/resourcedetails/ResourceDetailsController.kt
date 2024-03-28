@@ -14,6 +14,7 @@ class ResourceDetailsController(
     val navigateToCamera: () -> Unit,
     val navigateToQuizSession: (String, Int, String, Int) -> Unit,
     val navigateToSubmissionDetails: (Int,String, String, String) -> Unit,
+    val navigateToResourceCreate: (String, Int, String) -> Unit,
 ) : NavigationProvider<ResourceDetailsNavigation> by navigation(scope)
 
 sealed interface ResourceDetailsNavigation {
@@ -34,5 +35,11 @@ sealed interface ResourceDetailsNavigation {
         val submissionId: String,
         val studentId: String,
         val studentName: String,
+    ) : ResourceDetailsNavigation
+
+    data class NavigateToResourceCreate(
+        val classId: String,
+        val resourceTypeOrdinal: Int,
+        val resourceId: String,
     ) : ResourceDetailsNavigation
 }

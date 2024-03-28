@@ -53,6 +53,7 @@ internal fun ModuleRoute(
 
             is ModuleNavigation.NavigateToResourceDetails ->
                 controller.navigateToResourceDetails(
+                    navigation.classId,
                     navigation.resourceId,
                     navigation.resourceTypeOrdinal,
                 )
@@ -125,6 +126,7 @@ private fun ModuleScreen(
                                 timeLabel = module.updatedAt,
                                 onItemClick = {
                                     navigate(ModuleNavigation.NavigateToResourceDetails(
+                                        classId = state.classId,
                                         resourceId = module.id,
                                         resourceTypeOrdinal = it,
                                     ))

@@ -14,7 +14,7 @@ class ClassController(
     val navigateBack: () -> Unit,
     val navigateToJoinRequests: (String) -> Unit,
     val navigateToResourceCreate: (String, Int) -> Unit,
-    val navigateToResourceDetails: (String, Int) -> Unit,
+    val navigateToResourceDetails: (String, String, Int) -> Unit,
 ) : NavigationProvider<ClassNavigation> by navigation(scope)
 
 sealed interface ClassNavigation {
@@ -29,6 +29,7 @@ sealed interface ClassNavigation {
     ) : ClassNavigation
 
     data class NavigateToResourceDetails(
+        val classId: String,
         val resourceId: String,
         val resourceTypeOrdinal: Int,
     ) : ClassNavigation

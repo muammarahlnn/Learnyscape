@@ -38,7 +38,7 @@ fun NavController.navigateToClassNavigator(
 fun NavGraphBuilder.classNavigator(
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
+    navigateToResourceDetails: (String, String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
 ) {
     composable(

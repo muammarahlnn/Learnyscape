@@ -22,7 +22,7 @@ fun NavController.navigateToNotifications(navOptions: NavOptions? = null) {
 
 fun NavGraphBuilder.notificationsScreen(
     navigateBack: () -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
+    navigateToResourceDetails: (String, String, Int) -> Unit,
 ) {
     composable(route = NOTIFICATIONS_ROUTE) {
         NotificationsRoute(

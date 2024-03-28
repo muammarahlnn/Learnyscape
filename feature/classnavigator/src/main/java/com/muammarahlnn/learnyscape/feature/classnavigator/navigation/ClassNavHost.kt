@@ -22,7 +22,7 @@ internal fun ClassNavHost(
     state: ClassNavigatorState,
     navigateBack: () -> Unit,
     navigateToJoinRequests: (String) -> Unit,
-    navigateToResourceDetails: (String, Int) -> Unit,
+    navigateToResourceDetails: (String, String, Int) -> Unit,
     navigateToResourceCreate: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = CLASS_ROUTE,

@@ -11,6 +11,7 @@ import java.io.File
 interface ResourceDetailsContract {
 
     data class State(
+        val classId: String = "",
         val resourceId: String = "",
         val resourceType: ClassResourceType = ClassResourceType.ANNOUNCEMENT,
         val uiState: UiState = UiState.Loading,
