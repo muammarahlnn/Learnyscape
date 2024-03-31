@@ -120,19 +120,24 @@ private fun SubmissionDetailsScreen(
 
         when (state.uiState) {
             SubmissionDetailsContract.UiState.Loading -> LoadingScreen(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
 
             is SubmissionDetailsContract.UiState.Error -> ErrorScreen(
                 text = state.uiState.message,
                 onRefresh = { event(SubmissionDetailsContract.Event.FetchSubmissionDetails) },
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
             )
 
             SubmissionDetailsContract.UiState.Success -> when (state.submissionType) {
                 SubmissionType.ASSIGNMENT -> StudentSubmissionCard(
                     profilePicUiState = state.profilePicUiState,
                     studentName = state.assignmentSubmission.studentName,
+                    turnedInAt = state.turnedInAt,
                     attachments = state.assignmentSubmission.attachments,
                     onAttachmentClick = { event(SubmissionDetailsContract.Event.OnAttachmentClick(it)) },
                     modifier = Modifier.fillMaxWidth()
@@ -141,7 +146,8 @@ private fun SubmissionDetailsScreen(
                 SubmissionType.QUIZ -> StudentQuizAnswersContent(
                     profilePicUiState = state.profilePicUiState,
                     studentName = state.studentName,
-                    quizAnswers = state.quizAnswers
+                    quizAnswers = state.quizAnswers,
+                    turnedInAt = state.turnedInAt,
                 )
             }
         }
@@ -152,6 +158,7 @@ private fun SubmissionDetailsScreen(
 private fun StudentSubmissionCard(
     profilePicUiState: PhotoProfileImageUiState,
     studentName: String,
+    turnedInAt: String,
     attachments: List<File>,
     onAttachmentClick: (File) -> Unit,
     modifier: Modifier = Modifier,
@@ -163,6 +170,7 @@ private fun StudentSubmissionCard(
             StudentSubmissionDetailsRow(
                 profilePicUiState = profilePicUiState,
                 studentName = studentName,
+                turnedInAt = turnedInAt,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -199,6 +207,7 @@ private fun StudentSubmissionCard(
 private fun StudentQuizAnswersContent(
     profilePicUiState: PhotoProfileImageUiState,
     studentName: String,
+    turnedInAt: String,
     quizAnswers: List<StudentQuizAnswerModel>,
     modifier: Modifier = Modifier,
 ) {
@@ -207,6 +216,7 @@ private fun StudentQuizAnswersContent(
             StudentSubmissionDetailsRow(
                 profilePicUiState = profilePicUiState,
                 studentName = studentName,
+                turnedInAt = turnedInAt,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
@@ -225,6 +235,7 @@ private fun StudentQuizAnswersContent(
 private fun StudentSubmissionDetailsRow(
     profilePicUiState: PhotoProfileImageUiState,
     studentName: String,
+    turnedInAt: String,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -249,7 +260,7 @@ private fun StudentSubmissionDetailsRow(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "Turned in at TODO: need from BE",
+                text = turnedInAt,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.tertiary,
             )

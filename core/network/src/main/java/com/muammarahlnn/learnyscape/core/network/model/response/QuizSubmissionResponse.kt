@@ -11,4 +11,5 @@ data class QuizSubmissionResponse(
     val userId: String,
     val studentName: String,
     val turnInStatus: Boolean,
+    val turnedInAt: String,
 )

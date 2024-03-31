@@ -21,6 +21,7 @@ interface StudentWorkContract {
         val userId: String = "",
         val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val name: String = "",
+        val turnedInAt: String = "",
     )
 
     sealed interface UiState {

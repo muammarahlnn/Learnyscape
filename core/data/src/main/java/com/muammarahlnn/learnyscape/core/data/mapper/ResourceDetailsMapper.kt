@@ -71,6 +71,7 @@ fun LecturerTaskSubmissionResponse.toStudentSubmission() = StudentSubmissionMode
     userId = userId,
     studentName = studentName,
     turnInStatus = turnInStatus,
+    turnedInAt = formatIsoDate(turnedInAt),
 )
 
 fun List<QuizSubmissionResponse>.toQuizSubmissionModels() = map {
@@ -82,6 +83,7 @@ fun QuizSubmissionResponse.toStudentSubmission() = StudentSubmissionModel(
     userId = userId,
     studentName = studentName,
     turnInStatus = turnInStatus,
+    turnedInAt = formatIsoDate(turnedInAt),
 )
 
 fun StudentTaskSubmissionResponse.toAssignmentSubmissionModel(attachments: List<File>) =
@@ -90,5 +92,6 @@ fun StudentTaskSubmissionResponse.toAssignmentSubmissionModel(attachments: List<
         userId = userId,
         studentName = studentName,
         turnInStatus = turnInStatus,
+        turnedInAt = turnedInAt?.let { formatIsoDate(it) } ?: "",
         attachments = attachments,
     )

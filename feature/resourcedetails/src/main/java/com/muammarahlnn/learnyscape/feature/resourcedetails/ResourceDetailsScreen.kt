@@ -64,6 +64,7 @@ internal fun ResourceDetailsRoute(
                     navigation.submissionId,
                     navigation.studentId,
                     navigation.studentName,
+                    navigation.turnedInAt,
                 )
 
             is ResourceDetailsNavigation.NavigateToResourceCreate ->
@@ -192,7 +193,7 @@ private fun ResourceDetailsScreen(
                     onStartQuizButtonClick = instructionsContentEvent.onStartQuizButtonClick,
                     onAttachmentClick = instructionsContentEvent.onAttachmentClick,
                     onRefreshInstructions = instructionsContentEvent.onRefresh,
-                    onSubmissionClick = { submissionId, studentId, studentName ->
+                    onSubmissionClick = { submissionId, studentId, studentName, turnedInAt ->
                         val resolvedSubmissionId = when (state.resourceType) {
                             ClassResourceType.ASSIGNMENT -> submissionId
                             ClassResourceType.QUIZ -> state.resourceId
@@ -204,6 +205,7 @@ private fun ResourceDetailsScreen(
                             submissionId = resolvedSubmissionId,
                             studentId = studentId,
                             studentName = studentName,
+                            turnedInAt = turnedInAt,
                         ))
                     },
                     modifier = contentModifier

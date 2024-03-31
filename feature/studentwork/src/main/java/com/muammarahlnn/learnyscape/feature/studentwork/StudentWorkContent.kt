@@ -29,7 +29,7 @@ enum class StudentWorkType {
 fun StudentWorkContent(
     studentWorkType: StudentWorkType,
     resourceId: String,
-    onSubmissionClick: (String, String, String) -> Unit,
+    onSubmissionClick: (String, String, String, String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: StudentWorkViewModel = hiltViewModel(),
 ) {
@@ -54,7 +54,7 @@ fun StudentWorkContent(
 private fun StudentWorkContent(
     state: StudentWorkContract.State,
     event: (StudentWorkContract.Event) -> Unit,
-    onSubmissionClick: (String, String, String) -> Unit,
+    onSubmissionClick: (String, String, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val submittedText = stringResource(

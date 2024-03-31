@@ -52,7 +52,7 @@ fun NavGraphBuilder.resourceDetailScreen(
     navigateBack: () -> Unit,
     navigateToCamera: () -> Unit,
     navigateToQuizSession: (String, Int, String, Int) -> Unit,
-    navigateToSubmissionDetails: (Int, String, String, String) -> Unit,
+    navigateToSubmissionDetails: (Int, String, String, String, String) -> Unit,
     navigateToResourceCreate: (String, Int, String) -> Unit,
 ) {
     composable(

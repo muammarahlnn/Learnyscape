@@ -22,7 +22,7 @@ import com.muammarahlnn.learnyscape.feature.studentwork.StudentWorkContract
 internal fun SubmittedStudentsCard(
     submittedText: String,
     submittedStudents: List<StudentWorkContract.StudentSubmissionState>,
-    onSubmissionClick: (String, String, String) -> Unit,
+    onSubmissionClick: (String, String, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubmissionsCard(
@@ -36,7 +36,12 @@ internal fun SubmittedStudentsCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .noRippleClickable {
-                        onSubmissionClick(submission.id, submission.userId, submission.name)
+                        onSubmissionClick(
+                            submission.id,
+                            submission.userId,
+                            submission.name,
+                            submission.turnedInAt
+                        )
                     }
             ) {
                 Column(
@@ -50,7 +55,7 @@ internal fun SubmittedStudentsCard(
                         color = MaterialTheme.colorScheme.tertiary,
                     )
                     Text(
-                        text = "from BE",
+                        text = submission.turnedInAt,
                         style = MaterialTheme.typography.bodySmall.copy(
                             fontSize = 11.sp,
                         ),

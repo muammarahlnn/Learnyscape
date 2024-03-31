@@ -114,6 +114,7 @@ class StudentWorkViewModel @Inject constructor(
             id = id,
             userId = userId,
             name = studentName,
+            turnedInAt = turnedInAt,
         )
 
         val (submittedSubmissions, missingSubmissions) = submissions.partition { submission ->

@@ -19,14 +19,16 @@ private const val SUBMISSION_TYPE_ORDINAL_ARG = "submission_type_ordinal"
 private const val SUBMISSION_ID_ARG = "submission_id"
 private const val STUDENT_ID_ARG = "student_id"
 private const val STUDENT_NAME_ARG = "student_name"
+private const val TURNED_IN_AT_ARG = "turned_in_at"
 private const val SUBMISSION_DETAILS_ROUTE_WITH_ARGS =
-    "$SUBMISSION_DETAILS_ROUTE?$SUBMISSION_ID_ARG={$SUBMISSION_ID_ARG}/{$SUBMISSION_TYPE_ORDINAL_ARG}/{$STUDENT_ID_ARG}/{$STUDENT_NAME_ARG}"
+    "$SUBMISSION_DETAILS_ROUTE?$SUBMISSION_ID_ARG={$SUBMISSION_ID_ARG}/{$SUBMISSION_TYPE_ORDINAL_ARG}/{$STUDENT_ID_ARG}/{$STUDENT_NAME_ARG}/{$TURNED_IN_AT_ARG}"
 
 internal class SubmissionDetailsArgs(
     val submissionTypeOrdinal: Int,
     val submissionId: String?,
     val studentId: String,
     val studentName: String,
+    val turnedInAt: String,
 ) {
 
     constructor(savedStateHandle: SavedStateHandle) : this(
@@ -34,6 +36,7 @@ internal class SubmissionDetailsArgs(
         submissionId = savedStateHandle[SUBMISSION_ID_ARG],
         studentId = checkNotNull(savedStateHandle[STUDENT_ID_ARG]),
         studentName = checkNotNull(savedStateHandle[STUDENT_NAME_ARG]),
+        turnedInAt = checkNotNull(savedStateHandle[TURNED_IN_AT_ARG]),
     )
 }
 
@@ -42,8 +45,9 @@ fun NavController.navigateToSubmissionDetails(
     submissionId: String,
     studentId: String,
     studentName: String,
+    turnedInAt: String,
 ) {
-    this.navigate("$SUBMISSION_DETAILS_ROUTE?$SUBMISSION_ID_ARG=$submissionId/$submissionTypeOrdinal/$studentId/$studentName") {
+    this.navigate("$SUBMISSION_DETAILS_ROUTE?$SUBMISSION_ID_ARG=$submissionId/$submissionTypeOrdinal/$studentId/$studentName/$turnedInAt") {
         launchSingleTop = true
     }
 }
@@ -65,6 +69,9 @@ fun NavGraphBuilder.submissionDetailsScreen(
                 type = NavType.StringType
             },
             navArgument(STUDENT_NAME_ARG) {
+                type = NavType.StringType
+            },
+            navArgument(TURNED_IN_AT_ARG) {
                 type = NavType.StringType
             },
         )

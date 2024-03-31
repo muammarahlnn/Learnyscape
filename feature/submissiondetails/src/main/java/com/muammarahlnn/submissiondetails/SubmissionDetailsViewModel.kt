@@ -49,6 +49,7 @@ class SubmissionDetailsViewModel @Inject constructor(
                 submissionId = args.submissionId.orEmpty(),
                 studentId = args.studentId,
                 studentName = args.studentName,
+                turnedInAt = args.turnedInAt,
             )
         }
     }

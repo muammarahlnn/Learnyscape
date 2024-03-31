@@ -11,5 +11,6 @@ data class AssignmentSubmissionModel(
     val userId: String = "",
     val studentName: String = "",
     val turnInStatus: Boolean = false,
+    val turnedInAt: String = "",
     val attachments: List<File> = listOf(),
 )

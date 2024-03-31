@@ -41,7 +41,7 @@ internal fun ResourceDetailsPager(
     onStartQuizButtonClick: () -> Unit,
     onAttachmentClick: (File) -> Unit,
     onRefreshInstructions: () -> Unit,
-    onSubmissionClick: (String, String, String) -> Unit,
+    onSubmissionClick: (String, String, String, String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()

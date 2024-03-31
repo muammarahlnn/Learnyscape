@@ -13,5 +13,6 @@ data class StudentTaskSubmissionResponse(
     val taskSubmissionId: String,
     val studentName: String,
     val turnInStatus: Boolean,
+    val turnedInAt: String? = null,
     @SerialName("attachment") val attachmentUrls: List<String>,
 )

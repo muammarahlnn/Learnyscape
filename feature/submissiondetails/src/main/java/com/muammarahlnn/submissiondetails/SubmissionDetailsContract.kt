@@ -17,6 +17,7 @@ interface SubmissionDetailsContract {
         val submissionId: String = "",
         val studentId: String = "",
         val studentName: String = "",
+        val turnedInAt: String = "",
         val uiState: UiState = UiState.Loading,
         val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val assignmentSubmission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
