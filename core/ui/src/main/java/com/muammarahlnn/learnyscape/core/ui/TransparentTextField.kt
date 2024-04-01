@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 
@@ -28,7 +29,10 @@ fun TransparentTextField(
     modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onBackground,
     placeholderTextColor: Color = MaterialTheme.colorScheme.onSurface,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    imeAction: ImeAction = ImeAction.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions(
+        imeAction = imeAction,
+    ),
 ) {
     BasicTextField(
         value = value,
