@@ -9,6 +9,7 @@ import com.muammarahlnn.learnyscape.core.network.api.constant.ResourceClassPartK
 import com.muammarahlnn.learnyscape.core.network.datasource.ResourceCreateNetworkDataSource
 import com.muammarahlnn.learnyscape.core.network.model.request.AddQuizQuestionsRequest
 import com.muammarahlnn.learnyscape.core.network.model.request.CreateQuizRequest
+import com.muammarahlnn.learnyscape.core.network.model.request.EditQuizRequest
 import com.muammarahlnn.learnyscape.core.network.util.toFileParts
 import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBody
 import com.muammarahlnn.learnyscape.core.network.util.toTextRequestBodyOrNull
@@ -121,6 +122,79 @@ class ResourceCreateNetworkDataSourceImpl @Inject constructor(
                     }
                 )
             ).data
+        )
+    }
+
+    override fun putAnnouncement(
+        announcementId: String,
+        description: String,
+        attachments: List<File>
+    ): Flow<String> = flow {
+        emit(
+            announcementsApi.putAnnouncement(
+                announcementId = announcementId,
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+                description = description.toTextRequestBody(),
+            ).data
+        )
+    }
+
+    override fun putReference(
+        referenceId: String,
+        title: String,
+        description: String,
+        attachments: List<File>
+    ): Flow<String> = flow {
+        emit(
+            referencesApi.putReference(
+                referenceId = referenceId,
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+                title = title.toTextRequestBody(),
+                description = description.toTextRequestBodyOrNull(),
+            ).data
+        )
+    }
+
+    override fun putTask(
+        taskId: String,
+        title: String,
+        description: String,
+        dueDate: LocalDateTime,
+        attachments: List<File>
+    ): Flow<String> = flow {
+        emit(
+            tasksApi.putTask(
+                taskId = taskId,
+                files = attachments.toFileParts(ResourceClassPartKey.FILES_PART),
+                title = title.toTextRequestBody(),
+                description = description.toTextRequestBodyOrNull(),
+                dueDate = dueDate.toEpochSecond().toString().toTextRequestBody(),
+            ).data
+        )
+    }
+
+    override fun putQuiz(
+        quizId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        duration: Int,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime
+    ): Flow<String> = flow {
+        val editQuizRequest = EditQuizRequest(
+            name = title,
+            description = description.ifEmpty { null },
+            quizType = quizType,
+            duration= duration,
+            startDate = startDate.toEpochSecond(),
+            endDate = endDate.toEpochSecond()
+        )
+        emit(
+            quizzesApi.putQuiz(
+                quizId = quizId,
+                editQuizRequest = editQuizRequest,
+            ).data.id
         )
     }
 

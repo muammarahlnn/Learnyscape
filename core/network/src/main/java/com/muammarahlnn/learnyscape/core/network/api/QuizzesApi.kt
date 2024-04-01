@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.network.api
 
 import com.muammarahlnn.learnyscape.core.network.model.request.AddQuizQuestionsRequest
 import com.muammarahlnn.learnyscape.core.network.model.request.CreateQuizRequest
+import com.muammarahlnn.learnyscape.core.network.model.request.EditQuizRequest
 import com.muammarahlnn.learnyscape.core.network.model.request.QuizSolutionResponse
 import com.muammarahlnn.learnyscape.core.network.model.request.SubmitMultipleChoiceAnswersRequest
 import com.muammarahlnn.learnyscape.core.network.model.response.BaseResponse
@@ -14,6 +15,7 @@ import com.muammarahlnn.learnyscape.core.network.model.response.StudentQuizAnswe
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -76,4 +78,11 @@ interface QuizzesApi {
     suspend fun deleteQuiz(
         @Path("quizId") quizId: String,
     ): BaseResponse<String>
+
+    @Multipart
+    @PUT("quizzes/{quizId}")
+    suspend fun putQuiz(
+        @Path("quizId") quizId: String,
+        @Body editQuizRequest: EditQuizRequest,
+    ): BaseResponse<CreateQuizResponse>
 }

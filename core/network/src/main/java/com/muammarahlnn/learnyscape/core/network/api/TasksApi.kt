@@ -83,4 +83,14 @@ interface TasksApi {
     suspend fun getTaskSubmissionDetails(
         @Path("submissionId") submissionId: String,
     ): BaseResponse<StudentTaskSubmissionResponse>
+
+    @Multipart
+    @PUT("tasks/{taskId}")
+    suspend fun putTask(
+        @Path("taskId") taskId: String,
+        @Part files: List<MultipartBody.Part>,
+        @Part(ResourceClassPartKey.NAME_PART) title: RequestBody,
+        @Part(ResourceClassPartKey.DESCRIPTION_PART) description: RequestBody?,
+        @Part(ResourceClassPartKey.DUE_DATE_PART) dueDate: RequestBody,
+    ): BaseResponse<String>
 }

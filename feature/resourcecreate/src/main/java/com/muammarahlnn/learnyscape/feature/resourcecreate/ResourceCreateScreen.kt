@@ -240,15 +240,20 @@ private fun ResourceCreateScreen(
                             .clip(RoundedCornerShape(6.dp))
                             .background(MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(
-                            text = stringResource(
+                        val text = if (state.isEdit) {
+                            stringResource(id = R.string.edit)
+                        } else {
+                            stringResource(
                                 id = when (state.resourceType) {
                                     ClassResourceType.ANNOUNCEMENT,
                                     ClassResourceType.MODULE -> R.string.post
                                     ClassResourceType.ASSIGNMENT -> R.string.assign
                                     ClassResourceType.QUIZ -> R.string.create
                                 }
-                            ),
+                            )
+                        }
+                        Text(
+                            text = text,
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.background,
                             modifier = Modifier
@@ -257,7 +262,10 @@ private fun ResourceCreateScreen(
                                     horizontal = 32.dp,
                                 )
                                 .clickable {
-                                    event(ResourceCreateContract.Event.OnCreateResourceClick)
+                                    event(
+                                        if (!state.isEdit) ResourceCreateContract.Event.OnCreateResourceClick
+                                        else ResourceCreateContract.Event.OnEditResourceClick
+                                    )
                                 }
                         )
                     }

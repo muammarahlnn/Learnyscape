@@ -20,6 +20,9 @@ import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAnnouncemen
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateAssignmentUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcecreate.CreateQuizUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.EditAnnouncementUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.EditAssignmentUseCase
+import com.muammarahlnn.learnyscape.core.domain.resourcecreate.EditModuleUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAnnouncementDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetAssignmentDetailsUseCase
 import com.muammarahlnn.learnyscape.core.domain.resourcedetails.GetModuleDetailsUseCase
@@ -64,6 +67,9 @@ class ResourceCreateViewModel @Inject constructor(
     private val getModuleDetailsUseCase: GetModuleDetailsUseCase,
     private val getAssignmentDetailsUseCase: GetAssignmentDetailsUseCase,
     private val getQuizDetailsUseCase: GetQuizDetailsUseCase,
+    private val editAnnouncementUseCase: EditAnnouncementUseCase,
+    private val editModuleUseCase: EditModuleUseCase,
+    private val editAssignmentUseCase: EditAssignmentUseCase,
 ) : ViewModel(), ContractProvider<State, Event, Effect> by contract(State()) {
 
     private val resourceCreateArgs = ResourceCreateArgs(savedStateHandle)
@@ -86,6 +92,9 @@ class ResourceCreateViewModel @Inject constructor(
 
             Event.OnCreateResourceClick ->
                 createResource()
+
+            Event.OnEditResourceClick ->
+                editResource()
 
             is Event.OnTitleChange ->
                 onTitleChange(event.title)
@@ -298,10 +307,7 @@ class ResourceCreateViewModel @Inject constructor(
     }
 
     private fun createAnnouncement() {
-        if (state.value.description.isEmpty()) {
-            onErrorCreatingResource("Announcement caption can't be empty")
-            return
-        }
+        if (!isAnnouncementFieldsValid()) return
 
         viewModelScope.launch {
             createAnnouncementUseCase(
@@ -309,26 +315,21 @@ class ResourceCreateViewModel @Inject constructor(
                 description = state.value.description,
                 attachments = state.value.attachments,
             ).asResult().collect { result ->
-                result.onLoading {
-                    onLoadingCreatingResource()
-                }.onSuccess { message ->
-                    onSuccessCreatingResource(message)
-                }.onNoInternet { message ->
-                    onErrorCreatingResource(message)
-                }.onError { _, message ->
-                    onErrorCreatingResource(message)
-                }.onException { exception, message ->
-                    onErrorCreatingResource(message, exception)
-                }
+                handleCreatingResource(result)
             }
         }
     }
 
-    private fun createModule() {
-        if (state.value.title.isEmpty()) {
-            onErrorCreatingResource("Module title can't be empty")
-            return
+    private fun isAnnouncementFieldsValid(): Boolean {
+        if (state.value.description.isEmpty()) {
+            onErrorCreatingResource("Announcement caption can't be empty")
+            return false
         }
+        return true
+    }
+
+    private fun createModule() {
+        if (!isModuleFieldsValid()) return
 
         viewModelScope.launch {
             createModuleUseCase(
@@ -337,31 +338,21 @@ class ResourceCreateViewModel @Inject constructor(
                 description = state.value.description,
                 attachments = state.value.attachments,
             ).asResult().collect { result ->
-                result.onLoading {
-                    onLoadingCreatingResource()
-                }.onSuccess { message ->
-                    onSuccessCreatingResource(message)
-                }.onNoInternet { message ->
-                    onErrorCreatingResource(message)
-                }.onError { _, message ->
-                    onErrorCreatingResource(message)
-                }.onException { exception, message ->
-                    onErrorCreatingResource(message, exception)
-                }
+                handleCreatingResource(result)
             }
         }
     }
 
-    private fun createAssignment() {
+    private fun isModuleFieldsValid(): Boolean {
         if (state.value.title.isEmpty()) {
-            onErrorCreatingResource("Assignment title can't be empty")
-            return
+            onErrorCreatingResource("Module title can't be empty")
+            return false
         }
+        return true
+    }
 
-        if (state.value.dueDate == null) {
-            onErrorCreatingResource("Due date can't be empty")
-            return
-        }
+    private fun createAssignment() {
+        if (!isAssignmentFieldsValid()) return
 
         viewModelScope.launch {
             createAssignmentUseCase(
@@ -371,19 +362,23 @@ class ResourceCreateViewModel @Inject constructor(
                 dueDate = state.value.dueDate!!,
                 attachments = state.value.attachments,
             ).asResult().collect { result ->
-                result.onLoading {
-                    onLoadingCreatingResource()
-                }.onSuccess { message ->
-                    onSuccessCreatingResource(message)
-                }.onNoInternet { message ->
-                    onErrorCreatingResource(message)
-                }.onError { _, message ->
-                    onErrorCreatingResource(message)
-                }.onException { exception, message ->
-                    onErrorCreatingResource(message, exception)
-                }
+                handleCreatingResource(result)
             }
         }
+    }
+
+    private fun isAssignmentFieldsValid(): Boolean  {
+        if (state.value.title.isEmpty()) {
+            onErrorCreatingResource("Assignment title can't be empty")
+            return false
+        }
+
+        if (state.value.dueDate == null) {
+            onErrorCreatingResource("Due date can't be empty")
+            return false
+        }
+
+        return true
     }
 
     private fun createQuiz() {
@@ -473,18 +468,93 @@ class ResourceCreateViewModel @Inject constructor(
             )
                 .asResult()
                 .collect { result ->
-                    result.onLoading {
-                        onLoadingCreatingResource()
-                    }.onSuccess {
-                        onSuccessCreatingResource("Quiz successfully created")
-                    }.onNoInternet { message ->
-                        onErrorCreatingResource(message)
-                    }.onError { _, message ->
-                        onErrorCreatingResource(message)
-                    }.onException { exception, message ->
-                        onErrorCreatingResource(message, exception)
-                    }
+                    handleCreatingResource(
+                        result = result,
+                        successMessage = "Quiz successfully created"
+                    )
                 }
+        }
+    }
+
+    private fun handleCreatingResource(
+        result: Result<String>,
+        successMessage: String? = null,
+    ) {
+        result.onLoading {
+            onLoadingCreatingResource()
+        }.onSuccess {
+            onSuccessCreatingResource(successMessage ?: it)
+        }.onNoInternet { message ->
+            onErrorCreatingResource(message)
+        }.onError { _, message ->
+            onErrorCreatingResource(message)
+        }.onException { exception, message ->
+            onErrorCreatingResource(message, exception)
+        }
+    }
+
+    private fun editResource() {
+        showCreatingResourceDialog(true)
+
+        when (state.value.resourceType) {
+            ClassResourceType.ANNOUNCEMENT -> editAnnouncement()
+            ClassResourceType.MODULE -> editModule()
+            ClassResourceType.ASSIGNMENT -> editAssignment()
+            ClassResourceType.QUIZ -> TODO()
+        }
+    }
+
+    private fun editAnnouncement() {
+        if (!isAnnouncementFieldsValid()) return
+
+        viewModelScope.launch {
+            editAnnouncementUseCase(
+                announcementId = state.value.resourceId,
+                description = state.value.description,
+                attachments = state.value.attachments,
+            ).asResult().collect { result ->
+                handleCreatingResource(
+                    result = result,
+                    successMessage = "Successfully edit announcement"
+                )
+            }
+        }
+    }
+
+    private fun editModule() {
+        if (!isModuleFieldsValid()) return
+
+        viewModelScope.launch {
+            editModuleUseCase(
+                moduleId = state.value.resourceId,
+                title = state.value.title,
+                description = state.value.description,
+                attachments = state.value.attachments,
+            ).asResult().collect { result ->
+                handleCreatingResource(
+                    result = result,
+                    successMessage = "Successfully edit module"
+                )
+            }
+        }
+    }
+
+    private fun editAssignment() {
+        if (!isAssignmentFieldsValid()) return
+
+        viewModelScope.launch {
+            editAssignmentUseCase(
+                assignmentId = state.value.resourceId,
+                title = state.value.title,
+                description = state.value.description,
+                dueDate = state.value.dueDate!!,
+                attachments = state.value.attachments,
+            ).asResult().collect { result ->
+                handleCreatingResource(
+                    result = result,
+                    successMessage = "Successfully edit assignment"
+                )
+            }
         }
     }
 

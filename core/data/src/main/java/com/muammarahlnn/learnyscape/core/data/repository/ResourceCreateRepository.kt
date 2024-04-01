@@ -46,4 +46,35 @@ interface ResourceCreateRepository {
         quizId: String,
         questions: List<MultipleChoiceQuestionModel>,
     ): Flow<String>
+
+    fun editAnnouncement(
+        announcementId: String,
+        description: String,
+        attachments: List<File>,
+    ): Flow<String>
+
+    fun editModule(
+        moduleId: String,
+        title: String,
+        description: String,
+        attachments: List<File>,
+    ): Flow<String>
+
+    fun editAssignment(
+        assignmentId: String,
+        title: String,
+        description: String,
+        dueDate: LocalDateTime,
+        attachments: List<File>,
+    ): Flow<String>
+
+    fun editQuiz(
+        quizId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        duration: Int,
+    ): Flow<String>
 }

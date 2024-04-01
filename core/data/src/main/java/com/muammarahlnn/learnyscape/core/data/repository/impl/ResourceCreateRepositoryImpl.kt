@@ -77,4 +77,58 @@ class ResourceCreateRepositoryImpl @Inject constructor(
         quizId = quizId,
         multipleChoiceQuestions = questions,
     )
+
+    override fun editAnnouncement(
+        announcementId: String,
+        description: String,
+        attachments: List<File>
+    ): Flow<String> = resourceCreateNetworkDataSource.putAnnouncement(
+        announcementId = announcementId,
+        description = description,
+        attachments = attachments,
+    )
+
+    override fun editModule(
+        moduleId: String,
+        title: String,
+        description: String,
+        attachments: List<File>
+    ): Flow<String> = resourceCreateNetworkDataSource.putReference(
+        referenceId = moduleId,
+        title = title,
+        description = description,
+        attachments = attachments,
+    )
+
+    override fun editAssignment(
+        assignmentId: String,
+        title: String,
+        description: String,
+        dueDate: LocalDateTime,
+        attachments: List<File>
+    ): Flow<String> = resourceCreateNetworkDataSource.putTask(
+        taskId = assignmentId,
+        title = title,
+        description = description,
+        dueDate = dueDate,
+        attachments = attachments,
+    )
+
+    override fun editQuiz(
+        quizId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+        duration: Int
+    ): Flow<String> = resourceCreateNetworkDataSource.putQuiz(
+        quizId = quizId,
+        title = title,
+        description = description,
+        quizType = quizType,
+        startDate = startDate,
+        endDate = endDate,
+        duration = duration,
+    )
 }

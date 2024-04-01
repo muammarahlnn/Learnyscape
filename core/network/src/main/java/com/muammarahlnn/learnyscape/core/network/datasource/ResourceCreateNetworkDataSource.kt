@@ -46,4 +46,35 @@ interface ResourceCreateNetworkDataSource {
         quizId: String,
         multipleChoiceQuestions: List<MultipleChoiceQuestionModel>,
     ): Flow<String>
+
+    fun putAnnouncement(
+        announcementId: String,
+        description: String,
+        attachments: List<File>,
+    ): Flow<String>
+
+    fun putReference(
+        referenceId: String,
+        title: String,
+        description: String,
+        attachments: List<File>,
+    ): Flow<String>
+
+    fun putTask(
+        taskId: String,
+        title: String,
+        description: String,
+        dueDate: LocalDateTime,
+        attachments: List<File>,
+    ): Flow<String>
+
+    fun putQuiz(
+        quizId: String,
+        title: String,
+        description: String,
+        quizType: String,
+        duration: Int,
+        startDate: LocalDateTime,
+        endDate: LocalDateTime,
+    ): Flow<String>
 }

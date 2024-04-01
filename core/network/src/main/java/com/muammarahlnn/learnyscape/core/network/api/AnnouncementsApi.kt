@@ -10,6 +10,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -40,5 +41,13 @@ interface AnnouncementsApi {
     @DELETE("announcements/{announcementId}")
     suspend fun deleteAnnouncement(
         @Path("announcementId") announcementId: String,
+    ): BaseResponse<String>
+
+    @Multipart
+    @PUT("announcements/{announcementId}")
+    suspend fun putAnnouncement(
+        @Path("announcementId") announcementId: String,
+        @Part files: List<MultipartBody.Part>,
+        @Part(ResourceClassPartKey.DESCRIPTION_PART) description: RequestBody,
     ): BaseResponse<String>
 }

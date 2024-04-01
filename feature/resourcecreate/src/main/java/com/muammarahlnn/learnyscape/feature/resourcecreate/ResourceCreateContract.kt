@@ -65,6 +65,8 @@ interface ResourceCreateContract  {
 
         data object OnCreateResourceClick : Event
 
+        data object OnEditResourceClick : Event
+
         data class OnTitleChange(val title: String) : Event
 
         data class OnDescriptionChange(val description: String) : Event
