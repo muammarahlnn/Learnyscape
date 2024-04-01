@@ -254,7 +254,7 @@ private fun StudentSubmissionDetailsRow(
         Column {
             Text(
                 text = studentName,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -297,28 +297,69 @@ private fun MultipleChoiceAnswers(
                 }
 
                 Spacer(modifier = Modifier.width(10.dp))
-
-                BaseCard(modifier = Modifier.fillMaxWidth()) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(10.dp)
+                
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    BaseCard(
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(
-                            text = "${answer.option}.",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = FontWeight.SemiBold
-                            ),
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                        ) {
+                            Text(
+                                text = answer.question,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(10.dp))
 
-                        Spacer(modifier = Modifier.width(4.dp))
+                    listOf(
+                        answer.optionA,
+                        answer.optionB,
+                        answer.optionC,
+                        answer.optionD,
+                        answer.optionE,
+                    ).forEach { option ->
+                        val isSolution = option.option == answer.solution
+                        val (backgroundColor, textColor) = if (isSolution) {
+                            MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.background
+                        } else {
+                            MaterialTheme.colorScheme.background to MaterialTheme.colorScheme.onBackground
+                        }
 
-                        Text(
-                            text = answer.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground,
-                        )
+                        BaseCard(
+                            backgroundColor = backgroundColor,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(10.dp)
+                            ) {
+                                Text(
+                                    text = "${option.option}.",
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                    color = textColor,
+                                )
+
+                                Spacer(modifier = Modifier.width(4.dp))
+
+                                Text(
+                                    text = option.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = textColor,
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
                 }
             }

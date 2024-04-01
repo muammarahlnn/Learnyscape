@@ -21,7 +21,7 @@ interface SubmissionDetailsContract {
         val uiState: UiState = UiState.Loading,
         val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val assignmentSubmission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
-        val quizAnswers: List<StudentQuizAnswerModel> = listOf(),
+        val quizAnswers: List<StudentQuizAnswerModel> = emptyList(),
     )
 
     sealed interface UiState {

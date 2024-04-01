@@ -6,6 +6,21 @@ package com.muammarahlnn.learnyscape.core.model.data
  */
 data class StudentQuizAnswerModel(
     val id: String,
-    val option: String,
-    val description: String,
-)
+    val question: String,
+    val optionA: QuestionOption,
+    val optionB: QuestionOption,
+    val optionC: QuestionOption,
+    val optionD: QuestionOption,
+    val optionE: QuestionOption,
+    val solution: Option,
+) {
+
+    class QuestionOption(
+        val option: Option,
+        val description: String,
+    )
+
+    enum class Option {
+        A, B, C, D, E,
+    }
+}
