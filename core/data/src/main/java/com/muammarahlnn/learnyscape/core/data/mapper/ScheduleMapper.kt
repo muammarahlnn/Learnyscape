@@ -19,7 +19,7 @@ fun ScheduleResponse.toScheduleModel() = ScheduleModel(
     className = className,
     startTime = startTime.toLocalTime(),
     endTime = endTime.toLocalTime(),
-    day = DayModel.getDayModel(day),
+    day = DayModel.fromDayName(day),
 )
 
 fun Int.toLocalTime(): LocalTime = LocalTime(

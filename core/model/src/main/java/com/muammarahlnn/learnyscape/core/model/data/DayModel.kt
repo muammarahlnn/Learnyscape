@@ -16,15 +16,12 @@ enum class DayModel(val displayedText: String) {
 
     companion object {
 
-        fun getDayModel(day: String): DayModel = when (day) {
-            MONDAY.name -> MONDAY
-            TUESDAY.name -> TUESDAY
-            WEDNESDAY.name -> WEDNESDAY
-            THURSDAY.name -> THURSDAY
-            FRIDAY.name -> FRIDAY
-            SATURDAY.name -> SATURDAY
-            SUNDAY.name -> SUNDAY
-            else -> throw IllegalArgumentException("The given day not matched any DayModel")
+        private val dayLookup by lazy {
+            entries.associateBy { it.name }
         }
+
+        fun fromDayName(dayName: String): DayModel = dayLookup[dayName]
+            ?: throw IllegalArgumentException("The given day not matched any DayModel")
+
     }
 }
