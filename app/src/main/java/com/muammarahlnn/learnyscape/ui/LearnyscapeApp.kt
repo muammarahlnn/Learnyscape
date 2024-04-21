@@ -8,7 +8,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,18 +34,13 @@ fun LearnyscapeApp(
     ),
     viewModel: LearnyscapeViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.checkIfUserLoggedIn()
-    }
-    val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsStateWithLifecycle()
-
     LearnyscapeBackground {
         Scaffold(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground,
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
         ) { padding ->
-            if (isUserLoggedIn) {
+            if (viewModel.isUserLoggedIn()) {
                 ChangeStatusBarColor(statusBarColor = appState.currentStatusBarColor)
 
                 val user by appState.user.collectAsStateWithLifecycle()

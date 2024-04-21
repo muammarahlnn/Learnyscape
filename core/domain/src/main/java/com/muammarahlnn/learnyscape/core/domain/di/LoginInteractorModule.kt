@@ -1,7 +1,6 @@
 package com.muammarahlnn.learnyscape.core.domain.di
 
 import com.muammarahlnn.learnyscape.core.data.repository.LoginRepository
-import com.muammarahlnn.learnyscape.core.domain.login.IsUserLoggedInUseCase
 import com.muammarahlnn.learnyscape.core.domain.login.PostLoginUserUseCase
 import com.muammarahlnn.learnyscape.core.domain.login.SaveUserUseCase
 import dagger.Module
@@ -17,13 +16,6 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 object LoginInteractorModule {
-
-    @Provides
-    fun providesIsUserLoggedInUseCase(
-        loginRepository: LoginRepository
-    ): IsUserLoggedInUseCase = IsUserLoggedInUseCase(
-        loginRepository::isUserLoggedIn
-    )
 
     @Provides
     fun providesPostLoginUserUseCase(
