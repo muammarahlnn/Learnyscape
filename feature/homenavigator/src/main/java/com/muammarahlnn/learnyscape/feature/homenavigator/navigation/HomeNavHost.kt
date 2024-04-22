@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import com.muammarahlnn.learnyscape.feature.home.navigation.HOME_ROUTE
 import com.muammarahlnn.learnyscape.feature.home.navigation.homeScreen
 import com.muammarahlnn.learnyscape.feature.homenavigator.HomeNavigatorState
-import com.muammarahlnn.learnyscape.feature.profile.navigation.profileScreenn
+import com.muammarahlnn.learnyscape.feature.profile.navigation.profileScreen
 import com.muammarahlnn.learnyscape.feature.schedule.navigation.scheduleScreen
 import com.muammarahlnn.learnyscape.feature.search.navigation.searchScreen
 
@@ -24,6 +24,7 @@ internal fun HomeNavHost(
     navigateToPendingRequestClass: () -> Unit,
     navigateToCamera: () -> Unit,
     navigateToChangePassword: () -> Unit,
+    navigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
     startDestination: String = HOME_ROUTE,
 ) {
@@ -43,9 +44,10 @@ internal fun HomeNavHost(
         scheduleScreen(
             navigateToClass = navigateToClass,
         )
-        profileScreenn(
+        profileScreen(
             navigateToCamera = navigateToCamera,
             navigateToChangePassword = navigateToChangePassword,
+            navigateToLogin = navigateToLogin,
         )
     }
 }

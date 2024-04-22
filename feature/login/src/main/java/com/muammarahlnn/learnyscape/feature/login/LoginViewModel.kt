@@ -81,11 +81,13 @@ class LoginViewModel @Inject constructor(
                                 TAG,
                                 "User logged in: ${userModel.fullName} role -> ${userModel.role.name}"
                             )
+
                             updateState {
                                 it.copy(
+                                    isLoginSuccess = true,
+                                    loading = false,
                                     username = "",
                                     password = "",
-                                    loading = false
                                 )
                             }
                         }.onNoInternet { message ->

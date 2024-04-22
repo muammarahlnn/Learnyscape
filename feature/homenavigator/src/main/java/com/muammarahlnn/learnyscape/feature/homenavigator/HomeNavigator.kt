@@ -30,6 +30,7 @@ internal fun HomeNavigatorRoute(
     navigateToCamera: () -> Unit,
     navigateToPendingRequestClass: () -> Unit,
     navigateToChangePassword: () -> Unit,
+    navigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     HomeNavigator(
@@ -38,6 +39,7 @@ internal fun HomeNavigatorRoute(
         navigateToCamera = navigateToCamera,
         navigateToPendingRequestClass = navigateToPendingRequestClass,
         navigateToChangePassword = navigateToChangePassword,
+        navigateToLogin = navigateToLogin,
         modifier = modifier,
     )
 }
@@ -49,6 +51,7 @@ private fun HomeNavigator(
     navigateToCamera: () -> Unit,
     navigateToPendingRequestClass: () -> Unit,
     navigateToChangePassword: () -> Unit,
+    navigateToLogin: () -> Unit,
     modifier: Modifier = Modifier,
     state: HomeNavigatorState = rememberHomeNavigatorState()
 ) {
@@ -72,6 +75,7 @@ private fun HomeNavigator(
             navigateToPendingRequestClass = navigateToPendingRequestClass,
             navigateToCamera = navigateToCamera,
             navigateToChangePassword = navigateToChangePassword,
+            navigateToLogin = navigateToLogin,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)

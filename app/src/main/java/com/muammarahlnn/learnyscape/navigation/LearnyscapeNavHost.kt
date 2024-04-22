@@ -13,8 +13,12 @@ import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.classNavig
 import com.muammarahlnn.learnyscape.feature.classnavigator.navigation.navigateToClassNavigator
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.HOME_NAVIGATOR_ROUTE
 import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.homeNavigator
+import com.muammarahlnn.learnyscape.feature.homenavigator.navigation.navigateToHomeNavigator
 import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.joinRequestScreen
 import com.muammarahlnn.learnyscape.feature.joinrequest.navigation.navigateToJoinRequest
+import com.muammarahlnn.learnyscape.feature.login.navigation.LOGIN_ROUTE
+import com.muammarahlnn.learnyscape.feature.login.navigation.loginScreen
+import com.muammarahlnn.learnyscape.feature.login.navigation.navigateToLogin
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.navigateToNotifications
 import com.muammarahlnn.learnyscape.feature.notifications.navigation.notificationsScreen
 import com.muammarahlnn.learnyscape.feature.pendingrequest.navigation.navigateToPendingRequest
@@ -38,8 +42,8 @@ import com.muammarahlnn.submissiondetails.navigation.submissionDetailsScreen
 @Composable
 fun LearnyscapeNavHost(
     appState: LearnyscapeAppState,
+    startDestination: String,
     modifier: Modifier = Modifier,
-    startDestination: String = HOME_NAVIGATOR_ROUTE,
 ) {
     val navController = appState.navController
     NavHost(
@@ -71,12 +75,20 @@ fun LearnyscapeNavHost(
             )
         }
     ) {
+        loginScreen(
+            navigateToHomeNavigator = {
+                navController.navigateToHomeNavigator(popUpToRoute = LOGIN_ROUTE)
+            }
+        )
         homeNavigator(
             navigateToNotifications = navController::navigateToNotifications,
             navigateToClass = navController::navigateToClassNavigator,
             navigateToCamera = navController::navigateToCamera,
             navigateToPendingRequestClass = navController::navigateToPendingRequest,
-            navigateToChangePassword = navController::navigateToChangePassword
+            navigateToChangePassword = navController::navigateToChangePassword,
+            navigateToLogin = {
+                navController.navigateToLogin(popUpToRoute = HOME_NAVIGATOR_ROUTE)
+            }
         )
         classNavigator(
             navigateBack = navController::popBackStack,

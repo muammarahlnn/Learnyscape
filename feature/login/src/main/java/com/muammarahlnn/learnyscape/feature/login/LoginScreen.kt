@@ -27,6 +27,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,7 +45,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.muammarahlnn.learnyscape.core.ui.LearnyscapeLogoText
-import com.muammarahlnn.learnyscape.core.ui.util.ChangeStatusBarColor
 import com.muammarahlnn.learnyscape.core.ui.util.CollectEffect
 import com.muammarahlnn.learnyscape.core.ui.util.use
 import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
@@ -55,11 +55,16 @@ import com.muammarahlnn.learnyscape.core.designsystem.R as designSystemR
  */
 
 @Composable
-fun LoginRoute(
+internal fun LoginRoute(
+    controller: LoginController,
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
 ) {
-    ChangeStatusBarColor(statusBarColor = MaterialTheme.colorScheme.background)
+    CollectEffect(controller.navigation) { navigation ->
+        when (navigation) {
+            LoginNavigation.NavigateToHomeNavigator -> controller.navigateToHomeNavigator()
+        }
+    }
 
     val (state, event) = use(contract = viewModel)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -78,6 +83,7 @@ fun LoginRoute(
         state = state,
         snackbarHostState = snackbarHostState,
         event = { event(it) },
+        navigate = controller::navigate,
         modifier = modifier,
     )
 }
@@ -87,8 +93,13 @@ private fun LoginScreen(
     state: LoginContract.State,
     snackbarHostState: SnackbarHostState,
     event: (LoginContract.Event) -> Unit,
+    navigate: (LoginNavigation) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    LaunchedEffect(state.isLoginSuccess) {
+        if (state.isLoginSuccess) navigate(LoginNavigation.NavigateToHomeNavigator)
+    }
+
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = {

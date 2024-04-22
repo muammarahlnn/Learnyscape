@@ -14,6 +14,7 @@ interface ProfileContract  {
         val profilePicUiState: PhotoProfileImageUiState = PhotoProfileImageUiState.Loading,
         val showChangePhotoProfileBottomSheet: Boolean = false,
         val showLogoutDialog: Boolean = false,
+        val isLogout: Boolean = false,
     )
 
     sealed interface Event {

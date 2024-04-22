@@ -11,6 +11,7 @@ interface LoginContract {
         val username: String = "",
         val password: String = "",
         val isLoginButtonEnabled: Boolean = false,
+        val isLoginSuccess: Boolean = false,
     )
 
     sealed interface Event {

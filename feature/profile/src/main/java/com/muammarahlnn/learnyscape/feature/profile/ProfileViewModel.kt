@@ -147,6 +147,12 @@ class ProfileViewModel @Inject constructor(
     private fun logout() {
         viewModelScope.launch {
             logoutUseCase()
+            updateState {
+                it.copy(
+                    showLogoutDialog = false,
+                    isLogout = true,
+                )
+            }
         }
     }
 

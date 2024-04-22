@@ -20,9 +20,10 @@ fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
     this.navigate(PROFILE_ROUTE, navOptions)
 }
 
-fun NavGraphBuilder.profileScreenn(
+fun NavGraphBuilder.profileScreen(
     navigateToCamera: () -> Unit,
     navigateToChangePassword: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     composable(route = PROFILE_ROUTE) {
         ProfileRoute(
@@ -30,6 +31,7 @@ fun NavGraphBuilder.profileScreenn(
                 scope = rememberCoroutineScope(),
                 navigateToCamera = navigateToCamera,
                 navigateToChangePassword = navigateToChangePassword,
+                navigateToLogin = navigateToLogin,
             )
         )
     }

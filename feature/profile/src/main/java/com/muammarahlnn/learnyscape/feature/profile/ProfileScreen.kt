@@ -74,6 +74,9 @@ internal fun ProfileRoute(
 
             ProfileNavigation.NavigateToChangePassword ->
                 controller.navigateToChangePassword()
+
+            ProfileNavigation.NavigateToLogin ->
+                controller.navigateToLogin()
         }
     }
 
@@ -103,9 +106,8 @@ internal fun ProfileRoute(
             is Effect.ShowToast ->
                 Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
 
-            Effect.OpenGallery -> {
+            Effect.OpenGallery ->
                 launcher.launch("image/*")
-            }
         }
     }
 
@@ -140,6 +142,10 @@ private fun ProfileScreen(
             onLogout = { event(Event.OnLogout) },
             onDismiss = { event(Event.OnShowLogoutDialog(false)) },
         )
+    }
+
+    if (state.isLogout) {
+        navigate(ProfileNavigation.NavigateToLogin)
     }
 
     Scaffold(

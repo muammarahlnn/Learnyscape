@@ -1,5 +1,6 @@
 package com.muammarahlnn.learnyscape.feature.homenavigator.navigation
 
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.muammarahlnn.learnyscape.feature.homenavigator.HomeNavigatorRoute
@@ -12,12 +13,21 @@ import com.muammarahlnn.learnyscape.feature.homenavigator.HomeNavigatorRoute
 
 const val HOME_NAVIGATOR_ROUTE = "home_navigator_route"
 
+fun NavController.navigateToHomeNavigator(popUpToRoute: String) {
+    this.navigate(HOME_NAVIGATOR_ROUTE) {
+        popUpTo(popUpToRoute) {
+            inclusive = true
+        }
+    }
+}
+
 fun NavGraphBuilder.homeNavigator(
     navigateToNotifications: () -> Unit,
     navigateToClass: (String) -> Unit,
     navigateToCamera: () -> Unit,
     navigateToPendingRequestClass: () -> Unit,
     navigateToChangePassword: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     composable(route = HOME_NAVIGATOR_ROUTE) {
         HomeNavigatorRoute(
@@ -26,6 +36,7 @@ fun NavGraphBuilder.homeNavigator(
             navigateToCamera = navigateToCamera,
             navigateToPendingRequestClass = navigateToPendingRequestClass,
             navigateToChangePassword = navigateToChangePassword,
+            navigateToLogin = navigateToLogin,
         )
     }
 }
