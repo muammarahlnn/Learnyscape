@@ -30,9 +30,10 @@ class LoginRepositoryImpl @Inject constructor(
             loginResponse.toLoginModel()
         }
 
-    override fun saveUser(token: String): Flow<UserModel> =
-        loginNetworkDataSource.getCredential(token).map { userResponse ->
-            learnyscapePreferences.saveAccessToken(token)
+    override fun saveUser(accessToken: String, refreshToken: String): Flow<UserModel> =
+        loginNetworkDataSource.getCredential(accessToken).map { userResponse ->
+            learnyscapePreferences.saveAccessToken(accessToken)
+            learnyscapePreferences.saveRefreshToken(refreshToken)
             learnyscapePreferences.saveUser(
                 userResponse.toUserEntity()
             )

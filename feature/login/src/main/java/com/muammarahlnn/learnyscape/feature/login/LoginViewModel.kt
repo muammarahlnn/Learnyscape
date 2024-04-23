@@ -73,7 +73,10 @@ class LoginViewModel @Inject constructor(
                 result.onLoading {
                     updateStateOnLoading()
                 }.onSuccess { loginModel ->
-                    saveUserUseCase(loginModel.accessToken).asResult().collect { result ->
+                    saveUserUseCase(
+                        accessToken = loginModel.accessToken,
+                        refreshToken = loginModel.refreshToken,
+                    ).asResult().collect { result ->
                         result.onLoading {
                             updateStateOnLoading()
                         }.onSuccess { userModel ->

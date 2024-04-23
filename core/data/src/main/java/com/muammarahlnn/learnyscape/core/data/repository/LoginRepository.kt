@@ -16,7 +16,10 @@ interface LoginRepository {
         password: String,
     ): Flow<LoginModel>
 
-    fun saveUser(token: String): Flow<UserModel>
+    fun saveUser(
+        accessToken: String,
+        refreshToken: String,
+    ): Flow<UserModel>
 
     fun isUserLoggedIn(): Flow<Boolean>
 }

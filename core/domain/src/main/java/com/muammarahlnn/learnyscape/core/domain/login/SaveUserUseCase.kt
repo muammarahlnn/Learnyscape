@@ -10,5 +10,8 @@ import kotlinx.coroutines.flow.Flow
  */
 fun interface SaveUserUseCase {
 
-    operator fun invoke(token: String): Flow<UserModel>
+    operator fun invoke(
+        accessToken: String,
+        refreshToken: String,
+    ): Flow<UserModel>
 }

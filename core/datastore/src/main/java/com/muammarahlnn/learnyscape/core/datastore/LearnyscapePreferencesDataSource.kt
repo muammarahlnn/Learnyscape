@@ -29,6 +29,8 @@ class LearnyscapePreferencesDataSource @Inject constructor(
 
         val TOKEN = stringPreferencesKey("token")
 
+        val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+
         val FULL_NAME = stringPreferencesKey("full_name")
 
         val USERNAME = stringPreferencesKey("username")
@@ -71,9 +73,20 @@ class LearnyscapePreferencesDataSource @Inject constructor(
         }
     }
 
+    suspend fun saveRefreshToken(refreshToken: String) {
+        preferences.edit { pref ->
+            pref[PreferencesKeys.REFRESH_TOKEN] = refreshToken
+        }
+    }
+
     fun getAccessToken(): Flow<String> =
         preferences.data.map { pref ->
             pref[PreferencesKeys.TOKEN] ?: ""
+        }
+
+    fun getRefreshToken(): Flow<String> =
+        preferences.data.map { pref ->
+            pref[PreferencesKeys.REFRESH_TOKEN] ?: ""
         }
 
 }

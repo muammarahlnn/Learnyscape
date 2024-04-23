@@ -13,6 +13,7 @@ import com.muammarahlnn.learnyscape.core.network.api.ReferencesApi
 import com.muammarahlnn.learnyscape.core.network.api.TasksApi
 import com.muammarahlnn.learnyscape.core.network.api.UsersApi
 import com.muammarahlnn.learnyscape.core.network.api.WaitingListApi
+import com.muammarahlnn.learnyscape.core.network.authenticator.TokenAuthenticator
 import com.muammarahlnn.learnyscape.core.network.interceptor.BearerTokenInterceptor
 import com.muammarahlnn.learnyscape.core.network.interceptor.NetworkConnectionInterceptor
 import dagger.Module
@@ -21,6 +22,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
+import okhttp3.Authenticator
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -52,9 +54,11 @@ object NetworkModule {
     fun providesBearerTokenOkHttpClient(
         @ApplicationContext context: Context,
         learnyscapePreferences: LearnyscapePreferencesDataSource,
+        tokenAuthenticator: TokenAuthenticator,
     ): OkHttpClient = buildOkHttpClient(
         context = context,
-        customInterceptor = BearerTokenInterceptor(learnyscapePreferences)
+        customInterceptor = BearerTokenInterceptor(learnyscapePreferences),
+        customAuthenticator = tokenAuthenticator,
     )
 
     @Provides
@@ -144,10 +148,9 @@ internal const val BEARER_TOKEN_AUTH = "BearerTokenAuth"
 private fun buildOkHttpClient(
     context: Context,
     customInterceptor: Interceptor? = null,
+    customAuthenticator: Authenticator? = null,
 ): OkHttpClient = OkHttpClient.Builder().apply {
-    if (customInterceptor != null) {
-        addInterceptor(customInterceptor)
-    }
+    if (customInterceptor != null) addInterceptor(customInterceptor)
     addInterceptor(NetworkConnectionInterceptor(context))
     addInterceptor(
         HttpLoggingInterceptor().apply {
@@ -156,6 +159,9 @@ private fun buildOkHttpClient(
             }
         }
     )
+
+    if (customAuthenticator != null) authenticator(customAuthenticator)
+
     connectTimeout(120, TimeUnit.SECONDS)
     readTimeout(120, TimeUnit.SECONDS)
 }.build()
