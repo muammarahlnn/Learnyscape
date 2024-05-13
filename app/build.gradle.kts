@@ -2,6 +2,7 @@ plugins {
     id("learnyscape.android.application")
     id("learnyscape.android.application.compose")
     id("learnyscape.android.hilt")
+    id("learnyscape.android.application.firebase")
 }
 
 android {

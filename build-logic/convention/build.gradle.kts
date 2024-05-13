@@ -64,6 +64,11 @@ gradlePlugin {
             implementationClass = "AndroidRoomConventionPlugin"
         }
 
+        register("androidFirebase") {
+            id = "learnyscape.android.application.firebase"
+            implementationClass = "AndroidApplicationFirebaseConventionPlugin"
+        }
+
         register("jvmLibrary") {
             id = "learnyscape.jvm.library"
             implementationClass = "JvmLibraryConventionPlugin"
