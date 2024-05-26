@@ -66,4 +66,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.window.manager)
     implementation(libs.coil.kt)
+
+    testImplementation(project(":core:testing"))
 }
