@@ -2,6 +2,7 @@
 <resources>
     <string name="learnyscape">Learnyscape</string>
     <string name="home">Home</string>
+    <string name="home_loading_desc">Loading home…</string>
     <string name="notifications">Notifications</string>
     <string name="empty_class_illustration_desc">You haven\'t join any class yet</string>
     <string name="search_placeholder_text">Search your class…</string>

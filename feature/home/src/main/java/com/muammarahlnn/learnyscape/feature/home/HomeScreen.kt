@@ -38,6 +38,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -101,7 +103,7 @@ internal fun HomeRoute(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-private fun HomeScreen(
+internal fun HomeScreen(
     state: State,
     refreshState: RefreshState,
     event: (Event) -> Unit,
@@ -277,10 +279,14 @@ private fun ClassCard(
 private fun HomeContentLoading(
     modifier: Modifier = Modifier,
 ) {
+    val contentDescription = stringResource(id = R.string.home_loading_desc)
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .semantics {
+                this.contentDescription = contentDescription
+            }
     ) {
         Box(
             modifier = Modifier
