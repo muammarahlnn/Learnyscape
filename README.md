@@ -21,7 +21,7 @@ their schedule for today.
 # Stacks
 - Using fully [Jetpack Compose](https://developer.android.com/jetpack/compose) to create UI and [Navigation Component](https://developer.android.com/develop/ui/compose/navigation) to handle navigation between screens
 - Using [Modularization](https://developer.android.com/topic/modularization) and [Version Catalogs](https://developer.android.com/build/migrate-to-catalogs) to handle multi-modules
-- Using [Clean Architecture](https://developer.android.com/topic/architecture) and MVI architecture pattern
+- Using [Clean Architecture](https://developer.android.com/topic/architecture) and [MVI](https://proandroiddev.com/migrate-from-mvvm-to-mvi-f938c27c214f) architecture pattern
 - Using [Retrofit](https://square.github.io/retrofit/) and [Kotlin Serialization](https://kotlinlang.org/docs/serialization.html#serialize-and-deserialize-json) to handle network data
 - Using [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for local data
 - Using [Hilt](https://developer.android.com/training/dependency-injection/hilt-android) for DI
