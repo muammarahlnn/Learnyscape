@@ -13,7 +13,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.muammarahlnn.learnyscape.core.designsystem.theme.LearnyscapeTheme
 import com.muammarahlnn.learnyscape.core.domain.home.GetLoggedInUserUseCase
-import com.muammarahlnn.learnyscape.core.domain.login.IsUserLoggedInUseCase
 import com.muammarahlnn.learnyscape.ui.LearnyscapeApp
 import com.muammarahlnn.learnyscape.ui.rememberLearnyscapeAppState
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,9 +26,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var getLoggedInUserUseCase: GetLoggedInUserUseCase
-
-    @Inject
-    lateinit var isUserLoggedInUseCase: IsUserLoggedInUseCase
 
     private val viewModel: MainActivityViewModel by viewModels()
 

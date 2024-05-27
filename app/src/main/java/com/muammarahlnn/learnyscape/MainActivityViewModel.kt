@@ -25,12 +25,4 @@ internal class MainActivityViewModel @Inject constructor(
             MainActivityUiState.Success(isUserLoggedInUseCase())
         }
     }
-
-//    val uiState: StateFlow<MainActivityUiState> = isUserLoggedInUseCase().map { isUserLoggedIn ->
-//        MainActivityUiState.Success(isUserLoggedIn)
-//    }.stateIn(
-//        scope = viewModelScope,
-//        initialValue = MainActivityUiState.Loading,
-//        started = SharingStarted.WhileSubscribed(5_000)
-//    )
 }
