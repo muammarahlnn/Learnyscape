@@ -1,6 +1,7 @@
 plugins {
     id("learnyscape.android.library")
     id("learnyscape.android.library.compose")
+    id("learnyscape.android.hilt")
 }
 
 android {
@@ -12,6 +13,7 @@ dependencies {
     api(libs.androidx.compose.ui.test)
     api(project(":core:data"))
     api(project(":core:model"))
+    api(project(":core:ui"))
 
     debugApi(libs.androidx.compose.ui.testManifest)
 
