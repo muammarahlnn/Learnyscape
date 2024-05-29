@@ -33,8 +33,10 @@ their schedule for today.
 **Learnyscape** uses internal server so you can't build and run it.
 But you can try it by download the .apk file in [releases](https://github.com/muammarahlnn/Learnyscape/releases/tag/v1.0.0) 
 (100% guaranteed safe, not like wedding invitation apk). And login with these accounts:
-- Lecturer<br>Username: guest1<br>Password: guest
-- Student<br>Username: guest2<br>Password: guest
+- Lecturer<br>Username: demodosen<br>Password: demo
+- Student<br>Username: demomahasiswa<br>Password: demo
+
+Note: Please don't change the password :)
 
 # License
 **Learnyscape** is distributed under the terms of the Apache License (Version 2.0)
