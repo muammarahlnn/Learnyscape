@@ -4,7 +4,7 @@ import com.muammarahlnn.learnyscape.core.testing.repository.TestResourceCreateRe
 import com.muammarahlnn.learnyscape.core.testing.util.MainDispatcherRule
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
+import org.junit.Assert
 import org.junit.Rule
 import org.junit.Test
 import java.time.LocalDateTime
@@ -41,7 +41,7 @@ class CreateQuizUseCaseTest {
         resourceCreateRepository.quizQuestionsAdded(testResponse)
 
         // then
-        assertEquals(
+        Assert.assertEquals(
             createQuiz.first(),
             testResponse
         )
