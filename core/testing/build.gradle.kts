@@ -11,6 +11,8 @@ android {
 dependencies {
     api(kotlin("test"))
     api(libs.androidx.compose.ui.test)
+    api(project(":core:datastore"))
+    api(project(":core:network"))
     api(project(":core:data"))
     api(project(":core:model"))
     api(project(":core:ui"))

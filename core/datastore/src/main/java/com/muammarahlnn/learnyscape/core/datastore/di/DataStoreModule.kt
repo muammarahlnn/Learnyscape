@@ -2,6 +2,7 @@ package com.muammarahlnn.learnyscape.core.datastore.di
 
 import android.content.Context
 import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSource
+import com.muammarahlnn.learnyscape.core.datastore.LearnyscapePreferencesDataSourceImpl
 import com.muammarahlnn.learnyscape.core.datastore.learnyscapePreferences
 import dagger.Module
 import dagger.Provides
@@ -21,9 +22,9 @@ object DataStoreModule {
 
     @Provides
     @Singleton
-    fun providesLearnyscapePreferencesDataStore(
+    fun providesLearnyscapePreferencesDataSource(
         @ApplicationContext context: Context
-    ): LearnyscapePreferencesDataSource = LearnyscapePreferencesDataSource(
+    ): LearnyscapePreferencesDataSource = LearnyscapePreferencesDataSourceImpl(
         context.learnyscapePreferences
     )
 }

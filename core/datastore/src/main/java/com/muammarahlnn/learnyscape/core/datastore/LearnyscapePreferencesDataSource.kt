@@ -1,92 +1,25 @@
 package com.muammarahlnn.learnyscape.core.datastore
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.muammarahlnn.learnyscape.core.datastore.model.UserEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-
 
 /**
- * @author Muammar Ahlan Abimanyu (muammarahlnn)
- * @file LearnyscapePreferencesDataStore, 06/10/2023 21.06 by Muammar Ahlan Abimanyu
+ * @Author Muammar Ahlan Abimanyu
+ * @File LearnyscapePreferencesDataStore, 31/05/2024 19.28
  */
+interface LearnyscapePreferencesDataSource {
 
-val Context.learnyscapePreferences: DataStore<Preferences> by preferencesDataStore("learnyscape")
+    suspend fun saveUser(user: UserEntity)
 
-class LearnyscapePreferencesDataSource @Inject constructor(
-    private val preferences: DataStore<Preferences>
-) {
+    suspend fun removeUser()
 
-    private object PreferencesKeys {
+    fun getUser(): Flow<UserEntity>
 
-        val ID = stringPreferencesKey("id")
+    suspend fun saveAccessToken(accessToken: String)
 
-        val TOKEN = stringPreferencesKey("token")
+    suspend fun saveRefreshToken(refreshToken: String)
 
-        val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
+    fun getAccessToken(): Flow<String>
 
-        val FULL_NAME = stringPreferencesKey("full_name")
-
-        val USERNAME = stringPreferencesKey("username")
-
-        val ROLE = stringPreferencesKey("role")
-    }
-
-    suspend fun saveUser(user: UserEntity) {
-        preferences.edit { pref ->
-            pref[PreferencesKeys.ID] = user.id
-            pref[PreferencesKeys.FULL_NAME] = user.fullName
-            pref[PreferencesKeys.USERNAME] = user.username
-            pref[PreferencesKeys.ROLE] = user.role
-        }
-    }
-
-    suspend fun removeUser() {
-        preferences.edit { pref ->
-            pref[PreferencesKeys.ID] = ""
-            pref[PreferencesKeys.TOKEN] = ""
-            pref[PreferencesKeys.FULL_NAME] = ""
-            pref[PreferencesKeys.USERNAME] = ""
-            pref[PreferencesKeys.ROLE] = ""
-        }
-    }
-
-    fun getUser(): Flow<UserEntity> =
-        preferences.data.map { pref ->
-            UserEntity(
-                id = pref[PreferencesKeys.ID] ?: "",
-                username = pref[PreferencesKeys.USERNAME] ?: "",
-                fullName = pref[PreferencesKeys.FULL_NAME] ?: "",
-                role = pref[PreferencesKeys.ROLE] ?: "",
-            )
-        }
-
-    suspend fun saveAccessToken(accessToken: String) {
-        preferences.edit { pref ->
-            pref[PreferencesKeys.TOKEN] = accessToken
-        }
-    }
-
-    suspend fun saveRefreshToken(refreshToken: String) {
-        preferences.edit { pref ->
-            pref[PreferencesKeys.REFRESH_TOKEN] = refreshToken
-        }
-    }
-
-    fun getAccessToken(): Flow<String> =
-        preferences.data.map { pref ->
-            pref[PreferencesKeys.TOKEN] ?: ""
-        }
-
-    fun getRefreshToken(): Flow<String> =
-        preferences.data.map { pref ->
-            pref[PreferencesKeys.REFRESH_TOKEN] ?: ""
-        }
-
+    fun getRefreshToken(): Flow<String>
 }
