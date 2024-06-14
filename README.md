@@ -30,6 +30,7 @@ their schedule for today.
 - Implemented [unit test](https://developer.android.com/training/testing/local-tests) and [Compose UI test](https://developer.android.com/develop/ui/compose/testing)
 
 # How to run
+### ⚠️ Currently you can't try it due to expired server
 **Learnyscape** uses internal server so you can't build and run it.
 But you can try it by download the .apk file in [releases](https://github.com/muammarahlnn/Learnyscape/releases/tag/v1.0.0) 
 (100% guaranteed safe, not like wedding invitation apk). And login with these accounts:
