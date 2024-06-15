@@ -162,8 +162,9 @@ private fun buildOkHttpClient(
 
     if (customAuthenticator != null) authenticator(customAuthenticator)
 
-    connectTimeout(120, TimeUnit.SECONDS)
-    readTimeout(120, TimeUnit.SECONDS)
+    connectTimeout(10, TimeUnit.SECONDS)
+    writeTimeout(10, TimeUnit.SECONDS)
+    readTimeout(30, TimeUnit.SECONDS)
 }.build()
 
 private fun buildRetrofit(

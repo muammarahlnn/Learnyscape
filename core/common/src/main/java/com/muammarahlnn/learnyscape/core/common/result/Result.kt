@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import retrofit2.HttpException
+import java.io.IOException
 
 
 /**
@@ -96,16 +97,38 @@ fun <T> Flow<T>.asResult(): Flow<Result<T>> {
             }
 
             is HttpException -> {
-                val responseBody = it.response()?.errorBody()?.string()
-                val errorResponse = responseBody?.convertToErrorResponse()
-                errorResponse?.error?.let { error ->
-                    emit(
+                val connectionTimedOutCode = 522
+                when (it.code()) {
+                    connectionTimedOutCode -> emit(
                         Result.Error(
-                            code = error.code.orEmpty(),
-                            message = error.message,
+                            code = it.code().toString(),
+                            message = "Server is currently down, please try again later.",
                         )
                     )
-                } ?: emit(Result.Exception(it))
+
+                    else -> {
+                        val responseBody = it.response()?.errorBody()?.string()
+                        val errorResponse = responseBody?.convertToErrorResponse()
+                        errorResponse?.error?.let { error ->
+                            emit(
+                                Result.Error(
+                                    code = error.code.orEmpty(),
+                                    message = error.message,
+                                )
+                            )
+                        } ?: emit(Result.Exception(it))
+                    }
+                }
+            }
+
+            is IOException -> {
+                val networkReadTimeoutErrorCode = 598
+                emit(
+                    Result.Error(
+                        code = networkReadTimeoutErrorCode.toString(),
+                        message = "Connection timed out, please try again later.",
+                    )
+                )
             }
 
             else -> emit(Result.Exception(it))
