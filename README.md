@@ -1,5 +1,7 @@
 ![Learnyscape](docs/images/learnyscape-backdrop.png "Learnyscape")
 
+<a href="https://play.google.com/store/apps/details?id=com.muammarahlnn.learnyscape"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="100"></a>
+
 Learnyscape
 ==================
 **Learnyscape** is a Learning Management System (LMS) Android app. It's intended for my Bachelor thesis project.
@@ -31,10 +33,10 @@ their schedule for today.
 
 # How to run
 **Learnyscape** uses internal server so you can't build and run it.
-But you can try it by download the .apk file in [releases](https://github.com/muammarahlnn/Learnyscape/releases/tag/v1.0.0) 
+But you can try it by download the app-debug.apk file in [releases](https://github.com/muammarahlnn/Learnyscape/releases/tag/v1.1.1) 
 (100% guaranteed safe, not like wedding invitation apk). And login with these accounts:
-- Lecturer<br>Username: demodosen<br>Password: demo
-- Student<br>Username: demomahasiswa<br>Password: demo
+- Lecturer<br>Username: test-dosen<br>Password: test
+- Student<br>Username: test-mahasiswa<br>Password: test
 
 Note: Please don't change the password :)
 
