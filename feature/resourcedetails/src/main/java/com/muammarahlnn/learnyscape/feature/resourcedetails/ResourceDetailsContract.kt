@@ -34,6 +34,8 @@ interface ResourceDetailsContract {
 
         data object Success : UiState
 
+        data object NotFound : UiState
+
         data class Error(val message: String) : UiState
     }
 

@@ -50,6 +50,9 @@ class AssignmentSubmissionViewModel @Inject constructor(
             is Event.SetAssignmentId ->
                 setAssignmentId(event.assignmentId)
 
+            is Event.SetIsAssignmentDeleted ->
+                setIsAssignmentDelete(event.isAssignmentDeleted)
+
             Event.FetchStudentSubmission ->
                 fetchStudentSubmission()
 
@@ -97,6 +100,14 @@ class AssignmentSubmissionViewModel @Inject constructor(
         updateState {
             it.copy(
                 assignmentId = assignmentId,
+            )
+        }
+    }
+
+    private fun setIsAssignmentDelete(isAssignmentDeleted: Boolean) {
+        updateState {
+            it.copy(
+                isAssignmentDeleted = isAssignmentDeleted,
             )
         }
     }

@@ -12,6 +12,7 @@ interface AssignmentSubmissionContract {
     data class State(
         val uiState: UiState = UiState.Loading,
         val assignmentId: String = "",
+        val isAssignmentDeleted: Boolean = false,
         val submission: AssignmentSubmissionModel = AssignmentSubmissionModel(),
         val isSaveStudentCurrentWorkLoading: Boolean = false,
         val isStudentCurrentWorkChange: Boolean = false,
@@ -38,6 +39,8 @@ interface AssignmentSubmissionContract {
     sealed interface Event {
 
         data class SetAssignmentId(val assignmentId: String) : Event
+
+        data class SetIsAssignmentDeleted(val isAssignmentDeleted: Boolean) : Event
 
         data object FetchStudentSubmission : Event
 

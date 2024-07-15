@@ -35,5 +35,7 @@ internal fun DeletingResourceDialog(
             message = state.message,
             onDismiss = onDismiss
         )
+
+        else -> Unit
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +46,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun AssignmentSubmissionSheet(
     assignmentId: String,
+    isAssignmentDeleted: Boolean,
     topAppBar: @Composable () -> Unit,
     navigateToCamera: () -> Unit,
     modifier: Modifier = Modifier,
@@ -57,6 +59,10 @@ fun AssignmentSubmissionSheet(
             yield(AssignmentSubmissionContract.Event.SetAssignmentId(assignmentId))
             yield(AssignmentSubmissionContract.Event.FetchStudentSubmission)
         }.forEach { event(it) }
+    }
+
+    LaunchedEffect(isAssignmentDeleted) {
+        event(AssignmentSubmissionContract.Event.SetIsAssignmentDeleted(isAssignmentDeleted))
     }
 
     val context = LocalContext.current
@@ -113,11 +119,21 @@ private fun AssignmentSubmissionSheet(
     content: @Composable (PaddingValues) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = rememberStandardBottomSheetState(
+            skipHiddenState = false
+        )
+    )
     val coroutineScope = rememberCoroutineScope()
 
     val density  = LocalDensity.current
     var bottomPadding by remember { mutableStateOf(0.dp) }
+
+    LaunchedEffect(state.isAssignmentDeleted) {
+        if (state.isAssignmentDeleted) {
+            scaffoldState.bottomSheetState.hide()
+        }
+    }
 
     Box(modifier = modifier) {
         BottomSheetScaffold(
@@ -153,7 +169,7 @@ private fun AssignmentSubmissionSheet(
             content = content,
         )
 
-        if (!state.submission.turnInStatus) {
+        if (!state.submission.turnInStatus && !state.isAssignmentDeleted) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

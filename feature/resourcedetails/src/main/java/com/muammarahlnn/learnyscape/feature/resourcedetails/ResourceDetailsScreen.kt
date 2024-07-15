@@ -216,6 +216,7 @@ private fun ResourceDetailsScreen(
         when (state.resourceType) {
             ClassResourceType.ASSIGNMENT -> AssignmentSubmissionSheet(
                 assignmentId = state.resourceId,
+                isAssignmentDeleted = state.uiState is ResourceDetailsContract.UiState.NotFound,
                 topAppBar = resourceDetailsTopAppBar,
                 navigateToCamera = { navigate(ResourceDetailsNavigation.NavigateToCamera) },
                 modifier = Modifier.fillMaxSize(),

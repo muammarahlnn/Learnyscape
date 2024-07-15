@@ -209,8 +209,13 @@ class ResourceDetailsViewModel @Inject constructor(
             onSuccess(data)
         }.onNoInternet { message ->
             onErrorFetchResourceDetails(message)
-        }.onError { _, message ->
-            onErrorFetchResourceDetails(message)
+        }.onError { code, message ->
+            val notFoundErrorCodeResponse = "E444"
+            if (code.equals(notFoundErrorCodeResponse, true)) {
+                onFetchResourceDetailsNotFound()
+            } else {
+                onErrorFetchResourceDetails(message)
+            }
         }.onException { exception, message ->
             Log.e(TAG, exception?.message.toString())
             onErrorFetchResourceDetails(message)
@@ -221,6 +226,14 @@ class ResourceDetailsViewModel @Inject constructor(
         updateState {
             it.copy(
                 uiState = UiState.Loading
+            )
+        }
+    }
+
+    private fun onFetchResourceDetailsNotFound() {
+        updateState {
+            it.copy(
+                uiState = UiState.NotFound
             )
         }
     }
