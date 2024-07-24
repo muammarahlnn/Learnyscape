@@ -1,13 +1,13 @@
 ![Learnyscape](docs/images/learnyscape-backdrop.png "Learnyscape")
 
 <a href="https://play.google.com/store/apps/details?id=com.muammarahlnn.learnyscape"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" height="100"></a>
-[![Learnyscape Live Demo](docs/images/youtube-logo.png)](https://youtu.be/mUoRo41ecXg" "Learnyscape Live Demo")
 
 Learnyscape
 ==================
 **Learnyscape** is a Learning Management System (LMS) Android app. It's intended for my Bachelor thesis project.
 I made it all by myself with determination and full of my heart.
-It follows Android design and development best practices.
+It follows Android design and development best practices.  
+[LIVE DEMO](https://youtu.be/mUoRo41ecXg)
 
 # Features
 **Learnyscape** has two type of users, Lecturer and Student, and both of them have similar features.
